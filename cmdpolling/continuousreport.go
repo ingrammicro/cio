@@ -8,9 +8,9 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/cmd"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/cmd"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 const (

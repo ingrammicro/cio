@@ -1,6 +1,6 @@
 builds:
   - main: main.go
-    binary: concerto
+    binary: cio
     goos:
       - windows
       - darwin
@@ -11,5 +11,5 @@ archive:
   name_template: "{{ .ProjectName }}.{{ .Arch }}.{{ .Os }}"
   format: binary
 release:
-  prerelease: false
+  prerelease: true
   name_template: "{{.ProjectName}}-v{{.Version}}"

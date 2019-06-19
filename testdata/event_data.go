@@ -3,7 +3,7 @@ package testdata
 import (
 	"time"
 
-	"github.com/ingrammicro/concerto/api/types"
+	"github.com/ingrammicro/cio/api/types"
 )
 
 // GetEventData loads test data

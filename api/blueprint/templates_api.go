@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/utils"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/utils"
 )
 
 // TemplateService manages template operations

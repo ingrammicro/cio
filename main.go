@@ -2,26 +2,27 @@ package main
 
 import (
 	"fmt"
-	log "github.com/Sirupsen/logrus"
-	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/audit"
-	"github.com/ingrammicro/concerto/blueprint"
-	"github.com/ingrammicro/concerto/bootstrapping"
-	"github.com/ingrammicro/concerto/brownfield"
-	"github.com/ingrammicro/concerto/cloud"
-	"github.com/ingrammicro/concerto/cmdpolling"
-	"github.com/ingrammicro/concerto/converge"
-	"github.com/ingrammicro/concerto/dispatcher"
-	"github.com/ingrammicro/concerto/firewall"
-	"github.com/ingrammicro/concerto/labels"
-	"github.com/ingrammicro/concerto/network"
-	"github.com/ingrammicro/concerto/settings"
-	"github.com/ingrammicro/concerto/storage"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
-	"github.com/ingrammicro/concerto/wizard"
 	"os"
 	"sort"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/codegangsta/cli"
+	"github.com/ingrammicro/cio/audit"
+	"github.com/ingrammicro/cio/blueprint"
+	"github.com/ingrammicro/cio/bootstrapping"
+	"github.com/ingrammicro/cio/brownfield"
+	"github.com/ingrammicro/cio/cloud"
+	"github.com/ingrammicro/cio/cmdpolling"
+	"github.com/ingrammicro/cio/converge"
+	"github.com/ingrammicro/cio/dispatcher"
+	"github.com/ingrammicro/cio/firewall"
+	"github.com/ingrammicro/cio/labels"
+	"github.com/ingrammicro/cio/network"
+	"github.com/ingrammicro/cio/settings"
+	"github.com/ingrammicro/cio/storage"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
+	"github.com/ingrammicro/cio/wizard"
 )
 
 var serverCommands = []cli.Command{
@@ -245,9 +246,9 @@ func prepareFlags(c *cli.Context) error {
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "concerto"
-	app.Author = "Concerto Contributors"
-	app.Email = "https://github.com/ingrammicro/concerto"
+	app.Name = "cio"
+	app.Author = "Ingram Micro"
+	app.Email = "https://github.com/ingrammicro/cio"
 
 	app.CommandNotFound = cmdNotFound
 	app.Usage = "Manages communication between Host and IMCO Platform"

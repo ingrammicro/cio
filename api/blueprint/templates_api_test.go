@@ -3,8 +3,8 @@ package blueprint
 import (
 	"testing"
 
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/testdata"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
 )
 

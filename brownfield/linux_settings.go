@@ -10,8 +10,8 @@ import (
 	"os/exec"
 	"text/template"
 
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 type Settings struct {

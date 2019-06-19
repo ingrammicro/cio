@@ -1,6 +1,6 @@
 package testdata
 
-import "github.com/ingrammicro/concerto/api/types"
+import "github.com/ingrammicro/cio/api/types"
 
 // GetFloatingIPData loads test data
 func GetFloatingIPData() []*types.FloatingIP {

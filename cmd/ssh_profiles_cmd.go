@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/cloud"
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/cloud"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 // WireUpSSHProfile prepares common resources to send request to Concerto API

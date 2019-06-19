@@ -3,9 +3,9 @@
 package brownfield
 
 import (
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/firewall"
-	"github.com/ingrammicro/concerto/utils"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/firewall"
+	"github.com/ingrammicro/cio/utils"
 )
 
 func Apply(p *types.Policy) error {

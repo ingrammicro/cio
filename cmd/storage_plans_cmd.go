@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/storage"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/storage"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 // WireUpStoragePlan prepares common resources to send request to Concerto API

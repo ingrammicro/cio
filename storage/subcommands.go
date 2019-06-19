@@ -2,8 +2,8 @@ package storage
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/storage/storage_plans"
-	"github.com/ingrammicro/concerto/storage/volumes"
+	"github.com/ingrammicro/cio/storage/storage_plans"
+	"github.com/ingrammicro/cio/storage/volumes"
 )
 
 // SubCommands returns storage commands

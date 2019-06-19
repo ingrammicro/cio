@@ -79,13 +79,8 @@ RTM | Latest Release | 0.6.0 | Yes
   Samples:
 
   ```bash
-  git push release/0.6.0-alpha
-  git push release/0.6.0-alpha.1
-  git push release/0.6.0-beta
-  git push release/0.6.0-beta.1
-  git push release/0.6.0-rc
-  git push release/0.6.0-rc1
-  git push release/0.6.0
+  git push release/0.9.0
+  git push release/cirrus
   ```
 
 - Set environment variable
@@ -108,7 +103,7 @@ RTM | Latest Release | 0.6.0 | Yes
       prerelease: false
       ```
 
-    > Note: this parameter can be changed later editing the release in <https://github.com/ingrammicro/concerto/releases>
+    > Note: this parameter can be changed later editing the release in <https://github.com/ingrammicro/cio/releases>
 
 ### 4. ONLY IN RTM CASE. Prepare master branch
 
@@ -135,19 +130,19 @@ Once approved and merged:
 - Tag the new release
 
   ```bash
-  git tag -a v[CURRENT_VERSION] -m "Concerto v[CURRENT_VERSION]"
+  git tag -a v[CURRENT_VERSION] -m "CIO v[CURRENT_VERSION]"
   ```
 
   Samples:
 
   ```bash
-  git tag -a v0.6.0-alpha -m "Concerto v0.6.0-alpha"
-  git tag -a v0.6.0-alpha.1 -m "Concerto v0.6.0-alpha.1"
-  git tag -a v0.6.0-beta -m "Concerto v0.6.0-beta"
-  git tag -a v0.6.0-beta.1 -m "Concerto v0.6.0-beta.1"
-  git tag -a v0.6.0-rc -m "Concerto v0.6.0-rc"
-  git tag -a v0.6.0-rc1 -m "Concerto v0.6.0-rc1"
-  git tag -a v0.6.0 -m "Concerto v0.6.0"
+  git tag -a v0.6.0-alpha -m "CIO v0.6.0-alpha"
+  git tag -a v0.6.0-alpha.1 -m "CIO v0.6.0-alpha.1"
+  git tag -a v0.6.0-beta -m "CIO v0.6.0-beta"
+  git tag -a v0.6.0-beta.1 -m "CIO v0.6.0-beta.1"
+  git tag -a v0.6.0-rc -m "CIO v0.6.0-rc"
+  git tag -a v0.6.0-rc1 -m "CIO v0.6.0-rc1"
+  git tag -a v0.6.0 -m "CIO v0.6.0"
   ```
 
 - Publish tag

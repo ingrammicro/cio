@@ -2,7 +2,7 @@ package apps
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/cmd"
+	"github.com/ingrammicro/cio/cmd"
 )
 
 // SubCommands returns apps commands

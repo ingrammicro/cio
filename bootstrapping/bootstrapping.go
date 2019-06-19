@@ -18,11 +18,11 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/allan-simon/go-singleinstance"
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/blueprint"
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/cmd"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/blueprint"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/cmd"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 const (

@@ -2,10 +2,10 @@ package blueprint
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/blueprint/attachments"
-	"github.com/ingrammicro/concerto/blueprint/cookbook_versions"
-	"github.com/ingrammicro/concerto/blueprint/scripts"
-	"github.com/ingrammicro/concerto/blueprint/templates"
+	"github.com/ingrammicro/cio/blueprint/attachments"
+	"github.com/ingrammicro/cio/blueprint/cookbook_versions"
+	"github.com/ingrammicro/cio/blueprint/scripts"
+	"github.com/ingrammicro/cio/blueprint/templates"
 )
 
 // SubCommands returns blueprint commands
