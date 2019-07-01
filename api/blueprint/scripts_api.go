@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	log "github.com/Sirupsen/logrus"
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/utils"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/utils"
 )
 
 // ScriptService manages scripts operations
@@ -16,7 +16,7 @@ type ScriptService struct {
 // NewScriptService returns a Concerto script service
 func NewScriptService(concertoService utils.ConcertoService) (*ScriptService, error) {
 	if concertoService == nil {
-		return nil, fmt.Errorf("Must initialize ConcertoService before using it")
+		return nil, fmt.Errorf("must initialize ConcertoService before using it")
 	}
 
 	return &ScriptService{
@@ -24,11 +24,11 @@ func NewScriptService(concertoService utils.ConcertoService) (*ScriptService, er
 	}, nil
 }
 
-// GetScriptsList returns the list of scripts as an array of Scripts
-func (sc *ScriptService) GetScriptList() (scripts []types.Script, err error) {
+// GetScriptList returns the list of scripts as an array of Scripts
+func (sc *ScriptService) GetScriptList() (scripts []*types.Script, err error) {
 	log.Debug("GetScriptsList")
 
-	data, status, err := sc.concertoService.Get("/v1/blueprint/scripts")
+	data, status, err := sc.concertoService.Get("/blueprint/scripts")
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +45,10 @@ func (sc *ScriptService) GetScriptList() (scripts []types.Script, err error) {
 }
 
 // GetScript returns a script by its ID
-func (sc *ScriptService) GetScript(ID string) (script *types.Script, err error) {
+func (sc *ScriptService) GetScript(scriptID string) (script *types.Script, err error) {
 	log.Debug("GetScript")
 
-	data, status, err := sc.concertoService.Get(fmt.Sprintf("/v1/blueprint/scripts/%s", ID))
+	data, status, err := sc.concertoService.Get(fmt.Sprintf("/blueprint/scripts/%s", scriptID))
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (sc *ScriptService) GetScript(ID string) (script *types.Script, err error) 
 func (sc *ScriptService) CreateScript(scriptVector *map[string]interface{}) (script *types.Script, err error) {
 	log.Debug("CreateScript")
 
-	data, status, err := sc.concertoService.Post("/v1/blueprint/scripts", scriptVector)
+	data, status, err := sc.concertoService.Post("/blueprint/scripts", scriptVector)
 	if err != nil {
 		return nil, err
 	}
@@ -85,10 +85,10 @@ func (sc *ScriptService) CreateScript(scriptVector *map[string]interface{}) (scr
 }
 
 // UpdateScript updates a script by its ID
-func (sc *ScriptService) UpdateScript(scriptVector *map[string]interface{}, ID string) (script *types.Script, err error) {
+func (sc *ScriptService) UpdateScript(scriptVector *map[string]interface{}, scriptID string) (script *types.Script, err error) {
 	log.Debug("UpdateScript")
 
-	data, status, err := sc.concertoService.Put(fmt.Sprintf("/v1/blueprint/scripts/%s", ID), scriptVector)
+	data, status, err := sc.concertoService.Put(fmt.Sprintf("/blueprint/scripts/%s", scriptID), scriptVector)
 	if err != nil {
 		return nil, err
 	}
@@ -105,10 +105,10 @@ func (sc *ScriptService) UpdateScript(scriptVector *map[string]interface{}, ID s
 }
 
 // DeleteScript deletes a script by its ID
-func (sc *ScriptService) DeleteScript(ID string) (err error) {
+func (sc *ScriptService) DeleteScript(scriptID string) (err error) {
 	log.Debug("DeleteScript")
 
-	data, status, err := sc.concertoService.Delete(fmt.Sprintf("/v1/blueprint/scripts/%s", ID))
+	data, status, err := sc.concertoService.Delete(fmt.Sprintf("/blueprint/scripts/%s", scriptID))
 	if err != nil {
 		return err
 	}
@@ -118,4 +118,80 @@ func (sc *ScriptService) DeleteScript(ID string) (err error) {
 	}
 
 	return nil
+}
+
+// AddScriptAttachment adds an attachment to script by its ID
+func (sc *ScriptService) AddScriptAttachment(attachmentIn *map[string]interface{}, scriptID string) (script *types.Attachment, err error) {
+	log.Debug("AddScriptAttachment")
+
+	data, status, err := sc.concertoService.Post(fmt.Sprintf("/blueprint/scripts/%s/attachments", scriptID), attachmentIn)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(data, &script); err != nil {
+		return nil, err
+	}
+
+	return script, nil
+}
+
+// UploadScriptAttachment uploads an attachment file
+func (sc *ScriptService) UploadScriptAttachment(sourceFilePath string, targetURL string) error {
+	log.Debug("UploadScriptAttachment")
+
+	data, status, err := sc.concertoService.PutFile(sourceFilePath, targetURL)
+	if err != nil {
+		return err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UploadedScriptAttachment sets "uploaded" status to the attachment by its ID
+func (sc *ScriptService) UploadedScriptAttachment(attachmentVector *map[string]interface{}, attachmentID string) (attachment *types.Attachment, err error) {
+	log.Debug("UploadedScriptAttachment")
+
+	data, status, err := sc.concertoService.Put(fmt.Sprintf("/blueprint/attachments/%s/uploaded", attachmentID), attachmentVector)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(data, &attachment); err != nil {
+		return nil, err
+	}
+
+	return attachment, nil
+}
+
+// ListScriptAttachments returns the list of Attachments for a given script ID
+func (sc *ScriptService) ListScriptAttachments(scriptID string) (attachments []*types.Attachment, err error) {
+	log.Debug("ListScriptAttachments")
+
+	data, status, err := sc.concertoService.Get(fmt.Sprintf("/blueprint/scripts/%s/attachments", scriptID))
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(data, &attachments); err != nil {
+		return nil, err
+	}
+
+	return attachments, nil
 }

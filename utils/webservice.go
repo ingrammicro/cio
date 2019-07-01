@@ -2,16 +2,16 @@ package utils
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	log "github.com/Sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
-
-	log "github.com/Sirupsen/logrus"
 )
 
 // ConcertoService defines actions to be performed by web service manager
@@ -20,7 +20,8 @@ type ConcertoService interface {
 	Put(path string, payload *map[string]interface{}) ([]byte, int, error)
 	Delete(path string) ([]byte, int, error)
 	Get(path string) ([]byte, int, error)
-	GetFile(path string, directoryPath string) (string, int, error)
+	GetFile(url string, filePath string, discoveryFileName bool) (string, int, error)
+	PutFile(sourceFilePath string, targetURL string) ([]byte, int, error)
 }
 
 // HTTPConcertoservice web service manager.
@@ -33,79 +34,93 @@ type HTTPConcertoservice struct {
 func NewHTTPConcertoService(config *Config) (hcs *HTTPConcertoservice, err error) {
 
 	if config == nil {
-		return nil, fmt.Errorf("Web service configuration failed. No data in configuration")
+		return nil, fmt.Errorf("web service configuration failed. No data in configuration")
 	}
 
 	if !config.IsConfigReady() {
-		return nil, fmt.Errorf("Configuration is incomplete.")
+		return nil, fmt.Errorf("configuration is incomplete")
 	}
 
 	// creates HTTP Concerto service with config
 	hcs = &HTTPConcertoservice{
 		config: config,
 	}
+
+	// Loads CA Certificate
+	caCert, err := ioutil.ReadFile(hcs.config.Certificate.Ca)
+	if err != nil {
+		return nil, fmt.Errorf("cannot read IMCO CA cert: %v", err)
+	}
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
 
 	// Loads Clients Certificates and creates and 509KeyPair
 	cert, err := tls.LoadX509KeyPair(hcs.config.Certificate.Cert, hcs.config.Certificate.Key)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cannot read IMCO API key (from '%s' and '%s'): %v", hcs.config.Certificate.Cert, hcs.config.Certificate.Key, err)
 	}
 
 	// Creates a client with specific transport configurations
-	transport := &http.Transport{
-		TLSClientConfig: &tls.Config{Certificates: []tls.Certificate{cert}, InsecureSkipVerify: true},
+	hcs.client = &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				RootCAs:      caCertPool,
+				Certificates: []tls.Certificate{cert},
+			},
+		},
 	}
-	hcs.client = &http.Client{Transport: transport}
-
 	return hcs, nil
 }
 
-// NewHTTPConcertoService creates new http Concerto client based on config
+// NewHTTPConcertoServiceWithBrownfieldToken creates new http Concerto client based on config
 func NewHTTPConcertoServiceWithBrownfieldToken(config *Config) (hcs *HTTPConcertoservice, err error) {
 
 	if config == nil {
-		return nil, fmt.Errorf("Web service configuration failed. No data in configuration")
+		return nil, fmt.Errorf("web service configuration failed. No data in configuration")
 	}
 
 	if !config.IsConfigReadyBrownfield() {
-		return nil, fmt.Errorf("Configuration is incomplete.")
+		return nil, fmt.Errorf("configuration is incomplete")
 	}
 
 	// creates HTTP Concerto service with config
 	hcs = &HTTPConcertoservice{
 		config: config,
 	}
-
-	// Creates a client with specific transport configurations
-	transport := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	// Creates a client with no certificates and insecure option
+	hcs.client = &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
 	}
-	hcs.client = &http.Client{Transport: transport}
-
 	return hcs, nil
 }
 
+// NewHTTPConcertoServiceWithCommandPolling creates new http Concerto client based on config
 func NewHTTPConcertoServiceWithCommandPolling(config *Config) (hcs *HTTPConcertoservice, err error) {
 
 	if config == nil {
-		return nil, fmt.Errorf("Web service configuration failed. No data in configuration")
+		return nil, fmt.Errorf("web service configuration failed. No data in configuration")
 	}
 
 	if !config.IsConfigReadyCommandPolling() {
-		return nil, fmt.Errorf("Configuration is incomplete.")
+		return nil, fmt.Errorf("configuration is incomplete")
 	}
 
 	// creates HTTP Concerto service with config
 	hcs = &HTTPConcertoservice{
 		config: config,
 	}
-
-	// Creates a client with specific transport configurations
-	transport := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	// Creates a client with no certificates and insecure option
+	hcs.client = &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
 	}
-	hcs.client = &http.Client{Transport: transport}
-
 	return hcs, nil
 }
 
@@ -117,7 +132,7 @@ func (hcs *HTTPConcertoservice) Post(path string, payload *map[string]interface{
 		return nil, 0, err
 	}
 
-	log.Debugf("Sending POST request to %s with payload %s ", url, jsPayload)
+	log.Debugf("Sending POST request to %s with payload %v ", url, jsPayload)
 	req, err := http.NewRequest("POST", url, jsPayload)
 	req.Header.Add("Content-Type", "application/json")
 	if hcs.config.BrownfieldToken != "" {
@@ -145,7 +160,7 @@ func (hcs *HTTPConcertoservice) Put(path string, payload *map[string]interface{}
 		return nil, 0, err
 	}
 
-	log.Debugf("Sending PUT request to %s with payload %s ", url, jsPayload)
+	log.Debugf("Sending PUT request to %s with payload %v ", url, jsPayload)
 	request, err := http.NewRequest("PUT", url, jsPayload)
 	if err != nil {
 		return nil, 0, err
@@ -198,12 +213,7 @@ func (hcs *HTTPConcertoservice) Get(path string) ([]byte, int, error) {
 }
 
 // GetFile sends GET request to Concerto API and receives a file
-func (hcs *HTTPConcertoservice) GetFile(path string, directoryPath string) (string, int, error) {
-
-	url, _, err := hcs.prepareCall(path, nil)
-	if err != nil {
-		return "", 0, err
-	}
+func (hcs *HTTPConcertoservice) GetFile(url string, filePath string, discoveryFileName bool) (string, int, error) {
 
 	log.Debugf("Sending GET request to %s", url)
 	response, err := hcs.client.Get(url)
@@ -214,14 +224,14 @@ func (hcs *HTTPConcertoservice) GetFile(path string, directoryPath string) (stri
 	defer response.Body.Close()
 	log.Debugf("Status code:%d message:%s", response.StatusCode, response.Status)
 
-	r, err := regexp.Compile("filename=\\\"([^\\\"]*){1}\\\"")
-	if err != nil {
-		return "", response.StatusCode, err
+	realFileName := filePath
+	if discoveryFileName {
+		r, err := regexp.Compile("filename=\\\"([^\\\"]*){1}\\\"")
+		if err != nil {
+			return "", 0, err
+		}
+		realFileName = fmt.Sprintf("%s/%s", filePath, r.FindStringSubmatch(response.Header.Get("Content-Disposition"))[1])
 	}
-
-	// TODO check errors
-	fileName := r.FindStringSubmatch(response.Header.Get("Content-Disposition"))[1]
-	realFileName := fmt.Sprintf("%s/%s", directoryPath, fileName)
 
 	output, err := os.Create(realFileName)
 	if err != nil {
@@ -236,6 +246,30 @@ func (hcs *HTTPConcertoservice) GetFile(path string, directoryPath string) (stri
 
 	log.Debugf("%#v bytes downloaded", n)
 	return realFileName, response.StatusCode, nil
+}
+
+// PutFile sends PUT request to send a file
+func (hcs *HTTPConcertoservice) PutFile(sourceFilePath string, targetURL string) ([]byte, int, error) {
+
+	data, err := os.Open(sourceFilePath)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	req, err := http.NewRequest("PUT", targetURL, data)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	res, err := hcs.client.Do(req)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer res.Body.Close()
+
+	buf, err := ioutil.ReadAll(res.Body)
+	status := res.StatusCode
+	return buf, status, nil
 }
 
 func (hcs *HTTPConcertoservice) prepareCall(path string, payload *map[string]interface{}) (url string, jsPayload *strings.Reader, err error) {

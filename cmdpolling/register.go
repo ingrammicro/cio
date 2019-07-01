@@ -10,8 +10,8 @@ import (
 	"text/template"
 
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 var configFileTemplate = template.Must(template.New("configFile").Parse(`<concerto version="1.0" server="{{.APIEndpoint}}" log_file="{{.LogFile}}" log_level="{{.LogLevel}}">

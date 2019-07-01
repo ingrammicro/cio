@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/wizard"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/wizard"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 // WireUpWizServerPlan prepares common resources to send request to Concerto API
@@ -22,7 +22,7 @@ func WireUpWizServerPlan(c *cli.Context) (ds *wizard.WizServerPlanService, f for
 	}
 	ds, err = wizard.NewWizServerPlanService(hcs)
 	if err != nil {
-		f.PrintFatal("Couldn't wire up serverPlan service", err)
+		f.PrintFatal("Couldn't wire up wizard server plan service", err)
 	}
 
 	return ds, f
@@ -33,12 +33,21 @@ func WizServerPlanList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	serverPlanSvc, formatter := WireUpWizServerPlan(c)
 
-	checkRequiredFlags(c, []string{"app_id", "location_id", "cloud_provider_id"}, formatter)
+	checkRequiredFlags(c, []string{"app-id", "location-id", "cloud-provider-id"}, formatter)
 
-	serverPlans, err := serverPlanSvc.GetWizServerPlanList(c.String("app_id"), c.String("location_id"), c.String("cloud_provider_id"))
+	serverPlans, err := serverPlanSvc.GetWizServerPlanList(c.String("app-id"), c.String("location-id"), c.String("cloud-provider-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive serverPlan data", err)
 	}
+
+	cloudProvidersMap := LoadCloudProvidersMapping(c)
+	locationsMap := LoadLocationsMapping(c)
+
+	for id, sp := range serverPlans {
+		serverPlans[id].CloudProviderName = cloudProvidersMap[sp.CloudProviderID]
+		serverPlans[id].LocationName = locationsMap[sp.LocationID]
+	}
+
 	if err = formatter.PrintList(serverPlans); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}

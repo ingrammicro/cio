@@ -2,15 +2,22 @@ package servers
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/cmd"
+	"github.com/ingrammicro/cio/cmd"
 )
 
+// SubCommands returns servers commands
 func SubCommands() []cli.Command {
 	return []cli.Command{
 		{
 			Name:   "list",
 			Usage:  "Lists information about all the servers on this account.",
 			Action: cmd.ServerList,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "labels",
+					Usage: "A list of comma separated label as a query filter",
+				},
+			},
 		},
 		{
 			Name:   "show",
@@ -33,20 +40,28 @@ func SubCommands() []cli.Command {
 					Usage: "Name of the server",
 				},
 				cli.StringFlag{
-					Name:  "workspace_id",
-					Usage: "Identifier of the workspace to which the server shall belong",
+					Name:  "ssh-profile-id",
+					Usage: "Identifier of the ssh profile which the server shall use",
 				},
 				cli.StringFlag{
-					Name:  "template_id",
+					Name:  "firewall-profile-id",
+					Usage: "Identifier of the firewall profile to which the server shall use",
+				},
+				cli.StringFlag{
+					Name:  "template-id",
 					Usage: "Identifier of the template the server shall use",
 				},
 				cli.StringFlag{
-					Name:  "server_plan_id",
+					Name:  "server-plan-id",
 					Usage: "Identifier of the server plan in which the server shall be deployed",
 				},
 				cli.StringFlag{
-					Name:  "cloud_account_id",
+					Name:  "cloud-account-id",
 					Usage: "Identifier of the cloud account in which the server shall be registered",
+				},
+				cli.StringFlag{
+					Name:  "labels",
+					Usage: "A list of comma separated label names to be associated with server",
 				},
 			},
 		},
@@ -99,7 +114,7 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "override_server",
+			Name:   "override-server",
 			Usage:  "This action takes the server with the given id from a stalled state to the operational state, at the user's own risk.",
 			Action: cmd.ServerOverride,
 			Flags: []cli.Flag{
@@ -121,7 +136,7 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "list_events",
+			Name:   "list-events",
 			Usage:  "This action returns information about the events related to the server with the given id.",
 			Action: cmd.EventsList,
 			Flags: []cli.Flag{
@@ -132,7 +147,7 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "list_operational_scripts",
+			Name:   "list-operational-scripts",
 			Usage:  "This action returns information about the operational scripts characterisations related to the server with the given id.",
 			Action: cmd.OperationalScriptsList,
 			Flags: []cli.Flag{
@@ -143,18 +158,81 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:  "execute_script",
-			Usage: "This action initiates the execution of the script characterisation with the given id on the server with the given id.",
-			// Action: cmd.OperationalScriptExecute,
-			Action: cmdExecuteScript,
+			Name:   "execute-script",
+			Usage:  "This action initiates the execution of the script characterisation with the given id on the server with the given id.",
+			Action: cmd.OperationalScriptExecute,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "server_id",
+					Name:  "server-id",
 					Usage: "Server Id",
 				},
 				cli.StringFlag{
-					Name:  "script_id",
+					Name:  "script-id",
 					Usage: "Script Id",
+				},
+			},
+		},
+		{
+			Name:   "list-floating-ips",
+			Usage:  "This action returns information about the floating IPs attached to the server with the given id",
+			Action: cmd.ServerFloatingIPList,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "id",
+					Usage: "Server Id",
+				},
+			},
+		},
+		{
+			Name:   "list-volumes",
+			Usage:  "This action returns information about the volumes attached to the server with the given id",
+			Action: cmd.ServerVolumesList,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "id",
+					Usage: "Server Id",
+				},
+			},
+		},
+		{
+			Name:   "add-label",
+			Usage:  "This action assigns a single label from a single labelable resource",
+			Action: cmd.LabelAdd,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "id",
+					Usage: "Server Id",
+				},
+				cli.StringFlag{
+					Name:  "label",
+					Usage: "Label name",
+				},
+				cli.StringFlag{
+					Name:   "resource-type",
+					Usage:  "Resource Type",
+					Value:  "server",
+					Hidden: true,
+				},
+			},
+		},
+		{
+			Name:   "remove-label",
+			Usage:  "This action unassigns a single label from a single labelable resource",
+			Action: cmd.LabelRemove,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "id",
+					Usage: "Server Id",
+				},
+				cli.StringFlag{
+					Name:  "label",
+					Usage: "Label name",
+				},
+				cli.StringFlag{
+					Name:   "resource-type",
+					Usage:  "Resource Type",
+					Value:  "server",
+					Hidden: true,
 				},
 			},
 		},

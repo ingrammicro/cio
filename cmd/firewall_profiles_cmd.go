@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/network"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/network"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 // WireUpFirewallProfile prepares common resources to send request to Concerto API
@@ -37,6 +39,24 @@ func FirewallProfileList(c *cli.Context) error {
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive firewallProfile data", err)
 	}
+
+	labelables := make([]types.Labelable, len(firewallProfiles))
+	for i := 0; i < len(firewallProfiles); i++ {
+		labelables[i] = types.Labelable(firewallProfiles[i])
+	}
+	labelIDsByName, labelNamesByID := LabelLoadsMapping(c)
+	filteredLabelables := LabelFiltering(c, labelables, labelIDsByName)
+	LabelAssignNamesForIDs(c, filteredLabelables, labelNamesByID)
+
+	firewallProfiles = make([]*types.FirewallProfile, len(filteredLabelables))
+	for i, labelable := range filteredLabelables {
+		fw, ok := labelable.(*types.FirewallProfile)
+		if !ok {
+			formatter.PrintFatal("Label filtering returned unexpected result",
+				fmt.Errorf("expected labelable to be a *types.FirewallProfile, got a %T", labelable))
+		}
+		firewallProfiles[i] = fw
+	}
 	if err = formatter.PrintList(firewallProfiles); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -53,6 +73,8 @@ func FirewallProfileShow(c *cli.Context) error {
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive firewallProfile data", err)
 	}
+	_, labelNamesByID := LabelLoadsMapping(c)
+	firewallProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*firewallProfile); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -65,10 +87,32 @@ func FirewallProfileCreate(c *cli.Context) error {
 	firewallProfileSvc, formatter := WireUpFirewallProfile(c)
 
 	checkRequiredFlags(c, []string{"name", "description"}, formatter)
-	firewallProfile, err := firewallProfileSvc.CreateFirewallProfile(utils.FlagConvertParams(c))
+
+	firewallProfileIn := map[string]interface{}{
+		"name":        c.String("name"),
+		"description": c.String("description"),
+	}
+
+	if c.String("rules") != "" {
+		fw := new(types.FirewallProfile)
+		if err := fw.ConvertFlagParamsToRules(c.String("rules")); err != nil {
+			formatter.PrintFatal("Error parsing parameters", err)
+		}
+		firewallProfileIn["rules"] = fw.Rules
+	}
+
+	labelIDsByName, labelNamesByID := LabelLoadsMapping(c)
+
+	if c.IsSet("labels") {
+		firewallProfileIn["label_ids"] = LabelResolution(c, c.String("labels"), &labelNamesByID, &labelIDsByName)
+	}
+
+	firewallProfile, err := firewallProfileSvc.CreateFirewallProfile(&firewallProfileIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't create firewallProfile", err)
 	}
+
+	firewallProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*firewallProfile); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -81,10 +125,29 @@ func FirewallProfileUpdate(c *cli.Context) error {
 	firewallProfileSvc, formatter := WireUpFirewallProfile(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	firewallProfile, err := firewallProfileSvc.UpdateFirewallProfile(utils.FlagConvertParams(c), c.String("id"))
+
+	firewallProfileIn := map[string]interface{}{}
+	if c.String("name") != "" {
+		firewallProfileIn["name"] = c.String("name")
+	}
+	if c.String("description") != "" {
+		firewallProfileIn["description"] = c.String("description")
+	}
+	if c.String("rules") != "" {
+		fw := new(types.FirewallProfile)
+		if err := fw.ConvertFlagParamsToRules(c.String("rules")); err != nil {
+			formatter.PrintFatal("Error parsing parameters", err)
+		}
+		firewallProfileIn["rules"] = fw.Rules
+	}
+
+	firewallProfile, err := firewallProfileSvc.UpdateFirewallProfile(&firewallProfileIn, c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't update firewallProfile", err)
 	}
+
+	_, labelNamesByID := LabelLoadsMapping(c)
+	firewallProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*firewallProfile); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}

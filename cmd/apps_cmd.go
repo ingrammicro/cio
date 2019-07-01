@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/wizard"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/wizard"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 // WireUpApp prepares common resources to send request to Concerto API
@@ -48,8 +48,18 @@ func AppDeploy(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	appSvc, formatter := WireUpApp(c)
 
-	checkRequiredFlags(c, []string{"id", "location_id", "cloud_provider_id", "hostname"}, formatter)
-	app, err := appSvc.DeployApp(utils.FlagConvertParams(c))
+	checkRequiredFlags(c, []string{"id", "location-id", "cloud-account-id", "hostname"}, formatter)
+
+	appIn := map[string]interface{}{
+		"location_id":      c.String("location-id"),
+		"cloud_account_id": c.String("cloud-account-id"),
+		"hostname":         c.String("hostname"),
+	}
+	if c.IsSet("server-plan-id") {
+		appIn["server_plan_id"] = c.String("server-plan-id")
+	}
+
+	app, err := appSvc.DeployApp(&appIn, c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't deploy app", err)
 	}

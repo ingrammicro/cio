@@ -4,16 +4,18 @@ package firewall
 
 import (
 	"fmt"
+	"github.com/ingrammicro/cio/api/types"
+	"os"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/ingrammicro/concerto/utils"
+	"github.com/ingrammicro/cio/utils"
 )
 
 func driverName() string {
 	return "iptables"
 }
 
-func apply(policy Policy) error {
+func Apply(policy types.Policy) error {
 	var exitCode int
 	utils.RunCmd("/sbin/iptables -w -N CONCERTO")
 	utils.RunCmd("/sbin/iptables -w -F CONCERTO")
@@ -35,7 +37,7 @@ func apply(policy Policy) error {
 
 	_, exitCode, _, _ = utils.RunCmd("/sbin/iptables -w -C INPUT -j CONCERTO")
 	if exitCode != 0 {
-		log.Debugln("Concerto Chain is not existant adding it to INPUT")
+		log.Debugln("Concerto Chain is not existent adding it to INPUT")
 		utils.RunCmd("/sbin/iptables -w -A INPUT -j CONCERTO")
 	}
 
@@ -43,6 +45,9 @@ func apply(policy Policy) error {
 }
 
 func flush() error {
+	if _, err := os.Stat("/etc/redhat-release"); err == nil {
+		utils.RunCmd("firewall-cmd --set-default-zone=trusted")
+	}
 	utils.RunCmd("/sbin/iptables -w -P INPUT ACCEPT")
 	utils.RunCmd("/sbin/iptables -w -F CONCERTO")
 	utils.RunCmd("/sbin/iptables -w -D INPUT -j CONCERTO")

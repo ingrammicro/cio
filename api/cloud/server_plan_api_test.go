@@ -1,7 +1,7 @@
 package cloud
 
 import (
-	"github.com/ingrammicro/concerto/testdata"
+	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -15,20 +15,20 @@ func TestNewServerPlanServiceNil(t *testing.T) {
 
 func TestGetServerPlanList(t *testing.T) {
 	serverPlansIn := testdata.GetServerPlanData()
-	for _, serverPlanIn := range *serverPlansIn {
-		GetServerPlanListMocked(t, serverPlansIn, serverPlanIn.CloudProviderId)
-		GetServerPlanListFailErrMocked(t, serverPlansIn, serverPlanIn.CloudProviderId)
-		GetServerPlanListFailStatusMocked(t, serverPlansIn, serverPlanIn.CloudProviderId)
-		GetServerPlanListFailJSONMocked(t, serverPlansIn, serverPlanIn.CloudProviderId)
+	for _, serverPlanIn := range serverPlansIn {
+		GetServerPlanListMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
+		GetServerPlanListFailErrMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
+		GetServerPlanListFailStatusMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
+		GetServerPlanListFailJSONMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
 	}
 }
 
 func TestGetServerPlan(t *testing.T) {
 	serverPlansIn := testdata.GetServerPlanData()
-	for _, serverPlanIn := range *serverPlansIn {
-		GetServerPlanMocked(t, &serverPlanIn)
-		GetServerPlanFailErrMocked(t, &serverPlanIn)
-		GetServerPlanFailStatusMocked(t, &serverPlanIn)
-		GetServerPlanFailJSONMocked(t, &serverPlanIn)
+	for _, serverPlanIn := range serverPlansIn {
+		GetServerPlanMocked(t, serverPlanIn)
+		GetServerPlanFailErrMocked(t, serverPlanIn)
+		GetServerPlanFailStatusMocked(t, serverPlanIn)
+		GetServerPlanFailJSONMocked(t, serverPlanIn)
 	}
 }

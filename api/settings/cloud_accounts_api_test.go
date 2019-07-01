@@ -3,7 +3,7 @@ package settings
 import (
 	"testing"
 
-	"github.com/ingrammicro/concerto/testdata"
+	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,31 +22,12 @@ func TestGetCloudAccountList(t *testing.T) {
 	GetCloudAccountListFailJSONMocked(t, cloudAccountsIn)
 }
 
-func TestCreateCloudAccount(t *testing.T) {
+func TestGetCloudAccount(t *testing.T) {
 	cloudAccountsIn := testdata.GetCloudAccountData()
-	for _, cloudAccountIn := range *cloudAccountsIn {
-		CreateCloudAccountMocked(t, &cloudAccountIn)
-		CreateCloudAccountFailErrMocked(t, &cloudAccountIn)
-		CreateCloudAccountFailStatusMocked(t, &cloudAccountIn)
-		CreateCloudAccountFailJSONMocked(t, &cloudAccountIn)
-	}
-}
-
-func TestUpdateCloudAccount(t *testing.T) {
-	cloudAccountsIn := testdata.GetCloudAccountData()
-	for _, cloudAccountIn := range *cloudAccountsIn {
-		UpdateCloudAccountMocked(t, &cloudAccountIn)
-		UpdateCloudAccountFailErrMocked(t, &cloudAccountIn)
-		UpdateCloudAccountFailStatusMocked(t, &cloudAccountIn)
-		UpdateCloudAccountFailJSONMocked(t, &cloudAccountIn)
-	}
-}
-
-func TestDeleteCloudAccount(t *testing.T) {
-	cloudAccountsIn := testdata.GetCloudAccountData()
-	for _, cloudAccountIn := range *cloudAccountsIn {
-		DeleteCloudAccountMocked(t, &cloudAccountIn)
-		DeleteCloudAccountFailErrMocked(t, &cloudAccountIn)
-		DeleteCloudAccountFailStatusMocked(t, &cloudAccountIn)
+	for _, cloudAccountIn := range cloudAccountsIn {
+		GetCloudAccountMocked(t, cloudAccountIn)
+		GetCloudAccountFailErrMocked(t, cloudAccountIn)
+		GetCloudAccountFailStatusMocked(t, cloudAccountIn)
+		GetCloudAccountFailJSONMocked(t, cloudAccountIn)
 	}
 }

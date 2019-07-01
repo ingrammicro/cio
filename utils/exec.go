@@ -19,6 +19,7 @@ import (
 const (
 	TimeStampLayout          = "2006-01-02T15:04:05.000000-07:00"
 	TimeLayoutYYYYMMDDHHMMSS = "20060102150405"
+	RetriesFactor            = 3
 )
 
 func extractExitCode(err error) int {
@@ -44,19 +45,19 @@ func ExecCode(code string, path string, filename string) (output string, exitCod
 	}
 
 	if err != nil {
-		log.Fatalf("Error creating temp file : ", err)
+		log.Fatalf("Error creating temp file: %v", err)
 	}
 
 	defer tmp.Close()
 
 	_, err = tmp.WriteString(code)
 	if err != nil {
-		log.Fatalf("Error writing to file : ", err)
+		log.Fatalf("Error writing to file: %v", err)
 	}
 
 	os.Chmod(tmp.Name(), 0777)
 	if err != nil {
-		log.Fatalf("Error changing permision to file : ", err)
+		log.Fatalf("Error changing permission to file: %v", err)
 	}
 
 	return RunFile(tmp.Name())
@@ -78,16 +79,21 @@ func RunFile(command string) (output string, exitCode int, startedAt time.Time, 
 	}
 
 	stdout, err := cmd.StdoutPipe()
-	CheckError(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	stderr, err := cmd.StderrPipe()
-	CheckError(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	multi := io.MultiReader(stdout, stderr)
 
 	startedAt = time.Now()
-	err = cmd.Start()
-	CheckError(err)
+	if err = cmd.Start(); err != nil {
+		log.Fatal(err)
+	}
 
 	io.Copy(buffer, multi)
 
@@ -98,8 +104,9 @@ func RunFile(command string) (output string, exitCode int, startedAt time.Time, 
 	finishedAt = time.Now()
 	exitCode = extractExitCode(err)
 
-	err = buffer.Flush()
-	CheckError(err)
+	if err = buffer.Flush(); err != nil {
+		log.Fatal(err)
+	}
 	output = b.String()
 
 	log.Debugf("Starting Time: %s", startedAt.Format(TimeStampLayout))
@@ -234,7 +241,9 @@ func RunTracedCmd(command string) (exitCode int, stdOut string, stdErr string, s
 	return
 }
 
-func RunContinuousCmd(fn func(chunk string) error, command string, thresholdTime int) (int, error) {
+// thresholdTime  > 0 continuous report
+// thresholdLines > 0 bootstrapping
+func RunContinuousCmd(fn func(chunk string) error, command string, thresholdTime int, thresholdLines int) (int, error) {
 	log.Debug("RunContinuousCmd")
 
 	// Saves script/command in a temp file
@@ -256,20 +265,19 @@ func RunContinuousCmd(fn func(chunk string) error, command string, thresholdTime
 	}
 
 	chunk := ""
-	nTime := 0
+	nLines, nTime := 0, 0
 	timeStart := time.Now()
 
 	scanner := bufio.NewScanner(bufio.NewReader(stdout))
 	for scanner.Scan() {
 		chunk = strings.Join([]string{chunk, scanner.Text(), "\n"}, "")
+		nLines++
 		nTime = int(time.Now().Sub(timeStart).Seconds())
-		if nTime >= thresholdTime {
-			if err := fn(chunk); err != nil {
-				nTime = 0
-			} else {
+		if (thresholdTime > 0 && nTime >= thresholdTime) || (thresholdLines > 0 && nLines >= thresholdLines) {
+			if err := fn(chunk); err == nil {
 				chunk = ""
-				nTime = 0
 			}
+			nLines, nTime = 0, 0
 			timeStart = time.Now()
 		}
 	}
@@ -290,4 +298,18 @@ func RunContinuousCmd(fn func(chunk string) error, command string, thresholdTime
 	exitCode := extractExitCode(err)
 
 	return exitCode, nil
+}
+
+func Retry(attempts int, sleep time.Duration, fn func() error) error {
+	log.Debug("Retry")
+
+	if err := fn(); err != nil {
+		if attempts--; attempts > 0 {
+			log.Debug("Waiting to retry: ", sleep)
+			time.Sleep(sleep)
+			return Retry(attempts, RetriesFactor*sleep, fn)
+		}
+		return err
+	}
+	return nil
 }

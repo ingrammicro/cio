@@ -1,7 +1,7 @@
 package cloud
 
 import (
-	"github.com/ingrammicro/concerto/testdata"
+	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -19,4 +19,12 @@ func TestGetCloudProviderList(t *testing.T) {
 	GetCloudProviderListFailErrMocked(t, cloudProvidersIn)
 	GetCloudProviderListFailStatusMocked(t, cloudProvidersIn)
 	GetCloudProviderListFailJSONMocked(t, cloudProvidersIn)
+}
+
+func TestGetServerStoragePlanList(t *testing.T) {
+	storagePlansIn := testdata.GetStoragePlanData()
+	GetServerStoragePlanListMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
+	GetServerStoragePlanListFailErrMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
+	GetServerStoragePlanListFailStatusMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
+	GetServerStoragePlanListFailJSONMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
 }

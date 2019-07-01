@@ -7,14 +7,15 @@ import (
 
 	"os"
 
-	"github.com/ingrammicro/concerto/utils"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/utils"
 )
 
 func driverName() string {
 	return "iptables"
 }
 
-func apply(policy Policy) error {
+func Apply(policy types.Policy) error {
 
 	// NO!
 	f, err := os.Create("/etc/ipf/ipf.conf")

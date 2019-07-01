@@ -3,11 +3,16 @@
 package brownfield
 
 import (
-	fw "github.com/ingrammicro/concerto/firewall"
-	"github.com/ingrammicro/concerto/utils"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/firewall"
+	"github.com/ingrammicro/cio/utils"
 )
 
-func apply(p *fw.Policy) error {
+func Apply(p *types.Policy) error {
 	utils.RunCmd("/sbin/iptables -w -F INPUT")
-	return p.Apply()
+
+	if len(p.Rules) > 0 {
+		return firewall.Apply(*p)
+	}
+	return nil
 }

@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/utils"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/utils"
 )
 
 // CloudAccountService manages cloudAccount operations
@@ -17,7 +17,7 @@ type CloudAccountService struct {
 // NewCloudAccountService returns a Concerto cloudAccount service
 func NewCloudAccountService(concertoService utils.ConcertoService) (*CloudAccountService, error) {
 	if concertoService == nil {
-		return nil, fmt.Errorf("Must initialize ConcertoService before using it")
+		return nil, fmt.Errorf("must initialize ConcertoService before using it")
 	}
 
 	return &CloudAccountService{
@@ -26,10 +26,10 @@ func NewCloudAccountService(concertoService utils.ConcertoService) (*CloudAccoun
 }
 
 // GetCloudAccountList returns the list of cloudAccounts as an array of CloudAccount
-func (ca *CloudAccountService) GetCloudAccountList() (cloudAccounts []types.CloudAccount, err error) {
+func (ca *CloudAccountService) GetCloudAccountList() (cloudAccounts []*types.CloudAccount, err error) {
 	log.Debug("GetCloudAccountList")
 
-	data, status, err := ca.concertoService.Get("/v1/settings/cloud_accounts")
+	data, status, err := ca.concertoService.Get("/settings/cloud_accounts")
 	if err != nil {
 		return nil, err
 	}
@@ -45,11 +45,11 @@ func (ca *CloudAccountService) GetCloudAccountList() (cloudAccounts []types.Clou
 	return cloudAccounts, nil
 }
 
-// CreateCloudAccount creates a cloudAccount
-func (ca *CloudAccountService) CreateCloudAccount(cloudAccountVector *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
-	log.Debug("CreateCloudAccount")
+// GetCloudAccount returns a cloudAccount by its ID
+func (ca *CloudAccountService) GetCloudAccount(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
+	log.Debug("GetCloudAccount")
 
-	data, status, err := ca.concertoService.Post("/v1/settings/cloud_accounts/", cloudAccountVector)
+	data, status, err := ca.concertoService.Get(fmt.Sprintf("/settings/cloud_accounts/%s", cloudAccountID))
 	if err != nil {
 		return nil, err
 	}
@@ -63,40 +63,4 @@ func (ca *CloudAccountService) CreateCloudAccount(cloudAccountVector *map[string
 	}
 
 	return cloudAccount, nil
-}
-
-// UpdateCloudAccount updates a cloudAccount by its ID
-func (ca *CloudAccountService) UpdateCloudAccount(cloudAccountVector *map[string]interface{}, ID string) (cloudAccount *types.CloudAccount, err error) {
-	log.Debug("UpdateCloudAccount")
-
-	data, status, err := ca.concertoService.Put(fmt.Sprintf("/v1/settings/cloud_accounts/%s", ID), cloudAccountVector)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = utils.CheckStandardStatus(status, data); err != nil {
-		return nil, err
-	}
-
-	if err = json.Unmarshal(data, &cloudAccount); err != nil {
-		return nil, err
-	}
-
-	return cloudAccount, nil
-}
-
-// DeleteCloudAccount deletes a cloudAccount by its ID
-func (ca *CloudAccountService) DeleteCloudAccount(ID string) (err error) {
-	log.Debug("DeleteCloudAccount")
-
-	data, status, err := ca.concertoService.Delete(fmt.Sprintf("/v1/settings/cloud_accounts/%s", ID))
-	if err != nil {
-		return err
-	}
-
-	if err = utils.CheckStandardStatus(status, data); err != nil {
-		return err
-	}
-
-	return nil
 }

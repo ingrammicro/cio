@@ -1,30 +1,23 @@
 package testdata
 
 import (
-	"encoding/json"
-	"github.com/ingrammicro/concerto/api/types"
+	"github.com/ingrammicro/cio/api/types"
 )
 
 // GetAppData loads test data
-func GetAppData() *[]types.WizardApp {
-
-	param0 := json.RawMessage(`{"fakeFlavour01":"x","fakeFlavour02":"y"}`)
-	param1 := json.RawMessage(`{"fakeFlavour11":"a","fakeFlavour12":"b"}`)
-
-	testApps := []types.WizardApp{
+func GetAppData() []*types.WizardApp {
+	return []*types.WizardApp{
 		{
-			Id:                   "fakeID0",
-			Name:                 "fakeName0",
-			Flavour_requirements: param0,
-			Generic_image_id:     "fakeGenericImageID0",
+			ID:                  "fakeID0",
+			Name:                "fakeName0",
+			FlavourRequirements: map[string]interface{}{"fakeFlavour01": "x", "fakeFlavour02": "y"},
+			GenericImageID:      "fakeGenericImageID0",
 		},
 		{
-			Id:                   "fakeID1",
-			Name:                 "fakeName1",
-			Flavour_requirements: param1,
-			Generic_image_id:     "fakeGenericImageID1",
+			ID:                  "fakeID1",
+			Name:                "fakeName1",
+			FlavourRequirements: map[string]interface{}{"fakeFlavour11": "a", "fakeFlavour12": "b"},
+			GenericImageID:      "fakeGenericImageID1",
 		},
 	}
-
-	return &testApps
 }

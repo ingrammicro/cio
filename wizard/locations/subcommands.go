@@ -2,9 +2,10 @@ package locations
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/cmd"
+	"github.com/ingrammicro/cio/cmd"
 )
 
+// SubCommands returns locations commands
 func SubCommands() []cli.Command {
 	return []cli.Command{
 		{

@@ -1,6 +1,8 @@
-concerto
+cio
 vendor/*
 dist/
 _vendor*
 coverage.txt
 profile.out
+.idea/*
+.idea/**/*

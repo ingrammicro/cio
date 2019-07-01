@@ -2,9 +2,10 @@ package server_plans
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/cmd"
+	"github.com/ingrammicro/cio/cmd"
 )
 
+// SubCommands returns server plans commands
 func SubCommands() []cli.Command {
 	return []cli.Command{
 		{
@@ -13,15 +14,15 @@ func SubCommands() []cli.Command {
 			Action: cmd.WizServerPlanList,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "app_id",
+					Name:  "app-id",
 					Usage: "Identifier of the App",
 				},
 				cli.StringFlag{
-					Name:  "location_id",
+					Name:  "location-id",
 					Usage: "Identifier of the Location",
 				},
 				cli.StringFlag{
-					Name:  "cloud_provider_id",
+					Name:  "cloud-provider-id",
 					Usage: "Identifier of the Cloud Provider",
 				},
 			},

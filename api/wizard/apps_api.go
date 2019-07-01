@@ -3,9 +3,10 @@ package wizard
 import (
 	"encoding/json"
 	"fmt"
+
 	log "github.com/Sirupsen/logrus"
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/utils"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/utils"
 )
 
 // AppService manages app operations
@@ -16,7 +17,7 @@ type AppService struct {
 // NewAppService returns a Concerto app service
 func NewAppService(concertoService utils.ConcertoService) (*AppService, error) {
 	if concertoService == nil {
-		return nil, fmt.Errorf("Must initialize ConcertoService before using it")
+		return nil, fmt.Errorf("must initialize ConcertoService before using it")
 	}
 
 	return &AppService{
@@ -25,10 +26,10 @@ func NewAppService(concertoService utils.ConcertoService) (*AppService, error) {
 }
 
 // GetAppList returns the list of apps as an array of App
-func (as *AppService) GetAppList() (apps []types.WizardApp, err error) {
+func (as *AppService) GetAppList() (apps []*types.WizardApp, err error) {
 	log.Debug("GetAppList")
 
-	data, status, err := as.concertoService.Get("/v1/wizard/apps")
+	data, status, err := as.concertoService.Get("/wizard/apps")
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +46,10 @@ func (as *AppService) GetAppList() (apps []types.WizardApp, err error) {
 }
 
 // DeployApp deploys a app
-func (as *AppService) DeployApp(appVector *map[string]interface{}) (app *types.WizardApp, err error) {
+func (as *AppService) DeployApp(appVector *map[string]interface{}, ID string) (app *types.Server, err error) {
 	log.Debug("DeployApp")
 
-	data, status, err := as.concertoService.Post("/v1/wizard/apps/", appVector)
+	data, status, err := as.concertoService.Post(fmt.Sprintf("/wizard/apps/%s/deploy", ID), appVector)
 	if err != nil {
 		return nil, err
 	}

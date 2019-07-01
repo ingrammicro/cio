@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/settings"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/settings"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 // WireUpCloudAccount prepares common resources to send request to Concerto API
@@ -31,69 +31,43 @@ func WireUpCloudAccount(c *cli.Context) (ds *settings.CloudAccountService, f for
 // CloudAccountList subcommand function
 func CloudAccountList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
-	cloudAccountSvc, formatter := WireUpCloudAccount(c)
 
+	cloudAccountSvc, formatter := WireUpCloudAccount(c)
 	cloudAccounts, err := cloudAccountSvc.GetCloudAccountList()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive cloudAccount data", err)
 	}
+
+	cloudProvidersMap := LoadCloudProvidersMapping(c)
+
+	for id, ca := range cloudAccounts {
+		cloudAccounts[id].CloudProviderName = cloudProvidersMap[ca.CloudProviderID]
+	}
+
 	if err = formatter.PrintList(cloudAccounts); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
+
 	return nil
 }
 
-// CloudAccountCreate subcommand function
-func CloudAccountCreate(c *cli.Context) error {
-	debugCmdFuncInfo(c)
-	cloudAccountSvc, formatter := WireUpCloudAccount(c)
-
-	checkRequiredFlags(c, []string{"cloud_provider_id", "credentials"}, formatter)
-
-	//cloudAccount, err := cloudAccountSvc.CreateCloudAccount(utils.FlagConvertParams(c))
-
-	// parse json parameter values
-	params, err := utils.FlagConvertParamsJSON(c, []string{"credentials"})
-	if err != nil {
-		formatter.PrintFatal("Error parsing parameters", err)
-	}
-
-	cloudAccount, err := cloudAccountSvc.CreateCloudAccount(params)
-
-	if err != nil {
-		formatter.PrintFatal("Couldn't create cloudAccount", err)
-	}
-	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
-	}
-	return nil
-}
-
-// CloudAccountUpdate subcommand function
-func CloudAccountUpdate(c *cli.Context) error {
+// CloudAccountShow subcommand function
+func CloudAccountShow(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	cloudAccountSvc, formatter := WireUpCloudAccount(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	cloudAccount, err := cloudAccountSvc.UpdateCloudAccount(utils.FlagConvertParams(c), c.String("id"))
+	cloudAccount, err := cloudAccountSvc.GetCloudAccount(c.String("id"))
 	if err != nil {
-		formatter.PrintFatal("Couldn't update cloudAccount", err)
+		formatter.PrintFatal("Couldn't receive cloudAccount data", err)
 	}
+
+	cloudProvidersMap := LoadCloudProvidersMapping(c)
+
+	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
+
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
-	}
-	return nil
-}
-
-// CloudAccountDelete subcommand function
-func CloudAccountDelete(c *cli.Context) error {
-	debugCmdFuncInfo(c)
-	cloudAccountSvc, formatter := WireUpCloudAccount(c)
-
-	checkRequiredFlags(c, []string{"id"}, formatter)
-	err := cloudAccountSvc.DeleteCloudAccount(c.String("id"))
-	if err != nil {
-		formatter.PrintFatal("Couldn't delete cloudAccount", err)
 	}
 	return nil
 }

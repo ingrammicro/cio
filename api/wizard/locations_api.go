@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/utils"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/utils"
 )
 
 // LocationService manages location operations
@@ -17,7 +17,7 @@ type LocationService struct {
 // NewLocationService returns a Concerto location service
 func NewLocationService(concertoService utils.ConcertoService) (*LocationService, error) {
 	if concertoService == nil {
-		return nil, fmt.Errorf("Must initialize ConcertoService before using it")
+		return nil, fmt.Errorf("must initialize ConcertoService before using it")
 	}
 
 	return &LocationService{
@@ -26,10 +26,10 @@ func NewLocationService(concertoService utils.ConcertoService) (*LocationService
 }
 
 // GetLocationList returns the list of locations as an array of Location
-func (dm *LocationService) GetLocationList() (locations []types.Location, err error) {
+func (dm *LocationService) GetLocationList() (locations []*types.Location, err error) {
 	log.Debug("GetLocationList")
 
-	data, status, err := dm.concertoService.Get("/v1/wizard/locations")
+	data, status, err := dm.concertoService.Get("/wizard/locations")
 	if err != nil {
 		return nil, err
 	}

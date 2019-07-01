@@ -1,22 +1,20 @@
 package testdata
 
 import (
-	"github.com/ingrammicro/concerto/api/types"
+	"github.com/ingrammicro/cio/api/types"
 )
 
 // GetLocationData loads test data
-func GetLocationData() *[]types.Location {
+func GetLocationData() []*types.Location {
 
-	testLocations := []types.Location{
+	return []*types.Location{
 		{
-			Id:   "fakeID0",
+			ID:   "fakeID0",
 			Name: "fakeName0",
 		},
 		{
-			Id:   "fakeID1",
+			ID:   "fakeID1",
 			Name: "fakeName1",
 		},
 	}
-
-	return &testLocations
 }

@@ -2,9 +2,10 @@ package server_plan
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/cmd"
+	"github.com/ingrammicro/cio/cmd"
 )
 
+// SubCommands returns server plan commands
 func SubCommands() []cli.Command {
 	return []cli.Command{
 		{
@@ -13,7 +14,7 @@ func SubCommands() []cli.Command {
 			Action: cmd.ServerPlanList,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "cloud_provider_id",
+					Name:  "cloud-provider-id",
 					Usage: "Cloud provider id",
 				},
 			},

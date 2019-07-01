@@ -4,22 +4,22 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
-	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/polling"
-	"github.com/ingrammicro/concerto/cmd"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/polling"
+	"github.com/ingrammicro/cio/cmd"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 const (
 	DefaultPollingPingTimingIntervalLong  = 30
 	DefaultPollingPingTimingIntervalShort = 5
-	ProcessIdFile                         = "imco-polling.pid"
+	ProcessIdFile                         = "cio-polling.pid"
 )
 
 // Handle signals
@@ -151,14 +151,14 @@ func processingCommandRoutine(pollingSvc *polling.PollingService, formatter form
 		log.Debug("Reporting command execution status")
 
 		commandIn := map[string]interface{}{
-			"id":        command.Id,
+			"id":        command.ID,
 			"script":    command.Script,
 			"stdout":    command.Stdout,
 			"stderr":    command.Stderr,
 			"exit_code": command.ExitCode,
 		}
 
-		_, status, err := pollingSvc.UpdateCommand(&commandIn, command.Id)
+		_, status, err := pollingSvc.UpdateCommand(&commandIn, command.ID)
 		if err != nil {
 			formatter.PrintError("Couldn't send polling command report data", err)
 		}

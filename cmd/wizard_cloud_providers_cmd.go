@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/wizard"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/wizard"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 // WireUpWizCloudProvider prepares common resources to send request to Concerto API
@@ -33,9 +33,9 @@ func WizCloudProviderList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	cloudProviderSvc, formatter := WireUpWizCloudProvider(c)
 
-	checkRequiredFlags(c, []string{"app_id", "location_id"}, formatter)
+	checkRequiredFlags(c, []string{"app-id", "location-id"}, formatter)
 
-	cloudProviders, err := cloudProviderSvc.GetWizCloudProviderList(c.String("app_id"), c.String("location_id"))
+	cloudProviders, err := cloudProviderSvc.GetWizCloudProviderList(c.String("app-id"), c.String("location-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive cloudProvider data", err)
 	}

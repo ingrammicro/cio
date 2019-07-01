@@ -4,21 +4,21 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/ingrammicro/cio/api/cloud"
 	"testing"
 
-	"github.com/ingrammicro/concerto/api/blueprint"
-	"github.com/ingrammicro/concerto/api/dns"
-	"github.com/ingrammicro/concerto/testdata"
+	"github.com/ingrammicro/cio/api/blueprint"
+	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPrintItemDomainJSON(t *testing.T) {
+func TestPrintItemJSON(t *testing.T) {
 
 	assert := assert.New(t)
-	domainsIn := testdata.GetDomainData()
-	for _, domainIn := range *domainsIn {
+	serversIn := testdata.GetServerData()
+	for _, serverIn := range serversIn {
 
-		domainOut := dns.GetDomainMocked(t, &domainIn)
+		serverOut := cloud.GetServerMocked(t, serverIn)
 
 		var b bytes.Buffer
 		mockOut := bufio.NewWriter(&b)
@@ -26,7 +26,7 @@ func TestPrintItemDomainJSON(t *testing.T) {
 		f := GetFormatter()
 		assert.NotNil(f, "Formatter")
 
-		err := f.PrintItem(*domainOut)
+		err := f.PrintItem(*serverOut)
 		assert.Nil(err, "JSON formatter PrintItem error")
 		mockOut.Flush()
 
@@ -39,9 +39,9 @@ func TestPrintItemTemplateJSON(t *testing.T) {
 
 	assert := assert.New(t)
 	templatesIn := testdata.GetTemplateData()
-	for _, templateIn := range *templatesIn {
+	for _, templateIn := range templatesIn {
 
-		templateOut := blueprint.GetTemplateMocked(t, &templateIn)
+		templateOut := blueprint.GetTemplateMocked(t, templateIn)
 
 		var b bytes.Buffer
 		mockOut := bufio.NewWriter(&b)
@@ -50,7 +50,7 @@ func TestPrintItemTemplateJSON(t *testing.T) {
 		assert.NotNil(f, "Formatter")
 
 		err := f.PrintItem(*templateOut)
-		assert.Nil(err, "Text formatter PrintItem error")
+		assert.Nil(err, "JSON formatter PrintItem error")
 		mockOut.Flush()
 
 		// TODO add more accurate parsing
@@ -58,11 +58,11 @@ func TestPrintItemTemplateJSON(t *testing.T) {
 	}
 }
 
-func TestPrintListDomainsJSON(t *testing.T) {
+func TestPrintListJSON(t *testing.T) {
 
 	assert := assert.New(t)
-	domainsIn := testdata.GetDomainData()
-	domainOut := dns.GetDomainListMocked(t, domainsIn)
+	serversIn := testdata.GetServerData()
+	serverOut := cloud.GetServerListMocked(t, serversIn)
 
 	var b bytes.Buffer
 	mockOut := bufio.NewWriter(&b)
@@ -70,8 +70,8 @@ func TestPrintListDomainsJSON(t *testing.T) {
 	f := GetFormatter()
 	assert.NotNil(f, "Formatter")
 
-	err := f.PrintList(domainOut)
-	assert.Nil(err, "JSON formatter PrintItem error")
+	err := f.PrintList(serverOut)
+	assert.Nil(err, "JSON formatter PrintList error")
 	mockOut.Flush()
 
 	// TODO add more accurate parsing
@@ -90,8 +90,8 @@ func TestPrintListTemplateJSON(t *testing.T) {
 	f := GetFormatter()
 	assert.NotNil(f, "Formatter")
 
-	err := f.PrintList(*templatesOut)
-	assert.Nil(err, "Text formatter PrintItem error")
+	err := f.PrintList(templatesOut)
+	assert.Nil(err, "JSON formatter PrintList error")
 	mockOut.Flush()
 
 	// TODO add more accurate parsing
@@ -125,8 +125,8 @@ func TestPrintItemWrongBytesJSON(t *testing.T) {
 	f := GetFormatter()
 	assert.NotNil(f, "Formatter")
 
-	err := f.PrintItem(map[int]string{1: "one"})
-	assert.Error(err, "Should have gotten an error marshaling a number/string tuple to JSON")
+	err := f.PrintItem(make(chan int))
+	assert.Error(err, "Should have gotten an error marshaling a JSON")
 	mockOut.Flush()
 }
 
@@ -140,7 +140,27 @@ func TestPrintListWrongBytesJSON(t *testing.T) {
 	f := GetFormatter()
 	assert.NotNil(f, "Formatter")
 
-	err := f.PrintList(map[int]string{1: "one"})
-	assert.Error(err, "Should have gotten an error marshaling a number/string tuple to JSON")
+	err := f.PrintList(make(chan int))
+	assert.Error(err, "Should have gotten an error marshaling a JSON")
 	mockOut.Flush()
+}
+
+func TestPrintFatalJSON(t *testing.T) {
+
+	// Save current function and restore at the end:
+	oldOsExit := osExit
+	defer func() { osExit = oldOsExit }()
+
+	var got int
+	osExit = func(code int) {
+		got = code
+	}
+	var b bytes.Buffer
+	mockOut := bufio.NewWriter(&b)
+	InitializeFormatter("json", mockOut)
+	f := GetFormatter()
+	f.PrintFatal("testing fatal", fmt.Errorf("this is a test error %s", "TEST"))
+	if exp := 1; got != exp {
+		t.Errorf("Expected exit code: %d, got: %d", exp, got)
+	}
 }

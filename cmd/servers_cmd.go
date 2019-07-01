@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/cloud"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/cloud"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 // WireUpServer prepares common resources to send request to Concerto API
@@ -37,6 +39,24 @@ func ServerList(c *cli.Context) error {
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive server data", err)
 	}
+
+	labelables := make([]types.Labelable, len(servers))
+	for i := 0; i < len(servers); i++ {
+		labelables[i] = types.Labelable(servers[i])
+	}
+	labelIDsByName, labelNamesByID := LabelLoadsMapping(c)
+	filteredLabelables := LabelFiltering(c, labelables, labelIDsByName)
+	LabelAssignNamesForIDs(c, filteredLabelables, labelNamesByID)
+
+	servers = make([]*types.Server, len(filteredLabelables))
+	for i, labelable := range filteredLabelables {
+		s, ok := labelable.(*types.Server)
+		if !ok {
+			formatter.PrintFatal("Label filtering returned unexpected result",
+				fmt.Errorf("expected labelable to be a *types.Server, got a %T", labelable))
+		}
+		servers[i] = s
+	}
 	if err = formatter.PrintList(servers); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -53,6 +73,9 @@ func ServerShow(c *cli.Context) error {
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive server data", err)
 	}
+
+	_, labelNamesByID := LabelLoadsMapping(c)
+	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -64,11 +87,28 @@ func ServerCreate(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	serverSvc, formatter := WireUpServer(c)
 
-	checkRequiredFlags(c, []string{"name", "workspace_id", "template_id", "server_plan_id", "cloud_account_id"}, formatter)
-	server, err := serverSvc.CreateServer(utils.FlagConvertParams(c))
+	checkRequiredFlags(c, []string{"name", "ssh-profile-id", "firewall-profile-id", "template-id", "server-plan-id", "cloud-account-id"}, formatter)
+	serverIn := map[string]interface{}{
+		"name":                c.String("name"),
+		"ssh_profile_id":      c.String("ssh-profile-id"),
+		"firewall_profile_id": c.String("firewall-profile-id"),
+		"template_id":         c.String("template-id"),
+		"server_plan_id":      c.String("server-plan-id"),
+		"cloud_account_id":    c.String("cloud-account-id"),
+	}
+
+	labelIDsByName, labelNamesByID := LabelLoadsMapping(c)
+
+	if c.IsSet("labels") {
+		serverIn["label_ids"] = LabelResolution(c, c.String("labels"), &labelNamesByID, &labelIDsByName)
+	}
+
+	server, err := serverSvc.CreateServer(&serverIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't create server", err)
 	}
+
+	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -85,6 +125,9 @@ func ServerUpdate(c *cli.Context) error {
 	if err != nil {
 		formatter.PrintFatal("Couldn't update server", err)
 	}
+
+	_, labelNamesByID := LabelLoadsMapping(c)
+	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -101,6 +144,9 @@ func ServerBoot(c *cli.Context) error {
 	if err != nil {
 		formatter.PrintFatal("Couldn't boot server", err)
 	}
+
+	_, labelNamesByID := LabelLoadsMapping(c)
+	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -117,6 +163,9 @@ func ServerReboot(c *cli.Context) error {
 	if err != nil {
 		formatter.PrintFatal("Couldn't reboot server", err)
 	}
+
+	_, labelNamesByID := LabelLoadsMapping(c)
+	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -133,6 +182,9 @@ func ServerShutdown(c *cli.Context) error {
 	if err != nil {
 		formatter.PrintFatal("Couldn't shutdown server", err)
 	}
+
+	_, labelNamesByID := LabelLoadsMapping(c)
+	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -149,6 +201,9 @@ func ServerOverride(c *cli.Context) error {
 	if err != nil {
 		formatter.PrintFatal("Couldn't override server", err)
 	}
+
+	_, labelNamesByID := LabelLoadsMapping(c)
+	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
@@ -168,18 +223,69 @@ func ServerDelete(c *cli.Context) error {
 	return nil
 }
 
-// ========= DNS ========
-// DNSList subcommand function
-func DNSList(c *cli.Context) error {
+// ServerFloatingIPList subcommand function
+func ServerFloatingIPList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
-	dnsSvc, formatter := WireUpServer(c)
+	serverSvc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	dnss, err := dnsSvc.GetDNSList(c.String("id"))
+	floatingIPs, err := serverSvc.GetServerFloatingIPList(c.String("id"))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive dns data", err)
+		formatter.PrintFatal("Couldn't receive floating IPs data", err)
 	}
-	if err = formatter.PrintList(dnss); err != nil {
+
+	labelables := make([]types.Labelable, len(floatingIPs))
+	for i := 0; i < len(floatingIPs); i++ {
+		labelables[i] = types.Labelable(floatingIPs[i])
+	}
+	labelIDsByName, labelNamesByID := LabelLoadsMapping(c)
+	filteredLabelables := LabelFiltering(c, labelables, labelIDsByName)
+	LabelAssignNamesForIDs(c, filteredLabelables, labelNamesByID)
+
+	floatingIPs = make([]*types.FloatingIP, len(filteredLabelables))
+	for i, labelable := range filteredLabelables {
+		fIP, ok := labelable.(*types.FloatingIP)
+		if !ok {
+			formatter.PrintFatal("Label filtering returned unexpected result",
+				fmt.Errorf("expected labelable to be a *types.FloatingIP, got a %T", labelable))
+		}
+		floatingIPs[i] = fIP
+	}
+	if err = formatter.PrintList(floatingIPs); err != nil {
+		formatter.PrintFatal("Couldn't print/format result", err)
+	}
+	return nil
+}
+
+// ServerVolumesList subcommand function
+func ServerVolumesList(c *cli.Context) error {
+	debugCmdFuncInfo(c)
+	serverSvc, formatter := WireUpServer(c)
+
+	checkRequiredFlags(c, []string{"id"}, formatter)
+	volumes, err := serverSvc.GetServerVolumesList(c.String("id"))
+	if err != nil {
+		formatter.PrintFatal("Couldn't receive volumes data", err)
+	}
+
+	labelables := make([]types.Labelable, len(volumes))
+	for i := 0; i < len(volumes); i++ {
+		labelables[i] = types.Labelable(volumes[i])
+	}
+	labelIDsByName, labelNamesByID := LabelLoadsMapping(c)
+	filteredLabelables := LabelFiltering(c, labelables, labelIDsByName)
+	LabelAssignNamesForIDs(c, filteredLabelables, labelNamesByID)
+
+	volumes = make([]*types.Volume, len(filteredLabelables))
+	for i, labelable := range filteredLabelables {
+		v, ok := labelable.(*types.Volume)
+		if !ok {
+			formatter.PrintFatal("Label filtering returned unexpected result",
+				fmt.Errorf("expected labelable to be a *types.Volume, got a %T", labelable))
+		}
+		volumes[i] = v
+	}
+	if err = formatter.PrintList(volumes); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
 	return nil
@@ -190,10 +296,10 @@ func DNSList(c *cli.Context) error {
 // EventsList subcommand function
 func EventsList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
-	dnsSvc, formatter := WireUpServer(c)
+	svc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	events, err := dnsSvc.GetEventsList(c.String("id"))
+	events, err := svc.GetEventsList(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive event data", err)
 	}
@@ -208,10 +314,10 @@ func EventsList(c *cli.Context) error {
 // OperationalScriptsList subcommand function
 func OperationalScriptsList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
-	dnsSvc, formatter := WireUpServer(c)
+	svc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	scripts, err := dnsSvc.GetOperationalScriptsList(c.String("id"))
+	scripts, err := svc.GetOperationalScriptsList(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive script data", err)
 	}
@@ -226,12 +332,13 @@ func OperationalScriptExecute(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	serverSvc, formatter := WireUpServer(c)
 
-	checkRequiredFlags(c, []string{"server_id", "script_id"}, formatter)
-	server, err := serverSvc.ExecuteOperationalScript(utils.FlagConvertParams(c), c.String("server_id"), c.String("script_id"))
+	checkRequiredFlags(c, []string{"server-id", "script-id"}, formatter)
+	in := &map[string]interface{}{}
+	scriptOut, err := serverSvc.ExecuteOperationalScript(in, c.String("server-id"), c.String("script-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't execute operational script", err)
 	}
-	if err = formatter.PrintItem(*server); err != nil {
+	if err = formatter.PrintItem(*scriptOut); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
 	return nil

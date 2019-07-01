@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/wizard"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/wizard"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 // WireUpLocation prepares common resources to send request to Concerto API
@@ -41,4 +41,21 @@ func LocationList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
 	return nil
+}
+
+// LoadLocationsMapping retrieves Locations and create a map between ID and Name
+func LoadLocationsMapping(c *cli.Context) map[string]string {
+	debugCmdFuncInfo(c)
+
+	locationSvc, formatter := WireUpLocation(c)
+	locations, err := locationSvc.GetLocationList()
+	if err != nil {
+		formatter.PrintFatal("Couldn't receive location data", err)
+	}
+	locationsMap := make(map[string]string)
+	for _, location := range locations {
+		locationsMap[location.ID] = location.Name
+	}
+
+	return locationsMap
 }

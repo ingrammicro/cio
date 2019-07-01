@@ -2,9 +2,10 @@ package generic_images
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/cmd"
+	"github.com/ingrammicro/cio/cmd"
 )
 
+// SubCommands returns generic images commands
 func SubCommands() []cli.Command {
 	return []cli.Command{
 		{

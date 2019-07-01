@@ -20,26 +20,27 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
-const windowsServerConfigFile = "c:\\imco\\client.xml"
-const nixServerConfigFile = "/etc/imco/client.xml"
+const windowsServerConfigFile = "c:\\cio\\client.xml"
+const nixServerConfigFile = "/etc/cio/client.xml"
 const defaultConcertoEndpoint = "https://clients.concerto.io:886/"
 
-const windowsServerLogFilePath = "c:\\imco\\log\\concerto-client.log"
-const windowsServerCaCertPath = "c:\\imco\\client_ssl\\ca_cert.pem"
-const windowsServerCertPath = "c:\\imco\\client_ssl\\cert.pem"
-const windowsServerKeyPath = "c:\\imco\\client_ssl\\private\\key.pem"
+const windowsServerLogFilePath = "c:\\cio\\log\\concerto-client.log"
+const windowsServerCaCertPath = "c:\\cio\\client_ssl\\ca_cert.pem"
+const windowsServerCertPath = "c:\\cio\\client_ssl\\cert.pem"
+const windowsServerKeyPath = "c:\\cio\\client_ssl\\private\\key.pem"
 const nixServerLogFilePath = "/var/log/concerto-client.log"
-const nixServerCaCertPath = "/etc/imco/client_ssl/ca_cert.pem"
-const nixServerCertPath = "/etc/imco/client_ssl/cert.pem"
-const nixServerKeyPath = "/etc/imco/client_ssl/private/key.pem"
+const nixServerCaCertPath = "/etc/cio/client_ssl/ca_cert.pem"
+const nixServerCertPath = "/etc/cio/client_ssl/cert.pem"
+const nixServerKeyPath = "/etc/cio/client_ssl/private/key.pem"
 
 // Config stores configuration file contents
 type Config struct {
-	XMLName             xml.Name `xml:"concerto"`
-	APIEndpoint         string   `xml:"server,attr"`
-	LogFile             string   `xml:"log_file,attr"`
-	LogLevel            string   `xml:"log_level,attr"`
-	Certificate         Cert     `xml:"ssl"`
+	XMLName             xml.Name        `xml:"concerto"`
+	APIEndpoint         string          `xml:"server,attr"`
+	LogFile             string          `xml:"log_file,attr"`
+	LogLevel            string          `xml:"log_level,attr"`
+	Certificate         Cert            `xml:"ssl"`
+	BootstrapConfig     BootstrapConfig `xml:"bootstrap"`
 	ConfLocation        string
 	ConfFile            string
 	IsHost              bool
@@ -58,12 +59,20 @@ type Cert struct {
 	Ca   string `xml:"server_ca,attr"`
 }
 
+// BootstrapConfig stores configuration specific to the bootstrap command
+type BootstrapConfig struct {
+	IntervalSeconds      int  `xml:"interval,attr"`
+	SplaySeconds         int  `xml:"splay,attr"`
+	ApplyAfterIterations int  `xml:"apply_after_iterations,attr"`
+	RunOnce              bool `xml:"run_once,attr"`
+}
+
 var cachedConfig *Config
 
 // GetConcertoConfig returns concerto configuration
 func GetConcertoConfig() (*Config, error) {
 	if cachedConfig == nil {
-		return nil, fmt.Errorf("Configuration hasn't been initialized")
+		return nil, fmt.Errorf("configuration hasn't been initialized")
 	}
 	return cachedConfig, nil
 }
@@ -77,38 +86,37 @@ func InitializeConcertoConfig(c *cli.Context) (*Config, error) {
 
 	cachedConfig = &Config{}
 
-	err := cachedConfig.readBrownfieldToken(c)
-	if err != nil {
+	if err := cachedConfig.readBrownfieldToken(c); err != nil {
 		return nil, err
 	}
 
-	err = cachedConfig.readCommandPollingConfig(c)
-	if err != nil {
+	if err := cachedConfig.readCommandPollingConfig(c); err != nil {
 		return nil, err
 	}
 
 	// where config file must me
-	err = cachedConfig.evaluateConcertoConfigFile(c)
-	if err != nil {
+	if err := cachedConfig.evaluateConcertoConfigFile(c); err != nil {
 		return nil, err
 	}
 
 	// read config contents
 	log.Debugf("Reading configuration from %s", cachedConfig.ConfFile)
-	err = cachedConfig.readConcertoConfig(c)
-	if err != nil {
+	if err := cachedConfig.readConcertoConfig(c); err != nil {
 		return nil, err
 	}
 
 	// add login URL. Needed for setup
-	err = cachedConfig.readConcertoURL()
-	if err != nil {
+	if err := cachedConfig.readConcertoURL(); err != nil {
 		return nil, err
 	}
 
-	// check if isHost. Needed to show appropiate options
-	err = cachedConfig.evaluateCertificate()
-	if err != nil {
+	// check if isHost. Needed to show appropriate options
+	if err := cachedConfig.evaluateCertificate(); err != nil {
+		return nil, err
+	}
+
+	// evaluates API endpoint url
+	if err := cachedConfig.evaluateAPIEndpointURL(); err != nil {
 		return nil, err
 	}
 
@@ -154,6 +162,11 @@ func debugStruct(prefix string, item interface{}) {
 			}
 		}
 	}
+}
+
+// IsAgentMode returns whether CLI is acting as Server Or Client mode
+func (config *Config) IsAgentMode() bool {
+	return config.IsHost || config.BrownfieldToken != "" || config.CommandPollingToken != ""
 }
 
 // IsConfigReady returns whether configurations items are filled
@@ -206,11 +219,11 @@ func (config *Config) readConcertoConfig(c *cli.Context) error {
 		defer xmlFile.Close()
 		b, err := ioutil.ReadAll(xmlFile)
 		if err != nil {
-			return fmt.Errorf("Configuration File %s couldn't be read.", config.ConfFile)
+			return fmt.Errorf("configuration File %s couldn't be read", config.ConfFile)
 		}
 
 		if err = xml.Unmarshal(b, &config); err != nil {
-			return fmt.Errorf("Configuration File %s does not have valid XML format.", config.ConfFile)
+			return fmt.Errorf("configuration File %s does not have valid XML format", config.ConfFile)
 		}
 
 	} else {
@@ -253,7 +266,7 @@ func (config *Config) evaluateCurrentUser() (*user.User, error) {
 		log.Debugf("Couldn't use os.user to get user details: %s", err.Error())
 		dir, err := homedir.Dir()
 		if err != nil {
-			return nil, fmt.Errorf("Couldn't get home dir for current user: %s", err.Error())
+			return nil, fmt.Errorf("couldn't get home dir for current user: %s", err.Error())
 		}
 		currUser = &user.User{
 			Username: getUsername(),
@@ -263,9 +276,9 @@ func (config *Config) evaluateCurrentUser() (*user.User, error) {
 	if runtime.GOOS == "windows" {
 		currUser.Username = currUser.Username[strings.LastIndex(currUser.Username, "\\")+1:]
 		log.Debugf("Windows username is %s", currUser.Username)
-		config.CurrentUserIsAdmin = (currUser.Gid == "S-1-5-32-544" || isWinAdministrator(currUser.Username) || canPerformAdministratorTasks())
+		config.CurrentUserIsAdmin = currUser.Gid == "S-1-5-32-544" || isWinAdministrator(currUser.Username) || canPerformAdministratorTasks()
 	} else {
-		config.CurrentUserIsAdmin = (currUser.Uid == "0" || currUser.Username == "root")
+		config.CurrentUserIsAdmin = currUser.Uid == "0" || currUser.Username == "root"
 	}
 	config.CurrentUserName = currUser.Username
 	return currUser, nil
@@ -287,7 +300,7 @@ func (config *Config) evaluateConcertoConfigFile(c *cli.Context) error {
 
 		if runtime.GOOS == "windows" {
 			if config.CurrentUserIsAdmin && (config.BrownfieldToken != "" || (config.CommandPollingToken != "" && config.ServerID != "") || FileExists(windowsServerConfigFile)) {
-				log.Debug("Current user is administrator, setting config file as %s", windowsServerConfigFile)
+				log.Debugf("Current user is administrator, setting config file as %s", windowsServerConfigFile)
 				config.ConfFile = windowsServerConfigFile
 			} else {
 				// User mode Windows
@@ -358,7 +371,7 @@ func canPerformAdministratorTasks() bool {
 	return true
 }
 
-// readConcertoURL reads URL from CONCERTO_URL envrionment or calculates using API URL
+// readConcertoURL reads URL from CONCERTO_URL environment or calculates using API URL
 func (config *Config) readConcertoURL() error {
 
 	if config.ConcertoURL != "" {
@@ -387,7 +400,7 @@ func (config *Config) readConcertoURL() error {
 	return nil
 }
 
-// readConcertoURL reads URL from CONCERTO_URL envrionment or calculates using API URL
+// readConcertoURL reads URL from CONCERTO_URL environment or calculates using API URL
 func (config *Config) readBrownfieldToken(c *cli.Context) error {
 	if config.BrownfieldToken != "" {
 		return nil
@@ -451,6 +464,30 @@ func (config *Config) evaluateCertificate() error {
 		}
 	}
 	config.IsHost = false
+	return nil
+}
+
+// evaluateAPIEndpointURL evaluates if API endpoint url is valid, advising if invalid version defined, and adapting if required
+func (config *Config) evaluateAPIEndpointURL() error {
+	log.Debug("evaluateAPIEndpointURL")
+
+	// remove ending slash if exist
+	config.APIEndpoint = strings.TrimRight(config.APIEndpoint, "/")
+
+	// In User mode, endpoint url should include API version
+	if !config.IsAgentMode() {
+		cURL, err := url.Parse(config.APIEndpoint)
+		if err != nil {
+			return err
+		}
+		if cURL.Path == "" {
+			config.APIEndpoint = strings.Join([]string{config.APIEndpoint, VERSION_API_USER_MODE}, "/")
+			log.Warnf("Defined API server endpoint url does not include API version. Normalized to latest version (%s): %s", VERSION_API_USER_MODE, config.APIEndpoint)
+		} else if cURL.Path != strings.Join([]string{"/", VERSION_API_USER_MODE}, "") {
+			log.Warnf("Defined API server endpoint url does not match the latest supported API version (%s). Found %s", VERSION_API_USER_MODE, cURL.Path)
+		}
+	}
+
 	return nil
 }
 

@@ -1,22 +1,20 @@
 package testdata
 
 import (
-	"github.com/ingrammicro/concerto/api/types"
+	"github.com/ingrammicro/cio/api/types"
 )
 
 // GetGenericImageData loads test data
-func GetGenericImageData() *[]types.GenericImage {
+func GetGenericImageData() []*types.GenericImage {
 
-	testGenericImages := []types.GenericImage{
+	return []*types.GenericImage{
 		{
-			Id:   "fakeID0",
+			ID:   "fakeID0",
 			Name: "fakeName0",
 		},
 		{
-			Id:   "fakeID1",
+			ID:   "fakeID1",
 			Name: "fakeName1",
 		},
 	}
-
-	return &testGenericImages
 }
