@@ -1,9 +1,9 @@
 # IMCO CLI / Go Library
 
 [![GoDoc](https://godoc.org/github.com/ingrammicro/cio?status.png)](https://godoc.org/github.com/ingrammicro/cio)
-[![codecov.io](https://codecov.io/github/ingrammicro/concerto/coverage.svg?branch=master)](https://codecov.io/github/ingrammicro/concerto?branch=master)
-[![Build Status](https://travis-ci.org/ingrammicro/concerto.svg?branch=master)](https://travis-ci.org/ingrammicro/concerto)
-[![Go Report Card](http://goreportcard.com/badge/ingrammicro/concerto)](http://goreportcard.com/report/ingrammicro/concerto)
+[![codecov.io](https://codecov.io/github/ingrammicro/cio/coverage.svg?branch=master)](https://codecov.io/github/ingrammicro/cio?branch=master)
+[![Build Status](https://travis-ci.org/ingrammicro/cio.svg?branch=master)](https://travis-ci.org/ingrammicro/cio)
+[![Go Report Card](http://goreportcard.com/badge/ingrammicro/cio)](http://goreportcard.com/report/ingrammicro/cio)
 
 Ingram Micro Cloud Orchestrator Command Line Interface (aka IMCO CLI) allows you to interact with IMCO features, and build your own scripts calling IMCO's API.
 
