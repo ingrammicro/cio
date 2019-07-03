@@ -1,13 +1,13 @@
 # IMCO CLI / Go Library
 
-[![GoDoc](https://godoc.org/github.com/ingrammicro/concerto?status.png)](https://godoc.org/github.com/ingrammicro/concerto)
-[![codecov.io](https://codecov.io/github/ingrammicro/concerto/coverage.svg?branch=master)](https://codecov.io/github/ingrammicro/concerto?branch=master)
-[![Build Status](https://travis-ci.org/ingrammicro/concerto.svg?branch=master)](https://travis-ci.org/ingrammicro/concerto)
-[![Go Report Card](http://goreportcard.com/badge/ingrammicro/concerto)](http://goreportcard.com/report/ingrammicro/concerto)
+[![GoDoc](https://godoc.org/github.com/ingrammicro/cio?status.png)](https://godoc.org/github.com/ingrammicro/cio)
+[![codecov.io](https://codecov.io/github/ingrammicro/cio/coverage.svg?branch=master)](https://codecov.io/github/ingrammicro/cio?branch=master)
+[![Build Status](https://travis-ci.org/ingrammicro/cio.svg?branch=master)](https://travis-ci.org/ingrammicro/cio)
+[![Go Report Card](http://goreportcard.com/badge/ingrammicro/cio)](http://goreportcard.com/report/ingrammicro/cio)
 
 Ingram Micro Cloud Orchestrator Command Line Interface (aka IMCO CLI) allows you to interact with IMCO features, and build your own scripts calling IMCO's API.
 
-If you are already using IMCO CLI, and only want to obtain the latest version, download IMCO CLI from <https://github.com/ingrammicro/concerto/releases/latest>
+If you are already using IMCO CLI, and only want to obtain the latest version, download IMCO CLI from <https://github.com/ingrammicro/cio/releases/latest>
 
 > NOTE: IMCO CLI is named as `concerto` in terms of the binary and executable.
 
@@ -102,39 +102,39 @@ $HOME/.concerto
 
 ### Binaries
 
-Download linux binaries for `Linux` or for `OSX` from <https://github.com/ingrammicro/concerto/releases/latest> and place it in your path.
+Download linux binaries for `Linux` or for `OSX` from <https://github.com/ingrammicro/cio/releases/latest> and place it in your path.
 
 > NOTE: Please, remember to replace `{LATEST_RELEASE}` with the right tagged release.
 
 Linux:
 
 ```bash
-$ sudo curl -o /usr/local/bin/concerto https://github.com/ingrammicro/concerto/releases/download/{LATEST_RELEASE}/concerto.amd64.linux
-$ sudo chmod +x /usr/local/bin/concerto
+$ sudo curl -o /usr/local/bin/cio https://github.com/ingrammicro/cio/releases/download/{LATEST_RELEASE}/cio.amd64.linux
+$ sudo chmod +x /usr/local/bin/cio
 ```
 
 OSX:
 
 ```bash
-$ sudo curl -o /usr/local/bin/concerto https://github.com/ingrammicro/concerto/releases/download/{LATEST_RELEASE}/concerto.amd64.darwin
-$ sudo chmod +x /usr/local/bin/concerto
+$ sudo curl -o /usr/local/bin/cio https://github.com/ingrammicro/cio/releases/download/{LATEST_RELEASE}/cio.amd64.darwin
+$ sudo chmod +x /usr/local/bin/cio
 ```
 
-To test the binary execute `concerto` without parameters
+To test the binary execute `cio` without parameters
 
 ```bash
-$ concerto
+$ cio
 NAME:
-   concerto - Manages communication between Host and IMCO Platform
+   cio - Manages communication between Host and IMCO Platform
 
 USAGE:
-   concerto [global options] command [command options] [arguments...]
+   cio [global options] command [command options] [arguments...]
 
 VERSION:
    0.7.0
 
 AUTHOR:
-   Concerto Contributors <https://github.com/ingrammicro/concerto>
+   Ingram Micro <https://github.com/ingrammicro/cio>
 
 COMMANDS:
      blueprint, bl  Manages blueprint commands for scripts, services and templates
@@ -151,7 +151,7 @@ COMMANDS:
 To test that certificates are valid, and that we can communicate with IMCO server, obtain the list of cloud providers at your IMCO account using this command
 
 ```bash
-$ concerto cloud cloud_providers list
+$ cio cloud cloud_providers list
 ID                         NAME
 5aabb7511de0240abb000001   AWS
 5aabb7511de0240abb000002   Mock
@@ -184,11 +184,11 @@ If you got an error executing IMCO CLI:
 - check that your internet connection can reach `clients.{IMCO_DOMAIN}`
 - make sure that your firewall lets you access to <https://clients.{IMCO_DOMAIN}:886>
 - check that `client.xml` is pointing to the correct certificates location
-- if `concerto` executes but only shows server commands, you are probably trying to use `concerto` from a commissioned server, and the configuration is being read from `/etc/cio`. If that's the case, you should leave `concerto` configuration untouched so that server commands are available for our remote management.
+- if `concerto` executes but only shows server commands, you are probably trying to use `cio` from a commissioned server, and the configuration is being read from `/etc/cio`. If that's the case, you should leave `concerto` configuration untouched so that server commands are available for our remote management.
 
 ## Usage
 
-We include the most common use cases here. If you feel there is a missing a use case here, open an github issue <https://github.com/ingrammicro/concerto/issues/new>.
+We include the most common use cases here. If you feel there is a missing a use case here, open an github issue <https://github.com/ingrammicro/cio/issues/new>.
 
 From release 0.7.0 the resources can be organized using labels, a many-to-many relationship between labels and resources, based on User criteria and needs ('workspaces' are not available anymore)
 
@@ -201,7 +201,7 @@ The Wizard command for IMCO CLI is the command line version of our `Quick add se
 Wizard is the quickest way to install a well known stack in a cloud server. You can get an idea of what the wizard does using the command `concerto wizard` without further subcommands:
 
 ```bash
-$ concerto wizard
+$ cio wizard
 NAME:
     - Manages wizard related commands for apps, locations, cloud providers, server plans
 
@@ -223,7 +223,7 @@ IMCO CLI Wizard lets you select the application layer, the location, the cloud p
 Let's type `concerto wizard apps list` to check what applications we can instantiate as cloud servers using IMCO CLI wizard.
 
 ```bash
-$ concerto wizard apps list
+$ cio wizard apps list
 ID                         NAME              FLAVOUR_REQUIREMENTS   GENERIC_IMAGE_ID
 5aabb75a1de0240abb000185   Ubuntu 14.04      {}                     5aabb7551de0240abb000064
 5aabb75a1de0240abb000186   Ubuntu 16.04      {}                     5aabb7551de0240abb000065
@@ -240,7 +240,7 @@ You can choose whatever application/stack is fine for your purpose, we choose `W
 We will also need the location where we want our server to be instantiated. Execute `concerto wizard locations list` to get the possible locations and its identifier.
 
 ```bash
-$ concerto wizard locations list
+$ cio wizard locations list
 ID                         NAME
 5aabb7551de0240abb000060   North America
 5aabb7551de0240abb000061   Europe
@@ -254,7 +254,7 @@ When using IMCO's Web UI, the wizard may take care of filtering appropriate clou
 To show all possible cloud providers execute this command:
 
 ```bash
-$ concerto wizard cloud_providers list --app_id 5aabb75b1de0240abb00018b --location_id 5aabb7551de0240abb000060
+$ cio wizard cloud_providers list --app_id 5aabb75b1de0240abb00018b --location_id 5aabb7551de0240abb000060
 ID                         NAME
 5aabb7511de0240abb000001   AWS
 5aabb7511de0240abb000002   Mock
@@ -266,7 +266,7 @@ It's necessary to retrieve the adequeate Cloud Account ID for `Microsoft Azure` 
 We will choose `Microsoft Azure`, whose ID is `5aabb7511de0240abb000005`:
 
 ```bash
-$ concerto settings cloud_accounts list
+$ cio settings cloud_accounts list
 ID                         NAME                                     CLOUD_PROVIDER_ID          CLOUD_PROVIDER_NAME
 5aabb7521de0240abb00001b   AWS-cloud_account-name                   5aabb7511de0240abb000001   AWS
 5aabb7521de0240abb00001c   Mock-cloud_account-name-0                5aabb7511de0240abb000002   Mock
@@ -282,7 +282,7 @@ ID                         NAME                                     CLOUD_PROVID
 Now that we have all the data that we need, commission the server:
 
 ```bash
-$ concerto wizard apps deploy --id 5aabb75b1de0240abb00018b --location_id 5aabb7551de0240abb000060 --cloud_account_id 5aabb7531de0240abb000024 --hostname wpnode1
+$ cio wizard apps deploy --id 5aabb75b1de0240abb00018b --location_id 5aabb7551de0240abb000060 --cloud_account_id 5aabb7531de0240abb000024 --hostname wpnode1
 ID:                     5b0ea6377906e900fab96798
 NAME:                   wpnode1
 FLAVOUR_REQUIREMENTS:
@@ -293,10 +293,10 @@ We have a new server template with a commissioned server in IMCO.
 
 <img src="./docs/images/commissioned-server.png" alt="Server Commissioned" width="500px" >
 
-Our server's ID is `5b0ea6377906e900fab96798`. We can now use `concerto cloud servers` subcommands to manage the server. Lets bring wordpress up:
+Our server's ID is `5b0ea6377906e900fab96798`. We can now use `cio cloud servers` subcommands to manage the server. Lets bring wordpress up:
 
 ```bash
-$ concerto cloud servers boot --id 5b0ea6377906e900fab96798
+$ cio cloud servers boot --id 5b0ea6377906e900fab96798
 ID:                    5b0ea6377906e900fab96798
 NAME:                  wpnode1
 FQDN:                  sf98aa2c61069a1b.centralus.cloudapp.azure.com
@@ -327,7 +327,7 @@ After a brief amount of time you will have your new `Wordpress` server up and ru
 
 IMCO blueprints are the compendium of:
 
-- services, they map to IMCO's Web UI cookbooks. Use `concerto blueprint services list` to show all cookbooks available at your account.
+- services, they map to IMCO's Web UI cookbooks. Use `cio blueprint services list` to show all cookbooks available at your account.
 - scripts, they provide a way to execute custom scripts after bootstraping, before a clean shutdown, or on demand.
 - templates, an ordered combination of services and scripts.
 
@@ -344,7 +344,7 @@ IMCO takes care of the gap, and lets you select a cloud provider independent OS,
 For our case we will be using Ubuntu 16.04. Let's find its IMCO ID
 
 ```bash
-$ concerto cloud generic_images list
+$ cio cloud generic_images list
 ID                         NAME
 5aabb7551de0240abb000064   Ubuntu 14.04 Trusty Tahr x86_64
 5aabb7551de0240abb000065   Ubuntu 16.04 Xenial Xerus x86_64
@@ -360,10 +360,10 @@ Take note of Ubuntu 16.04 ID, `5aabb7551de0240abb000065`.
 
 #### Service List
 
-We want to use IMCO's curated Joomla cookbook. Use `concerto blueprint services` to find the cookbooks to add.
+We want to use IMCO's curated Joomla cookbook. Use `cio blueprint services` to find the cookbooks to add.
 
 ```bash
-$ concerto blueprint services list | awk 'NR==1 || /joomla/'
+$ cio blueprint services list | awk 'NR==1 || /joomla/'
 ID                         NAME                  DESCRIPTION                               PUBLIC         LICENSE
 5aabb871e4997809f700000e   joomla                Installs/Configures joomla environment    false          All rights reserved
 ```
@@ -371,7 +371,7 @@ ID                         NAME                  DESCRIPTION                    
 Joomla curated cookbooks creates a local mysql database. We only have to tell our cookbook that we should override the `joomla.db.hostname` to `127.0.0.1`. Execute the following command to create the Joomla template.
 
 ```bash
-$ concerto blueprint templates create --name joomla-tmplt --generic_image_id 5aabb7551de0240abb000065 --service_list '["joomla"]' --configuration_attributes '{"joomla":{"db":{"hostname":"127.0.0.1"}}}' --labels Joomla,mysite.com
+$ cio blueprint templates create --name joomla-tmplt --generic_image_id 5aabb7551de0240abb000065 --service_list '["joomla"]' --configuration_attributes '{"joomla":{"db":{"hostname":"127.0.0.1"}}}' --labels Joomla,mysite.com
 ID:                         5b5192b15f7c880ad9c6bc12
 NAME:                       joomla-tmplt
 GENERIC IMAGE ID:           5aabb7551de0240abb000065
@@ -390,7 +390,7 @@ As we did in the Wizard use case, we can find the missing data using these comma
 ##### Find cloud provider server plan
 
 ```bash
-$ concerto cloud cloud_providers list
+$ cio cloud cloud_providers list
 ID                         NAME
 5aabb7511de0240abb000001   AWS
 5aabb7511de0240abb000002   Mock
@@ -403,7 +403,7 @@ ID                         NAME
 We want to use `Microsoft Azure` with ID `5aabb7511de0240abb000005` and filtering by server_plan `Basic_A0`
 
 ```bash
-$ concerto cloud server_plans list --cloud_provider_id 5aabb7511de0240abb000005 | awk 'NR==1 || /Basic_A0/'
+$ cio cloud server_plans list --cloud_provider_id 5aabb7511de0240abb000005 | awk 'NR==1 || /Basic_A0/'
 ID                         NAME                  MEMORY         CPUS           STORAGE        LOCATION_ID                LOCATION_NAME   CLOUD_PROVIDER_ID          CLOUD_PROVIDER_NAME
 5aac0bff348f190b3e001030   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
 5aac0c02348f190b3e0010db   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
@@ -438,7 +438,7 @@ ID                         NAME                  MEMORY         CPUS           S
 We already know our template ID, but in case you want to make sure
 
 ```bash
-$ concerto blueprint templates list
+$ cio blueprint templates list
 ID                         NAME                 GENERIC IMAGE ID              LABELS
 5afd5b4c42d90d09f00000aa   windows 2016         5aabb7551de0240abb000067      []
 5b067fe8f585000b80809a8e   ubuntu 16.04         5aabb7551de0240abb000065      []
@@ -451,7 +451,7 @@ ID                         NAME                 GENERIC IMAGE ID              LA
 We already know our location ID, but in case you want to make sure
 
 ```bash
-$ concerto wizard locations list
+$ cio wizard locations list
 ID                         NAME
 5aabb7551de0240abb000060   North America
 5aabb7551de0240abb000061   Europe
@@ -464,7 +464,7 @@ ID                         NAME
 It's necessary to retrieve the adequate Cloud Account ID for `Microsoft Azure` Cloud Provider, in our case `5aabb7511de0240abb000005`:
 
 ```bash
-$ concerto settings cloud_accounts list
+$ cio settings cloud_accounts list
 ID                         NAME                                     CLOUD_PROVIDER_ID          CLOUD_PROVIDER_NAME
 5aabb7521de0240abb00001b   AWS-cloud_account-name                   5aabb7511de0240abb000001   AWS
 5aabb7521de0240abb00001c   Mock-cloud_account-name-0                5aabb7511de0240abb000002   Mock
@@ -482,7 +482,7 @@ ID                         NAME                                     CLOUD_PROVID
 It's necessary to retrieve the adequate SSH Profile ID. It can be created using CLI commands or IMCO UI.
 
 ```bash
-$ concerto cloud ssh_profiles list
+$ cio cloud ssh_profiles list
 ID                         NAME                 PUBLIC_KEY                   LABELS
 5aabb7521de0240abb00000d   default              ssh-rsa AAAAB3NzaC1yc[...]   []
 5aabb7521de0240abb00000e   Joomla SSH           ssh-rsa AAAABBfD4Klmn[...]   [mysite.com Joomla]
@@ -494,7 +494,7 @@ ID                         NAME                 PUBLIC_KEY                   LAB
 It's necessary to retrieve the adequate Firewall Profile ID. It can be created using CLI commands or IMCO UI.
 
 ```bash
-$ concerto network firewall_profiles list
+$ cio network firewall_profiles list
 ID                         NAME                                     DESCRIPTION                                            DEFAULT        LABELS
 5aabb7521de0240abb00000c   Default firewall                         Firewall profile created by the platfom for your use   true           []
 5b519da77fb2480b0831d9d2   Joomla Firewall                          Firewall profile created for joomla management         false          [mysite.com Joomla]
@@ -504,7 +504,7 @@ ID                         NAME                                     DESCRIPTION 
 ##### Create our Joomla Server
 
 ```bash
-$ concerto cloud servers create --name joomla-node1 --template_id 5b5192b15f7c880ad9c6bc12 --server_plan_id 5aac0c04348f190b3e001186 --cloud_account_id 5aabb7531de0240abb000024 --ssh_profile_id 5aabb7521de0240abb00000e --firewall_profile_id 5b519da77fb2480b0831d9d2 --labels Joomla,mysite.com
+$ cio cloud servers create --name joomla-node1 --template_id 5b5192b15f7c880ad9c6bc12 --server_plan_id 5aac0c04348f190b3e001186 --cloud_account_id 5aabb7531de0240abb000024 --ssh_profile_id 5aabb7521de0240abb00000e --firewall_profile_id 5b519da77fb2480b0831d9d2 --labels Joomla,mysite.com
 ID:                    5b5193675f7c880ad9c6bc16
 NAME:                  joomla-node1
 FQDN:
@@ -522,7 +522,7 @@ LABELS:                [mysite.com Joomla]
 And finally boot it
 
 ```bash
-$ concerto cloud servers boot --id 5b5193675f7c880ad9c6bc16
+$ cio cloud servers boot --id 5b5193675f7c880ad9c6bc16
 ID:                    5b5193675f7c880ad9c6bc16
 NAME:                  joomla-node1
 FQDN:
@@ -540,7 +540,7 @@ LABELS:                [mysite.com Joomla]
 You can retrieve the current status of the server and see how it transitions along different statuses (booting, bootstrapping, operational). Then, after a brief amount of time the final status is reached:
 
 ```bash
-$ concerto cloud servers show --id 5b5193675f7c880ad9c6bc16
+$ cio cloud servers show --id 5b5193675f7c880ad9c6bc16
 ID:                    5b5193675f7c880ad9c6bc16
 NAME:                  joomla-node1
 FQDN:                  s6ef3f68038ec9e8.centralus.cloudapp.azure.com
@@ -562,7 +562,7 @@ IMCO CLI's `network` command lets you manage a network settings at the server sc
 As we have did before, execute this command with no futher commands to get usage information:
 
 ```bash
-$ concerto network
+$ cio network
 NAME:
     - Manages network related commands for firewall profiles
 
@@ -582,7 +582,7 @@ Servers in IMCO are always associated with a firewall profile. By default ports 
 The first thing we will need is our servers's related firewall identifier. In this they can be found filtering by label assigned 'LDAP':
 
 ```bash
-$ concerto cloud servers list --labels LDAP
+$ cio cloud servers list --labels LDAP
 ID                         NAME           FQDN                                                 STATE          PUBLIC_IP       TEMPLATE_ID                SERVER_PLAN_ID             CLOUD_ACCOUNT_ID           SSH_PROFILE_ID      FIREWALL_PROFILE_ID        LABELS
 5b51a9dc7fb2480b0831d9eb   openldap-1                                                          inactive                       5afd5b4c42d90d09f00000aa   5aac0c0e348f190b3e001432   5aabb7531de0240abb000024   5b51a9617fb2480b0831d9e9   5b51a9377fb2480b0831d9e6   [LDAP]
 5b51a9ff7fb2480b0831d9ee   openldap-2     sca9229d77b151d4.northcentralus.cloudapp.azure.com   operational    23.100.76.238   5afd5b4c42d90d09f00000aa   5aac0c0e348f190b3e001432   5aabb7531de0240abb000024   5b51a9617fb2480b0831d9e9   5b51a9377fb2480b0831d9e6   [LDAP]
@@ -591,7 +591,7 @@ ID                         NAME           FQDN                                  
 Now that we have the firewall profile ID, list it's contents
 
 ```bash
-$ concerto network firewall_profiles show --id 5b51a9377fb2480b0831d9e6
+$ cio network firewall_profiles show --id 5b51a9377fb2480b0831d9e6
 ID:              5b51a9377fb2480b0831d9e6
 NAME:            Firewall LDAP
 DESCRIPTION:     LDAP Services firewall
@@ -606,7 +606,7 @@ The first four values are ports that IMCO may use to keep the desired state of t
 When updating, we tell IMCO a new set of rules. Execute the following command to open 389 and 686 to anyone.
 
 ```bash
-$ concerto network firewall_profiles update --id 5b51a9377fb2480b0831d9e6 --rules '[{"ip_protocol":"tcp", "min_port":389, "max_port":389, "source":"0.0.0.0/0"}, {"ip_protocol":"tcp", "min_port":636, "max_port":636, "source":"0.0.0.0/0"}]'
+$ cio network firewall_profiles update --id 5b51a9377fb2480b0831d9e6 --rules '[{"ip_protocol":"tcp", "min_port":389, "max_port":389, "source":"0.0.0.0/0"}, {"ip_protocol":"tcp", "min_port":636, "max_port":636, "source":"0.0.0.0/0"}]'
 ID:              5b51a9377fb2480b0831d9e6
 NAME:            Firewall LDAP
 DESCRIPTION:     LDAP Services firewall
@@ -629,7 +629,7 @@ Let's pretend there is an existing Joomla blueprint, and that we want to update 
 This is the Joomla blueprint that we created in a previous use case.
 
 ```bash
-$ concerto blueprint templates show --id 5b5192b15f7c880ad9c6bc12
+$ cio blueprint templates show --id 5b5192b15f7c880ad9c6bc12
 ID:                         5b5192b15f7c880ad9c6bc12
 NAME:                       joomla-tmplt
 GENERIC IMAGE ID:           5aabb7551de0240abb000065
@@ -642,7 +642,7 @@ LABELS:                     [mysite.com Joomla]
 Beware of adding previous services or configuration attributes. Update will replace existing items with the ones provided. If we don't want to lose the `joomla.db.hostname` attribute, add it to our configuretion attributes parameter:
 
 ```bash
-$ concerto blueprint templates update --id 5b5192b15f7c880ad9c6bc12 --configuration_attributes '{"joomla":{"db":{"hostname":"127.0.0.1", "password":"$afeP4sSw0rd"}}}'
+$ cio blueprint templates update --id 5b5192b15f7c880ad9c6bc12 --configuration_attributes '{"joomla":{"db":{"hostname":"127.0.0.1", "password":"$afeP4sSw0rd"}}}'
 ID:                         5b5192b15f7c880ad9c6bc12
 NAME:                       joomla-tmplt
 GENERIC IMAGE ID:           5aabb7551de0240abb000065
@@ -655,7 +655,7 @@ LABELS:                     [mysite.com Joomla]
 As you can see, non specified parameters, like name and service list, remain unchanged. Let's now change the service list, adding a two cookbooks.
 
 ```bash
-$ concerto blueprint templates update --id 5b5192b15f7c880ad9c6bc12  --service_list '["joomla","python@1.4.6","polipo"]'
+$ cio blueprint templates update --id 5b5192b15f7c880ad9c6bc12  --service_list '["joomla","python@1.4.6","polipo"]'
 ID:                         5b5192b15f7c880ad9c6bc12
 NAME:                       joomla-tmplt
 GENERIC IMAGE ID:           5aabb7551de0240abb000065
@@ -668,7 +668,7 @@ LABELS:                     [mysite.com Joomla]
 Of course, we can change service list and configuration attributes in one command.
 
 ```bash
-$ concerto blueprint templates update --id 5b5192b15f7c880ad9c6bc12 --configuration_attributes '{"joomla":{"db":{"hostname":"127.0.0.1", "password":"$afeP4sSw0rd"}}}' --service_list '["joomla","python@1.4.6","polipo"]'
+$ cio blueprint templates update --id 5b5192b15f7c880ad9c6bc12 --configuration_attributes '{"joomla":{"db":{"hostname":"127.0.0.1", "password":"$afeP4sSw0rd"}}}' --service_list '["joomla","python@1.4.6","polipo"]'
 ID:                         5b5192b15f7c880ad9c6bc12
 NAME:                       joomla-tmplt
 GENERIC IMAGE ID:           5aabb7551de0240abb000065

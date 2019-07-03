@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/firewall/discovery"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/firewall/discovery"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 func configureConcertoFirewall(cs *utils.HTTPConcertoservice, f format.Formatter) {

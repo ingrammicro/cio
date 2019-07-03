@@ -2,10 +2,10 @@ package wizard
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/wizard/apps"
-	"github.com/ingrammicro/concerto/wizard/cloud_providers"
-	"github.com/ingrammicro/concerto/wizard/locations"
-	"github.com/ingrammicro/concerto/wizard/server_plans"
+	"github.com/ingrammicro/cio/wizard/apps"
+	"github.com/ingrammicro/cio/wizard/cloud_providers"
+	"github.com/ingrammicro/cio/wizard/locations"
+	"github.com/ingrammicro/cio/wizard/server_plans"
 )
 
 // SubCommands returns wizard commands

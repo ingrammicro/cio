@@ -3,10 +3,10 @@ package cmd
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/api/storage"
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/utils"
-	"github.com/ingrammicro/concerto/utils/format"
+	"github.com/ingrammicro/cio/api/storage"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/utils"
+	"github.com/ingrammicro/cio/utils/format"
 )
 
 // WireUpVolume prepares common resources to send request to Concerto API

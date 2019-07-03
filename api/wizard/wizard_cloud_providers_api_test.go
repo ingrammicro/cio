@@ -1,7 +1,7 @@
 package wizard
 
 import (
-	"github.com/ingrammicro/concerto/testdata"
+	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

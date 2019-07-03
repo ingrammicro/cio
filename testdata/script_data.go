@@ -1,6 +1,6 @@
 package testdata
 
-import "github.com/ingrammicro/concerto/api/types"
+import "github.com/ingrammicro/cio/api/types"
 
 // GetScriptData loads test data
 func GetScriptData() []*types.Script {

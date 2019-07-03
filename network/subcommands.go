@@ -2,11 +2,11 @@ package network
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/network/firewall_profiles"
-	"github.com/ingrammicro/concerto/network/floating_ips"
-	"github.com/ingrammicro/concerto/network/subnets"
-	"github.com/ingrammicro/concerto/network/vpcs"
-	"github.com/ingrammicro/concerto/network/vpns"
+	"github.com/ingrammicro/cio/network/firewall_profiles"
+	"github.com/ingrammicro/cio/network/floating_ips"
+	"github.com/ingrammicro/cio/network/subnets"
+	"github.com/ingrammicro/cio/network/vpcs"
+	"github.com/ingrammicro/cio/network/vpns"
 )
 
 // SubCommands returns network commands

@@ -2,7 +2,7 @@ package cloud_providers
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/cmd"
+	"github.com/ingrammicro/cio/cmd"
 )
 
 // SubCommands returns cloud providers commands

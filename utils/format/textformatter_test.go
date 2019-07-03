@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ingrammicro/concerto/api/blueprint"
-	"github.com/ingrammicro/concerto/api/cloud"
-	"github.com/ingrammicro/concerto/testdata"
+	"github.com/ingrammicro/cio/api/blueprint"
+	"github.com/ingrammicro/cio/api/cloud"
+	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
 )
 

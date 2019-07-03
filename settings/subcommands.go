@@ -2,7 +2,7 @@ package settings
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/settings/cloud_accounts"
+	"github.com/ingrammicro/cio/settings/cloud_accounts"
 )
 
 // SubCommands returns settings commands

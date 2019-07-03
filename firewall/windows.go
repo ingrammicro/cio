@@ -5,10 +5,10 @@ package firewall
 import (
 	"fmt"
 
-	"github.com/ingrammicro/concerto/api/types"
-	"github.com/ingrammicro/concerto/firewall/discovery"
+	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/firewall/discovery"
 
-	"github.com/ingrammicro/concerto/utils"
+	"github.com/ingrammicro/cio/utils"
 )
 
 func driverName() string {

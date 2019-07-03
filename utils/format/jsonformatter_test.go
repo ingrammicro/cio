@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/ingrammicro/concerto/api/cloud"
+	"github.com/ingrammicro/cio/api/cloud"
 	"testing"
 
-	"github.com/ingrammicro/concerto/api/blueprint"
-	"github.com/ingrammicro/concerto/testdata"
+	"github.com/ingrammicro/cio/api/blueprint"
+	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
 )
 

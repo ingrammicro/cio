@@ -2,7 +2,7 @@ package floating_ips
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/ingrammicro/concerto/cmd"
+	"github.com/ingrammicro/cio/cmd"
 )
 
 // SubCommands returns floating IPs commands

@@ -1,7 +1,7 @@
 package testdata
 
 import (
-	"github.com/ingrammicro/concerto/api/types"
+	"github.com/ingrammicro/cio/api/types"
 )
 
 // GetTemplateData loads loads test data
