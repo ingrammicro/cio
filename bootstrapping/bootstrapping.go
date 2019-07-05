@@ -15,7 +15,7 @@ import (
 	"syscall"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/allan-simon/go-singleinstance"
 	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/blueprint"

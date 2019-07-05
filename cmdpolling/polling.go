@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/polling"
 	"github.com/ingrammicro/cio/cmd"

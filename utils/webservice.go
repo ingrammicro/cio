@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
