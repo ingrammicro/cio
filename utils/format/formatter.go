@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 // Required workaround for testing os.Exit(1) scenarios in Go with coverage.
