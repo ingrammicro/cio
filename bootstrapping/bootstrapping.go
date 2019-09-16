@@ -15,7 +15,6 @@ import (
 	"syscall"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/allan-simon/go-singleinstance"
 	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/blueprint"
@@ -23,6 +22,7 @@ import (
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -153,37 +153,7 @@ func start(c *cli.Context) error {
 	defer cancel()
 	go handleSysSignals(cancel)
 
-	config, err := utils.GetConcertoConfig()
-	if err != nil {
-		formatter.PrintFatal("Couldn't wire up config", err)
-	}
-
-	interval := config.BootstrapConfig.IntervalSeconds
-	if !(interval > 0) {
-		interval = defaultIntervalSeconds
-	}
-
-	splay := config.BootstrapConfig.SplaySeconds
-	if !(splay > 0) {
-		splay = defaultSplaySeconds
-	}
-
-	applyAfterIterations := config.BootstrapConfig.ApplyAfterIterations
-	if !(applyAfterIterations > 0) {
-		applyAfterIterations = defaultApplyAfterIterations
-	}
-
-	thresholdLines := c.Int("lines")
-	if !(thresholdLines > 0) {
-		thresholdLines = defaultThresholdLines
-	}
-	log.Debug("routine lines threshold: ", thresholdLines)
-	bootstrappingSvc, formatter := cmd.WireUpBootstrapping(c)
-
-	if config.BootstrapConfig.RunOnce {
-		return runBootstrapOnce(ctx, bootstrappingSvc, formatter, thresholdLines, interval, splay)
-	}
-	return runBootstrapPeriodically(ctx, bootstrappingSvc, formatter, applyAfterIterations, thresholdLines, interval, splay)
+	return runBootstrapPeriodically(ctx, c, formatter)
 }
 
 // Stop the bootstrapping process
@@ -199,11 +169,21 @@ func stop(c *cli.Context) error {
 	return nil
 }
 
-func runBootstrapPeriodically(ctx context.Context, bootstrappingSvc *blueprint.BootstrappingService, formatter format.Formatter, applyAfterIterations, thresholdLines, interval, splay int) error {
+func runBootstrapPeriodically(ctx context.Context, c *cli.Context, formatter format.Formatter) error {
+	config, err := utils.GetConcertoConfig()
+	if err != nil {
+		formatter.PrintFatal("Couldn't wire up config", err)
+	}
+	if config.BootstrapConfig.RunOnce {
+		return runBootstrapOnce(ctx, c, config, formatter)
+	}
+	applyAfterIterations, thresholdLines, interval, splay := getBootstrappingConfigOrDefaults(c, config)
+
+	bootstrappingSvc, formatter := cmd.WireUpBootstrapping(c)
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	var blueprintConfig *types.BootstrappingConfiguration
 	var noPolicyfileApplicationIterations int
-	var lastPolicyfileApplicationErr, err error
+	var lastPolicyfileApplicationErr error
 	for {
 		var updated bool
 		blueprintConfig, updated, err = getBlueprintConfig(ctx, bootstrappingSvc, blueprintConfig, formatter)
@@ -211,6 +191,19 @@ func runBootstrapPeriodically(ctx context.Context, bootstrappingSvc *blueprint.B
 			if updated || lastPolicyfileApplicationErr != nil || noPolicyfileApplicationIterations >= applyAfterIterations {
 				noPolicyfileApplicationIterations = -1
 				lastPolicyfileApplicationErr = applyPolicyfiles(ctx, bootstrappingSvc, blueprintConfig, formatter, thresholdLines)
+				var configUpdated bool
+				config, configUpdated, err = utils.ReloadConcertoConfig(c)
+				if err != nil && configUpdated {
+					if config.BootstrapConfig.RunOnce {
+						if lastPolicyfileApplicationErr != nil {
+							log.Info("Change to run-once mode detected after a failed policyfile application: starting run-once mode (with 3 retries)...")
+							return runBootstrapOnce(ctx, c, config, formatter)
+						}
+						log.Info("Change to run-once mode detected after a successful policyfile application: exiting...")
+						return nil
+					}
+					applyAfterIterations, thresholdLines, interval, splay = getBootstrappingConfigOrDefaults(c, config)
+				}
 			}
 		}
 		noPolicyfileApplicationIterations++
@@ -233,7 +226,11 @@ func runBootstrapPeriodically(ctx context.Context, bootstrappingSvc *blueprint.B
 	return nil
 }
 
-func runBootstrapOnce(ctx context.Context, bootstrappingSvc *blueprint.BootstrappingService, formatter format.Formatter, thresholdLines, interval, splay int) error {
+func runBootstrapOnce(ctx context.Context, c *cli.Context, config *utils.Config, formatter format.Formatter) error {
+
+	_, thresholdLines, interval, splay := getBootstrappingConfigOrDefaults(c, config)
+
+	bootstrappingSvc, formatter := cmd.WireUpBootstrapping(c)
 	blueprintConfig, _, err := getBlueprintConfig(ctx, bootstrappingSvc, nil, formatter)
 	if err == nil {
 		err = applyPolicyfiles(ctx, bootstrappingSvc, blueprintConfig, formatter, thresholdLines)
@@ -257,6 +254,32 @@ func runBootstrapOnce(ctx context.Context, bootstrappingSvc *blueprint.Bootstrap
 		}
 	}
 	return err
+}
+
+func getBootstrappingConfigOrDefaults(c *cli.Context, config *utils.Config) (applyAfterIterations, thresholdLines, interval, splay int) {
+	if c == nil {
+		return defaultApplyAfterIterations, defaultThresholdLines, defaultIntervalSeconds, defaultSplaySeconds
+	}
+	interval = config.BootstrapConfig.IntervalSeconds
+	if !(interval > 0) {
+		interval = defaultIntervalSeconds
+	}
+
+	splay = config.BootstrapConfig.SplaySeconds
+	if !(splay > 0) {
+		splay = defaultSplaySeconds
+	}
+
+	applyAfterIterations = config.BootstrapConfig.ApplyAfterIterations
+	if !(applyAfterIterations > 0) {
+		applyAfterIterations = defaultApplyAfterIterations
+	}
+
+	thresholdLines = c.Int("lines")
+	if !(thresholdLines > 0) {
+		thresholdLines = defaultThresholdLines
+	}
+	return
 }
 
 func getBlueprintConfig(ctx context.Context, bootstrappingSvc *blueprint.BootstrappingService, previousBlueprintConfig *types.BootstrappingConfiguration, formatter format.Formatter) (*types.BootstrappingConfiguration, bool, error) {
