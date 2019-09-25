@@ -193,7 +193,7 @@ func runBootstrapPeriodically(ctx context.Context, c *cli.Context, formatter for
 				lastPolicyfileApplicationErr = applyPolicyfiles(ctx, bootstrappingSvc, blueprintConfig, formatter, thresholdLines)
 				var configUpdated bool
 				config, configUpdated, err = utils.ReloadConcertoConfig(c)
-				if err != nil && configUpdated {
+				if err == nil && configUpdated {
 					if config.BootstrapConfig.RunOnce {
 						if lastPolicyfileApplicationErr != nil {
 							log.Info("Change to run-once mode detected after a failed policyfile application: starting run-once mode (with 3 retries)...")
