@@ -2,13 +2,14 @@ package dispatcher
 
 import (
 	"fmt"
-	log "github.com/Sirupsen/logrus"
+	"io/ioutil"
+	"os"
+
 	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/utils"
-	"io/ioutil"
-	"os"
+	log "github.com/sirupsen/logrus"
 )
 
 func cmdBoot(c *cli.Context) error {
@@ -35,7 +36,9 @@ func execute(c *cli.Context, phase string, scriptCharacterizationUUID string) {
 	if scriptCharacterizationUUID == "" {
 		scriptChars, err = dispatcherSvc.GetDispatcherScriptCharacterizationsByType(phase)
 	} else {
-		scriptChars, err = dispatcherSvc.GetDispatcherScriptCharacterizationsByUUID(scriptCharacterizationUUID)
+		var scriptChar *types.ScriptCharacterization
+		scriptChar, err = dispatcherSvc.GetDispatcherScriptCharacterizationByUUID(scriptCharacterizationUUID)
+		scriptChars = []*types.ScriptCharacterization{scriptChar}
 	}
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive Script Characterization data", err)

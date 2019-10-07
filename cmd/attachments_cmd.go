@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/blueprint"
 	"github.com/ingrammicro/cio/utils"

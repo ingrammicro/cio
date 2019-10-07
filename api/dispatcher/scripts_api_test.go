@@ -1,9 +1,10 @@
 package dispatcher
 
 import (
+	"testing"
+
 	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestNewDispatcherServiceNil(t *testing.T) {
@@ -21,12 +22,12 @@ func TestGetDispatcherScriptCharacterizationsByType(t *testing.T) {
 	GetDispatcherScriptCharacterizationsByTypeFailJSONMocked(t, "boot", dIn)
 }
 
-func TestGetDispatcherScriptCharacterizationsByUUID(t *testing.T) {
+func TestGetDispatcherScriptCharacterizationByUUID(t *testing.T) {
 	dIn := testdata.GetScriptCharacterizationsData()
-	GetDispatcherScriptCharacterizationsByUUIDMocked(t, "fakeUUID1", dIn)
-	GetDispatcherScriptCharacterizationsByUUIDFailErrMocked(t, "fakeUUID1", dIn)
-	GetDispatcherScriptCharacterizationsByUUIDFailStatusMocked(t, "fakeUUID1", dIn)
-	GetDispatcherScriptCharacterizationsByUUIDFailJSONMocked(t, "fakeUUID1", dIn)
+	GetDispatcherScriptCharacterizationByUUIDMocked(t, "fakeUUID1", dIn[0])
+	GetDispatcherScriptCharacterizationByUUIDFailErrMocked(t, "fakeUUID1", dIn[0])
+	GetDispatcherScriptCharacterizationByUUIDFailStatusMocked(t, "fakeUUID1", dIn[0])
+	GetDispatcherScriptCharacterizationByUUIDFailJSONMocked(t, "fakeUUID1", dIn[0])
 }
 
 func TestReportScriptConclusions(t *testing.T) {

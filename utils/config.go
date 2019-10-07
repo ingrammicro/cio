@@ -14,10 +14,11 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
+	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/mitchellh/go-homedir"
+	log "github.com/sirupsen/logrus"
 )
 
 const windowsServerConfigFile = "c:\\cio\\client.xml"
@@ -35,21 +36,22 @@ const nixServerKeyPath = "/etc/cio/client_ssl/private/key.pem"
 
 // Config stores configuration file contents
 type Config struct {
-	XMLName             xml.Name        `xml:"concerto"`
-	APIEndpoint         string          `xml:"server,attr"`
-	LogFile             string          `xml:"log_file,attr"`
-	LogLevel            string          `xml:"log_level,attr"`
-	Certificate         Cert            `xml:"ssl"`
-	BootstrapConfig     BootstrapConfig `xml:"bootstrap"`
-	ConfLocation        string
-	ConfFile            string
-	IsHost              bool
-	ConcertoURL         string
-	BrownfieldToken     string
-	CommandPollingToken string
-	ServerID            string
-	CurrentUserName     string
-	CurrentUserIsAdmin  bool
+	XMLName              xml.Name        `xml:"concerto"`
+	APIEndpoint          string          `xml:"server,attr"`
+	LogFile              string          `xml:"log_file,attr"`
+	LogLevel             string          `xml:"log_level,attr"`
+	Certificate          Cert            `xml:"ssl"`
+	BootstrapConfig      BootstrapConfig `xml:"bootstrap"`
+	ConfLocation         string
+	ConfFile             string
+	confFileLastLoadedAt time.Time
+	IsHost               bool
+	ConcertoURL          string
+	BrownfieldToken      string
+	CommandPollingToken  string
+	ServerID             string
+	CurrentUserName      string
+	CurrentUserIsAdmin   bool
 }
 
 // Cert stores cert files location
@@ -122,6 +124,30 @@ func InitializeConcertoConfig(c *cli.Context) (*Config, error) {
 
 	debugShowConfig()
 	return cachedConfig, nil
+}
+
+// ReloadConcertoConfig checks if the config file was modified and
+// if so, attempts to reload it. It returns the resulting config
+// (updated or not), whether an modification of the file happened,
+// and any errors
+func ReloadConcertoConfig(c *cli.Context) (*Config, bool, error) {
+	fi, err := os.Stat(cachedConfig.ConfFile)
+	if err != nil {
+		log.Warnf("Could not stat config file %q to see if it changed: %v", cachedConfig.ConfFile, err)
+		return cachedConfig, false, err
+	}
+	if fi.ModTime().After(cachedConfig.confFileLastLoadedAt) {
+		log.Infof("Config file %q changed since last reading, reloading configuration...", cachedConfig.ConfFile)
+		oldConfig := cachedConfig
+		cachedConfig = nil
+		_, err = InitializeConcertoConfig(c)
+		if err != nil {
+			log.Warnf("Could not load changes to config file %q: %v", cachedConfig.ConfFile, err)
+			cachedConfig = oldConfig
+		}
+		return cachedConfig, true, err
+	}
+	return cachedConfig, false, nil
 }
 
 func debugShowConfig() {
@@ -217,6 +243,7 @@ func (config *Config) readConcertoConfig(c *cli.Context) error {
 			return err
 		}
 		defer xmlFile.Close()
+		readingTime := time.Now()
 		b, err := ioutil.ReadAll(xmlFile)
 		if err != nil {
 			return fmt.Errorf("configuration File %s couldn't be read", config.ConfFile)
@@ -225,6 +252,7 @@ func (config *Config) readConcertoConfig(c *cli.Context) error {
 		if err = xml.Unmarshal(b, &config); err != nil {
 			return fmt.Errorf("configuration File %s does not have valid XML format", config.ConfFile)
 		}
+		config.confFileLastLoadedAt = readingTime
 
 	} else {
 		log.Debugf("Configuration File %s does not exist. Reading environment variables", config.ConfFile)

@@ -5,7 +5,7 @@ import (
 	"os"
 	"sort"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/audit"
 	"github.com/ingrammicro/cio/blueprint"

@@ -3,9 +3,10 @@ package dispatcher
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/Sirupsen/logrus"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 // DispatcherService manages bootstrapping operations
@@ -44,9 +45,9 @@ func (ds *DispatcherService) GetDispatcherScriptCharacterizationsByType(phase st
 	return scriptCharacterizations, nil
 }
 
-// GetDispatcherScriptCharacterizationsByUUID returns script characterizations list for a given UUID
-func (ds *DispatcherService) GetDispatcherScriptCharacterizationsByUUID(scriptCharacterizationUUID string) (scriptCharacterizations []*types.ScriptCharacterization, err error) {
-	log.Debug("GetDispatcherScriptCharacterizationsByUUID")
+// GetDispatcherScriptCharacterizationByUUID returns script characterizations list for a given UUID
+func (ds *DispatcherService) GetDispatcherScriptCharacterizationByUUID(scriptCharacterizationUUID string) (*types.ScriptCharacterization, error) {
+	log.Debug("GetDispatcherScriptCharacterizationByUUID")
 
 	data, status, err := ds.concertoService.Get(fmt.Sprintf("/blueprint/script_characterizations/%s", scriptCharacterizationUUID))
 	if err != nil {
@@ -56,12 +57,12 @@ func (ds *DispatcherService) GetDispatcherScriptCharacterizationsByUUID(scriptCh
 	if err = utils.CheckStandardStatus(status, data); err != nil {
 		return nil, err
 	}
-
-	if err = json.Unmarshal(data, &scriptCharacterizations); err != nil {
+	var scriptCharacterization types.ScriptCharacterization
+	if err = json.Unmarshal(data, &scriptCharacterization); err != nil {
 		return nil, err
 	}
 
-	return scriptCharacterizations, nil
+	return &scriptCharacterization, nil
 }
 
 // ReportScriptConclusions reports a result

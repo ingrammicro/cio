@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 // JSONFormatter prints items and lists in JSON format

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"syscall"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 // SetProcessIdToFile obtains the process id and save it inside a file
