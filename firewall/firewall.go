@@ -2,9 +2,9 @@ package firewall
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/cmd"
+	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 func cmdList(c *cli.Context) error {

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
+	"github.com/urfave/cli"
 )
 
 func cmdConfigure(c *cli.Context) error {

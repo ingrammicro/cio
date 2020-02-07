@@ -6,9 +6,9 @@ import (
 	"runtime"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/utils/format"
+	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 // debugCmdFuncInfo writes context info about the calling function

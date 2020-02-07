@@ -1,9 +1,9 @@
 package storage
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/storage/storage_plans"
 	"github.com/ingrammicro/cio/storage/volumes"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns storage commands

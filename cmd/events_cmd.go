@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/audit"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
+	"github.com/urfave/cli"
 )
 
 // WireUpEvent prepares common resources to send request to Concerto API

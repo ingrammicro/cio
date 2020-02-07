@@ -1,11 +1,11 @@
 package wizard
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/wizard/apps"
 	"github.com/ingrammicro/cio/wizard/cloud_providers"
 	"github.com/ingrammicro/cio/wizard/locations"
 	"github.com/ingrammicro/cio/wizard/server_plans"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns wizard commands

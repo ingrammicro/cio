@@ -5,8 +5,6 @@ import (
 	"os"
 	"sort"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/audit"
 	"github.com/ingrammicro/cio/blueprint"
 	"github.com/ingrammicro/cio/bootstrapping"
@@ -23,6 +21,8 @@ import (
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	"github.com/ingrammicro/cio/wizard"
+	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 var serverCommands = []cli.Command{
