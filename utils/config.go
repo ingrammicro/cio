@@ -16,9 +16,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/codegangsta/cli"
 	"github.com/mitchellh/go-homedir"
 	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 const windowsServerConfigFile = "c:\\cio\\client.xml"
@@ -172,7 +172,7 @@ func debugShowConfig() {
 func debugStruct(prefix string, item interface{}) {
 	c := reflect.ValueOf(item)
 	for i := 0; i < c.NumField(); i++ {
-		if c.Type().Field(i).Type.String() != "xml.Name" {
+		if c.Type().Field(i).Type.String() != "xml.Name" && c.Field(i).CanInterface() {
 
 			name := c.Type().Field(i).Name
 			value := c.Field(i).Interface()

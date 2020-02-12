@@ -1,7 +1,7 @@
 package dispatcher
 
 import (
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns dispatcher commands

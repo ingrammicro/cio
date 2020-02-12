@@ -5,11 +5,11 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 func cmdBoot(c *cli.Context) error {

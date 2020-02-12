@@ -1,11 +1,11 @@
 package blueprint
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/blueprint/attachments"
 	"github.com/ingrammicro/cio/blueprint/cookbook_versions"
 	"github.com/ingrammicro/cio/blueprint/scripts"
 	"github.com/ingrammicro/cio/blueprint/templates"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns blueprint commands

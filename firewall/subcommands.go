@@ -1,7 +1,7 @@
 package firewall
 
 import (
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns firewall commands

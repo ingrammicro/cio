@@ -8,12 +8,12 @@ import (
 	"syscall"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/polling"
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
+	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 const (

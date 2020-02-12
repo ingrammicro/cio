@@ -3,7 +3,7 @@ package brownfield
 import (
 	"runtime"
 
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns brownfield commands

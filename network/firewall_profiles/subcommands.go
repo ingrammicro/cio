@@ -1,8 +1,8 @@
 package firewall_profiles
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/cmd"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns firewall profiles commands
