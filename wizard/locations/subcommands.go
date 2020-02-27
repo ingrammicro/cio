@@ -1,8 +1,8 @@
 package locations
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/cmd"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns locations commands

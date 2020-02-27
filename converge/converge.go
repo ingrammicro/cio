@@ -9,9 +9,9 @@ import (
 	"regexp"
 	"runtime"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/utils"
+	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 func CmbConverge(c *cli.Context) error {

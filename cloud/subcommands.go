@@ -1,13 +1,13 @@
 package cloud
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/cloud/cloud_providers"
 	"github.com/ingrammicro/cio/cloud/generic_images"
 	"github.com/ingrammicro/cio/cloud/server_arrays"
 	"github.com/ingrammicro/cio/cloud/server_plan"
 	"github.com/ingrammicro/cio/cloud/servers"
 	"github.com/ingrammicro/cio/cloud/ssh_profiles"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns cloud commands

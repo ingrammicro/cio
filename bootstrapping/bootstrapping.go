@@ -16,13 +16,13 @@ import (
 	"time"
 
 	"github.com/allan-simon/go-singleinstance"
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/blueprint"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 const (

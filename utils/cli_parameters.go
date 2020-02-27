@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"reflect"
 )
 

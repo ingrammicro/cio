@@ -1,8 +1,8 @@
 package server_plans
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/cmd"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns server plans commands

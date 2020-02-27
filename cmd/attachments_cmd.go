@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/blueprint"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 // WireUpAttachment prepares common resources to send request to Concerto API

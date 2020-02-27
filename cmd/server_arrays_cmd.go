@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/cloud"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
+	"github.com/urfave/cli"
 )
 
 // WireUpServerArray prepares common resources to send request to Concerto API

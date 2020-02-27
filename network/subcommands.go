@@ -1,12 +1,12 @@
 package network
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/network/firewall_profiles"
 	"github.com/ingrammicro/cio/network/floating_ips"
 	"github.com/ingrammicro/cio/network/subnets"
 	"github.com/ingrammicro/cio/network/vpcs"
 	"github.com/ingrammicro/cio/network/vpns"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns network commands

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/api/blueprint"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
+	"github.com/urfave/cli"
 )
 
 // WireUpScript prepares common resources to send request to Concerto API

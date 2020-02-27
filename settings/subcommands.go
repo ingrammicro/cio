@@ -1,8 +1,8 @@
 package settings
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/ingrammicro/cio/settings/cloud_accounts"
+	"github.com/urfave/cli"
 )
 
 // SubCommands returns settings commands
