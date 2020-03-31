@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ingrammicro/cio/clientbrownfield"
 	"os"
 	"sort"
 
@@ -64,6 +65,12 @@ var clientCommands = []cli.Command{
 		ShortName:   "bl",
 		Usage:       "Manages blueprint commands for scripts, services and templates",
 		Subcommands: append(blueprint.SubCommands()),
+	},
+	{
+		Name:        "brownfield",
+		ShortName:   "bf",
+		Usage:       "Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs and volumes from different cloud accounts into the system.",
+		Subcommands: append(clientbrownfield.SubCommands()),
 	},
 	{
 		Name:        "cloud",
