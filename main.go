@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ingrammicro/cio/cloudapplications"
 	"os"
 	"sort"
 
@@ -72,6 +73,12 @@ var clientCommands = []cli.Command{
 		ShortName:   "bf",
 		Usage:       "Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs and volumes from different cloud accounts into the system.",
 		Subcommands: append(clientbrownfield.SubCommands()),
+	},
+	{
+		Name:        "cloud-applications",
+		ShortName:   "ca",
+		Usage:       "Manages cloud application templates -CATs- and deployments, allowing users to import and export of infrastructures using TOSCA (Topology and Orchestration Specification for Cloud Applications)",
+		Subcommands: append(cloudapplications.SubCommands()),
 	},
 	{
 		Name:        "cloud",
