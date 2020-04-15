@@ -1,15 +1,12 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/ingrammicro/cio/api/blueprint"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	"github.com/urfave/cli"
-	"io"
-	"os"
 	"regexp"
 	"strings"
 )
@@ -110,7 +107,7 @@ func TemplateCreate(c *cli.Context) error {
 		"generic_image_id": c.String("generic-image-id"),
 	}
 	if c.IsSet("configuration-attributes-from-file") {
-		caIn, err := convertFlagParamsJsonFromFileOrStdin(c, c.String("configuration-attributes-from-file"))
+		caIn, err := utils.ConvertFlagParamsJsonFromFileOrStdin(c, c.String("configuration-attributes-from-file"))
 		if err != nil {
 			formatter.PrintFatal("Cannot parse input configuration attributes", err)
 		}
@@ -172,7 +169,7 @@ func TemplateUpdate(c *cli.Context) error {
 		templateIn["name"] = c.String("name")
 	}
 	if c.IsSet("configuration-attributes-from-file") {
-		caIn, err := convertFlagParamsJsonFromFileOrStdin(c, c.String("configuration-attributes-from-file"))
+		caIn, err := utils.ConvertFlagParamsJsonFromFileOrStdin(c, c.String("configuration-attributes-from-file"))
 		if err != nil {
 			formatter.PrintFatal("Cannot parse input configuration attributes", err)
 		}
@@ -299,7 +296,7 @@ func TemplateScriptCreate(c *cli.Context) error {
 		"script_id": c.String("script-id"),
 	}
 	if c.IsSet("parameter-values-from-file") {
-		pvIn, err := convertFlagParamsJsonFromFileOrStdin(c, c.String("parameter-values-from-file"))
+		pvIn, err := utils.ConvertFlagParamsJsonFromFileOrStdin(c, c.String("parameter-values-from-file"))
 		if err != nil {
 			formatter.PrintFatal("Cannot parse input parameter values", err)
 		}
@@ -337,7 +334,7 @@ func TemplateScriptUpdate(c *cli.Context) error {
 	templateScriptIn := map[string]interface{}{}
 
 	if c.IsSet("parameter-values-from-file") {
-		pvIn, err := convertFlagParamsJsonFromFileOrStdin(c, c.String("parameter-values-from-file"))
+		pvIn, err := utils.ConvertFlagParamsJsonFromFileOrStdin(c, c.String("parameter-values-from-file"))
 		if err != nil {
 			formatter.PrintFatal("Cannot parse input parameter values", err)
 		}
@@ -456,27 +453,6 @@ func convertFlagParamsToCookbookVersions(c *cli.Context, cbvsIn string) (map[str
 		}
 	}
 	return result, nil
-}
-
-// convertFlagParamsJsonFromFileOrStdin returns the json representation of parameters taken from the input file or STDIN
-func convertFlagParamsJsonFromFileOrStdin(c *cli.Context, dataIn string) (map[string]interface{}, error) {
-	var reader io.Reader
-	var content map[string]interface{}
-	if dataIn == "-" {
-		reader = os.Stdin
-		dataIn = "STDIN"
-	} else {
-		jsonFile, err := os.Open(dataIn)
-		if err != nil {
-			return nil, fmt.Errorf("cannot open %s to read JSON params: %v", dataIn, err)
-		}
-		defer jsonFile.Close()
-		reader = jsonFile
-	}
-	if err := json.NewDecoder(reader).Decode(&content); err != nil {
-		return nil, fmt.Errorf("cannot read JSON params from %s: %v", dataIn, err)
-	}
-	return content, nil
 }
 
 // resolveCookbookVersions resolves adequate cookbook version ids
