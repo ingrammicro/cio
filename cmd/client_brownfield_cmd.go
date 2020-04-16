@@ -49,26 +49,6 @@ func BrownfieldCloudAccountList(c *cli.Context) error {
 	return nil
 }
 
-// BrownfieldCloudAccountShow subcommand function
-func BrownfieldCloudAccountShow(c *cli.Context) error {
-	debugCmdFuncInfo(c)
-	cloudAccountSvc, formatter := WireUpBrownfieldCloudAccount(c)
-
-	checkRequiredFlags(c, []string{"id"}, formatter)
-	cloudAccount, err := cloudAccountSvc.GetBrownfieldCloudAccount(c.String("id"))
-	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloud account data", err)
-	}
-
-	cloudProvidersMap := LoadCloudProvidersMapping(c)
-	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
-
-	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
-	}
-	return nil
-}
-
 // BrownfieldCloudAccountServersDiscover subcommand function
 func BrownfieldCloudAccountServersDiscover(c *cli.Context) error {
 	debugCmdFuncInfo(c)

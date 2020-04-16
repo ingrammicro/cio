@@ -24,26 +24,6 @@ func NewImportCandidateService(concertoService utils.ConcertoService) (*ImportCa
 	}, nil
 }
 
-// GetServer returns a server import candidate
-func (ics *ImportCandidateService) GetServer(serverID string) (server *types.ServerImportCandidate, err error) {
-	log.Debug("GetServer")
-
-	data, status, err := ics.concertoService.Get(fmt.Sprintf("/brownfield/import_candidates/%s", serverID))
-	if err != nil {
-		return nil, err
-	}
-
-	if err = utils.CheckStandardStatus(status, data); err != nil {
-		return nil, err
-	}
-
-	if err = json.Unmarshal(data, &server); err != nil {
-		return nil, err
-	}
-
-	return server, nil
-}
-
 // ImportServer imports a server import candidate
 func (ics *ImportCandidateService) ImportServer(serverID string, serverIn *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("ImportServer")
@@ -62,26 +42,6 @@ func (ics *ImportCandidateService) ImportServer(serverID string, serverIn *map[s
 	}
 
 	return server, nil
-}
-
-// GetVPC returns a vpc import candidate
-func (ics *ImportCandidateService) GetVPC(vpcID string) (vpc *types.VpcImportCandidate, err error) {
-	log.Debug("GetVPC")
-
-	data, status, err := ics.concertoService.Get(fmt.Sprintf("/brownfield/vpc_import_candidates/%s", vpcID))
-	if err != nil {
-		return nil, err
-	}
-
-	if err = utils.CheckStandardStatus(status, data); err != nil {
-		return nil, err
-	}
-
-	if err = json.Unmarshal(data, &vpc); err != nil {
-		return nil, err
-	}
-
-	return vpc, nil
 }
 
 // ImportVPC imports a vpc import candidate
@@ -104,26 +64,6 @@ func (ics *ImportCandidateService) ImportVPC(vpcID string, vpcIn *map[string]int
 	return vpc, nil
 }
 
-// GetFloatingIP returns a floating ip import candidate
-func (ics *ImportCandidateService) GetFloatingIP(floatingIPID string) (floatingIP *types.FloatingIPImportCandidate, err error) {
-	log.Debug("GetFloatingIP")
-
-	data, status, err := ics.concertoService.Get(fmt.Sprintf("/brownfield/floating_ip_import_candidates/%s", floatingIPID))
-	if err != nil {
-		return nil, err
-	}
-
-	if err = utils.CheckStandardStatus(status, data); err != nil {
-		return nil, err
-	}
-
-	if err = json.Unmarshal(data, &floatingIP); err != nil {
-		return nil, err
-	}
-
-	return floatingIP, nil
-}
-
 // ImportFloatingIP imports a floating ip import candidate
 func (ics *ImportCandidateService) ImportFloatingIP(floatingIPID string, floatingIPIn *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
 	log.Debug("ImportFloatingIP")
@@ -142,26 +82,6 @@ func (ics *ImportCandidateService) ImportFloatingIP(floatingIPID string, floatin
 	}
 
 	return floatingIP, nil
-}
-
-// GetVolume returns a volume import candidate
-func (ics *ImportCandidateService) GetVolume(volumeID string) (volume *types.VolumeImportCandidate, err error) {
-	log.Debug("GetVolume")
-
-	data, status, err := ics.concertoService.Get(fmt.Sprintf("/brownfield/volume_import_candidates/%s", volumeID))
-	if err != nil {
-		return nil, err
-	}
-
-	if err = utils.CheckStandardStatus(status, data); err != nil {
-		return nil, err
-	}
-
-	if err = json.Unmarshal(data, &volume); err != nil {
-		return nil, err
-	}
-
-	return volume, nil
 }
 
 // ImportVolume imports a volume import candidate

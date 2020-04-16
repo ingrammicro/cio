@@ -14,17 +14,6 @@ func SubCommands() []cli.Command {
 			Action: cmd.BrownfieldCloudAccountList,
 		},
 		{
-			Name:   "show",
-			Usage:  "Shows a cloud account that supports discovering and importing resources, given its id",
-			Action: cmd.BrownfieldCloudAccountShow,
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "id",
-					Usage: "Cloud account Id",
-				},
-			},
-		},
-		{
 			Name:   "discover-servers",
 			Usage:  "Starts the process of discovering servers on the cloud account identified by the given id",
 			Action: cmd.BrownfieldCloudAccountServersDiscover,
