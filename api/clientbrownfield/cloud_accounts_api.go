@@ -44,6 +44,28 @@ func (bcas *BrownfieldCloudAccountService) ListBrownfieldCloudAccounts() (cloudA
 	return cloudAccounts, nil
 }
 
+// GetBrownfieldCloudAccount returns a Brownfield Cloud Account by its ID
+func (bcas *BrownfieldCloudAccountService) GetBrownfieldCloudAccount(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
+	log.Debug("GetBrownfieldCloudAccount")
+
+	data, status, err := bcas.concertoService.Get(fmt.Sprintf("/brownfield/cloud_accounts/%s", cloudAccountID))
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(data, &cloudAccount); err != nil {
+		return nil, err
+	}
+
+	return cloudAccount, nil
+}
+
+
+
 // DiscoverServers discovers Brownfield servers
 func (bcas *BrownfieldCloudAccountService) DiscoverServers(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("DiscoverServers")

@@ -2,9 +2,12 @@ package cmd
 
 import (
 	"github.com/ingrammicro/cio/api/clientbrownfield"
+	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+	"time"
 )
 
 // WireUpBrownfieldCloudAccount prepares common resources to send request to Concerto API
@@ -49,16 +52,37 @@ func BrownfieldCloudAccountList(c *cli.Context) error {
 	return nil
 }
 
+func checkCloudAccountLastDiscoveredStatus(c *cli.Context, cloudAccount *types.CloudAccount) {
+	debugCmdFuncInfo(c)
+	cloudAccountSvc, formatter := WireUpBrownfieldCloudAccount(c)
+
+	log.Info("Brownfield cloud account ID... ", cloudAccount.ID)
+	log.Info("Checking discovery... ")
+	for {
+		ca, err := cloudAccountSvc.GetBrownfieldCloudAccount(c.String("id"))
+		if err != nil {
+			formatter.PrintFatal("Couldn't get cloud account data", err)
+		}
+		if (cloudAccount.LastDiscoveredAt != ca.LastDiscoveredAt) ||
+			(cloudAccount.LastDiscoveredFailedAt != ca.LastDiscoveredFailedAt) {
+			break
+		}
+		time.Sleep(5 * time.Second)
+	}
+}
+
 // BrownfieldCloudAccountServersDiscover subcommand function
 func BrownfieldCloudAccountServersDiscover(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	cloudAccountSvc, formatter := WireUpBrownfieldCloudAccount(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	_, err := cloudAccountSvc.DiscoverServers(c.String("id"))
+	cloudAccount, err := cloudAccountSvc.DiscoverServers(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't discover servers", err)
 	}
+
+	checkCloudAccountLastDiscoveredStatus(c, cloudAccount)
 
 	serversImportCandidates, err := cloudAccountSvc.ListServers(c.String("id"))
 	if err != nil {
@@ -77,10 +101,12 @@ func BrownfieldCloudAccountVPCsDiscover(c *cli.Context) error {
 	cloudAccountSvc, formatter := WireUpBrownfieldCloudAccount(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	_, err := cloudAccountSvc.DiscoverVPCs(c.String("id"))
+	cloudAccount, err := cloudAccountSvc.DiscoverVPCs(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't discover VPCs", err)
 	}
+
+	checkCloudAccountLastDiscoveredStatus(c, cloudAccount)
 
 	vpcsImportCandidates, err := cloudAccountSvc.ListVPCs(c.String("id"))
 	if err != nil {
@@ -99,10 +125,12 @@ func BrownfieldCloudAccountFloatingIPsDiscover(c *cli.Context) error {
 	cloudAccountSvc, formatter := WireUpBrownfieldCloudAccount(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	_, err := cloudAccountSvc.DiscoverFloatingIPs(c.String("id"))
+	cloudAccount, err := cloudAccountSvc.DiscoverFloatingIPs(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't discover floating IPs", err)
 	}
+
+	checkCloudAccountLastDiscoveredStatus(c, cloudAccount)
 
 	floatingIPsImportCandidates, err := cloudAccountSvc.ListFloatingIPs(c.String("id"))
 	if err != nil {
@@ -121,10 +149,12 @@ func BrownfieldCloudAccountVolumesDiscover(c *cli.Context) error {
 	cloudAccountSvc, formatter := WireUpBrownfieldCloudAccount(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	_, err := cloudAccountSvc.DiscoverVolumes(c.String("id"))
+	cloudAccount, err := cloudAccountSvc.DiscoverVolumes(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't discover volumes", err)
 	}
+
+	checkCloudAccountLastDiscoveredStatus(c, cloudAccount)
 
 	volumesImportCandidates, err := cloudAccountSvc.ListVolumes(c.String("id"))
 	if err != nil {
