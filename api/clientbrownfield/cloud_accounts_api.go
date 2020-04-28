@@ -64,9 +64,7 @@ func (bcas *BrownfieldCloudAccountService) GetBrownfieldCloudAccount(cloudAccoun
 	return cloudAccount, nil
 }
 
-
-
-// DiscoverServers discovers Brownfield servers
+// DiscoverServers discovers brownfield servers
 func (bcas *BrownfieldCloudAccountService) DiscoverServers(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("DiscoverServers")
 
@@ -88,7 +86,7 @@ func (bcas *BrownfieldCloudAccountService) DiscoverServers(cloudAccountID string
 	return cloudAccount, nil
 }
 
-// ListServers list Brownfield servers import candidates
+// ListServers lists brownfield servers import candidates
 func (bcas *BrownfieldCloudAccountService) ListServers(cloudAccountID string) (serversImportCandidates []*types.ServerImportCandidate, err error) {
 	log.Debug("ListServers")
 
@@ -109,7 +107,7 @@ func (bcas *BrownfieldCloudAccountService) ListServers(cloudAccountID string) (s
 	return serversImportCandidates, nil
 }
 
-// DiscoverVPCs discovers VPCs
+// DiscoverVPCs discovers brownfield VPCs
 func (bcas *BrownfieldCloudAccountService) DiscoverVPCs(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("DiscoverVPCs")
 
@@ -131,7 +129,7 @@ func (bcas *BrownfieldCloudAccountService) DiscoverVPCs(cloudAccountID string) (
 	return cloudAccount, nil
 }
 
-// ListVPCs list Brownfield VPCs import candidates
+// ListVPCs lists brownfield VPCs import candidates
 func (bcas *BrownfieldCloudAccountService) ListVPCs(cloudAccountID string) (vpcsImportCandidates []*types.VpcImportCandidate, err error) {
 	log.Debug("ListVPCs")
 
@@ -152,7 +150,7 @@ func (bcas *BrownfieldCloudAccountService) ListVPCs(cloudAccountID string) (vpcs
 	return vpcsImportCandidates, nil
 }
 
-// DiscoverFloatingIPs discovers floating IPs
+// DiscoverFloatingIPs discovers brownfield floating IPs
 func (bcas *BrownfieldCloudAccountService) DiscoverFloatingIPs(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("DiscoverFloatingIPs")
 
@@ -174,7 +172,7 @@ func (bcas *BrownfieldCloudAccountService) DiscoverFloatingIPs(cloudAccountID st
 	return cloudAccount, nil
 }
 
-// ListFloatingIPs list Brownfield floating IPs import candidates
+// ListFloatingIPs lists brownfield floating IPs import candidates
 func (bcas *BrownfieldCloudAccountService) ListFloatingIPs(cloudAccountID string) (floatingIPsImportCandidates []*types.FloatingIPImportCandidate, err error) {
 	log.Debug("ListFloatingIPs")
 
@@ -195,7 +193,7 @@ func (bcas *BrownfieldCloudAccountService) ListFloatingIPs(cloudAccountID string
 	return floatingIPsImportCandidates, nil
 }
 
-// DiscoverVolumes discovers Volumes
+// DiscoverVolumes discovers brownfield Volumes
 func (bcas *BrownfieldCloudAccountService) DiscoverVolumes(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("DiscoverVolumes")
 
@@ -217,7 +215,7 @@ func (bcas *BrownfieldCloudAccountService) DiscoverVolumes(cloudAccountID string
 	return cloudAccount, nil
 }
 
-// ListVolumes list Brownfield volumes import candidates
+// ListVolumes lists brownfield volumes import candidates
 func (bcas *BrownfieldCloudAccountService) ListVolumes(cloudAccountID string) (volumesImportCandidates []*types.VolumeImportCandidate, err error) {
 	log.Debug("ListVolumes")
 

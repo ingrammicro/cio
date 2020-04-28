@@ -24,7 +24,7 @@ func NewImportCandidateService(concertoService utils.ConcertoService) (*ImportCa
 	}, nil
 }
 
-// ImportServer imports a server import candidate
+// ImportServer imports a brownfield server import candidate
 func (ics *ImportCandidateService) ImportServer(serverID string, serverIn *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("ImportServer")
 
@@ -44,7 +44,7 @@ func (ics *ImportCandidateService) ImportServer(serverID string, serverIn *map[s
 	return server, nil
 }
 
-// ImportVPC imports a vpc import candidate
+// ImportVPC imports a brownfield vpc import candidate
 func (ics *ImportCandidateService) ImportVPC(vpcID string, vpcIn *map[string]interface{}) (vpc *types.Vpc, err error) {
 	log.Debug("ImportVPC")
 
@@ -64,7 +64,7 @@ func (ics *ImportCandidateService) ImportVPC(vpcID string, vpcIn *map[string]int
 	return vpc, nil
 }
 
-// ImportFloatingIP imports a floating ip import candidate
+// ImportFloatingIP imports a brownfield floating ip import candidate
 func (ics *ImportCandidateService) ImportFloatingIP(floatingIPID string, floatingIPIn *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
 	log.Debug("ImportFloatingIP")
 
@@ -84,7 +84,7 @@ func (ics *ImportCandidateService) ImportFloatingIP(floatingIPID string, floatin
 	return floatingIP, nil
 }
 
-// ImportVolume imports a volume import candidate
+// ImportVolume imports a brownfield volume import candidate
 func (ics *ImportCandidateService) ImportVolume(volumeID string, volumeIn *map[string]interface{}) (volume *types.Volume, err error) {
 	log.Debug("ImportVolume")
 
