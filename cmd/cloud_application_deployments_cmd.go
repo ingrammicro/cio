@@ -53,7 +53,7 @@ func CloudApplicationDeploymentShow(c *cli.Context) error {
 	svc, formatter := WireUpCloudApplicationDeployment(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	dep, err := svc.GetDeployment(c.String("id"))
+	dep, _, err := svc.GetDeployment(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive cloud application deployment data", err)
 	}
@@ -124,9 +124,34 @@ func CloudApplicationDeploymentDelete(c *cli.Context) error {
 	svc, formatter := WireUpCloudApplicationDeployment(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	err := svc.DeleteDeployment(c.String("id"))
+	deployment, err := svc.DeleteDeployment(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't delete cloud application deployment", err)
+	}
+	deploymentID := deployment.ID
+	deploymentName := deployment.Name
+
+	log.Info(fmt.Sprintf("Deployment: %s - %s undeploying...", deploymentID, deploymentName))
+	for {
+		deployment, status, err := svc.GetDeployment(deploymentID)
+		if err != nil {
+			if status == 404 {
+				log.Info(fmt.Sprintf("Deployment: %s - %s undeployed.", deploymentID, deploymentName))
+				break
+			} else {
+				formatter.PrintFatal("Couldn't check cloud application deployment data", err)
+			}
+		}
+		log.Info("State: ", deployment.Value)
+
+		// stops if something fails while undeploying
+		if deployment.Value != "undeploying" {
+			if err = formatter.PrintItem(*deployment); err != nil {
+				formatter.PrintFatal("Couldn't print/format result", err)
+			}
+			break
+		}
+		time.Sleep(10 * time.Second)
 	}
 	return nil
 }

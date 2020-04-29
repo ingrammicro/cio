@@ -11,7 +11,6 @@ type CloudApplicationTemplate struct {
 	Inputs       []Input `json:"inputs" header:"INPUTS" show:"nolist"`
 	IsMock       bool    `json:"is_mock" header:"IS_MOCK" show:"nolist"`
 	ResourceType string  `json:"resource_type" header:"RESOURCE_TYPE" show:"nolist"`
-	//LabelableFields
 }
 
 type Input struct {
@@ -33,7 +32,7 @@ type CloudApplicationDeployment struct {
 }
 
 // tosca task
-type DeploymentTask struct {
+type CloudApplicationDeploymentTask struct {
 	ID           string `json:"id" header:"ID"`
 	Type         string `json:"type" header:"TYPE"`
 	LabelName    string `json:"label_name" header:"LABEL_NAME"`

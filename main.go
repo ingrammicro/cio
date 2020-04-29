@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/ingrammicro/cio/cloudapplications"
 	"os"
 	"sort"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/ingrammicro/cio/brownfield"
 	"github.com/ingrammicro/cio/clientbrownfield"
 	"github.com/ingrammicro/cio/cloud"
+	"github.com/ingrammicro/cio/cloudapplications"
 	"github.com/ingrammicro/cio/cloudspecificextensions"
 	"github.com/ingrammicro/cio/cmdpolling"
 	"github.com/ingrammicro/cio/converge"

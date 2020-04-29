@@ -53,10 +53,30 @@ func (cads *CloudApplicationDeploymentService) ListDeployments() (deployments []
 }
 
 // GetDeployment returns a cloud application deployment by its ID
-func (cads *CloudApplicationDeploymentService) GetDeployment(deploymentID string) (deployment *types.CloudApplicationDeployment, err error) {
+func (cads *CloudApplicationDeploymentService) GetDeployment(deploymentID string) (deployment *types.CloudApplicationDeployment, status int, err error) {
 	log.Debug("GetDeployment")
 
 	data, status, err := cads.concertoService.Get(fmt.Sprintf("/plugins/tosca/deployments/%s", deploymentID))
+	if err != nil {
+		return nil, status, err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return nil, status, err
+	}
+
+	if err = json.Unmarshal(data, &deployment); err != nil {
+		return nil, status, err
+	}
+
+	return deployment, status, nil
+}
+
+// DeleteDeployment deletes a cloud application deployment by its ID
+func (cads *CloudApplicationDeploymentService) DeleteDeployment(deploymentID string) (deployment *types.CloudApplicationDeployment, err error) {
+	log.Debug("DeleteDeployment")
+
+	data, status, err := cads.concertoService.Delete(fmt.Sprintf("/plugins/tosca/deployments/%s", deploymentID))
 	if err != nil {
 		return nil, err
 	}
@@ -72,24 +92,8 @@ func (cads *CloudApplicationDeploymentService) GetDeployment(deploymentID string
 	return deployment, nil
 }
 
-// DeleteDeployment deletes a cloud application deployment by its ID
-func (cads *CloudApplicationDeploymentService) DeleteDeployment(deploymentID string) (err error) {
-	log.Debug("DeleteDeployment")
-
-	data, status, err := cads.concertoService.Delete(fmt.Sprintf("/plugins/tosca/deployments/%s", deploymentID))
-	if err != nil {
-		return err
-	}
-
-	if err = utils.CheckStandardStatus(status, data); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // CreateDeploymentTask creates a cloud application deployment task by a given CAT ID
-func (cads *CloudApplicationDeploymentService) CreateDeploymentTask(catID string, deploymentIn *map[string]interface{}) (deploymentTask *types.DeploymentTask, err error) {
+func (cads *CloudApplicationDeploymentService) CreateDeploymentTask(catID string, deploymentIn *map[string]interface{}) (deploymentTask *types.CloudApplicationDeploymentTask, err error) {
 	log.Debug("CreateDeploymentTask")
 
 	data, status, err := cads.concertoService.Post(fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks", catID), deploymentIn)
@@ -109,7 +113,7 @@ func (cads *CloudApplicationDeploymentService) CreateDeploymentTask(catID string
 }
 
 // GetDeploymentTask gets a cloud application deployment task by its ID and given CAT ID
-func (cads *CloudApplicationDeploymentService) GetDeploymentTask(catID string, deploymentTaskID string) (deploymentTask *types.DeploymentTask, err error) {
+func (cads *CloudApplicationDeploymentService) GetDeploymentTask(catID string, deploymentTaskID string) (deploymentTask *types.CloudApplicationDeploymentTask, err error) {
 	log.Debug("GetDeploymentTask")
 
 	data, status, err := cads.concertoService.Get(fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks/%s", catID, deploymentTaskID))
