@@ -65,10 +65,10 @@ func (csets *CloudSpecificExtensionTemplateService) GetTemplate(templateID strin
 }
 
 // CreateTemplate creates a cloud specific extension template
-func (csets *CloudSpecificExtensionTemplateService) CreateTemplate(templateVector *map[string]interface{}) (template *types.CloudSpecificExtensionTemplate, err error) {
+func (csets *CloudSpecificExtensionTemplateService) CreateTemplate(templateParams *map[string]interface{}) (template *types.CloudSpecificExtensionTemplate, err error) {
 	log.Debug("CreateTemplate")
 
-	data, status, err := csets.concertoService.Post("/cse/templates", templateVector)
+	data, status, err := csets.concertoService.Post("/cse/templates", templateParams)
 	if err != nil {
 		return nil, err
 	}
@@ -85,10 +85,10 @@ func (csets *CloudSpecificExtensionTemplateService) CreateTemplate(templateVecto
 }
 
 // UpdateTemplate updates a cloud specific extension template by its ID
-func (csets *CloudSpecificExtensionTemplateService) UpdateTemplate(templateVector *map[string]interface{}, templateID string) (template *types.CloudSpecificExtensionTemplate, err error) {
+func (csets *CloudSpecificExtensionTemplateService) UpdateTemplate(templateParams *map[string]interface{}, templateID string) (template *types.CloudSpecificExtensionTemplate, err error) {
 	log.Debug("UpdateTemplate")
 
-	data, status, err := csets.concertoService.Put(fmt.Sprintf("/cse/templates/%s", templateID), templateVector)
+	data, status, err := csets.concertoService.Put(fmt.Sprintf("/cse/templates/%s", templateID), templateParams)
 	if err != nil {
 		return nil, err
 	}

@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/ingrammicro/cio/clientbrownfield"
-	"github.com/ingrammicro/cio/cloudspecificextensions"
 	"os"
 	"sort"
 
@@ -11,7 +9,9 @@ import (
 	"github.com/ingrammicro/cio/blueprint"
 	"github.com/ingrammicro/cio/bootstrapping"
 	"github.com/ingrammicro/cio/brownfield"
+	"github.com/ingrammicro/cio/clientbrownfield"
 	"github.com/ingrammicro/cio/cloud"
+	"github.com/ingrammicro/cio/cloudspecificextensions"
 	"github.com/ingrammicro/cio/cmdpolling"
 	"github.com/ingrammicro/cio/converge"
 	"github.com/ingrammicro/cio/dispatcher"

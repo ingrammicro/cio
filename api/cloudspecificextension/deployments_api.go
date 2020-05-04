@@ -65,10 +65,10 @@ func (csets *CloudSpecificExtensionDeploymentService) GetDeployment(deploymentID
 }
 
 // CreateDeployment creates a cloud specific extension deployment
-func (csets *CloudSpecificExtensionDeploymentService) CreateDeployment(templateID string, deploymentVector *map[string]interface{}) (deployment *types.CloudSpecificExtensionDeployment, err error) {
+func (csets *CloudSpecificExtensionDeploymentService) CreateDeployment(templateID string, deploymentParams *map[string]interface{}) (deployment *types.CloudSpecificExtensionDeployment, err error) {
 	log.Debug("CreateDeployment")
 
-	data, status, err := csets.concertoService.Post(fmt.Sprintf("/cse/templates/%s/deployments", templateID), deploymentVector)
+	data, status, err := csets.concertoService.Post(fmt.Sprintf("/cse/templates/%s/deployments", templateID), deploymentParams)
 	if err != nil {
 		return nil, err
 	}
@@ -85,10 +85,10 @@ func (csets *CloudSpecificExtensionDeploymentService) CreateDeployment(templateI
 }
 
 // UpdateDeployment updates a cloud specific extension deployment by its ID
-func (csets *CloudSpecificExtensionDeploymentService) UpdateDeployment(deploymentVector *map[string]interface{}, deploymentID string) (deployment *types.CloudSpecificExtensionDeployment, err error) {
+func (csets *CloudSpecificExtensionDeploymentService) UpdateDeployment(deploymentParams *map[string]interface{}, deploymentID string) (deployment *types.CloudSpecificExtensionDeployment, err error) {
 	log.Debug("UpdateDeployment")
 
-	data, status, err := csets.concertoService.Put(fmt.Sprintf("/cse/deployments/%s", deploymentID), deploymentVector)
+	data, status, err := csets.concertoService.Put(fmt.Sprintf("/cse/deployments/%s", deploymentID), deploymentParams)
 	if err != nil {
 		return nil, err
 	}
@@ -105,17 +105,21 @@ func (csets *CloudSpecificExtensionDeploymentService) UpdateDeployment(deploymen
 }
 
 // DeleteDeployment deletes a cloud specific extension deployment by its ID
-func (csets *CloudSpecificExtensionDeploymentService) DeleteDeployment(deploymentID string) (err error) {
+func (csets *CloudSpecificExtensionDeploymentService) DeleteDeployment(deploymentID string) (deployment *types.CloudSpecificExtensionDeployment, err error) {
 	log.Debug("DeleteDeployment")
 
 	data, status, err := csets.concertoService.Delete(fmt.Sprintf("/cse/deployments/%s", deploymentID))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if err = utils.CheckStandardStatus(status, data); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	if err = json.Unmarshal(data, &deployment); err != nil {
+		return nil, err
+	}
+
+	return deployment, nil
 }

@@ -158,9 +158,16 @@ func CloudSpecificExtensionDeploymentDelete(c *cli.Context) error {
 	svc, formatter := WireUpCloudSpecificExtensionDeployment(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	err := svc.DeleteDeployment(c.String("id"))
+	cseDeployment, err := svc.DeleteDeployment(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't delete CSE deployment", err)
 	}
+
+	_, labelNamesByID := LabelLoadsMapping(c)
+	cseDeployment.FillInLabelNames(labelNamesByID)
+	if err = formatter.PrintItem(*cseDeployment); err != nil {
+		formatter.PrintFatal("Couldn't print/format result", err)
+	}
+
 	return nil
 }
