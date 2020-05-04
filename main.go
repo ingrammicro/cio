@@ -77,7 +77,7 @@ var clientCommands = []cli.Command{
 	{
 		Name:        "cloud-applications",
 		ShortName:   "ca",
-		Usage:       "Manages cloud application templates -CATs- and deployments, allowing users to import and export of infrastructures using TOSCA (Topology and Orchestration Specification for Cloud Applications)",
+		Usage:       "Manages cloud application templates -CATs- and deployments",
 		Subcommands: append(cloudapplications.SubCommands()),
 	},
 	{
