@@ -133,7 +133,7 @@ func CloudSpecificExtensionTemplateUpdate(c *cli.Context) error {
 		"name": c.String("name"),
 	}
 
-	cseTemplate, err := svc.UpdateTemplate(&cseTemplateIn, c.String("id"))
+	cseTemplate, err := svc.UpdateTemplate(c.String("id"), &cseTemplateIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update CSE template", err)
 	}

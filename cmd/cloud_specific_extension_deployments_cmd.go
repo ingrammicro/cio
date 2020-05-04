@@ -139,7 +139,7 @@ func CloudSpecificExtensionDeploymentUpdate(c *cli.Context) error {
 		"name": c.String("name"),
 	}
 
-	cseDeployment, err := svc.UpdateDeployment(&cseDeploymentIn, c.String("id"))
+	cseDeployment, err := svc.UpdateDeployment(c.String("id"), &cseDeploymentIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update CSE deployment", err)
 	}

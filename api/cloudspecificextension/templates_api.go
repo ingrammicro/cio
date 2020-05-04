@@ -85,7 +85,7 @@ func (csets *CloudSpecificExtensionTemplateService) CreateTemplate(templateParam
 }
 
 // UpdateTemplate updates a cloud specific extension template by its ID
-func (csets *CloudSpecificExtensionTemplateService) UpdateTemplate(templateParams *map[string]interface{}, templateID string) (template *types.CloudSpecificExtensionTemplate, err error) {
+func (csets *CloudSpecificExtensionTemplateService) UpdateTemplate(templateID string, templateParams *map[string]interface{}) (template *types.CloudSpecificExtensionTemplate, err error) {
 	log.Debug("UpdateTemplate")
 
 	data, status, err := csets.concertoService.Put(fmt.Sprintf("/cse/templates/%s", templateID), templateParams)
