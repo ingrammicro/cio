@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/ingrammicro/cio/clientbrownfield"
 	"os"
 	"sort"
 
@@ -10,7 +9,9 @@ import (
 	"github.com/ingrammicro/cio/blueprint"
 	"github.com/ingrammicro/cio/bootstrapping"
 	"github.com/ingrammicro/cio/brownfield"
+	"github.com/ingrammicro/cio/clientbrownfield"
 	"github.com/ingrammicro/cio/cloud"
+	"github.com/ingrammicro/cio/cloudspecificextensions"
 	"github.com/ingrammicro/cio/cmdpolling"
 	"github.com/ingrammicro/cio/converge"
 	"github.com/ingrammicro/cio/dispatcher"
@@ -77,6 +78,12 @@ var clientCommands = []cli.Command{
 		ShortName:   "clo",
 		Usage:       "Manages cloud related commands for server arrays, servers, generic images, ssh profiles, cloud providers and server plans",
 		Subcommands: append(cloud.SubCommands()),
+	},
+	{
+		Name:        "cloud-specific-extensions",
+		ShortName:   "cse",
+		Usage:       "Manages cloud specific extensions -CSEs- templates and deployments",
+		Subcommands: append(cloudspecificextensions.SubCommands()),
 	},
 	{
 		Name:        "events",
