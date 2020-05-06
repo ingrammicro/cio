@@ -10,6 +10,11 @@ import (
 	"time"
 )
 
+const (
+	DefaultTimeLapseDeploymentStatusCheck = 30
+	DefaultTimeLapseDeletionStatusCheck   = 30
+)
+
 // WireUpCloudApplicationDeployment prepares common resources to send request to Concerto API
 func WireUpCloudApplicationDeployment(c *cli.Context) (ds *cloudapplication.CloudApplicationDeploymentService, f format.Formatter) {
 
@@ -91,6 +96,12 @@ func CloudApplicationDeploymentDeploy(c *cli.Context) error {
 		deploymentIn["inputs"] = (*params)["inputs"]
 	}
 
+	timeLapseDeploymentStatusCheck := c.Int64("time")
+	if !(timeLapseDeploymentStatusCheck > 0) {
+		timeLapseDeploymentStatusCheck = DefaultTimeLapseDeploymentStatusCheck
+	}
+	log.Debug("Time lapse -seconds- for deployment status check:", timeLapseDeploymentStatusCheck)
+
 	deploymentTask, err := svc.CreateDeploymentTask(c.String("id"), &deploymentIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't create cloud application deployment data", err)
@@ -112,9 +123,8 @@ func CloudApplicationDeploymentDeploy(c *cli.Context) error {
 			}
 			break
 		}
-		time.Sleep(5 * time.Second)
+		time.Sleep(time.Duration(timeLapseDeploymentStatusCheck) * time.Second)
 	}
-
 	return nil
 }
 
@@ -124,6 +134,12 @@ func CloudApplicationDeploymentDelete(c *cli.Context) error {
 	svc, formatter := WireUpCloudApplicationDeployment(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
+	timeLapseDeletionStatusCheck := c.Int64("time")
+	if !(timeLapseDeletionStatusCheck > 0) {
+		timeLapseDeletionStatusCheck = DefaultTimeLapseDeletionStatusCheck
+	}
+	log.Debug("Time lapse -seconds- for deletion status check:", timeLapseDeletionStatusCheck)
+
 	deployment, err := svc.DeleteDeployment(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't delete cloud application deployment", err)
@@ -151,7 +167,7 @@ func CloudApplicationDeploymentDelete(c *cli.Context) error {
 			}
 			break
 		}
-		time.Sleep(10 * time.Second)
+		time.Sleep(time.Duration(timeLapseDeletionStatusCheck) * time.Second)
 	}
 	return nil
 }

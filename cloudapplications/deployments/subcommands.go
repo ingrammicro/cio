@@ -45,6 +45,11 @@ func SubCommands() []cli.Command {
 					Name:  "inputs-from-file",
 					Usage: "The inputs used to configure the cloud application deployment, from file or STDIN, as a json formatted parameter. \n\tFrom file: --inputs-from-file attrs.json \n\tFrom STDIN: --inputs-from-file -",
 				},
+				cli.IntFlag{
+					Name:  "time, t",
+					Usage: "Time lapse -seconds- for deployment status check",
+					Value: cmd.DefaultTimeLapseDeploymentStatusCheck,
+				},
 			},
 		},
 		{
@@ -55,6 +60,11 @@ func SubCommands() []cli.Command {
 				cli.StringFlag{
 					Name:  "id",
 					Usage: "Deployment Id",
+				},
+				cli.IntFlag{
+					Name:  "time, t",
+					Usage: "Time lapse -seconds- for deletion status check",
+					Value: cmd.DefaultTimeLapseDeletionStatusCheck,
 				},
 			},
 		},
