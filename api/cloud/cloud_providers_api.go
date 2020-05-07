@@ -63,3 +63,23 @@ func (dm *CloudProviderService) GetServerStoragePlanList(providerID string) (sto
 
 	return storagePlans, nil
 }
+
+// ListLoadBalancerPlans returns the list of load balancer plans as an array of LoadBalancerPlan
+func (dm *CloudProviderService) ListLoadBalancerPlans(providerID string) (loadBalancerPlans []*types.LoadBalancerPlan, err error) {
+	log.Debug("ListLoadBalancerPlans")
+
+	data, status, err := dm.concertoService.Get(fmt.Sprintf("/cloud/cloud_providers/%s/load_balancer_plans", providerID))
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(data, &loadBalancerPlans); err != nil {
+		return nil, err
+	}
+
+	return loadBalancerPlans, nil
+}
