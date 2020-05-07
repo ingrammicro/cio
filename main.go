@@ -11,6 +11,7 @@ import (
 	"github.com/ingrammicro/cio/brownfield"
 	"github.com/ingrammicro/cio/clientbrownfield"
 	"github.com/ingrammicro/cio/cloud"
+	"github.com/ingrammicro/cio/cloudapplications"
 	"github.com/ingrammicro/cio/cloudspecificextensions"
 	"github.com/ingrammicro/cio/cmdpolling"
 	"github.com/ingrammicro/cio/converge"
@@ -72,6 +73,12 @@ var clientCommands = []cli.Command{
 		ShortName:   "bf",
 		Usage:       "Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs and volumes from different cloud accounts into the system.",
 		Subcommands: append(clientbrownfield.SubCommands()),
+	},
+	{
+		Name:        "cloud-applications",
+		ShortName:   "ca",
+		Usage:       "Manages cloud application templates -CATs- and deployments",
+		Subcommands: append(cloudapplications.SubCommands()),
 	},
 	{
 		Name:        "cloud",
