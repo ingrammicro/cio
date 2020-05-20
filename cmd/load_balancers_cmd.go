@@ -150,7 +150,6 @@ func LoadBalancerDelete(c *cli.Context) error {
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
-	// @TODO wait while decommissioning?
 	return nil
 }
 

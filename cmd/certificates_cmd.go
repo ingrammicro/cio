@@ -115,6 +115,5 @@ func CertificateDelete(c *cli.Context) error {
 	if err != nil {
 		formatter.PrintFatal("Couldn't delete load balancer certificate", err)
 	}
-	// @TODO wait while decommissioning?
 	return nil
 }

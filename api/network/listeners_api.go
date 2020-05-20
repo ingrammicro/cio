@@ -106,19 +106,23 @@ func (ls *ListenerService) UpdateListener(listenerID string, listenerParams *map
 }
 
 // DeleteListener deletes a listener by its ID
-func (ls *ListenerService) DeleteListener(listenerID string) (err error) {
+func (ls *ListenerService) DeleteListener(listenerID string) (listener *types.Listener, err error) {
 	log.Debug("DeleteListener")
 
 	data, status, err := ls.concertoService.Delete(fmt.Sprintf("/network/listeners/%s", listenerID))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if err = utils.CheckStandardStatus(status, data); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	if err = json.Unmarshal(data, &listener); err != nil {
+		return nil, err
+	}
+
+	return listener, nil
 }
 
 // RetryListener retries a listener by its ID

@@ -136,7 +136,6 @@ func TargetGroupDelete(c *cli.Context) error {
 	if err = formatter.PrintItem(*targetGroup); err != nil {
 		formatter.PrintFatal("Couldn't print/format result", err)
 	}
-	// @TODO wait while decommissioning?
 	return nil
 }
 

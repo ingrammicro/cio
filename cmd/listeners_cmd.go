@@ -111,11 +111,14 @@ func ListenerDelete(c *cli.Context) error {
 	svc, formatter := WireUpListener(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	err := svc.DeleteListener(c.String("id"))
+	listener, err := svc.DeleteListener(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't delete load balancer listener", err)
 	}
-	// @TODO wait while decommissioning?
+
+	if err = formatter.PrintItem(*listener); err != nil {
+		formatter.PrintFatal("Couldn't print/format result", err)
+	}
 	return nil
 }
 
