@@ -65,10 +65,10 @@ func (cats *CloudApplicationTemplateService) GetTemplate(templateID string) (tem
 }
 
 // CreateTemplate creates a cloud application template
-func (cats *CloudApplicationTemplateService) CreateTemplate(catVector *map[string]interface{}) (template *types.CloudApplicationTemplate, err error) {
+func (cats *CloudApplicationTemplateService) CreateTemplate(catParams *map[string]interface{}) (template *types.CloudApplicationTemplate, err error) {
 	log.Debug("CreateTemplate")
 
-	data, status, err := cats.concertoService.Post("/plugins/tosca/cats", catVector)
+	data, status, err := cats.concertoService.Post("/plugins/tosca/cats", catParams)
 	if err != nil {
 		return nil, err
 	}

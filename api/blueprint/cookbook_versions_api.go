@@ -65,10 +65,10 @@ func (cv *CookbookVersionService) GetCookbookVersion(ID string) (cookbookVersion
 }
 
 // CreateCookbookVersion creates a new cookbook version
-func (cv *CookbookVersionService) CreateCookbookVersion(cvVector *map[string]interface{}) (cookbookVersion *types.CookbookVersion, err error) {
+func (cv *CookbookVersionService) CreateCookbookVersion(cookbookVersionParams *map[string]interface{}) (cookbookVersion *types.CookbookVersion, err error) {
 	log.Debug("CreateCookbookVersion")
 
-	data, status, err := cv.concertoService.Post("/blueprint/cookbook_versions", cvVector)
+	data, status, err := cv.concertoService.Post("/blueprint/cookbook_versions", cookbookVersionParams)
 	if err != nil {
 		return nil, err
 	}
@@ -101,10 +101,10 @@ func (cv *CookbookVersionService) UploadCookbookVersion(sourceFilePath string, t
 }
 
 // ProcessCookbookVersion process a cookbook version by its ID
-func (cv *CookbookVersionService) ProcessCookbookVersion(cvVector *map[string]interface{}, ID string) (cookbookVersion *types.CookbookVersion, err error) {
+func (cv *CookbookVersionService) ProcessCookbookVersion(cookbookVersionParams *map[string]interface{}, ID string) (cookbookVersion *types.CookbookVersion, err error) {
 	log.Debug("ProcessCookbookVersion")
 
-	data, status, err := cv.concertoService.Post(fmt.Sprintf("/blueprint/cookbook_versions/%s/process", ID), cvVector)
+	data, status, err := cv.concertoService.Post(fmt.Sprintf("/blueprint/cookbook_versions/%s/process", ID), cookbookVersionParams)
 	if err != nil {
 		return nil, err
 	}

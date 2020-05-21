@@ -66,10 +66,10 @@ func (dm *SubnetService) GetSubnet(ID string) (subnet *types.Subnet, err error) 
 }
 
 // CreateSubnet creates a Subnet
-func (dm *SubnetService) CreateSubnet(subnetVector *map[string]interface{}, vpcID string) (subnet *types.Subnet, err error) {
+func (dm *SubnetService) CreateSubnet(subnetParams *map[string]interface{}, vpcID string) (subnet *types.Subnet, err error) {
 	log.Debug("CreateSubnet")
 
-	data, status, err := dm.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/subnets", vpcID), subnetVector)
+	data, status, err := dm.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/subnets", vpcID), subnetParams)
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +86,10 @@ func (dm *SubnetService) CreateSubnet(subnetVector *map[string]interface{}, vpcI
 }
 
 // UpdateSubnet updates a Subnet by its ID
-func (dm *SubnetService) UpdateSubnet(subnetVector *map[string]interface{}, ID string) (subnet *types.Subnet, err error) {
+func (dm *SubnetService) UpdateSubnet(subnetParams *map[string]interface{}, ID string) (subnet *types.Subnet, err error) {
 	log.Debug("UpdateSubnet")
 
-	data, status, err := dm.concertoService.Put(fmt.Sprintf("/network/subnets/%s", ID), subnetVector)
+	data, status, err := dm.concertoService.Put(fmt.Sprintf("/network/subnets/%s", ID), subnetParams)
 	if err != nil {
 		return nil, err
 	}

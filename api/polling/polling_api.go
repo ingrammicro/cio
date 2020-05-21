@@ -58,10 +58,10 @@ func (p *PollingService) GetNextCommand() (command *types.PollingCommand, status
 }
 
 // UpdateCommand updates a command by its ID
-func (p *PollingService) UpdateCommand(pollingCommandVector *map[string]interface{}, ID string) (command *types.PollingCommand, status int, err error) {
+func (p *PollingService) UpdateCommand(pollingCommandParams *map[string]interface{}, ID string) (command *types.PollingCommand, status int, err error) {
 	log.Debug("UpdateCommand")
 
-	data, status, err := p.concertoService.Put(fmt.Sprintf("/command_polling/commands/%s", ID), pollingCommandVector)
+	data, status, err := p.concertoService.Put(fmt.Sprintf("/command_polling/commands/%s", ID), pollingCommandParams)
 	if err != nil {
 		return nil, status, err
 	}
@@ -74,10 +74,10 @@ func (p *PollingService) UpdateCommand(pollingCommandVector *map[string]interfac
 }
 
 // ReportBootstrapLog reports a command result
-func (p *PollingService) ReportBootstrapLog(PollingContinuousReportVector *map[string]interface{}) (command *types.PollingContinuousReport, status int, err error) {
+func (p *PollingService) ReportBootstrapLog(pollingContinuousReportParams *map[string]interface{}) (command *types.PollingContinuousReport, status int, err error) {
 	log.Debug("ReportBootstrapLog")
 
-	data, status, err := p.concertoService.Post("/command_polling/bootstrap_logs", PollingContinuousReportVector)
+	data, status, err := p.concertoService.Post("/command_polling/bootstrap_logs", pollingContinuousReportParams)
 	if err != nil {
 		return nil, status, err
 	}

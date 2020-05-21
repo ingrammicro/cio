@@ -71,10 +71,10 @@ func (dm *VolumeService) GetVolume(volumeID string) (volume *types.Volume, err e
 }
 
 // CreateVolume creates a Volume
-func (dm *VolumeService) CreateVolume(volumeVector *map[string]interface{}) (volume *types.Volume, err error) {
+func (dm *VolumeService) CreateVolume(volumeParams *map[string]interface{}) (volume *types.Volume, err error) {
 	log.Debug("CreateVolume")
 
-	data, status, err := dm.concertoService.Post("/storage/volumes/", volumeVector)
+	data, status, err := dm.concertoService.Post("/storage/volumes/", volumeParams)
 	if err != nil {
 		return nil, err
 	}
@@ -91,10 +91,10 @@ func (dm *VolumeService) CreateVolume(volumeVector *map[string]interface{}) (vol
 }
 
 // UpdateVolume updates a Volume by its ID
-func (dm *VolumeService) UpdateVolume(volumeVector *map[string]interface{}, volumeID string) (volume *types.Volume, err error) {
+func (dm *VolumeService) UpdateVolume(volumeParams *map[string]interface{}, volumeID string) (volume *types.Volume, err error) {
 	log.Debug("UpdateVolume")
 
-	data, status, err := dm.concertoService.Put(fmt.Sprintf("/storage/volumes/%s", volumeID), volumeVector)
+	data, status, err := dm.concertoService.Put(fmt.Sprintf("/storage/volumes/%s", volumeID), volumeParams)
 	if err != nil {
 		return nil, err
 	}
@@ -111,10 +111,10 @@ func (dm *VolumeService) UpdateVolume(volumeVector *map[string]interface{}, volu
 }
 
 // AttachVolume attaches a Volume by its ID
-func (dm *VolumeService) AttachVolume(volumeVector *map[string]interface{}, volumeID string) (server *types.Server, err error) {
+func (dm *VolumeService) AttachVolume(volumeParams *map[string]interface{}, volumeID string) (server *types.Server, err error) {
 	log.Debug("AttachVolume")
 
-	data, status, err := dm.concertoService.Post(fmt.Sprintf("/storage/volumes/%s/attached_server", volumeID), volumeVector)
+	data, status, err := dm.concertoService.Post(fmt.Sprintf("/storage/volumes/%s/attached_server", volumeID), volumeParams)
 	if err != nil {
 		return nil, err
 	}

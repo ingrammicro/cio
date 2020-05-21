@@ -45,10 +45,10 @@ func (dm *VPNService) GetVPN(vpcID string) (vpn *types.Vpn, err error) {
 }
 
 // CreateVPN creates a VPN
-func (dm *VPNService) CreateVPN(vpnVector *map[string]interface{}, vpcID string) (vpn *types.Vpn, err error) {
+func (dm *VPNService) CreateVPN(vpnParams *map[string]interface{}, vpcID string) (vpn *types.Vpn, err error) {
 	log.Debug("CreateVPN")
 
-	data, status, err := dm.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID), vpnVector)
+	data, status, err := dm.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID), vpnParams)
 	if err != nil {
 		return nil, err
 	}

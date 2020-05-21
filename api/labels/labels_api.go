@@ -54,10 +54,10 @@ func (lbl *LabelService) GetLabelList() (labels []*types.Label, err error) {
 }
 
 // CreateLabel creates a label
-func (lbl *LabelService) CreateLabel(labelVector *map[string]interface{}) (label *types.Label, err error) {
+func (lbl *LabelService) CreateLabel(labelParams *map[string]interface{}) (label *types.Label, err error) {
 	log.Debug("CreateLabel")
 
-	data, status, err := lbl.concertoService.Post("/labels/", labelVector)
+	data, status, err := lbl.concertoService.Post("/labels/", labelParams)
 	if err != nil {
 		return nil, err
 	}
@@ -74,10 +74,10 @@ func (lbl *LabelService) CreateLabel(labelVector *map[string]interface{}) (label
 }
 
 // AddLabel assigns a single label from a single labelable resource
-func (lbl *LabelService) AddLabel(labelVector *map[string]interface{}, labelID string) (labeledResources []*types.LabeledResource, err error) {
+func (lbl *LabelService) AddLabel(labelParams *map[string]interface{}, labelID string) (labeledResources []*types.LabeledResource, err error) {
 	log.Debug("AddLabel")
 
-	data, status, err := lbl.concertoService.Post(fmt.Sprintf("/labels/%s/resources", labelID), labelVector)
+	data, status, err := lbl.concertoService.Post(fmt.Sprintf("/labels/%s/resources", labelID), labelParams)
 	if err != nil {
 		return nil, err
 	}

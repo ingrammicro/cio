@@ -71,10 +71,10 @@ func (dm *FloatingIPService) GetFloatingIP(ID string) (floatingIP *types.Floatin
 }
 
 // CreateFloatingIP creates a FloatingIP
-func (dm *FloatingIPService) CreateFloatingIP(floatingIPVector *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
+func (dm *FloatingIPService) CreateFloatingIP(floatingIPParams *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
 	log.Debug("CreateFloatingIP")
 
-	data, status, err := dm.concertoService.Post("/network/floating_ips/", floatingIPVector)
+	data, status, err := dm.concertoService.Post("/network/floating_ips/", floatingIPParams)
 	if err != nil {
 		return nil, err
 	}
@@ -91,10 +91,10 @@ func (dm *FloatingIPService) CreateFloatingIP(floatingIPVector *map[string]inter
 }
 
 // UpdateFloatingIP updates a FloatingIP by its ID
-func (dm *FloatingIPService) UpdateFloatingIP(floatingIPVector *map[string]interface{}, ID string) (floatingIP *types.FloatingIP, err error) {
+func (dm *FloatingIPService) UpdateFloatingIP(floatingIPParams *map[string]interface{}, ID string) (floatingIP *types.FloatingIP, err error) {
 	log.Debug("UpdateFloatingIP")
 
-	data, status, err := dm.concertoService.Put(fmt.Sprintf("/network/floating_ips/%s", ID), floatingIPVector)
+	data, status, err := dm.concertoService.Put(fmt.Sprintf("/network/floating_ips/%s", ID), floatingIPParams)
 	if err != nil {
 		return nil, err
 	}
@@ -111,10 +111,10 @@ func (dm *FloatingIPService) UpdateFloatingIP(floatingIPVector *map[string]inter
 }
 
 // AttachFloatingIP attaches a FloatingIP by its ID
-func (dm *FloatingIPService) AttachFloatingIP(floatingIPVector *map[string]interface{}, ID string) (server *types.Server, err error) {
+func (dm *FloatingIPService) AttachFloatingIP(floatingIPParams *map[string]interface{}, ID string) (server *types.Server, err error) {
 	log.Debug("AttachFloatingIP")
 
-	data, status, err := dm.concertoService.Post(fmt.Sprintf("/network/floating_ips/%s/attached_server", ID), floatingIPVector)
+	data, status, err := dm.concertoService.Post(fmt.Sprintf("/network/floating_ips/%s/attached_server", ID), floatingIPParams)
 	if err != nil {
 		return nil, err
 	}
