@@ -28,3 +28,11 @@ func TestGetServerStoragePlanList(t *testing.T) {
 	GetServerStoragePlanListFailStatusMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
 	GetServerStoragePlanListFailJSONMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
 }
+
+func TestListLoadBalancerPlans(t *testing.T) {
+	loadBalancerPlansIn := testdata.GetLoadBalancerPlanData()
+	ListLoadBalancerPlansMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
+	ListLoadBalancerPlansFailErrMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
+	ListLoadBalancerPlansFailStatusMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
+	ListLoadBalancerPlansFailJSONMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
+}

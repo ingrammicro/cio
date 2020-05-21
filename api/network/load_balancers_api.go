@@ -69,7 +69,7 @@ func (lbs *LoadBalancerService) GetLoadBalancer(loadBalancerID string) (loadBala
 func (lbs *LoadBalancerService) CreateLoadBalancer(loadBalancerParams *map[string]interface{}) (loadBalancer *types.LoadBalancer, err error) {
 	log.Debug("CreateLoadBalancer")
 
-	data, status, err := lbs.concertoService.Post("/network/load_balancers/", loadBalancerParams)
+	data, status, err := lbs.concertoService.Post("/network/load_balancers", loadBalancerParams)
 	if err != nil {
 		return nil, err
 	}
