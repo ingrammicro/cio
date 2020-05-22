@@ -14,12 +14,12 @@ func TestNewServerServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetServerList(t *testing.T) {
+func TestListServers(t *testing.T) {
 	serversIn := testdata.GetServerData()
-	GetServerListMocked(t, serversIn)
-	GetServerListFailErrMocked(t, serversIn)
-	GetServerListFailStatusMocked(t, serversIn)
-	GetServerListFailJSONMocked(t, serversIn)
+	ListServersMocked(t, serversIn)
+	ListServersFailErrMocked(t, serversIn)
+	ListServersFailStatusMocked(t, serversIn)
+	ListServersFailJSONMocked(t, serversIn)
 }
 
 func TestGetServer(t *testing.T) {
@@ -102,49 +102,49 @@ func TestDeleteServer(t *testing.T) {
 	}
 }
 
-func TestGetServerFloatingIPList(t *testing.T) {
+func TestListServerFloatingIPs(t *testing.T) {
 	serversIn := testdata.GetServerData()
 	floatingIPsIn := testdata.GetFloatingIPData()
 	for _, serverIn := range serversIn {
-		GetServerFloatingIPListMocked(t, floatingIPsIn, serverIn.ID)
-		GetServerFloatingIPListFailErrMocked(t, floatingIPsIn, serverIn.ID)
-		GetServerFloatingIPListFailStatusMocked(t, floatingIPsIn, serverIn.ID)
-		GetServerFloatingIPListFailJSONMocked(t, floatingIPsIn, serverIn.ID)
+		ListServerFloatingIPsMocked(t, floatingIPsIn, serverIn.ID)
+		ListServerFloatingIPsFailErrMocked(t, floatingIPsIn, serverIn.ID)
+		ListServerFloatingIPsFailStatusMocked(t, floatingIPsIn, serverIn.ID)
+		ListServerFloatingIPsFailJSONMocked(t, floatingIPsIn, serverIn.ID)
 	}
 }
 
-func TestGetServerVolumesList(t *testing.T) {
+func TestListServerVolumes(t *testing.T) {
 	serversIn := testdata.GetServerData()
 	volumesIn := testdata.GetVolumeData()
 	for _, serverIn := range serversIn {
-		GetServerVolumesListMocked(t, volumesIn, serverIn.ID)
-		GetServerVolumesListFailErrMocked(t, volumesIn, serverIn.ID)
-		GetServerVolumesListFailStatusMocked(t, volumesIn, serverIn.ID)
-		GetServerVolumesListFailJSONMocked(t, volumesIn, serverIn.ID)
+		ListServerVolumesMocked(t, volumesIn, serverIn.ID)
+		ListServerVolumesFailErrMocked(t, volumesIn, serverIn.ID)
+		ListServerVolumesFailStatusMocked(t, volumesIn, serverIn.ID)
+		ListServerVolumesFailJSONMocked(t, volumesIn, serverIn.ID)
 	}
 }
 
 //======= Events ==========
-func TestGetEventsList(t *testing.T) {
+func TestListEvents(t *testing.T) {
 	serversIn := testdata.GetServerData()
 	eventsIn := testdata.GetEventData()
 	for _, serverIn := range serversIn {
-		GetServerEventListMocked(t, eventsIn, serverIn.ID)
-		GetServerEventListFailErrMocked(t, eventsIn, serverIn.ID)
-		GetServerEventListFailStatusMocked(t, eventsIn, serverIn.ID)
-		GetServerEventListFailJSONMocked(t, eventsIn, serverIn.ID)
+		ListEventsListMocked(t, eventsIn, serverIn.ID)
+		ListEventsListFailErrMocked(t, eventsIn, serverIn.ID)
+		ListEventsListFailStatusMocked(t, eventsIn, serverIn.ID)
+		ListEventsListFailJSONMocked(t, eventsIn, serverIn.ID)
 	}
 }
 
 //======= Operational Scripts ==========
-func TestGetOperationalScriptList(t *testing.T) {
+func TestListOperationalScripts(t *testing.T) {
 	serversIn := testdata.GetServerData()
 	scriptsIn := testdata.GetScriptCharData()
 	for _, serverIn := range serversIn {
-		GetOperationalScriptListMocked(t, scriptsIn, serverIn.ID)
-		GetOperationalScriptFailErrMocked(t, scriptsIn, serverIn.ID)
-		GetOperationalScriptFailStatusMocked(t, scriptsIn, serverIn.ID)
-		GetOperationalScriptFailJSONMocked(t, scriptsIn, serverIn.ID)
+		ListOperationalScriptsMocked(t, scriptsIn, serverIn.ID)
+		ListOperationalScriptsFailErrMocked(t, scriptsIn, serverIn.ID)
+		ListOperationalScriptsFailStatusMocked(t, scriptsIn, serverIn.ID)
+		ListOperationalScriptsFailJSONMocked(t, scriptsIn, serverIn.ID)
 	}
 }
 

@@ -35,7 +35,7 @@ func CookbookVersionList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	svc, formatter := WireUpCookbookVersion(c)
 
-	cookbookVersions, err := svc.GetCookbookVersionList()
+	cookbookVersions, err := svc.ListCookbookVersions()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive cookbook versions data", err)
 	}

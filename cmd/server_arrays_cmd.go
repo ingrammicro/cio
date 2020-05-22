@@ -35,7 +35,7 @@ func ServerArrayList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	serverArraySvc, formatter := WireUpServerArray(c)
 
-	serverArrays, err := serverArraySvc.GetServerArrayList()
+	serverArrays, err := serverArraySvc.ListServerArrays()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive server array data", err)
 	}
@@ -233,7 +233,7 @@ func ServerArrayServerList(c *cli.Context) error {
 	serverArraySvc, formatter := WireUpServerArray(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	servers, err := serverArraySvc.GetServerArrayServerList(c.String("id"))
+	servers, err := serverArraySvc.ListServerArrayServers(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive server data", err)
 	}

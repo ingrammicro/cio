@@ -14,10 +14,10 @@ func TestNewLocationServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetLocationList(t *testing.T) {
+func TestListLocations(t *testing.T) {
 	locationsIn := testdata.GetLocationData()
-	GetLocationListMocked(t, locationsIn)
-	GetLocationListFailErrMocked(t, locationsIn)
-	GetLocationListFailStatusMocked(t, locationsIn)
-	GetLocationListFailJSONMocked(t, locationsIn)
+	ListLocationsMocked(t, locationsIn)
+	ListLocationsFailErrMocked(t, locationsIn)
+	ListLocationsFailStatusMocked(t, locationsIn)
+	ListLocationsFailJSONMocked(t, locationsIn)
 }

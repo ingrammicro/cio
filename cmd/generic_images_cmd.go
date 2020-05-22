@@ -33,7 +33,7 @@ func GenericImageList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	genericImageSvc, formatter := WireUpGenericImage(c)
 
-	genericImages, err := genericImageSvc.GetGenericImageList()
+	genericImages, err := genericImageSvc.ListGenericImages()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive genericImage data", err)
 	}

@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ScriptService manages scripts operations
+// ScriptService manages script operations
 type ScriptService struct {
 	concertoService utils.ConcertoService
 }
@@ -24,9 +24,9 @@ func NewScriptService(concertoService utils.ConcertoService) (*ScriptService, er
 	}, nil
 }
 
-// GetScriptList returns the list of scripts as an array of Scripts
-func (sc *ScriptService) GetScriptList() (scripts []*types.Script, err error) {
-	log.Debug("GetScriptsList")
+// ListScripts returns the list of scripts as an array of Scripts
+func (sc *ScriptService) ListScripts() (scripts []*types.Script, err error) {
+	log.Debug("ListScripts")
 
 	data, status, err := sc.concertoService.Get("/blueprint/scripts")
 	if err != nil {

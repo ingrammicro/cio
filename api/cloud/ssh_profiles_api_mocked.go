@@ -12,8 +12,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetSSHProfileListMocked test mocked function
-func GetSSHProfileListMocked(t *testing.T, sshProfilesIn []*types.SSHProfile) []*types.SSHProfile {
+// ListSSHProfilesMocked test mocked function
+func ListSSHProfilesMocked(t *testing.T, sshProfilesIn []*types.SSHProfile) []*types.SSHProfile {
 
 	assert := assert.New(t)
 
@@ -29,15 +29,15 @@ func GetSSHProfileListMocked(t *testing.T, sshProfilesIn []*types.SSHProfile) []
 
 	// call service
 	cs.On("Get", "/cloud/ssh_profiles").Return(dIn, 200, nil)
-	sshProfilesOut, err := ds.GetSSHProfileList()
+	sshProfilesOut, err := ds.ListSSHProfiles()
 	assert.Nil(err, "Error getting sshProfile list")
-	assert.Equal(sshProfilesIn, sshProfilesOut, "GetSSHProfileList returned different sshProfiles")
+	assert.Equal(sshProfilesIn, sshProfilesOut, "ListSSHProfiles returned different sshProfiles")
 
 	return sshProfilesOut
 }
 
-// GetSSHProfileListFailErrMocked test mocked function
-func GetSSHProfileListFailErrMocked(t *testing.T, sshProfilesIn []*types.SSHProfile) []*types.SSHProfile {
+// ListSSHProfilesFailErrMocked test mocked function
+func ListSSHProfilesFailErrMocked(t *testing.T, sshProfilesIn []*types.SSHProfile) []*types.SSHProfile {
 
 	assert := assert.New(t)
 
@@ -53,7 +53,7 @@ func GetSSHProfileListFailErrMocked(t *testing.T, sshProfilesIn []*types.SSHProf
 
 	// call service
 	cs.On("Get", "/cloud/ssh_profiles").Return(dIn, 200, fmt.Errorf("mocked error"))
-	sshProfilesOut, err := ds.GetSSHProfileList()
+	sshProfilesOut, err := ds.ListSSHProfiles()
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(sshProfilesOut, "Expecting nil output")
@@ -62,8 +62,8 @@ func GetSSHProfileListFailErrMocked(t *testing.T, sshProfilesIn []*types.SSHProf
 	return sshProfilesOut
 }
 
-// GetSSHProfileListFailStatusMocked test mocked function
-func GetSSHProfileListFailStatusMocked(t *testing.T, sshProfilesIn []*types.SSHProfile) []*types.SSHProfile {
+// ListSSHProfilesFailStatusMocked test mocked function
+func ListSSHProfilesFailStatusMocked(t *testing.T, sshProfilesIn []*types.SSHProfile) []*types.SSHProfile {
 
 	assert := assert.New(t)
 
@@ -79,7 +79,7 @@ func GetSSHProfileListFailStatusMocked(t *testing.T, sshProfilesIn []*types.SSHP
 
 	// call service
 	cs.On("Get", "/cloud/ssh_profiles").Return(dIn, 499, nil)
-	sshProfilesOut, err := ds.GetSSHProfileList()
+	sshProfilesOut, err := ds.ListSSHProfiles()
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(sshProfilesOut, "Expecting nil output")
@@ -88,8 +88,8 @@ func GetSSHProfileListFailStatusMocked(t *testing.T, sshProfilesIn []*types.SSHP
 	return sshProfilesOut
 }
 
-// GetSSHProfileListFailJSONMocked test mocked function
-func GetSSHProfileListFailJSONMocked(t *testing.T, sshProfilesIn []*types.SSHProfile) []*types.SSHProfile {
+// ListSSHProfilesFailJSONMocked test mocked function
+func ListSSHProfilesFailJSONMocked(t *testing.T, sshProfilesIn []*types.SSHProfile) []*types.SSHProfile {
 
 	assert := assert.New(t)
 
@@ -104,7 +104,7 @@ func GetSSHProfileListFailJSONMocked(t *testing.T, sshProfilesIn []*types.SSHPro
 
 	// call service
 	cs.On("Get", "/cloud/ssh_profiles").Return(dIn, 200, nil)
-	sshProfilesOut, err := ds.GetSSHProfileList()
+	sshProfilesOut, err := ds.ListSSHProfiles()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(sshProfilesOut, "Expecting nil output")

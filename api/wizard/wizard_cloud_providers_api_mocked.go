@@ -9,14 +9,14 @@ import (
 	"testing"
 )
 
-// GetWizCloudProviderListMocked test mocked function
-func GetWizCloudProviderListMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
+// ListWizardCloudProvidersMocked test mocked function
+func ListWizardCloudProvidersMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
 
 	assert := assert.New(t)
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewWizCloudProvidersService(cs)
+	ds, err := NewWizardCloudProviderService(cs)
 	assert.Nil(err, "Couldn't load cloudProvider service")
 	assert.NotNil(ds, "WizCloudProvider service not instanced")
 
@@ -26,21 +26,21 @@ func GetWizCloudProviderListMocked(t *testing.T, cloudProvidersIn []*types.Cloud
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", AppID, LocID)).Return(dIn, 200, nil)
-	cloudProvidersOut, err := ds.GetWizCloudProviderList(AppID, LocID)
+	cloudProvidersOut, err := ds.ListWizardCloudProviders(AppID, LocID)
 	assert.Nil(err, "Error getting cloudProvider list")
-	assert.Equal(cloudProvidersIn, cloudProvidersOut, "GetWizCloudProviderList returned different cloudProviders")
+	assert.Equal(cloudProvidersIn, cloudProvidersOut, "ListWizardCloudProviders returned different cloudProviders")
 
 	return cloudProvidersOut
 }
 
-// GetWizCloudProviderListFailErrMocked test mocked function
-func GetWizCloudProviderListFailErrMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
+// ListWizardCloudProvidersFailErrMocked test mocked function
+func ListWizardCloudProvidersFailErrMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
 
 	assert := assert.New(t)
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewWizCloudProvidersService(cs)
+	ds, err := NewWizardCloudProviderService(cs)
 	assert.Nil(err, "Couldn't load cloudProvider service")
 	assert.NotNil(ds, "WizCloudProvider service not instanced")
 
@@ -50,7 +50,7 @@ func GetWizCloudProviderListFailErrMocked(t *testing.T, cloudProvidersIn []*type
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", AppID, LocID)).Return(dIn, 200, fmt.Errorf("mocked error"))
-	cloudProvidersOut, err := ds.GetWizCloudProviderList(AppID, LocID)
+	cloudProvidersOut, err := ds.ListWizardCloudProviders(AppID, LocID)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(cloudProvidersOut, "Expecting nil output")
@@ -59,14 +59,14 @@ func GetWizCloudProviderListFailErrMocked(t *testing.T, cloudProvidersIn []*type
 	return cloudProvidersOut
 }
 
-// GetWizCloudProviderListFailStatusMocked test mocked function
-func GetWizCloudProviderListFailStatusMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
+// ListWizardCloudProvidersFailStatusMocked test mocked function
+func ListWizardCloudProvidersFailStatusMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
 
 	assert := assert.New(t)
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewWizCloudProvidersService(cs)
+	ds, err := NewWizardCloudProviderService(cs)
 	assert.Nil(err, "Couldn't load cloudProvider service")
 	assert.NotNil(ds, "WizCloudProvider service not instanced")
 
@@ -76,7 +76,7 @@ func GetWizCloudProviderListFailStatusMocked(t *testing.T, cloudProvidersIn []*t
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", AppID, LocID)).Return(dIn, 499, nil)
-	cloudProvidersOut, err := ds.GetWizCloudProviderList(AppID, LocID)
+	cloudProvidersOut, err := ds.ListWizardCloudProviders(AppID, LocID)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(cloudProvidersOut, "Expecting nil output")
@@ -85,14 +85,14 @@ func GetWizCloudProviderListFailStatusMocked(t *testing.T, cloudProvidersIn []*t
 	return cloudProvidersOut
 }
 
-// GetWizCloudProviderListFailJSONMocked test mocked function
-func GetWizCloudProviderListFailJSONMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
+// ListWizardCloudProvidersFailJSONMocked test mocked function
+func ListWizardCloudProvidersFailJSONMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
 
 	assert := assert.New(t)
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewWizCloudProvidersService(cs)
+	ds, err := NewWizardCloudProviderService(cs)
 	assert.Nil(err, "Couldn't load cloudProvider service")
 	assert.NotNil(ds, "WizCloudProvider service not instanced")
 
@@ -101,7 +101,7 @@ func GetWizCloudProviderListFailJSONMocked(t *testing.T, cloudProvidersIn []*typ
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", AppID, LocID)).Return(dIn, 200, nil)
-	cloudProvidersOut, err := ds.GetWizCloudProviderList(AppID, LocID)
+	cloudProvidersOut, err := ds.ListWizardCloudProviders(AppID, LocID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(cloudProvidersOut, "Expecting nil output")

@@ -25,9 +25,9 @@ func NewServerArrayService(concertoService utils.ConcertoService) (*ServerArrayS
 	}, nil
 }
 
-// GetServerArrayList returns the list of server arrays as an array of ServerArray
-func (sas *ServerArrayService) GetServerArrayList() (serverArrays []*types.ServerArray, err error) {
-	log.Debug("GetServerArrayList")
+// ListServerArrays returns the list of server arrays as an array of ServerArray
+func (sas *ServerArrayService) ListServerArrays() (serverArrays []*types.ServerArray, err error) {
+	log.Debug("ListServerArrays")
 
 	data, status, err := sas.concertoService.Get("/cloud/server_arrays")
 	if err != nil {
@@ -185,9 +185,9 @@ func (sas *ServerArrayService) EnlargeServerArray(serverArrayParams *map[string]
 	return serverArray, nil
 }
 
-// GetServerArrayServerList returns the list of servers in a server array as an array of Server
-func (sas *ServerArrayService) GetServerArrayServerList(serverArrayID string) (servers []*types.Server, err error) {
-	log.Debug("GetServerArrayServerList")
+// ListServerArrayServers returns the list of servers in a server array as an array of Server
+func (sas *ServerArrayService) ListServerArrayServers(serverArrayID string) (servers []*types.Server, err error) {
+	log.Debug("ListServerArrayServers")
 
 	data, status, err := sas.concertoService.Get(fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID))
 	if err != nil {

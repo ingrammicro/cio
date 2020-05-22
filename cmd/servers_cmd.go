@@ -35,7 +35,7 @@ func ServerList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	serverSvc, formatter := WireUpServer(c)
 
-	servers, err := serverSvc.GetServerList()
+	servers, err := serverSvc.ListServers()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive server data", err)
 	}
@@ -229,7 +229,7 @@ func ServerFloatingIPList(c *cli.Context) error {
 	serverSvc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	floatingIPs, err := serverSvc.GetServerFloatingIPList(c.String("id"))
+	floatingIPs, err := serverSvc.ListServerFloatingIPs(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive floating IPs data", err)
 	}
@@ -263,7 +263,7 @@ func ServerVolumesList(c *cli.Context) error {
 	serverSvc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	volumes, err := serverSvc.GetServerVolumesList(c.String("id"))
+	volumes, err := serverSvc.ListServerVolumes(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive volumes data", err)
 	}
@@ -299,7 +299,7 @@ func EventsList(c *cli.Context) error {
 	svc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	events, err := svc.GetEventsList(c.String("id"))
+	events, err := svc.ListEvents(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive event data", err)
 	}
@@ -317,7 +317,7 @@ func OperationalScriptsList(c *cli.Context) error {
 	svc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	scripts, err := svc.GetOperationalScriptsList(c.String("id"))
+	scripts, err := svc.ListOperationalScripts(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive script data", err)
 	}

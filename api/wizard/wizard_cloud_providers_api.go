@@ -9,27 +9,27 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// WizCloudProvidersService manages wizCloudProviders operations
-type WizCloudProvidersService struct {
+// WizardCloudProviderService manages wizard cloud provider operations
+type WizardCloudProviderService struct {
 	concertoService utils.ConcertoService
 }
 
-// NewWizCloudProvidersService returns a Concerto wizCloudProviders service
-func NewWizCloudProvidersService(concertoService utils.ConcertoService) (*WizCloudProvidersService, error) {
+// NewWizardCloudProviderService returns a Concerto WizardCloudProvider service
+func NewWizardCloudProviderService(concertoService utils.ConcertoService) (*WizardCloudProviderService, error) {
 	if concertoService == nil {
 		return nil, fmt.Errorf("must initialize ConcertoService before using it")
 	}
 
-	return &WizCloudProvidersService{
+	return &WizardCloudProviderService{
 		concertoService: concertoService,
 	}, nil
 }
 
-// GetWizCloudProviderList returns the list of wizCloudProviders as an array of CloudProvider
-func (dm *WizCloudProvidersService) GetWizCloudProviderList(AppID string, LocID string) (wizCloudProviders []*types.CloudProvider, err error) {
-	log.Debug("GetWizCloudProviderList")
+// ListWizardCloudProviders returns the list of cloud providers as an array of CloudProvider
+func (wcps *WizardCloudProviderService) ListWizardCloudProviders(appID string, locationID string) (cloudProviders []*types.CloudProvider, err error) {
+	log.Debug("ListWizardCloudProviders")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", AppID, LocID))
+	data, status, err := wcps.concertoService.Get(fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", appID, locationID))
 	if err != nil {
 		return nil, err
 	}
@@ -38,9 +38,9 @@ func (dm *WizCloudProvidersService) GetWizCloudProviderList(AppID string, LocID 
 		return nil, err
 	}
 
-	if err = json.Unmarshal(data, &wizCloudProviders); err != nil {
+	if err = json.Unmarshal(data, &cloudProviders); err != nil {
 		return nil, err
 	}
 
-	return wizCloudProviders, nil
+	return cloudProviders, nil
 }

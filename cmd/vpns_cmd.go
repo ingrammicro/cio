@@ -89,7 +89,7 @@ func VPNPlanList(c *cli.Context) error {
 	vpcSvc, formatter := WireUpVPN(c)
 	checkRequiredFlags(c, []string{"vpc-id"}, formatter)
 
-	vpns, err := vpcSvc.GetVPNPlanList(c.String("vpc-id"))
+	vpns, err := vpcSvc.ListVPNPlans(c.String("vpc-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive VPN data", err)
 	}

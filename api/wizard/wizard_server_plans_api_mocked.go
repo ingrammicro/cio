@@ -9,14 +9,14 @@ import (
 	"testing"
 )
 
-// GetWizServerPlanListMocked test mocked function
-func GetWizServerPlanListMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
+// ListWizardServerPlansMocked test mocked function
+func ListWizardServerPlansMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewWizServerPlanService(cs)
+	ds, err := NewWizardServerPlanService(cs)
 	assert.Nil(err, "Couldn't load serverPlan service")
 	assert.NotNil(ds, "WizServerPlan service not instanced")
 
@@ -26,21 +26,21 @@ func GetWizServerPlanListMocked(t *testing.T, serverPlansIn []*types.ServerPlan,
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", AppID, LocID, ProviderID)).Return(dIn, 200, nil)
-	serverPlansOut, err := ds.GetWizServerPlanList(AppID, LocID, ProviderID)
+	serverPlansOut, err := ds.ListWizardServerPlans(AppID, LocID, ProviderID)
 	assert.Nil(err, "Error getting serverPlan list")
-	assert.Equal(serverPlansIn, serverPlansOut, "GetWizServerPlanList returned different serverPlans")
+	assert.Equal(serverPlansIn, serverPlansOut, "ListWizardServerPlans returned different serverPlans")
 
 	return serverPlansOut
 }
 
-// GetWizServerPlanListFailErrMocked test mocked function
-func GetWizServerPlanListFailErrMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
+// ListWizardServerPlansFailErrMocked test mocked function
+func ListWizardServerPlansFailErrMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewWizServerPlanService(cs)
+	ds, err := NewWizardServerPlanService(cs)
 	assert.Nil(err, "Couldn't load serverPlan service")
 	assert.NotNil(ds, "WizServerPlan service not instanced")
 
@@ -50,7 +50,7 @@ func GetWizServerPlanListFailErrMocked(t *testing.T, serverPlansIn []*types.Serv
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", AppID, LocID, ProviderID)).Return(dIn, 200, fmt.Errorf("mocked error"))
-	serverPlansOut, err := ds.GetWizServerPlanList(AppID, LocID, ProviderID)
+	serverPlansOut, err := ds.ListWizardServerPlans(AppID, LocID, ProviderID)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serverPlansOut, "Expecting nil output")
@@ -59,14 +59,14 @@ func GetWizServerPlanListFailErrMocked(t *testing.T, serverPlansIn []*types.Serv
 	return serverPlansOut
 }
 
-// GetWizServerPlanListFailStatusMocked test mocked function
-func GetWizServerPlanListFailStatusMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
+// ListWizardServerPlansFailStatusMocked test mocked function
+func ListWizardServerPlansFailStatusMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewWizServerPlanService(cs)
+	ds, err := NewWizardServerPlanService(cs)
 	assert.Nil(err, "Couldn't load serverPlan service")
 	assert.NotNil(ds, "WizServerPlan service not instanced")
 
@@ -76,7 +76,7 @@ func GetWizServerPlanListFailStatusMocked(t *testing.T, serverPlansIn []*types.S
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", AppID, LocID, ProviderID)).Return(dIn, 499, nil)
-	serverPlansOut, err := ds.GetWizServerPlanList(AppID, LocID, ProviderID)
+	serverPlansOut, err := ds.ListWizardServerPlans(AppID, LocID, ProviderID)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serverPlansOut, "Expecting nil output")
@@ -85,14 +85,14 @@ func GetWizServerPlanListFailStatusMocked(t *testing.T, serverPlansIn []*types.S
 	return serverPlansOut
 }
 
-// GetWizServerPlanListFailJSONMocked test mocked function
-func GetWizServerPlanListFailJSONMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
+// ListWizardServerPlansFailJSONMocked test mocked function
+func ListWizardServerPlansFailJSONMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewWizServerPlanService(cs)
+	ds, err := NewWizardServerPlanService(cs)
 	assert.Nil(err, "Couldn't load serverPlan service")
 	assert.NotNil(ds, "WizServerPlan service not instanced")
 
@@ -101,7 +101,7 @@ func GetWizServerPlanListFailJSONMocked(t *testing.T, serverPlansIn []*types.Ser
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", AppID, LocID, ProviderID)).Return(dIn, 200, nil)
-	serverPlansOut, err := ds.GetWizServerPlanList(AppID, LocID, ProviderID)
+	serverPlansOut, err := ds.ListWizardServerPlans(AppID, LocID, ProviderID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serverPlansOut, "Expecting nil output")

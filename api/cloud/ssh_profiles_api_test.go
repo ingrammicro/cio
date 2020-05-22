@@ -13,12 +13,12 @@ func TestNewSSHProfileServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetSSHProfileList(t *testing.T) {
+func TestListSSHProfiles(t *testing.T) {
 	sshProfilesIn := testdata.GetSSHProfileData()
-	GetSSHProfileListMocked(t, sshProfilesIn)
-	GetSSHProfileListFailErrMocked(t, sshProfilesIn)
-	GetSSHProfileListFailStatusMocked(t, sshProfilesIn)
-	GetSSHProfileListFailJSONMocked(t, sshProfilesIn)
+	ListSSHProfilesMocked(t, sshProfilesIn)
+	ListSSHProfilesFailErrMocked(t, sshProfilesIn)
+	ListSSHProfilesFailStatusMocked(t, sshProfilesIn)
+	ListSSHProfilesFailJSONMocked(t, sshProfilesIn)
 }
 
 func TestGetSSHProfile(t *testing.T) {

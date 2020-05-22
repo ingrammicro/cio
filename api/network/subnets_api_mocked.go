@@ -12,8 +12,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetSubnetListMocked test mocked function
-func GetSubnetListMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.Subnet {
+// ListSubnetsMocked test mocked function
+func ListSubnetsMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.Subnet {
 
 	assert := assert.New(t)
 
@@ -29,15 +29,15 @@ func GetSubnetListMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.Subne
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/subnets", subnetsIn[0].VpcID)).Return(dIn, 200, nil)
-	subnetsOut, err := ds.GetSubnetList(subnetsIn[0].VpcID)
+	subnetsOut, err := ds.ListSubnets(subnetsIn[0].VpcID)
 	assert.Nil(err, "Error getting Subnet list")
-	assert.Equal(subnetsIn, subnetsOut, "GetSubnetList returned different Subnets")
+	assert.Equal(subnetsIn, subnetsOut, "ListSubnets returned different Subnets")
 
 	return subnetsOut
 }
 
-// GetSubnetListFailErrMocked test mocked function
-func GetSubnetListFailErrMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.Subnet {
+// ListSubnetsFailErrMocked test mocked function
+func ListSubnetsFailErrMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.Subnet {
 
 	assert := assert.New(t)
 
@@ -53,7 +53,7 @@ func GetSubnetListFailErrMocked(t *testing.T, subnetsIn []*types.Subnet) []*type
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/subnets", subnetsIn[0].VpcID)).Return(dIn, 200, fmt.Errorf("mocked error"))
-	subnetsOut, err := ds.GetSubnetList(subnetsIn[0].VpcID)
+	subnetsOut, err := ds.ListSubnets(subnetsIn[0].VpcID)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(subnetsOut, "Expecting nil output")
@@ -62,8 +62,8 @@ func GetSubnetListFailErrMocked(t *testing.T, subnetsIn []*types.Subnet) []*type
 	return subnetsOut
 }
 
-// GetSubnetListFailStatusMocked test mocked function
-func GetSubnetListFailStatusMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.Subnet {
+// ListSubnetsFailStatusMocked test mocked function
+func ListSubnetsFailStatusMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.Subnet {
 
 	assert := assert.New(t)
 
@@ -79,7 +79,7 @@ func GetSubnetListFailStatusMocked(t *testing.T, subnetsIn []*types.Subnet) []*t
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/subnets", subnetsIn[0].VpcID)).Return(dIn, 499, nil)
-	subnetsOut, err := ds.GetSubnetList(subnetsIn[0].VpcID)
+	subnetsOut, err := ds.ListSubnets(subnetsIn[0].VpcID)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(subnetsOut, "Expecting nil output")
@@ -88,8 +88,8 @@ func GetSubnetListFailStatusMocked(t *testing.T, subnetsIn []*types.Subnet) []*t
 	return subnetsOut
 }
 
-// GetSubnetListFailJSONMocked test mocked function
-func GetSubnetListFailJSONMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.Subnet {
+// ListSubnetsFailJSONMocked test mocked function
+func ListSubnetsFailJSONMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.Subnet {
 
 	assert := assert.New(t)
 
@@ -104,7 +104,7 @@ func GetSubnetListFailJSONMocked(t *testing.T, subnetsIn []*types.Subnet) []*typ
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/subnets", subnetsIn[0].VpcID)).Return(dIn, 200, nil)
-	subnetsOut, err := ds.GetSubnetList(subnetsIn[0].VpcID)
+	subnetsOut, err := ds.ListSubnets(subnetsIn[0].VpcID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(subnetsOut, "Expecting nil output")
@@ -514,8 +514,8 @@ func DeleteSubnetFailStatusMocked(t *testing.T, subnetIn *types.Subnet) {
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
 }
 
-// GetSubnetServerListMocked test mocked function
-func GetSubnetServerListMocked(t *testing.T, serversIn []*types.Server) []*types.Server {
+// ListSubnetServersMocked test mocked function
+func ListSubnetServersMocked(t *testing.T, serversIn []*types.Server) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -531,15 +531,15 @@ func GetSubnetServerListMocked(t *testing.T, serversIn []*types.Server) []*types
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/subnets/%s/servers", serversIn[0].SubnetID)).Return(dIn, 200, nil)
-	serversOut, err := ds.GetSubnetServerList(serversIn[0].SubnetID)
+	serversOut, err := ds.ListSubnetServers(serversIn[0].SubnetID)
 	assert.Nil(err, "Error getting Subnet servers list")
-	assert.Equal(serversIn, serversOut, "GetSubnetServerList returned different Servers")
+	assert.Equal(serversIn, serversOut, "ListSubnetServers returned different Servers")
 
 	return serversOut
 }
 
-// GetSubnetServerListFailErrMocked test mocked function
-func GetSubnetServerListFailErrMocked(t *testing.T, serversIn []*types.Server) []*types.Server {
+// ListSubnetServersFailErrMocked test mocked function
+func ListSubnetServersFailErrMocked(t *testing.T, serversIn []*types.Server) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -555,7 +555,7 @@ func GetSubnetServerListFailErrMocked(t *testing.T, serversIn []*types.Server) [
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/subnets/%s/servers", serversIn[0].SubnetID)).Return(dIn, 200, fmt.Errorf("mocked error"))
-	serversOut, err := ds.GetSubnetServerList(serversIn[0].SubnetID)
+	serversOut, err := ds.ListSubnetServers(serversIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serversOut, "Expecting nil output")
@@ -564,8 +564,8 @@ func GetSubnetServerListFailErrMocked(t *testing.T, serversIn []*types.Server) [
 	return serversOut
 }
 
-// GetSubnetServerListFailStatusMocked test mocked function
-func GetSubnetServerListFailStatusMocked(t *testing.T, serversIn []*types.Server) []*types.Server {
+// ListSubnetServersFailStatusMocked test mocked function
+func ListSubnetServersFailStatusMocked(t *testing.T, serversIn []*types.Server) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -581,7 +581,7 @@ func GetSubnetServerListFailStatusMocked(t *testing.T, serversIn []*types.Server
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/subnets/%s/servers", serversIn[0].SubnetID)).Return(dIn, 499, nil)
-	serversOut, err := ds.GetSubnetServerList(serversIn[0].SubnetID)
+	serversOut, err := ds.ListSubnetServers(serversIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serversOut, "Expecting nil output")
@@ -590,8 +590,8 @@ func GetSubnetServerListFailStatusMocked(t *testing.T, serversIn []*types.Server
 	return serversOut
 }
 
-// GetSubnetServerListFailJSONMocked test mocked function
-func GetSubnetServerListFailJSONMocked(t *testing.T, serversIn []*types.Server) []*types.Server {
+// ListSubnetServersFailJSONMocked test mocked function
+func ListSubnetServersFailJSONMocked(t *testing.T, serversIn []*types.Server) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -606,7 +606,7 @@ func GetSubnetServerListFailJSONMocked(t *testing.T, serversIn []*types.Server) 
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/subnets/%s/servers", serversIn[0].SubnetID)).Return(dIn, 200, nil)
-	serversOut, err := ds.GetSubnetServerList(serversIn[0].SubnetID)
+	serversOut, err := ds.ListSubnetServers(serversIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serversOut, "Expecting nil output")
@@ -615,8 +615,8 @@ func GetSubnetServerListFailJSONMocked(t *testing.T, serversIn []*types.Server) 
 	return serversOut
 }
 
-// GetSubnetServerArrayListMocked test mocked function
-func GetSubnetServerArrayListMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
+// ListSubnetServerArraysMocked test mocked function
+func ListSubnetServerArraysMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
 
 	assert := assert.New(t)
 
@@ -632,15 +632,15 @@ func GetSubnetServerArrayListMocked(t *testing.T, serverArraysIn []*types.Server
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/subnets/%s/server_arrays", serverArraysIn[0].SubnetID)).Return(dIn, 200, nil)
-	serverArraysOut, err := ds.GetSubnetServerArrayList(serverArraysIn[0].SubnetID)
+	serverArraysOut, err := ds.ListSubnetServerArrays(serverArraysIn[0].SubnetID)
 	assert.Nil(err, "Error getting Subnet server array list")
-	assert.Equal(serverArraysIn, serverArraysOut, "GetSubnetServerArrayList returned different Server arrays")
+	assert.Equal(serverArraysIn, serverArraysOut, "ListSubnetServerArrays returned different Server arrays")
 
 	return serverArraysOut
 }
 
-// GetSubnetServerArrayListFailErrMocked test mocked function
-func GetSubnetServerArrayListFailErrMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
+// ListSubnetServerArraysFailErrMocked test mocked function
+func ListSubnetServerArraysFailErrMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
 
 	assert := assert.New(t)
 
@@ -656,7 +656,7 @@ func GetSubnetServerArrayListFailErrMocked(t *testing.T, serverArraysIn []*types
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/subnets/%s/server_arrays", serverArraysIn[0].SubnetID)).Return(dIn, 200, fmt.Errorf("mocked error"))
-	serverArraysOut, err := ds.GetSubnetServerArrayList(serverArraysIn[0].SubnetID)
+	serverArraysOut, err := ds.ListSubnetServerArrays(serverArraysIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serverArraysOut, "Expecting nil output")
@@ -665,8 +665,8 @@ func GetSubnetServerArrayListFailErrMocked(t *testing.T, serverArraysIn []*types
 	return serverArraysOut
 }
 
-// GetSubnetServerArrayListFailStatusMocked test mocked function
-func GetSubnetServerArrayListFailStatusMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
+// ListSubnetServerArraysFailStatusMocked test mocked function
+func ListSubnetServerArraysFailStatusMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
 
 	assert := assert.New(t)
 
@@ -682,7 +682,7 @@ func GetSubnetServerArrayListFailStatusMocked(t *testing.T, serverArraysIn []*ty
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/subnets/%s/server_arrays", serverArraysIn[0].SubnetID)).Return(dIn, 499, nil)
-	serverArraysOut, err := ds.GetSubnetServerArrayList(serverArraysIn[0].SubnetID)
+	serverArraysOut, err := ds.ListSubnetServerArrays(serverArraysIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serverArraysOut, "Expecting nil output")
@@ -691,8 +691,8 @@ func GetSubnetServerArrayListFailStatusMocked(t *testing.T, serverArraysIn []*ty
 	return serverArraysOut
 }
 
-// GetSubnetServerArrayListFailJSONMocked test mocked function
-func GetSubnetServerArrayListFailJSONMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
+// ListSubnetServerArraysFailJSONMocked test mocked function
+func ListSubnetServerArraysFailJSONMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
 
 	assert := assert.New(t)
 
@@ -707,7 +707,7 @@ func GetSubnetServerArrayListFailJSONMocked(t *testing.T, serverArraysIn []*type
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/network/subnets/%s/server_arrays", serverArraysIn[0].SubnetID)).Return(dIn, 200, nil)
-	serverArraysOut, err := ds.GetSubnetServerArrayList(serverArraysIn[0].SubnetID)
+	serverArraysOut, err := ds.ListSubnetServerArrays(serverArraysIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serverArraysOut, "Expecting nil output")

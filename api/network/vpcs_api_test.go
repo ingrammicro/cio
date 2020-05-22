@@ -13,12 +13,12 @@ func TestNewVPCServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetVPCList(t *testing.T) {
+func TestListVPCs(t *testing.T) {
 	vpcsIn := testdata.GetVPCData()
-	GetVPCListMocked(t, vpcsIn)
-	GetVPCListFailErrMocked(t, vpcsIn)
-	GetVPCListFailStatusMocked(t, vpcsIn)
-	GetVPCListFailJSONMocked(t, vpcsIn)
+	ListVPCsMocked(t, vpcsIn)
+	ListVPCsFailErrMocked(t, vpcsIn)
+	ListVPCsFailStatusMocked(t, vpcsIn)
+	ListVPCsFailJSONMocked(t, vpcsIn)
 }
 
 func TestGetVPC(t *testing.T) {

@@ -12,8 +12,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetAppListMocked test mocked function
-func GetAppListMocked(t *testing.T, appsIn []*types.WizardApp) []*types.WizardApp {
+// ListAppsMocked test mocked function
+func ListAppsMocked(t *testing.T, appsIn []*types.WizardApp) []*types.WizardApp {
 
 	assert := assert.New(t)
 
@@ -29,15 +29,15 @@ func GetAppListMocked(t *testing.T, appsIn []*types.WizardApp) []*types.WizardAp
 
 	// call service
 	cs.On("Get", "/wizard/apps").Return(dIn, 200, nil)
-	appsOut, err := ds.GetAppList()
+	appsOut, err := ds.ListApps()
 	assert.Nil(err, "Error getting app list")
-	assert.Equal(appsIn, appsOut, "GetAppList returned different apps")
+	assert.Equal(appsIn, appsOut, "ListApps returned different apps")
 
 	return appsOut
 }
 
-// GetAppListFailErrMocked test mocked function
-func GetAppListFailErrMocked(t *testing.T, appsIn []*types.WizardApp) []*types.WizardApp {
+// ListAppsFailErrMocked test mocked function
+func ListAppsFailErrMocked(t *testing.T, appsIn []*types.WizardApp) []*types.WizardApp {
 
 	assert := assert.New(t)
 
@@ -53,7 +53,7 @@ func GetAppListFailErrMocked(t *testing.T, appsIn []*types.WizardApp) []*types.W
 
 	// call service
 	cs.On("Get", "/wizard/apps").Return(dIn, 200, fmt.Errorf("mocked error"))
-	appsOut, err := ds.GetAppList()
+	appsOut, err := ds.ListApps()
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(appsOut, "Expecting nil output")
@@ -62,8 +62,8 @@ func GetAppListFailErrMocked(t *testing.T, appsIn []*types.WizardApp) []*types.W
 	return appsOut
 }
 
-// GetAppListFailStatusMocked test mocked function
-func GetAppListFailStatusMocked(t *testing.T, appsIn []*types.WizardApp) []*types.WizardApp {
+// ListAppsFailStatusMocked test mocked function
+func ListAppsFailStatusMocked(t *testing.T, appsIn []*types.WizardApp) []*types.WizardApp {
 
 	assert := assert.New(t)
 
@@ -79,7 +79,7 @@ func GetAppListFailStatusMocked(t *testing.T, appsIn []*types.WizardApp) []*type
 
 	// call service
 	cs.On("Get", "/wizard/apps").Return(dIn, 499, nil)
-	appsOut, err := ds.GetAppList()
+	appsOut, err := ds.ListApps()
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(appsOut, "Expecting nil output")
@@ -88,8 +88,8 @@ func GetAppListFailStatusMocked(t *testing.T, appsIn []*types.WizardApp) []*type
 	return appsOut
 }
 
-// GetAppListFailJSONMocked test mocked function
-func GetAppListFailJSONMocked(t *testing.T, appsIn []*types.WizardApp) []*types.WizardApp {
+// ListAppsFailJSONMocked test mocked function
+func ListAppsFailJSONMocked(t *testing.T, appsIn []*types.WizardApp) []*types.WizardApp {
 
 	assert := assert.New(t)
 
@@ -104,7 +104,7 @@ func GetAppListFailJSONMocked(t *testing.T, appsIn []*types.WizardApp) []*types.
 
 	// call service
 	cs.On("Get", "/wizard/apps").Return(dIn, 200, nil)
-	appsOut, err := ds.GetAppList()
+	appsOut, err := ds.ListApps()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(appsOut, "Expecting nil output")

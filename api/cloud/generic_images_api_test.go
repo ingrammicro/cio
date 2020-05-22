@@ -13,10 +13,10 @@ func TestNewGenericImageServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetGenericImageList(t *testing.T) {
+func TestListGenericImages(t *testing.T) {
 	genericImagesIn := testdata.GetGenericImageData()
-	GetGenericImageListMocked(t, genericImagesIn)
-	GetGenericImageListFailErrMocked(t, genericImagesIn)
-	GetGenericImageListFailStatusMocked(t, genericImagesIn)
-	GetGenericImageListFailJSONMocked(t, genericImagesIn)
+	ListGenericImagesMocked(t, genericImagesIn)
+	ListGenericImagesFailErrMocked(t, genericImagesIn)
+	ListGenericImagesFailStatusMocked(t, genericImagesIn)
+	ListGenericImagesFailJSONMocked(t, genericImagesIn)
 }

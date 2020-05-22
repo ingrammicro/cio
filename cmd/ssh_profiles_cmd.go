@@ -36,7 +36,7 @@ func SSHProfileList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	sshProfileSvc, formatter := WireUpSSHProfile(c)
 
-	sshProfiles, err := sshProfileSvc.GetSSHProfileList()
+	sshProfiles, err := sshProfileSvc.ListSSHProfiles()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive sshProfile data", err)
 	}

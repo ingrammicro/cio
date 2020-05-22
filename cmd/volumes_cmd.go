@@ -35,7 +35,7 @@ func VolumeList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	volumeSvc, formatter := WireUpVolume(c)
 
-	volumes, err := volumeSvc.GetVolumeList(c.String("server-id"))
+	volumes, err := volumeSvc.ListVolumes(c.String("server-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive volume data", err)
 	}

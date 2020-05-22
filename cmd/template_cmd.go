@@ -39,7 +39,7 @@ func TemplateList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	templateSvc, formatter := WireUpTemplate(c)
 
-	templates, err := templateSvc.GetTemplateList()
+	templates, err := templateSvc.ListTemplates()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive template data", err)
 	}
@@ -254,7 +254,7 @@ func TemplateScriptList(c *cli.Context) error {
 	templateScriptSvc, formatter := WireUpTemplate(c)
 
 	checkRequiredFlags(c, []string{"template-id", "type"}, formatter)
-	templateScripts, err := templateScriptSvc.GetTemplateScriptList(c.String("template-id"), c.String("type"))
+	templateScripts, err := templateScriptSvc.ListTemplateScripts(c.String("template-id"), c.String("type"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive templateScript data", err)
 	}
@@ -400,7 +400,7 @@ func TemplateServersList(c *cli.Context) error {
 	templateSvc, formatter := WireUpTemplate(c)
 
 	checkRequiredFlags(c, []string{"template-id"}, formatter)
-	templateServers, err := templateSvc.GetTemplateServerList(c.String("template-id"))
+	templateServers, err := templateSvc.ListTemplateServers(c.String("template-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive template servers data", err)
 	}
@@ -432,7 +432,7 @@ func convertFlagParamsToCookbookVersions(c *cli.Context, cbvsIn string) (map[str
 			if len(cookbookVersions) == 0 {
 				// data is loaded only once
 				svc, formatter := WireUpCookbookVersion(c)
-				cbvs, err := svc.GetCookbookVersionList()
+				cbvs, err := svc.ListCookbookVersions()
 				if err != nil {
 					formatter.PrintFatal("cannot receive uploaded cookbook versions data", err)
 				}
@@ -458,7 +458,7 @@ func convertFlagParamsToCookbookVersions(c *cli.Context, cbvsIn string) (map[str
 // resolveCookbookVersions resolves adequate cookbook version ids
 func resolveCookbookVersions(c *cli.Context, template *types.Template) error {
 	svc, _ := WireUpCookbookVersion(c)
-	cbvs, err := svc.GetCookbookVersionList()
+	cbvs, err := svc.ListCookbookVersions()
 	if err != nil {
 		return err
 	}

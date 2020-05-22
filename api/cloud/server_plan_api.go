@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ServerPlanService manages serverPlan operations
+// ServerPlanService manages server plan operations
 type ServerPlanService struct {
 	concertoService utils.ConcertoService
 }
@@ -24,11 +24,11 @@ func NewServerPlanService(concertoService utils.ConcertoService) (*ServerPlanSer
 	}, nil
 }
 
-// GetServerPlanList returns the list of serverPlans as an array of ServerPlan
-func (dm *ServerPlanService) GetServerPlanList(ProviderID string) (serverPlans []*types.ServerPlan, err error) {
-	log.Debug("GetServerPlanList")
+// ListServerPlans returns the list of serverPlans as an array of ServerPlan
+func (sps *ServerPlanService) ListServerPlans(providerID string) (serverPlans []*types.ServerPlan, err error) {
+	log.Debug("ListServerPlans")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/cloud/cloud_providers/%s/server_plans", ProviderID))
+	data, status, err := sps.concertoService.Get(fmt.Sprintf("/cloud/cloud_providers/%s/server_plans", providerID))
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +45,10 @@ func (dm *ServerPlanService) GetServerPlanList(ProviderID string) (serverPlans [
 }
 
 // GetServerPlan returns a serverPlan by its ID
-func (dm *ServerPlanService) GetServerPlan(ID string) (serverPlan *types.ServerPlan, err error) {
+func (sps *ServerPlanService) GetServerPlan(planID string) (serverPlan *types.ServerPlan, err error) {
 	log.Debug("GetServerPlan")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/cloud/server_plans/%s", ID))
+	data, status, err := sps.concertoService.Get(fmt.Sprintf("/cloud/server_plans/%s", planID))
 	if err != nil {
 		return nil, err
 	}

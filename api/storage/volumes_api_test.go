@@ -13,13 +13,13 @@ func TestNewVolumeServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetVolumeList(t *testing.T) {
+func TestListVolumes(t *testing.T) {
 	volumesIn := testdata.GetVolumeData()
-	GetVolumeListMocked(t, volumesIn)
-	GetVolumeListMockedFilteredByServer(t, volumesIn)
-	GetVolumeListFailErrMocked(t, volumesIn)
-	GetVolumeListFailStatusMocked(t, volumesIn)
-	GetVolumeListFailJSONMocked(t, volumesIn)
+	ListVolumesMocked(t, volumesIn)
+	ListVolumesMockedFilteredByServer(t, volumesIn)
+	ListVolumesFailErrMocked(t, volumesIn)
+	ListVolumesFailStatusMocked(t, volumesIn)
+	ListVolumesFailJSONMocked(t, volumesIn)
 }
 
 func TestGetVolume(t *testing.T) {

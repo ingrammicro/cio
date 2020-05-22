@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// VolumeService manages Volume operations
+// VolumeService manages volume operations
 type VolumeService struct {
 	concertoService utils.ConcertoService
 }
@@ -24,16 +24,16 @@ func NewVolumeService(concertoService utils.ConcertoService) (*VolumeService, er
 	}, nil
 }
 
-// GetVolumeList returns the list of Volumes as an array of Volume
-func (dm *VolumeService) GetVolumeList(serverID string) (volumes []*types.Volume, err error) {
-	log.Debug("GetVolumeList")
+// ListVolumes returns the list of Volumes as an array of Volume
+func (vs *VolumeService) ListVolumes(serverID string) (volumes []*types.Volume, err error) {
+	log.Debug("ListVolumes")
 
 	path := "/storage/volumes"
 	if serverID != "" {
 		path = fmt.Sprintf("/cloud/servers/%s/volumes", serverID)
 
 	}
-	data, status, err := dm.concertoService.Get(path)
+	data, status, err := vs.concertoService.Get(path)
 
 	if err != nil {
 		return nil, err
@@ -51,10 +51,10 @@ func (dm *VolumeService) GetVolumeList(serverID string) (volumes []*types.Volume
 }
 
 // GetVolume returns a Volume by its ID
-func (dm *VolumeService) GetVolume(volumeID string) (volume *types.Volume, err error) {
+func (vs *VolumeService) GetVolume(volumeID string) (volume *types.Volume, err error) {
 	log.Debug("GetVolume")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/storage/volumes/%s", volumeID))
+	data, status, err := vs.concertoService.Get(fmt.Sprintf("/storage/volumes/%s", volumeID))
 	if err != nil {
 		return nil, err
 	}
@@ -71,10 +71,11 @@ func (dm *VolumeService) GetVolume(volumeID string) (volume *types.Volume, err e
 }
 
 // CreateVolume creates a Volume
-func (dm *VolumeService) CreateVolume(volumeParams *map[string]interface{}) (volume *types.Volume, err error) {
+func (vs *VolumeService) CreateVolume(volumeParams *map[string]interface{}) (volume *types.Volume, err error) {
 	log.Debug("CreateVolume")
 
-	data, status, err := dm.concertoService.Post("/storage/volumes/", volumeParams)
+	data, status, err := vs.concertoService.Post("/storage/volumes/", volumeParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -91,10 +92,11 @@ func (dm *VolumeService) CreateVolume(volumeParams *map[string]interface{}) (vol
 }
 
 // UpdateVolume updates a Volume by its ID
-func (dm *VolumeService) UpdateVolume(volumeParams *map[string]interface{}, volumeID string) (volume *types.Volume, err error) {
+func (vs *VolumeService) UpdateVolume(volumeParams *map[string]interface{}, volumeID string) (volume *types.Volume, err error) {
 	log.Debug("UpdateVolume")
 
-	data, status, err := dm.concertoService.Put(fmt.Sprintf("/storage/volumes/%s", volumeID), volumeParams)
+	data, status, err := vs.concertoService.Put(fmt.Sprintf("/storage/volumes/%s", volumeID), volumeParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -111,10 +113,11 @@ func (dm *VolumeService) UpdateVolume(volumeParams *map[string]interface{}, volu
 }
 
 // AttachVolume attaches a Volume by its ID
-func (dm *VolumeService) AttachVolume(volumeParams *map[string]interface{}, volumeID string) (server *types.Server, err error) {
+func (vs *VolumeService) AttachVolume(volumeParams *map[string]interface{}, volumeID string) (server *types.Server, err error) {
 	log.Debug("AttachVolume")
 
-	data, status, err := dm.concertoService.Post(fmt.Sprintf("/storage/volumes/%s/attached_server", volumeID), volumeParams)
+	data, status, err := vs.concertoService.Post(fmt.Sprintf("/storage/volumes/%s/attached_server", volumeID), volumeParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -131,10 +134,10 @@ func (dm *VolumeService) AttachVolume(volumeParams *map[string]interface{}, volu
 }
 
 // DetachVolume detaches a Volume by its ID
-func (dm *VolumeService) DetachVolume(volumeID string) (err error) {
+func (vs *VolumeService) DetachVolume(volumeID string) (err error) {
 	log.Debug("DetachVolume")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/storage/volumes/%s/attached_server", volumeID))
+	data, status, err := vs.concertoService.Delete(fmt.Sprintf("/storage/volumes/%s/attached_server", volumeID))
 	if err != nil {
 		return err
 	}
@@ -147,10 +150,10 @@ func (dm *VolumeService) DetachVolume(volumeID string) (err error) {
 }
 
 // DeleteVolume deletes a Volume by its ID
-func (dm *VolumeService) DeleteVolume(volumeID string) (err error) {
+func (vs *VolumeService) DeleteVolume(volumeID string) (err error) {
 	log.Debug("DeleteVolume")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/storage/volumes/%s", volumeID))
+	data, status, err := vs.concertoService.Delete(fmt.Sprintf("/storage/volumes/%s", volumeID))
 	if err != nil {
 		return err
 	}
@@ -163,10 +166,10 @@ func (dm *VolumeService) DeleteVolume(volumeID string) (err error) {
 }
 
 // DiscardVolume discards a Volume by its ID
-func (dm *VolumeService) DiscardVolume(volumeID string) (err error) {
+func (vs *VolumeService) DiscardVolume(volumeID string) (err error) {
 	log.Debug("DiscardVolume")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/storage/volumes/%s/discard", volumeID))
+	data, status, err := vs.concertoService.Delete(fmt.Sprintf("/storage/volumes/%s/discard", volumeID))
 	if err != nil {
 		return err
 	}

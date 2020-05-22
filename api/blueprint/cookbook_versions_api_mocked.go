@@ -11,8 +11,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetCookbookVersionListMocked test mocked function
-func GetCookbookVersionListMocked(t *testing.T, cbsIn []*types.CookbookVersion) []*types.CookbookVersion {
+// ListCookbookVersionsMocked test mocked function
+func ListCookbookVersionsMocked(t *testing.T, cbsIn []*types.CookbookVersion) []*types.CookbookVersion {
 
 	assert := assert.New(t)
 
@@ -28,15 +28,15 @@ func GetCookbookVersionListMocked(t *testing.T, cbsIn []*types.CookbookVersion) 
 
 	// call service
 	cs.On("Get", "/blueprint/cookbook_versions").Return(dIn, 200, nil)
-	cbsOut, err := ds.GetCookbookVersionList()
+	cbsOut, err := ds.ListCookbookVersions()
 	assert.Nil(err, "Error getting cookbook version list")
-	assert.Equal(cbsIn, cbsOut, "GetCookbookVersionList returned different services")
+	assert.Equal(cbsIn, cbsOut, "ListCookbookVersions returned different cookbook versions")
 
 	return cbsOut
 }
 
-// GetCookbookVersionListFailErrMocked test mocked function
-func GetCookbookVersionListFailErrMocked(t *testing.T, cbsIn []*types.CookbookVersion) []*types.CookbookVersion {
+// ListCookbookVersionsFailErrMocked test mocked function
+func ListCookbookVersionsFailErrMocked(t *testing.T, cbsIn []*types.CookbookVersion) []*types.CookbookVersion {
 
 	assert := assert.New(t)
 
@@ -52,7 +52,7 @@ func GetCookbookVersionListFailErrMocked(t *testing.T, cbsIn []*types.CookbookVe
 
 	// call service
 	cs.On("Get", "/blueprint/cookbook_versions").Return(dIn, 200, fmt.Errorf("mocked error"))
-	cbsOut, err := ds.GetCookbookVersionList()
+	cbsOut, err := ds.ListCookbookVersions()
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(cbsOut, "Expecting nil output")
@@ -61,8 +61,8 @@ func GetCookbookVersionListFailErrMocked(t *testing.T, cbsIn []*types.CookbookVe
 	return cbsOut
 }
 
-// GetCookbookVersionListFailStatusMocked test mocked function
-func GetCookbookVersionListFailStatusMocked(t *testing.T, cbsIn []*types.CookbookVersion) []*types.CookbookVersion {
+// ListCookbookVersionsFailStatusMocked test mocked function
+func ListCookbookVersionsFailStatusMocked(t *testing.T, cbsIn []*types.CookbookVersion) []*types.CookbookVersion {
 
 	assert := assert.New(t)
 
@@ -78,7 +78,7 @@ func GetCookbookVersionListFailStatusMocked(t *testing.T, cbsIn []*types.Cookboo
 
 	// call service
 	cs.On("Get", "/blueprint/cookbook_versions").Return(dIn, 499, nil)
-	cbsOut, err := ds.GetCookbookVersionList()
+	cbsOut, err := ds.ListCookbookVersions()
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(cbsOut, "Expecting nil output")
@@ -87,8 +87,8 @@ func GetCookbookVersionListFailStatusMocked(t *testing.T, cbsIn []*types.Cookboo
 	return cbsOut
 }
 
-// GetCookbookVersionListFailJSONMocked test mocked function
-func GetCookbookVersionListFailJSONMocked(t *testing.T, cbsIn []*types.CookbookVersion) []*types.CookbookVersion {
+// ListCookbookVersionsFailJSONMocked test mocked function
+func ListCookbookVersionsFailJSONMocked(t *testing.T, cbsIn []*types.CookbookVersion) []*types.CookbookVersion {
 
 	assert := assert.New(t)
 
@@ -103,7 +103,7 @@ func GetCookbookVersionListFailJSONMocked(t *testing.T, cbsIn []*types.CookbookV
 
 	// call service
 	cs.On("Get", "/blueprint/cookbook_versions").Return(dIn, 200, nil)
-	cbsOut, err := ds.GetCookbookVersionList()
+	cbsOut, err := ds.ListCookbookVersions()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(cbsOut, "Expecting nil output")

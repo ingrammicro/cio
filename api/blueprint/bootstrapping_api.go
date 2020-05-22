@@ -51,6 +51,7 @@ func (bs *BootstrappingService) ReportBootstrappingAppliedConfiguration(bootstra
 	log.Debug("ReportBootstrappingAppliedConfiguration")
 
 	data, status, err := bs.concertoService.Put("/blueprint/applied_configuration", bootstrappingAppliedConfigurationParams)
+
 	if err != nil {
 		return err
 	}
@@ -67,6 +68,7 @@ func (bs *BootstrappingService) ReportBootstrappingLog(bootstrappingContinuousRe
 	log.Debug("ReportBootstrappingLog")
 
 	data, status, err := bs.concertoService.Post("/blueprint/bootstrap_logs", bootstrappingContinuousReportParams)
+
 	if err != nil {
 		return nil, status, err
 	}

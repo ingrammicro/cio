@@ -37,7 +37,7 @@ func ScriptsList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	scriptSvc, formatter := WireUpScript(c)
 
-	scripts, err := scriptSvc.GetScriptList()
+	scripts, err := scriptSvc.ListScripts()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive script data", err)
 	}

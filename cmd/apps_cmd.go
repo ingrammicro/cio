@@ -33,7 +33,7 @@ func AppList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	appSvc, formatter := WireUpApp(c)
 
-	apps, err := appSvc.GetAppList()
+	apps, err := appSvc.ListApps()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive app data", err)
 	}

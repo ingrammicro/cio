@@ -35,7 +35,7 @@ func FloatingIPList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	floatingIPSvc, formatter := WireUpFloatingIP(c)
 
-	floatingIPs, err := floatingIPSvc.GetFloatingIPList(c.String("server-id"))
+	floatingIPs, err := floatingIPSvc.ListFloatingIPs(c.String("server-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive floating IP data", err)
 	}

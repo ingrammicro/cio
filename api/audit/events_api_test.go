@@ -13,18 +13,18 @@ func TestNewEventServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetEventList(t *testing.T) {
+func TestListEvents(t *testing.T) {
 	eventsIn := testdata.GetEventData()
-	GetEventListMocked(t, eventsIn)
-	GetEventListFailErrMocked(t, eventsIn)
-	GetEventListFailStatusMocked(t, eventsIn)
-	GetEventListFailJSONMocked(t, eventsIn)
+	ListEventsMocked(t, eventsIn)
+	ListEventsFailErrMocked(t, eventsIn)
+	ListEventsFailStatusMocked(t, eventsIn)
+	ListEventsFailJSONMocked(t, eventsIn)
 }
 
-func TestGetSysEventList(t *testing.T) {
+func TestListSysEvents(t *testing.T) {
 	eventsIn := testdata.GetEventData()
-	GetSysEventListMocked(t, eventsIn)
-	GetSysEventListFailErrMocked(t, eventsIn)
-	GetSysEventListFailStatusMocked(t, eventsIn)
-	GetSysEventListFailJSONMocked(t, eventsIn)
+	ListSysEventsMocked(t, eventsIn)
+	ListSysEventsFailErrMocked(t, eventsIn)
+	ListSysEventsFailStatusMocked(t, eventsIn)
+	ListSysEventsFailJSONMocked(t, eventsIn)
 }

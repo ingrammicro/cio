@@ -12,8 +12,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetServerArrayListMocked test mocked function
-func GetServerArrayListMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
+// ListServerArraysMocked test mocked function
+func ListServerArraysMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
 
 	assert := assert.New(t)
 
@@ -29,15 +29,15 @@ func GetServerArrayListMocked(t *testing.T, serverArraysIn []*types.ServerArray)
 
 	// call service
 	cs.On("Get", "/cloud/server_arrays").Return(dIn, 200, nil)
-	serverArraysOut, err := ds.GetServerArrayList()
+	serverArraysOut, err := ds.ListServerArrays()
 	assert.Nil(err, "Error getting server array list")
-	assert.Equal(serverArraysIn, serverArraysOut, "GetServerArrayList returned different server arrays")
+	assert.Equal(serverArraysIn, serverArraysOut, "ListServerArrays returned different server arrays")
 
 	return serverArraysOut
 }
 
-// GetServerArrayListFailErrMocked test mocked function
-func GetServerArrayListFailErrMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
+// ListServerArraysFailErrMocked test mocked function
+func ListServerArraysFailErrMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
 
 	assert := assert.New(t)
 
@@ -53,7 +53,7 @@ func GetServerArrayListFailErrMocked(t *testing.T, serverArraysIn []*types.Serve
 
 	// call service
 	cs.On("Get", "/cloud/server_arrays").Return(dIn, 200, fmt.Errorf("mocked error"))
-	serverArraysOut, err := ds.GetServerArrayList()
+	serverArraysOut, err := ds.ListServerArrays()
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serverArraysOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -61,8 +61,8 @@ func GetServerArrayListFailErrMocked(t *testing.T, serverArraysIn []*types.Serve
 	return serverArraysOut
 }
 
-// GetServerArrayListFailStatusMocked test mocked function
-func GetServerArrayListFailStatusMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
+// ListServerArraysFailStatusMocked test mocked function
+func ListServerArraysFailStatusMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
 
 	assert := assert.New(t)
 
@@ -78,7 +78,7 @@ func GetServerArrayListFailStatusMocked(t *testing.T, serverArraysIn []*types.Se
 
 	// call service
 	cs.On("Get", "/cloud/server_arrays").Return(dIn, 499, nil)
-	serverArraysOut, err := ds.GetServerArrayList()
+	serverArraysOut, err := ds.ListServerArrays()
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serverArraysOut, "Expecting nil output")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -86,8 +86,8 @@ func GetServerArrayListFailStatusMocked(t *testing.T, serverArraysIn []*types.Se
 	return serverArraysOut
 }
 
-// GetServerArrayListFailJSONMocked test mocked function
-func GetServerArrayListFailJSONMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
+// ListServerArraysFailJSONMocked test mocked function
+func ListServerArraysFailJSONMocked(t *testing.T, serverArraysIn []*types.ServerArray) []*types.ServerArray {
 
 	assert := assert.New(t)
 
@@ -102,7 +102,7 @@ func GetServerArrayListFailJSONMocked(t *testing.T, serverArraysIn []*types.Serv
 
 	// call service
 	cs.On("Get", "/cloud/server_arrays").Return(dIn, 200, nil)
-	serverArraysOut, err := ds.GetServerArrayList()
+	serverArraysOut, err := ds.ListServerArrays()
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serverArraysOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
@@ -912,8 +912,8 @@ func EnlargeServerArrayFailJSONMocked(t *testing.T, serverArrayIn *types.ServerA
 	return serverArrayOut
 }
 
-// GetServerArrayServerListMocked test mocked function
-func GetServerArrayServerListMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
+// ListServerArrayServersMocked test mocked function
+func ListServerArrayServersMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -929,15 +929,15 @@ func GetServerArrayServerListMocked(t *testing.T, serversIn []*types.Server, ser
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID)).Return(dIn, 200, nil)
-	serversOut, err := ds.GetServerArrayServerList(serverArrayID)
+	serversOut, err := ds.ListServerArrayServers(serverArrayID)
 	assert.Nil(err, "Error getting server list")
-	assert.Equal(serversIn, serversOut, "GetServerArrayServerList returned different servers")
+	assert.Equal(serversIn, serversOut, "ListServerArrayServers returned different servers")
 
 	return serversOut
 }
 
-// GetServerArrayServerListFailErrMocked test mocked function
-func GetServerArrayServerListFailErrMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
+// ListServerArrayServersFailErrMocked test mocked function
+func ListServerArrayServersFailErrMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -953,7 +953,7 @@ func GetServerArrayServerListFailErrMocked(t *testing.T, serversIn []*types.Serv
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID)).Return(dIn, 200, fmt.Errorf("mocked error"))
-	serversOut, err := ds.GetServerArrayServerList(serverArrayID)
+	serversOut, err := ds.ListServerArrayServers(serverArrayID)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serversOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -961,8 +961,8 @@ func GetServerArrayServerListFailErrMocked(t *testing.T, serversIn []*types.Serv
 	return serversOut
 }
 
-// GetServerArrayServerListFailStatusMocked test mocked function
-func GetServerArrayServerListFailStatusMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
+// ListServerArrayServersFailStatusMocked test mocked function
+func ListServerArrayServersFailStatusMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -978,7 +978,7 @@ func GetServerArrayServerListFailStatusMocked(t *testing.T, serversIn []*types.S
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID)).Return(dIn, 499, nil)
-	serversOut, err := ds.GetServerArrayServerList(serverArrayID)
+	serversOut, err := ds.ListServerArrayServers(serverArrayID)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serversOut, "Expecting nil output")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -986,8 +986,8 @@ func GetServerArrayServerListFailStatusMocked(t *testing.T, serversIn []*types.S
 	return serversOut
 }
 
-// GetServerArrayServerListFailJSONMocked test mocked function
-func GetServerArrayServerListFailJSONMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
+// ListServerArrayServersFailJSONMocked test mocked function
+func ListServerArrayServersFailJSONMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -1002,7 +1002,7 @@ func GetServerArrayServerListFailJSONMocked(t *testing.T, serversIn []*types.Ser
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID)).Return(dIn, 200, nil)
-	serversOut, err := ds.GetServerArrayServerList(serverArrayID)
+	serversOut, err := ds.ListServerArrayServers(serverArrayID)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serversOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")

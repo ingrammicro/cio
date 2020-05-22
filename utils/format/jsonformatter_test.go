@@ -62,7 +62,7 @@ func TestPrintListJSON(t *testing.T) {
 
 	assert := assert.New(t)
 	serversIn := testdata.GetServerData()
-	serverOut := cloud.GetServerListMocked(t, serversIn)
+	serverOut := cloud.ListServersMocked(t, serversIn)
 
 	var b bytes.Buffer
 	mockOut := bufio.NewWriter(&b)
@@ -82,7 +82,7 @@ func TestPrintListTemplateJSON(t *testing.T) {
 
 	assert := assert.New(t)
 	templatesIn := testdata.GetTemplateData()
-	templatesOut := blueprint.GetTemplateListMocked(t, templatesIn)
+	templatesOut := blueprint.ListTemplatesMocked(t, templatesIn)
 
 	var b bytes.Buffer
 	mockOut := bufio.NewWriter(&b)

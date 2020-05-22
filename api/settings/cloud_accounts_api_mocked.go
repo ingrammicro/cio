@@ -12,8 +12,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetCloudAccountListMocked test mocked function
-func GetCloudAccountListMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
+// ListCloudAccountsMocked test mocked function
+func ListCloudAccountsMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -29,15 +29,15 @@ func GetCloudAccountListMocked(t *testing.T, cloudAccountsIn []*types.CloudAccou
 
 	// call service
 	cs.On("Get", "/settings/cloud_accounts").Return(dIn, 200, nil)
-	cloudAccountsOut, err := ds.GetCloudAccountList()
+	cloudAccountsOut, err := ds.ListCloudAccounts()
 	assert.Nil(err, "Error getting cloud account list")
-	assert.Equal(cloudAccountsIn, cloudAccountsOut, "GetCloudAccountList returned different cloud accounts")
+	assert.Equal(cloudAccountsIn, cloudAccountsOut, "ListCloudAccounts returned different cloud accounts")
 
 	return cloudAccountsOut
 }
 
-// GetCloudAccountListFailErrMocked test mocked function
-func GetCloudAccountListFailErrMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
+// ListCloudAccountsFailErrMocked test mocked function
+func ListCloudAccountsFailErrMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -53,7 +53,7 @@ func GetCloudAccountListFailErrMocked(t *testing.T, cloudAccountsIn []*types.Clo
 
 	// call service
 	cs.On("Get", "/settings/cloud_accounts").Return(dIn, 200, fmt.Errorf("mocked error"))
-	cloudAccountsOut, err := ds.GetCloudAccountList()
+	cloudAccountsOut, err := ds.ListCloudAccounts()
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(cloudAccountsOut, "Expecting nil output")
@@ -62,8 +62,8 @@ func GetCloudAccountListFailErrMocked(t *testing.T, cloudAccountsIn []*types.Clo
 	return cloudAccountsOut
 }
 
-// GetCloudAccountListFailStatusMocked test mocked function
-func GetCloudAccountListFailStatusMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
+// ListCloudAccountsFailStatusMocked test mocked function
+func ListCloudAccountsFailStatusMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -79,7 +79,7 @@ func GetCloudAccountListFailStatusMocked(t *testing.T, cloudAccountsIn []*types.
 
 	// call service
 	cs.On("Get", "/settings/cloud_accounts").Return(dIn, 499, nil)
-	cloudAccountsOut, err := ds.GetCloudAccountList()
+	cloudAccountsOut, err := ds.ListCloudAccounts()
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(cloudAccountsOut, "Expecting nil output")
@@ -88,8 +88,8 @@ func GetCloudAccountListFailStatusMocked(t *testing.T, cloudAccountsIn []*types.
 	return cloudAccountsOut
 }
 
-// GetCloudAccountListFailJSONMocked test mocked function
-func GetCloudAccountListFailJSONMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
+// ListCloudAccountsFailJSONMocked test mocked function
+func ListCloudAccountsFailJSONMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -104,7 +104,7 @@ func GetCloudAccountListFailJSONMocked(t *testing.T, cloudAccountsIn []*types.Cl
 
 	// call service
 	cs.On("Get", "/settings/cloud_accounts").Return(dIn, 200, nil)
-	cloudAccountsOut, err := ds.GetCloudAccountList()
+	cloudAccountsOut, err := ds.ListCloudAccounts()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(cloudAccountsOut, "Expecting nil output")
