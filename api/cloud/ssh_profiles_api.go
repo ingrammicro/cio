@@ -65,10 +65,10 @@ func (dm *SSHProfileService) GetSSHProfile(ID string) (sshProfile *types.SSHProf
 }
 
 // CreateSSHProfile creates a sshProfile
-func (dm *SSHProfileService) CreateSSHProfile(sshProfileVector *map[string]interface{}) (sshProfile *types.SSHProfile, err error) {
+func (dm *SSHProfileService) CreateSSHProfile(sshProfileParams *map[string]interface{}) (sshProfile *types.SSHProfile, err error) {
 	log.Debug("CreateSSHProfile")
 
-	data, status, err := dm.concertoService.Post("/cloud/ssh_profiles/", sshProfileVector)
+	data, status, err := dm.concertoService.Post("/cloud/ssh_profiles/", sshProfileParams)
 	if err != nil {
 		return nil, err
 	}
@@ -85,10 +85,10 @@ func (dm *SSHProfileService) CreateSSHProfile(sshProfileVector *map[string]inter
 }
 
 // UpdateSSHProfile updates a sshProfile by its ID
-func (dm *SSHProfileService) UpdateSSHProfile(sshProfileVector *map[string]interface{}, ID string) (sshProfile *types.SSHProfile, err error) {
+func (dm *SSHProfileService) UpdateSSHProfile(sshProfileParams *map[string]interface{}, ID string) (sshProfile *types.SSHProfile, err error) {
 	log.Debug("UpdateSSHProfile")
 
-	data, status, err := dm.concertoService.Put(fmt.Sprintf("/cloud/ssh_profiles/%s", ID), sshProfileVector)
+	data, status, err := dm.concertoService.Put(fmt.Sprintf("/cloud/ssh_profiles/%s", ID), sshProfileParams)
 	if err != nil {
 		return nil, err
 	}

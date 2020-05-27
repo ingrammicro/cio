@@ -66,10 +66,10 @@ func (dm *VPCService) GetVPC(ID string) (vpc *types.Vpc, err error) {
 }
 
 // CreateVPC creates a VPC
-func (dm *VPCService) CreateVPC(vpcVector *map[string]interface{}) (vpc *types.Vpc, err error) {
+func (dm *VPCService) CreateVPC(vpcParams *map[string]interface{}) (vpc *types.Vpc, err error) {
 	log.Debug("CreateVPC")
 
-	data, status, err := dm.concertoService.Post("/network/vpcs/", vpcVector)
+	data, status, err := dm.concertoService.Post("/network/vpcs/", vpcParams)
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +86,10 @@ func (dm *VPCService) CreateVPC(vpcVector *map[string]interface{}) (vpc *types.V
 }
 
 // UpdateVPC updates a VPC by its ID
-func (dm *VPCService) UpdateVPC(vpcVector *map[string]interface{}, ID string) (vpc *types.Vpc, err error) {
+func (dm *VPCService) UpdateVPC(vpcParams *map[string]interface{}, ID string) (vpc *types.Vpc, err error) {
 	log.Debug("UpdateVPC")
 
-	data, status, err := dm.concertoService.Put(fmt.Sprintf("/network/vpcs/%s", ID), vpcVector)
+	data, status, err := dm.concertoService.Put(fmt.Sprintf("/network/vpcs/%s", ID), vpcParams)
 	if err != nil {
 		return nil, err
 	}

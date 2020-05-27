@@ -65,10 +65,10 @@ func (sc *ScriptService) GetScript(scriptID string) (script *types.Script, err e
 }
 
 // CreateScript creates a script
-func (sc *ScriptService) CreateScript(scriptVector *map[string]interface{}) (script *types.Script, err error) {
+func (sc *ScriptService) CreateScript(scriptParams *map[string]interface{}) (script *types.Script, err error) {
 	log.Debug("CreateScript")
 
-	data, status, err := sc.concertoService.Post("/blueprint/scripts", scriptVector)
+	data, status, err := sc.concertoService.Post("/blueprint/scripts", scriptParams)
 	if err != nil {
 		return nil, err
 	}
@@ -85,10 +85,10 @@ func (sc *ScriptService) CreateScript(scriptVector *map[string]interface{}) (scr
 }
 
 // UpdateScript updates a script by its ID
-func (sc *ScriptService) UpdateScript(scriptVector *map[string]interface{}, scriptID string) (script *types.Script, err error) {
+func (sc *ScriptService) UpdateScript(scriptParams *map[string]interface{}, scriptID string) (script *types.Script, err error) {
 	log.Debug("UpdateScript")
 
-	data, status, err := sc.concertoService.Put(fmt.Sprintf("/blueprint/scripts/%s", scriptID), scriptVector)
+	data, status, err := sc.concertoService.Put(fmt.Sprintf("/blueprint/scripts/%s", scriptID), scriptParams)
 	if err != nil {
 		return nil, err
 	}
@@ -157,10 +157,10 @@ func (sc *ScriptService) UploadScriptAttachment(sourceFilePath string, targetURL
 }
 
 // UploadedScriptAttachment sets "uploaded" status to the attachment by its ID
-func (sc *ScriptService) UploadedScriptAttachment(attachmentVector *map[string]interface{}, attachmentID string) (attachment *types.Attachment, err error) {
+func (sc *ScriptService) UploadedScriptAttachment(attachmentParams *map[string]interface{}, attachmentID string) (attachment *types.Attachment, err error) {
 	log.Debug("UploadedScriptAttachment")
 
-	data, status, err := sc.concertoService.Put(fmt.Sprintf("/blueprint/attachments/%s/uploaded", attachmentID), attachmentVector)
+	data, status, err := sc.concertoService.Put(fmt.Sprintf("/blueprint/attachments/%s/uploaded", attachmentID), attachmentParams)
 	if err != nil {
 		return nil, err
 	}

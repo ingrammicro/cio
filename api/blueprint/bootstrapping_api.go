@@ -47,10 +47,10 @@ func (bs *BootstrappingService) GetBootstrappingConfiguration() (bootstrappingCo
 }
 
 // ReportBootstrappingAppliedConfiguration informs the platform of applied changes
-func (bs *BootstrappingService) ReportBootstrappingAppliedConfiguration(BootstrappingAppliedConfigurationVector *map[string]interface{}) (err error) {
+func (bs *BootstrappingService) ReportBootstrappingAppliedConfiguration(bootstrappingAppliedConfigurationParams *map[string]interface{}) (err error) {
 	log.Debug("ReportBootstrappingAppliedConfiguration")
 
-	data, status, err := bs.concertoService.Put("/blueprint/applied_configuration", BootstrappingAppliedConfigurationVector)
+	data, status, err := bs.concertoService.Put("/blueprint/applied_configuration", bootstrappingAppliedConfigurationParams)
 	if err != nil {
 		return err
 	}
@@ -63,10 +63,10 @@ func (bs *BootstrappingService) ReportBootstrappingAppliedConfiguration(Bootstra
 }
 
 // ReportBootstrappingLog reports a policy files application result
-func (bs *BootstrappingService) ReportBootstrappingLog(BootstrappingContinuousReportVector *map[string]interface{}) (command *types.BootstrappingContinuousReport, status int, err error) {
+func (bs *BootstrappingService) ReportBootstrappingLog(bootstrappingContinuousReportParams *map[string]interface{}) (command *types.BootstrappingContinuousReport, status int, err error) {
 	log.Debug("ReportBootstrappingLog")
 
-	data, status, err := bs.concertoService.Post("/blueprint/bootstrap_logs", BootstrappingContinuousReportVector)
+	data, status, err := bs.concertoService.Post("/blueprint/bootstrap_logs", bootstrappingContinuousReportParams)
 	if err != nil {
 		return nil, status, err
 	}
