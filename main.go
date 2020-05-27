@@ -107,7 +107,7 @@ var clientCommands = []cli.Command{
 	{
 		Name:        "network",
 		ShortName:   "net",
-		Usage:       "Manages network related commands for firewall profiles",
+		Usage:       "Manages network related commands",
 		Subcommands: append(network.SubCommands()),
 	},
 	{

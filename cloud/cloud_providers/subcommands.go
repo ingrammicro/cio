@@ -24,5 +24,16 @@ func SubCommands() []cli.Command {
 				},
 			},
 		},
+		{
+			Name:   "list-load-balancer-plans",
+			Usage:  "This action lists the load balancer plans offered by the cloud provider identified by the given id",
+			Action: cmd.CloudProviderLoadBalancerPlansList,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "cloud-provider-id",
+					Usage: "Cloud provider id",
+				},
+			},
+		},
 	}
 }

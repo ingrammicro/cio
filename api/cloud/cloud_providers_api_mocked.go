@@ -210,3 +210,105 @@ func GetServerStoragePlanListFailJSONMocked(t *testing.T, storagePlansIn []*type
 
 	return storagePlansOut
 }
+
+// ListLoadBalancerPlansMocked test mocked function
+func ListLoadBalancerPlansMocked(t *testing.T, loadBalancerPlansIn []*types.LoadBalancerPlan, providerID string) []*types.LoadBalancerPlan {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewCloudProviderService(cs)
+	assert.Nil(err, "Couldn't load cloudProvider service")
+	assert.NotNil(ds, "CloudProvider service not instanced")
+
+	// to json
+	dIn, err := json.Marshal(loadBalancerPlansIn)
+	assert.Nil(err, "LoadBalancerPlans test data corrupted")
+
+	// call service
+	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/load_balancer_plans", providerID)).Return(dIn, 200, nil)
+	loadBalancerPlansOut, err := ds.ListLoadBalancerPlans(providerID)
+
+	assert.Nil(err, "Error getting load balancer plan list")
+	assert.Equal(loadBalancerPlansIn, loadBalancerPlansOut, "ListLoadBalancerPlans returned different load balancer plans")
+
+	return loadBalancerPlansOut
+}
+
+// ListLoadBalancerPlansFailErrMocked test mocked function
+func ListLoadBalancerPlansFailErrMocked(t *testing.T, loadBalancerPlansIn []*types.LoadBalancerPlan, providerID string) []*types.LoadBalancerPlan {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewCloudProviderService(cs)
+	assert.Nil(err, "Couldn't load cloudProvider service")
+	assert.NotNil(ds, "CloudProvider service not instanced")
+
+	// to json
+	dIn, err := json.Marshal(loadBalancerPlansIn)
+	assert.Nil(err, "LoadBalancerPlans test data corrupted")
+
+	// call service
+	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/load_balancer_plans", providerID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	loadBalancerPlansOut, err := ds.ListLoadBalancerPlans(providerID)
+
+	assert.NotNil(err, "We are expecting an error")
+	assert.Nil(loadBalancerPlansOut, "Expecting nil output")
+	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
+
+	return loadBalancerPlansOut
+}
+
+// ListLoadBalancerPlansFailStatusMocked test mocked function
+func ListLoadBalancerPlansFailStatusMocked(t *testing.T, loadBalancerPlansIn []*types.LoadBalancerPlan, providerID string) []*types.LoadBalancerPlan {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewCloudProviderService(cs)
+	assert.Nil(err, "Couldn't load cloudProvider service")
+	assert.NotNil(ds, "CloudProvider service not instanced")
+
+	// to json
+	dIn, err := json.Marshal(loadBalancerPlansIn)
+	assert.Nil(err, "LoadBalancerPlans test data corrupted")
+
+	// call service
+	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/load_balancer_plans", providerID)).Return(dIn, 499, nil)
+	loadBalancerPlansOut, err := ds.ListLoadBalancerPlans(providerID)
+
+	assert.NotNil(err, "We are expecting an status code error")
+	assert.Nil(loadBalancerPlansOut, "Expecting nil output")
+	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+
+	return loadBalancerPlansOut
+}
+
+// ListLoadBalancerPlansFailJSONMocked test mocked function
+func ListLoadBalancerPlansFailJSONMocked(t *testing.T, loadBalancerPlansIn []*types.LoadBalancerPlan, providerID string) []*types.LoadBalancerPlan {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewCloudProviderService(cs)
+	assert.Nil(err, "Couldn't load cloudProvider service")
+	assert.NotNil(ds, "CloudProvider service not instanced")
+
+	// wrong json
+	dIn := []byte{10, 20, 30}
+
+	// call service
+	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/load_balancer_plans", providerID)).Return(dIn, 200, nil)
+	loadBalancerPlansOut, err := ds.ListLoadBalancerPlans(providerID)
+
+	assert.NotNil(err, "We are expecting a marshalling error")
+	assert.Nil(loadBalancerPlansOut, "Expecting nil output")
+	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
+
+	return loadBalancerPlansOut
+}
