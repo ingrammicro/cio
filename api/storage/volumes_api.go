@@ -92,7 +92,7 @@ func (vs *VolumeService) CreateVolume(volumeParams *map[string]interface{}) (vol
 }
 
 // UpdateVolume updates a Volume by its ID
-func (vs *VolumeService) UpdateVolume(volumeParams *map[string]interface{}, volumeID string) (volume *types.Volume, err error) {
+func (vs *VolumeService) UpdateVolume(volumeID string, volumeParams *map[string]interface{}) (volume *types.Volume, err error) {
 	log.Debug("UpdateVolume")
 
 	data, status, err := vs.concertoService.Put(fmt.Sprintf("/storage/volumes/%s", volumeID), volumeParams)
@@ -113,7 +113,7 @@ func (vs *VolumeService) UpdateVolume(volumeParams *map[string]interface{}, volu
 }
 
 // AttachVolume attaches a Volume by its ID
-func (vs *VolumeService) AttachVolume(volumeParams *map[string]interface{}, volumeID string) (server *types.Server, err error) {
+func (vs *VolumeService) AttachVolume(volumeID string, volumeParams *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("AttachVolume")
 
 	data, status, err := vs.concertoService.Post(fmt.Sprintf("/storage/volumes/%s/attached_server", volumeID), volumeParams)

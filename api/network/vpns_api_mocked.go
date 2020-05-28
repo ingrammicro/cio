@@ -134,7 +134,7 @@ func CreateVPNMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.VpcID), mapIn).Return(dOut, 200, nil)
-	vpnOut, err := ds.CreateVPN(mapIn, vpnIn.VpcID)
+	vpnOut, err := ds.CreateVPN(vpnIn.VpcID, mapIn)
 	assert.Nil(err, "Error creating VPN list")
 	assert.Equal(vpnIn, vpnOut, "CreateVPN returned different VPNs")
 
@@ -162,7 +162,7 @@ func CreateVPNFailErrMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.VpcID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	vpnOut, err := ds.CreateVPN(mapIn, vpnIn.VpcID)
+	vpnOut, err := ds.CreateVPN(vpnIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(vpnOut, "Expecting nil output")
@@ -192,7 +192,7 @@ func CreateVPNFailStatusMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.VpcID), mapIn).Return(dOut, 499, nil)
-	vpnOut, err := ds.CreateVPN(mapIn, vpnIn.VpcID)
+	vpnOut, err := ds.CreateVPN(vpnIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(vpnOut, "Expecting nil output")
@@ -221,7 +221,7 @@ func CreateVPNFailJSONMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.VpcID), mapIn).Return(dIn, 200, nil)
-	vpnOut, err := ds.CreateVPN(mapIn, vpnIn.VpcID)
+	vpnOut, err := ds.CreateVPN(vpnIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(vpnOut, "Expecting nil output")

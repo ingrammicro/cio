@@ -235,7 +235,7 @@ func CreateSubnetMocked(t *testing.T, subnetIn *types.Subnet) *types.Subnet {
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/subnets", subnetIn.VpcID), mapIn).Return(dOut, 200, nil)
-	subnetOut, err := ds.CreateSubnet(mapIn, subnetIn.VpcID)
+	subnetOut, err := ds.CreateSubnet(subnetIn.VpcID, mapIn)
 	assert.Nil(err, "Error creating Subnet list")
 	assert.Equal(subnetIn, subnetOut, "CreateSubnet returned different Subnets")
 
@@ -263,7 +263,7 @@ func CreateSubnetFailErrMocked(t *testing.T, subnetIn *types.Subnet) *types.Subn
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/subnets", subnetIn.VpcID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	subnetOut, err := ds.CreateSubnet(mapIn, subnetIn.VpcID)
+	subnetOut, err := ds.CreateSubnet(subnetIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(subnetOut, "Expecting nil output")
@@ -293,7 +293,7 @@ func CreateSubnetFailStatusMocked(t *testing.T, subnetIn *types.Subnet) *types.S
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/subnets", subnetIn.VpcID), mapIn).Return(dOut, 499, nil)
-	subnetOut, err := ds.CreateSubnet(mapIn, subnetIn.VpcID)
+	subnetOut, err := ds.CreateSubnet(subnetIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(subnetOut, "Expecting nil output")
@@ -322,7 +322,7 @@ func CreateSubnetFailJSONMocked(t *testing.T, subnetIn *types.Subnet) *types.Sub
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/subnets", subnetIn.VpcID), mapIn).Return(dIn, 200, nil)
-	subnetOut, err := ds.CreateSubnet(mapIn, subnetIn.VpcID)
+	subnetOut, err := ds.CreateSubnet(subnetIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(subnetOut, "Expecting nil output")
@@ -352,7 +352,7 @@ func UpdateSubnetMocked(t *testing.T, subnetIn *types.Subnet) *types.Subnet {
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/subnets/%s", subnetIn.ID), mapIn).Return(dOut, 200, nil)
-	subnetOut, err := ds.UpdateSubnet(mapIn, subnetIn.ID)
+	subnetOut, err := ds.UpdateSubnet(subnetIn.ID, mapIn)
 	assert.Nil(err, "Error updating Subnet list")
 	assert.Equal(subnetIn, subnetOut, "UpdateSubnet returned different Subnets")
 
@@ -380,7 +380,7 @@ func UpdateSubnetFailErrMocked(t *testing.T, subnetIn *types.Subnet) *types.Subn
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/subnets/%s", subnetIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	subnetOut, err := ds.UpdateSubnet(mapIn, subnetIn.ID)
+	subnetOut, err := ds.UpdateSubnet(subnetIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(subnetOut, "Expecting nil output")
@@ -410,7 +410,7 @@ func UpdateSubnetFailStatusMocked(t *testing.T, subnetIn *types.Subnet) *types.S
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/subnets/%s", subnetIn.ID), mapIn).Return(dOut, 499, nil)
-	subnetOut, err := ds.UpdateSubnet(mapIn, subnetIn.ID)
+	subnetOut, err := ds.UpdateSubnet(subnetIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(subnetOut, "Expecting nil output")
@@ -438,7 +438,7 @@ func UpdateSubnetFailJSONMocked(t *testing.T, subnetIn *types.Subnet) *types.Sub
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/subnets/%s", subnetIn.ID), mapIn).Return(dIn, 200, nil)
-	subnetOut, err := ds.UpdateSubnet(mapIn, subnetIn.ID)
+	subnetOut, err := ds.UpdateSubnet(subnetIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(subnetOut, "Expecting nil output")

@@ -102,10 +102,10 @@ func (cvs *CookbookVersionService) UploadCookbookVersion(sourceFilePath string, 
 }
 
 // ProcessCookbookVersion process a cookbook version by its ID
-func (cvs *CookbookVersionService) ProcessCookbookVersion(cookbookVersionParams *map[string]interface{}, ID string) (cookbookVersion *types.CookbookVersion, err error) {
+func (cvs *CookbookVersionService) ProcessCookbookVersion(cookbookVersionID string, cookbookVersionParams *map[string]interface{}) (cookbookVersion *types.CookbookVersion, err error) {
 	log.Debug("ProcessCookbookVersion")
 
-	data, status, err := cvs.concertoService.Post(fmt.Sprintf("/blueprint/cookbook_versions/%s/process", ID), cookbookVersionParams)
+	data, status, err := cvs.concertoService.Post(fmt.Sprintf("/blueprint/cookbook_versions/%s/process", cookbookVersionID), cookbookVersionParams)
 
 	if err != nil {
 		return nil, err

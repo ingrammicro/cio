@@ -192,7 +192,7 @@ func LabelAdd(c *cli.Context) error {
 		"resources": resourcesData,
 	}
 
-	labeledResources, err := labelsSvc.AddLabel(&labelIn, labelID)
+	labeledResources, err := labelsSvc.AddLabel(labelID, &labelIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't add label data", err)
 	}

@@ -273,7 +273,7 @@ func AddLabelMocked(t *testing.T, labelIn *types.Label, labeledResourcesOut []*t
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/labels/%s/resources", labelIn.ID), mapIn).Return(dOut, 200, nil)
-	labeledOut, err := ds.AddLabel(mapIn, labelIn.ID)
+	labeledOut, err := ds.AddLabel(labelIn.ID, mapIn)
 	assert.Nil(err, "Error creating label")
 	assert.Equal(labeledOut, labeledResourcesOut, "CreateLabel returned invalid labeled resources")
 
@@ -301,7 +301,7 @@ func AddLabelFailErrMocked(t *testing.T, labelIn *types.Label, labeledResourcesO
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/labels/%s/resources", labelIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	labeledOut, err := ds.AddLabel(mapIn, labelIn.ID)
+	labeledOut, err := ds.AddLabel(labelIn.ID, mapIn)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(labeledOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -330,7 +330,7 @@ func AddLabelFailStatusMocked(t *testing.T, labelIn *types.Label, labeledResourc
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/labels/%s/resources", labelIn.ID), mapIn).Return(dOut, 404, nil)
-	labeledOut, err := ds.AddLabel(mapIn, labelIn.ID)
+	labeledOut, err := ds.AddLabel(labelIn.ID, mapIn)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(labeledOut, "Expecting nil output")
 	assert.Contains(err.Error(), "404", "Error should contain http code 404")
@@ -358,7 +358,7 @@ func AddLabelFailJSONMocked(t *testing.T, labelIn *types.Label, labeledResources
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/labels/%s/resources", labelIn.ID), mapIn).Return(dOut, 200, nil)
-	labeledOut, err := ds.AddLabel(mapIn, labelIn.ID)
+	labeledOut, err := ds.AddLabel(labelIn.ID, mapIn)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(labeledOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")

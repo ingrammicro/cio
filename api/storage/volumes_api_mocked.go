@@ -375,7 +375,7 @@ func UpdateVolumeMocked(t *testing.T, volumeIn *types.Volume) *types.Volume {
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/storage/volumes/%s", volumeIn.ID), mapIn).Return(dOut, 200, nil)
-	volumeOut, err := ds.UpdateVolume(mapIn, volumeIn.ID)
+	volumeOut, err := ds.UpdateVolume(volumeIn.ID, mapIn)
 	assert.Nil(err, "Error updating volume list")
 	assert.Equal(volumeIn, volumeOut, "UpdateVolume returned different volumes")
 
@@ -403,7 +403,7 @@ func UpdateVolumeFailErrMocked(t *testing.T, volumeIn *types.Volume) *types.Volu
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/storage/volumes/%s", volumeIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	volumeOut, err := ds.UpdateVolume(mapIn, volumeIn.ID)
+	volumeOut, err := ds.UpdateVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(volumeOut, "Expecting nil output")
@@ -433,7 +433,7 @@ func UpdateVolumeFailStatusMocked(t *testing.T, volumeIn *types.Volume) *types.V
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/storage/volumes/%s", volumeIn.ID), mapIn).Return(dOut, 499, nil)
-	volumeOut, err := ds.UpdateVolume(mapIn, volumeIn.ID)
+	volumeOut, err := ds.UpdateVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(volumeOut, "Expecting nil output")
@@ -461,7 +461,7 @@ func UpdateVolumeFailJSONMocked(t *testing.T, volumeIn *types.Volume) *types.Vol
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/storage/volumes/%s", volumeIn.ID), mapIn).Return(dIn, 200, nil)
-	volumeOut, err := ds.UpdateVolume(mapIn, volumeIn.ID)
+	volumeOut, err := ds.UpdateVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(volumeOut, "Expecting nil output")
@@ -491,7 +491,7 @@ func AttachVolumeMocked(t *testing.T, volumeIn *types.Volume) *types.Server {
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/storage/volumes/%s/attached_server", volumeIn.ID), mapIn).Return(dOut, 200, nil)
-	serverOut, err := ds.AttachVolume(mapIn, volumeIn.ID)
+	serverOut, err := ds.AttachVolume(volumeIn.ID, mapIn)
 	assert.Nil(err, "Error attaching volume")
 	assert.Equal(volumeIn.AttachedServerID, serverOut.ID, "AttachVolume returned invalid values")
 
@@ -519,7 +519,7 @@ func AttachVolumeFailErrMocked(t *testing.T, volumeIn *types.Volume) *types.Serv
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/storage/volumes/%s/attached_server", volumeIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	serverOut, err := ds.AttachVolume(mapIn, volumeIn.ID)
+	serverOut, err := ds.AttachVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serverOut, "Expecting nil output")
@@ -549,7 +549,7 @@ func AttachVolumeFailStatusMocked(t *testing.T, volumeIn *types.Volume) *types.S
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/storage/volumes/%s/attached_server", volumeIn.ID), mapIn).Return(dOut, 499, nil)
-	serverOut, err := ds.AttachVolume(mapIn, volumeIn.ID)
+	serverOut, err := ds.AttachVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serverOut, "Expecting nil output")
@@ -577,7 +577,7 @@ func AttachVolumeFailJSONMocked(t *testing.T, volumeIn *types.Volume) *types.Ser
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/storage/volumes/%s/attached_server", volumeIn.ID), mapIn).Return(dIn, 200, nil)
-	serverOut, err := ds.AttachVolume(mapIn, volumeIn.ID)
+	serverOut, err := ds.AttachVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serverOut, "Expecting nil output")

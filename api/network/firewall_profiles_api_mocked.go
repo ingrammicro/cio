@@ -352,7 +352,7 @@ func UpdateFirewallProfileMocked(t *testing.T, firewallProfileIn *types.Firewall
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileIn.ID), mapIn).Return(dOut, 200, nil)
-	firewallProfileOut, err := ds.UpdateFirewallProfile(mapIn, firewallProfileIn.ID)
+	firewallProfileOut, err := ds.UpdateFirewallProfile(firewallProfileIn.ID, mapIn)
 	assert.Nil(err, "Error updating firewallProfile list")
 	assert.Equal(firewallProfileIn, firewallProfileOut, "UpdateFirewallProfile returned different firewallProfiles")
 
@@ -380,7 +380,7 @@ func UpdateFirewallProfileFailErrMocked(t *testing.T, firewallProfileIn *types.F
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	firewallProfileOut, err := ds.UpdateFirewallProfile(mapIn, firewallProfileIn.ID)
+	firewallProfileOut, err := ds.UpdateFirewallProfile(firewallProfileIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(firewallProfileOut, "Expecting nil output")
@@ -410,7 +410,7 @@ func UpdateFirewallProfileFailStatusMocked(t *testing.T, firewallProfileIn *type
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileIn.ID), mapIn).Return(dOut, 499, nil)
-	firewallProfileOut, err := ds.UpdateFirewallProfile(mapIn, firewallProfileIn.ID)
+	firewallProfileOut, err := ds.UpdateFirewallProfile(firewallProfileIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(firewallProfileOut, "Expecting nil output")
@@ -438,7 +438,7 @@ func UpdateFirewallProfileFailJSONMocked(t *testing.T, firewallProfileIn *types.
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileIn.ID), mapIn).Return(dIn, 200, nil)
-	firewallProfileOut, err := ds.UpdateFirewallProfile(mapIn, firewallProfileIn.ID)
+	firewallProfileOut, err := ds.UpdateFirewallProfile(firewallProfileIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(firewallProfileOut, "Expecting nil output")

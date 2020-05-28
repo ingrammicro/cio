@@ -87,10 +87,10 @@ func (ss *ServerService) CreateServer(serverParams *map[string]interface{}) (ser
 }
 
 // UpdateServer updates a server by its ID
-func (ss *ServerService) UpdateServer(serverParams *map[string]interface{}, ID string) (server *types.Server, err error) {
+func (ss *ServerService) UpdateServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("UpdateServer")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s", ID), serverParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s", serverID), serverParams)
 
 	if err != nil {
 		return nil, err
@@ -108,10 +108,10 @@ func (ss *ServerService) UpdateServer(serverParams *map[string]interface{}, ID s
 }
 
 // BootServer boots a server by its ID
-func (ss *ServerService) BootServer(serverParams *map[string]interface{}, ID string) (server *types.Server, err error) {
+func (ss *ServerService) BootServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("BootServer")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/boot", ID), serverParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/boot", serverID), serverParams)
 
 	if err != nil {
 		return nil, err
@@ -129,10 +129,10 @@ func (ss *ServerService) BootServer(serverParams *map[string]interface{}, ID str
 }
 
 // RebootServer reboots a server by its ID
-func (ss *ServerService) RebootServer(serverParams *map[string]interface{}, ID string) (server *types.Server, err error) {
+func (ss *ServerService) RebootServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("RebootServer")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/reboot", ID), serverParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/reboot", serverID), serverParams)
 
 	if err != nil {
 		return nil, err
@@ -150,10 +150,10 @@ func (ss *ServerService) RebootServer(serverParams *map[string]interface{}, ID s
 }
 
 // ShutdownServer shuts down a server by its ID
-func (ss *ServerService) ShutdownServer(serverParams *map[string]interface{}, ID string) (server *types.Server, err error) {
+func (ss *ServerService) ShutdownServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("ShutdownServer")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/shutdown", ID), serverParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/shutdown", serverID), serverParams)
 
 	if err != nil {
 		return nil, err
@@ -171,10 +171,10 @@ func (ss *ServerService) ShutdownServer(serverParams *map[string]interface{}, ID
 }
 
 // OverrideServer overrides a server by its ID
-func (ss *ServerService) OverrideServer(serverParams *map[string]interface{}, ID string) (server *types.Server, err error) {
+func (ss *ServerService) OverrideServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("OverrideServer")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/override", ID), serverParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/override", serverID), serverParams)
 
 	if err != nil {
 		return nil, err
@@ -292,7 +292,7 @@ func (ss *ServerService) ListOperationalScripts(serverID string) (scripts []*typ
 }
 
 // ExecuteOperationalScript executes an operational script by its server ID and the script id
-func (ss *ServerService) ExecuteOperationalScript(serverParams *map[string]interface{}, serverID string, scriptID string) (script *types.Event, err error) {
+func (ss *ServerService) ExecuteOperationalScript(serverID string, scriptID string, serverParams *map[string]interface{}) (script *types.Event, err error) {
 	log.Debug("ExecuteOperationalScript")
 
 	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/operational_scripts/%s/execute", serverID, scriptID), serverParams)

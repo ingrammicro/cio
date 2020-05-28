@@ -66,7 +66,7 @@ func (ss *SubnetService) GetSubnet(subnetID string) (subnet *types.Subnet, err e
 }
 
 // CreateSubnet creates a Subnet
-func (ss *SubnetService) CreateSubnet(subnetParams *map[string]interface{}, vpcID string) (subnet *types.Subnet, err error) {
+func (ss *SubnetService) CreateSubnet(vpcID string, subnetParams *map[string]interface{}) (subnet *types.Subnet, err error) {
 	log.Debug("CreateSubnet")
 
 	data, status, err := ss.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/subnets", vpcID), subnetParams)
@@ -87,10 +87,10 @@ func (ss *SubnetService) CreateSubnet(subnetParams *map[string]interface{}, vpcI
 }
 
 // UpdateSubnet updates a Subnet by its ID
-func (ss *SubnetService) UpdateSubnet(subnetParams *map[string]interface{}, ID string) (subnet *types.Subnet, err error) {
+func (ss *SubnetService) UpdateSubnet(subnetID string, subnetParams *map[string]interface{}) (subnet *types.Subnet, err error) {
 	log.Debug("UpdateSubnet")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/network/subnets/%s", ID), subnetParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf("/network/subnets/%s", subnetID), subnetParams)
 
 	if err != nil {
 		return nil, err

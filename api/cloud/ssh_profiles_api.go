@@ -86,10 +86,10 @@ func (sps *SSHProfileService) CreateSSHProfile(sshProfileParams *map[string]inte
 }
 
 // UpdateSSHProfile updates a sshProfile by its ID
-func (sps *SSHProfileService) UpdateSSHProfile(sshProfileParams *map[string]interface{}, ID string) (sshProfile *types.SSHProfile, err error) {
+func (sps *SSHProfileService) UpdateSSHProfile(sshProfileID string, sshProfileParams *map[string]interface{}) (sshProfile *types.SSHProfile, err error) {
 	log.Debug("UpdateSSHProfile")
 
-	data, status, err := sps.concertoService.Put(fmt.Sprintf("/cloud/ssh_profiles/%s", ID), sshProfileParams)
+	data, status, err := sps.concertoService.Put(fmt.Sprintf("/cloud/ssh_profiles/%s", sshProfileID), sshProfileParams)
 
 	if err != nil {
 		return nil, err

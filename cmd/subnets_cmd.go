@@ -76,7 +76,7 @@ func SubnetCreate(c *cli.Context) error {
 		"type":             c.String("type"),
 	}
 
-	subnet, err := subnetSvc.CreateSubnet(&subnetIn, c.String("vpc-id"))
+	subnet, err := subnetSvc.CreateSubnet(c.String("vpc-id"), &subnetIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't create Subnet", err)
 	}
@@ -98,7 +98,7 @@ func SubnetUpdate(c *cli.Context) error {
 		"name": c.String("name"),
 	}
 
-	subnet, err := subnetSvc.UpdateSubnet(&subnetIn, c.String("id"))
+	subnet, err := subnetSvc.UpdateSubnet(c.String("id"), &subnetIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update Subnet", err)
 	}

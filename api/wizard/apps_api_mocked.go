@@ -134,7 +134,7 @@ func DeployAppMocked(t *testing.T, appIn *types.WizardApp) *types.Server {
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/wizard/apps/%s/deploy", appIn.ID), mapIn).Return(dOut, 200, nil)
-	serverOut, err := ds.DeployApp(mapIn, appIn.ID)
+	serverOut, err := ds.DeployApp(appIn.ID, mapIn)
 	assert.Nil(err, "Error deploying app")
 
 	return serverOut
@@ -161,7 +161,7 @@ func DeployAppFailErrMocked(t *testing.T, appIn *types.WizardApp) *types.Server 
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/wizard/apps/%s/deploy", appIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	serverOut, err := ds.DeployApp(mapIn, appIn.ID)
+	serverOut, err := ds.DeployApp(appIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serverOut, "Expecting nil output")
@@ -191,7 +191,7 @@ func DeployAppFailStatusMocked(t *testing.T, appIn *types.WizardApp) *types.Serv
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/wizard/apps/%s/deploy", appIn.ID), mapIn).Return(dOut, 499, nil)
-	serverOut, err := ds.DeployApp(mapIn, appIn.ID)
+	serverOut, err := ds.DeployApp(appIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serverOut, "Expecting nil output")
@@ -220,7 +220,7 @@ func DeployAppFailJSONMocked(t *testing.T, appIn *types.WizardApp) *types.Server
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/wizard/apps/%s/deploy", appIn.ID), mapIn).Return(dIn, 200, nil)
-	serverOut, err := ds.DeployApp(mapIn, appIn.ID)
+	serverOut, err := ds.DeployApp(appIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serverOut, "Expecting nil output")

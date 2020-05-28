@@ -141,7 +141,7 @@ func FirewallProfileUpdate(c *cli.Context) error {
 		firewallProfileIn["rules"] = fw.Rules
 	}
 
-	firewallProfile, err := firewallProfileSvc.UpdateFirewallProfile(&firewallProfileIn, c.String("id"))
+	firewallProfile, err := firewallProfileSvc.UpdateFirewallProfile(c.String("id"), &firewallProfileIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update firewallProfile", err)
 	}

@@ -139,7 +139,7 @@ func ScriptUpdate(c *cli.Context) error {
 		scriptIn["parameters"] = strings.Split(c.String("parameters"), ",")
 	}
 
-	script, err := scriptSvc.UpdateScript(&scriptIn, c.String("id"))
+	script, err := scriptSvc.UpdateScript(c.String("id"), &scriptIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update script", err)
 	}
@@ -182,7 +182,7 @@ func ScriptAttachmentAdd(c *cli.Context) error {
 	}
 
 	// adds new attachment
-	attachment, err := scriptSvc.AddScriptAttachment(&attachmentIn, c.String("id"))
+	attachment, err := scriptSvc.AddScriptAttachment(c.String("id"), &attachmentIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't add attachment to script", err)
 	}
@@ -196,7 +196,7 @@ func ScriptAttachmentAdd(c *cli.Context) error {
 
 	// marks the attachment as "uploaded"
 	attachmentID := attachment.ID
-	attachment, err = scriptSvc.UploadedScriptAttachment(&attachmentIn, attachment.ID)
+	attachment, err = scriptSvc.UploadedScriptAttachment(attachment.ID, &attachmentIn)
 	if err != nil {
 		cleanAttachment(c, attachmentID)
 		formatter.PrintFatal("Couldn't set attachment as uploaded", err)

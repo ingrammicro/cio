@@ -58,10 +58,10 @@ func (ps *PollingService) GetNextCommand() (command *types.PollingCommand, statu
 }
 
 // UpdateCommand updates a command by its ID
-func (ps *PollingService) UpdateCommand(pollingCommandParams *map[string]interface{}, ID string) (command *types.PollingCommand, status int, err error) {
+func (ps *PollingService) UpdateCommand(commandID string, pollingCommandParams *map[string]interface{}) (command *types.PollingCommand, status int, err error) {
 	log.Debug("UpdateCommand")
 
-	data, status, err := ps.concertoService.Put(fmt.Sprintf("/command_polling/commands/%s", ID), pollingCommandParams)
+	data, status, err := ps.concertoService.Put(fmt.Sprintf("/command_polling/commands/%s", commandID), pollingCommandParams)
 
 	if err != nil {
 		return nil, status, err

@@ -87,10 +87,10 @@ func (vs *VPCService) CreateVPC(vpcParams *map[string]interface{}) (vpc *types.V
 }
 
 // UpdateVPC updates a VPC by its ID
-func (vs *VPCService) UpdateVPC(vpcParams *map[string]interface{}, ID string) (vpc *types.Vpc, err error) {
+func (vs *VPCService) UpdateVPC(vpcID string, vpcParams *map[string]interface{}) (vpc *types.Vpc, err error) {
 	log.Debug("UpdateVPC")
 
-	data, status, err := vs.concertoService.Put(fmt.Sprintf("/network/vpcs/%s", ID), vpcParams)
+	data, status, err := vs.concertoService.Put(fmt.Sprintf("/network/vpcs/%s", vpcID), vpcParams)
 
 	if err != nil {
 		return nil, err

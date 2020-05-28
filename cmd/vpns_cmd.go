@@ -59,7 +59,7 @@ func VPNCreate(c *cli.Context) error {
 		"vpn_plan_id":   c.String("vpn-plan-id"),
 	}
 
-	vpn, err := vpnSvc.CreateVPN(&vpnIn, c.String("vpc-id"))
+	vpn, err := vpnSvc.CreateVPN(c.String("vpc-id"), &vpnIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't create VPN", err)
 	}

@@ -75,7 +75,7 @@ func (ls *LabelService) CreateLabel(labelParams *map[string]interface{}) (label 
 }
 
 // AddLabel assigns a single label from a single labelable resource
-func (ls *LabelService) AddLabel(labelParams *map[string]interface{}, labelID string) (labeledResources []*types.LabeledResource, err error) {
+func (ls *LabelService) AddLabel(labelID string, labelParams *map[string]interface{}) (labeledResources []*types.LabeledResource, err error) {
 	log.Debug("AddLabel")
 
 	data, status, err := ls.concertoService.Post(fmt.Sprintf("/labels/%s/resources", labelID), labelParams)

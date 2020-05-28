@@ -120,7 +120,7 @@ func SSHProfileUpdate(c *cli.Context) error {
 	sshProfileSvc, formatter := WireUpSSHProfile(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	sshProfile, err := sshProfileSvc.UpdateSSHProfile(utils.FlagConvertParams(c), c.String("id"))
+	sshProfile, err := sshProfileSvc.UpdateSSHProfile(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't update sshProfile", err)
 	}

@@ -135,7 +135,7 @@ func ServerArrayUpdate(c *cli.Context) error {
 	serverArraySvc, formatter := WireUpServerArray(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	serverArray, err := serverArraySvc.UpdateServerArray(utils.FlagConvertParams(c), c.String("id"))
+	serverArray, err := serverArraySvc.UpdateServerArray(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't update server array", err)
 	}
@@ -154,7 +154,7 @@ func ServerArrayBoot(c *cli.Context) error {
 	serverArraySvc, formatter := WireUpServerArray(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	serverArray, err := serverArraySvc.BootServerArray(utils.FlagConvertParams(c), c.String("id"))
+	serverArray, err := serverArraySvc.BootServerArray(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't boot server array", err)
 	}
@@ -173,7 +173,7 @@ func ServerArrayShutdown(c *cli.Context) error {
 	serverArraySvc, formatter := WireUpServerArray(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	serverArray, err := serverArraySvc.ShutdownServerArray(utils.FlagConvertParams(c), c.String("id"))
+	serverArray, err := serverArraySvc.ShutdownServerArray(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't shutdown server array", err)
 	}
@@ -192,7 +192,7 @@ func ServerArrayEmpty(c *cli.Context) error {
 	serverArraySvc, formatter := WireUpServerArray(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	serverArray, err := serverArraySvc.EmptyServerArray(utils.FlagConvertParams(c), c.String("id"))
+	serverArray, err := serverArraySvc.EmptyServerArray(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't empty server array", err)
 	}
@@ -214,7 +214,7 @@ func ServerArrayEnlarge(c *cli.Context) error {
 	serverArrayEnlargeIn := map[string]interface{}{
 		"size": c.Int("size"),
 	}
-	serverArray, err := serverArraySvc.EnlargeServerArray(&serverArrayEnlargeIn, c.String("id"))
+	serverArray, err := serverArraySvc.EnlargeServerArray(c.String("id"), &serverArrayEnlargeIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't enlarge server array", err)
 	}

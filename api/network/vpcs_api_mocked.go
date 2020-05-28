@@ -352,7 +352,7 @@ func UpdateVPCMocked(t *testing.T, vpcIn *types.Vpc) *types.Vpc {
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/vpcs/%s", vpcIn.ID), mapIn).Return(dOut, 200, nil)
-	vpcOut, err := ds.UpdateVPC(mapIn, vpcIn.ID)
+	vpcOut, err := ds.UpdateVPC(vpcIn.ID, mapIn)
 	assert.Nil(err, "Error updating VPC list")
 	assert.Equal(vpcIn, vpcOut, "UpdateVPC returned different VPCs")
 
@@ -380,7 +380,7 @@ func UpdateVPCFailErrMocked(t *testing.T, vpcIn *types.Vpc) *types.Vpc {
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/vpcs/%s", vpcIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	vpcOut, err := ds.UpdateVPC(mapIn, vpcIn.ID)
+	vpcOut, err := ds.UpdateVPC(vpcIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(vpcOut, "Expecting nil output")
@@ -410,7 +410,7 @@ func UpdateVPCFailStatusMocked(t *testing.T, vpcIn *types.Vpc) *types.Vpc {
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/vpcs/%s", vpcIn.ID), mapIn).Return(dOut, 499, nil)
-	vpcOut, err := ds.UpdateVPC(mapIn, vpcIn.ID)
+	vpcOut, err := ds.UpdateVPC(vpcIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(vpcOut, "Expecting nil output")
@@ -438,7 +438,7 @@ func UpdateVPCFailJSONMocked(t *testing.T, vpcIn *types.Vpc) *types.Vpc {
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/vpcs/%s", vpcIn.ID), mapIn).Return(dIn, 200, nil)
-	vpcOut, err := ds.UpdateVPC(mapIn, vpcIn.ID)
+	vpcOut, err := ds.UpdateVPC(vpcIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(vpcOut, "Expecting nil output")

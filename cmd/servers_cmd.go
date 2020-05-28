@@ -121,7 +121,7 @@ func ServerUpdate(c *cli.Context) error {
 	serverSvc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	server, err := serverSvc.UpdateServer(utils.FlagConvertParams(c), c.String("id"))
+	server, err := serverSvc.UpdateServer(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't update server", err)
 	}
@@ -140,7 +140,7 @@ func ServerBoot(c *cli.Context) error {
 	serverSvc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	server, err := serverSvc.BootServer(utils.FlagConvertParams(c), c.String("id"))
+	server, err := serverSvc.BootServer(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't boot server", err)
 	}
@@ -159,7 +159,7 @@ func ServerReboot(c *cli.Context) error {
 	serverSvc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	server, err := serverSvc.RebootServer(utils.FlagConvertParams(c), c.String("id"))
+	server, err := serverSvc.RebootServer(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't reboot server", err)
 	}
@@ -178,7 +178,7 @@ func ServerShutdown(c *cli.Context) error {
 	serverSvc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	server, err := serverSvc.ShutdownServer(utils.FlagConvertParams(c), c.String("id"))
+	server, err := serverSvc.ShutdownServer(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't shutdown server", err)
 	}
@@ -197,7 +197,7 @@ func ServerOverride(c *cli.Context) error {
 	serverSvc, formatter := WireUpServer(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	server, err := serverSvc.OverrideServer(utils.FlagConvertParams(c), c.String("id"))
+	server, err := serverSvc.OverrideServer(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't override server", err)
 	}
@@ -334,7 +334,7 @@ func OperationalScriptExecute(c *cli.Context) error {
 
 	checkRequiredFlags(c, []string{"server-id", "script-id"}, formatter)
 	in := &map[string]interface{}{}
-	scriptOut, err := serverSvc.ExecuteOperationalScript(in, c.String("server-id"), c.String("script-id"))
+	scriptOut, err := serverSvc.ExecuteOperationalScript(c.String("server-id"), c.String("script-id"), in)
 	if err != nil {
 		formatter.PrintFatal("Couldn't execute operational script", err)
 	}

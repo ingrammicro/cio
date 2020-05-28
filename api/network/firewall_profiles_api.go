@@ -87,10 +87,10 @@ func (fps *FirewallProfileService) CreateFirewallProfile(firewallProfileParams *
 }
 
 // UpdateFirewallProfile updates a firewallProfile by its ID
-func (fps *FirewallProfileService) UpdateFirewallProfile(firewallProfileParams *map[string]interface{}, ID string) (firewallProfile *types.FirewallProfile, err error) {
+func (fps *FirewallProfileService) UpdateFirewallProfile(firewallProfileID string, firewallProfileParams *map[string]interface{}) (firewallProfile *types.FirewallProfile, err error) {
 	log.Debug("UpdateFirewallProfile")
 
-	data, status, err := fps.concertoService.Put(fmt.Sprintf("/network/firewall_profiles/%s", ID), firewallProfileParams)
+	data, status, err := fps.concertoService.Put(fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileID), firewallProfileParams)
 
 	if err != nil {
 		return nil, err

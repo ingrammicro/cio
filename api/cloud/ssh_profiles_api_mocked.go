@@ -352,7 +352,7 @@ func UpdateSSHProfileMocked(t *testing.T, sshProfileIn *types.SSHProfile) *types
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/cloud/ssh_profiles/%s", sshProfileIn.ID), mapIn).Return(dOut, 200, nil)
-	sshProfileOut, err := ds.UpdateSSHProfile(mapIn, sshProfileIn.ID)
+	sshProfileOut, err := ds.UpdateSSHProfile(sshProfileIn.ID, mapIn)
 	assert.Nil(err, "Error updating sshProfile list")
 	assert.Equal(sshProfileIn, sshProfileOut, "UpdateSSHProfile returned different sshProfiles")
 
@@ -380,7 +380,7 @@ func UpdateSSHProfileFailErrMocked(t *testing.T, sshProfileIn *types.SSHProfile)
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/cloud/ssh_profiles/%s", sshProfileIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	sshProfileOut, err := ds.UpdateSSHProfile(mapIn, sshProfileIn.ID)
+	sshProfileOut, err := ds.UpdateSSHProfile(sshProfileIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(sshProfileOut, "Expecting nil output")
@@ -410,7 +410,7 @@ func UpdateSSHProfileFailStatusMocked(t *testing.T, sshProfileIn *types.SSHProfi
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/cloud/ssh_profiles/%s", sshProfileIn.ID), mapIn).Return(dOut, 499, nil)
-	sshProfileOut, err := ds.UpdateSSHProfile(mapIn, sshProfileIn.ID)
+	sshProfileOut, err := ds.UpdateSSHProfile(sshProfileIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(sshProfileOut, "Expecting nil output")
@@ -438,7 +438,7 @@ func UpdateSSHProfileFailJSONMocked(t *testing.T, sshProfileIn *types.SSHProfile
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/cloud/ssh_profiles/%s", sshProfileIn.ID), mapIn).Return(dIn, 200, nil)
-	sshProfileOut, err := ds.UpdateSSHProfile(mapIn, sshProfileIn.ID)
+	sshProfileOut, err := ds.UpdateSSHProfile(sshProfileIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(sshProfileOut, "Expecting nil output")

@@ -92,10 +92,10 @@ func (fips *FloatingIPService) CreateFloatingIP(floatingIPParams *map[string]int
 }
 
 // UpdateFloatingIP updates a FloatingIP by its ID
-func (fips *FloatingIPService) UpdateFloatingIP(floatingIPParams *map[string]interface{}, ID string) (floatingIP *types.FloatingIP, err error) {
+func (fips *FloatingIPService) UpdateFloatingIP(floatingIPID string, floatingIPParams *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
 	log.Debug("UpdateFloatingIP")
 
-	data, status, err := fips.concertoService.Put(fmt.Sprintf("/network/floating_ips/%s", ID), floatingIPParams)
+	data, status, err := fips.concertoService.Put(fmt.Sprintf("/network/floating_ips/%s", floatingIPID), floatingIPParams)
 
 	if err != nil {
 		return nil, err
@@ -113,10 +113,10 @@ func (fips *FloatingIPService) UpdateFloatingIP(floatingIPParams *map[string]int
 }
 
 // AttachFloatingIP attaches a FloatingIP by its ID
-func (fips *FloatingIPService) AttachFloatingIP(floatingIPParams *map[string]interface{}, ID string) (server *types.Server, err error) {
+func (fips *FloatingIPService) AttachFloatingIP(floatingIPID string, floatingIPParams *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("AttachFloatingIP")
 
-	data, status, err := fips.concertoService.Post(fmt.Sprintf("/network/floating_ips/%s/attached_server", ID), floatingIPParams)
+	data, status, err := fips.concertoService.Post(fmt.Sprintf("/network/floating_ips/%s/attached_server", floatingIPID), floatingIPParams)
 
 	if err != nil {
 		return nil, err
