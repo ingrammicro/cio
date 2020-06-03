@@ -4,7 +4,6 @@ metadata:
   generateName: -build-wf-
 spec:
   entrypoint: build-pipeline
-  onExit: cleanup
   ttlSecondsAfterFinished: 86400
   activeDeadlineSeconds: 7200
   serviceAccountName: argo
@@ -203,7 +202,7 @@ spec:
         go build
         BUILD_RESULT=$?
         if [ $BUILD_RESULT -eq 0 ]; then
-          echo $NOTIFIABLE_COMMITS | sed "s/,/\n/g" | awk '{print "/notify.sh "$1" "$2" \"$COMMIT_STATUS_CONTEXT\" success \"Go build run successfully\""}' | bash
+          echo $NOTIFIABLE_COMMITS | sed "s/,/\n/g" | awk '{print "/notify.sh "$1" "$2" \"$COMMIT_STATUS_CONTEXT\" success \"Go build ran successfully\""}' | bash
         else
           echo $NOTIFIABLE_COMMITS | sed "s/,/\n/g" | awk '{print "/notify.sh "$1" "$2" \"$COMMIT_STATUS_CONTEXT\" failure \"${FAILURE_DESCRIPTION:-Failed}\""}' | bash
           false
