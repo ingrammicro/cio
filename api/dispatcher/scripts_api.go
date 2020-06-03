@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// DispatcherService manages bootstrapping operations
+// DispatcherService manages dispatcher operations
 type DispatcherService struct {
 	concertoService utils.ConcertoService
 }

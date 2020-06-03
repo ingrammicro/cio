@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// CloudAccountService manages cloudAccount operations
+// CloudAccountService manages cloud account operations
 type CloudAccountService struct {
 	concertoService utils.ConcertoService
 }
@@ -25,11 +25,11 @@ func NewCloudAccountService(concertoService utils.ConcertoService) (*CloudAccoun
 	}, nil
 }
 
-// GetCloudAccountList returns the list of cloudAccounts as an array of CloudAccount
-func (ca *CloudAccountService) GetCloudAccountList() (cloudAccounts []*types.CloudAccount, err error) {
-	log.Debug("GetCloudAccountList")
+// ListCloudAccounts returns the list of cloudAccounts as an array of CloudAccount
+func (cas *CloudAccountService) ListCloudAccounts() (cloudAccounts []*types.CloudAccount, err error) {
+	log.Debug("ListCloudAccounts")
 
-	data, status, err := ca.concertoService.Get("/settings/cloud_accounts")
+	data, status, err := cas.concertoService.Get("/settings/cloud_accounts")
 	if err != nil {
 		return nil, err
 	}
@@ -46,10 +46,10 @@ func (ca *CloudAccountService) GetCloudAccountList() (cloudAccounts []*types.Clo
 }
 
 // GetCloudAccount returns a cloudAccount by its ID
-func (ca *CloudAccountService) GetCloudAccount(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
+func (cas *CloudAccountService) GetCloudAccount(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("GetCloudAccount")
 
-	data, status, err := ca.concertoService.Get(fmt.Sprintf("/settings/cloud_accounts/%s", cloudAccountID))
+	data, status, err := cas.concertoService.Get(fmt.Sprintf("/settings/cloud_accounts/%s", cloudAccountID))
 	if err != nil {
 		return nil, err
 	}

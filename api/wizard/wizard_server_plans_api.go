@@ -9,27 +9,27 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// WizServerPlanService manages serverPlan operations
-type WizServerPlanService struct {
+// WizardServerPlanService manages wizard server plan operations
+type WizardServerPlanService struct {
 	concertoService utils.ConcertoService
 }
 
-// NewWizServerPlanService returns a Concerto serverPlan service
-func NewWizServerPlanService(concertoService utils.ConcertoService) (*WizServerPlanService, error) {
+// NewWizardServerPlanService returns a Concerto serverPlan service
+func NewWizardServerPlanService(concertoService utils.ConcertoService) (*WizardServerPlanService, error) {
 	if concertoService == nil {
 		return nil, fmt.Errorf("must initialize ConcertoService before using it")
 	}
 
-	return &WizServerPlanService{
+	return &WizardServerPlanService{
 		concertoService: concertoService,
 	}, nil
 }
 
-// GetWizServerPlanList returns the list of serverPlans as an array of ServerPlan
-func (dm *WizServerPlanService) GetWizServerPlanList(AppID string, LocID string, ProviderID string) (serverPlans []*types.ServerPlan, err error) {
-	log.Debug("GetWizServerPlanList")
+// ListWizardServerPlans returns the list of server plans as an array of ServerPlan
+func (wsps *WizardServerPlanService) ListWizardServerPlans(appID string, locationID string, cloudProviderID string) (serverPlans []*types.ServerPlan, err error) {
+	log.Debug("ListWizardServerPlans")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", AppID, LocID, ProviderID))
+	data, status, err := wsps.concertoService.Get(fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", appID, locationID, cloudProviderID))
 	if err != nil {
 		return nil, err
 	}

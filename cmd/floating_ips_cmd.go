@@ -35,7 +35,7 @@ func FloatingIPList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	floatingIPSvc, formatter := WireUpFloatingIP(c)
 
-	floatingIPs, err := floatingIPSvc.GetFloatingIPList(c.String("server-id"))
+	floatingIPs, err := floatingIPSvc.ListFloatingIPs(c.String("server-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive floating IP data", err)
 	}
@@ -123,7 +123,7 @@ func FloatingIPUpdate(c *cli.Context) error {
 		"name": c.String("name"),
 	}
 
-	floatingIP, err := floatingIPSvc.UpdateFloatingIP(&floatingIPIn, c.String("id"))
+	floatingIP, err := floatingIPSvc.UpdateFloatingIP(c.String("id"), &floatingIPIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update floating IP", err)
 	}
@@ -147,7 +147,7 @@ func FloatingIPAttach(c *cli.Context) error {
 		"attached_server_id": c.String("server-id"),
 	}
 
-	server, err := floatingIPSvc.AttachFloatingIP(&floatingIPIn, c.String("id"))
+	server, err := floatingIPSvc.AttachFloatingIP(c.String("id"), &floatingIPIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't attach floating IP", err)
 	}

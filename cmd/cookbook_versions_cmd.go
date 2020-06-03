@@ -35,7 +35,7 @@ func CookbookVersionList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	svc, formatter := WireUpCookbookVersion(c)
 
-	cookbookVersions, err := svc.GetCookbookVersionList()
+	cookbookVersions, err := svc.ListCookbookVersions()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive cookbook versions data", err)
 	}
@@ -116,7 +116,7 @@ func CookbookVersionUpload(c *cli.Context) error {
 
 	// processes the new cookbook_version
 	cookbookVersionID := cookbookVersion.ID
-	cookbookVersion, err = svc.ProcessCookbookVersion(utils.FlagConvertParams(c), cookbookVersion.ID)
+	cookbookVersion, err = svc.ProcessCookbookVersion(cookbookVersion.ID, utils.FlagConvertParams(c))
 	if err != nil {
 		cleanCookbookVersion(c, cookbookVersionID)
 		formatter.PrintFatal("Couldn't process cookbook version", err)

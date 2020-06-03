@@ -24,11 +24,11 @@ func NewVPCService(concertoService utils.ConcertoService) (*VPCService, error) {
 	}, nil
 }
 
-// GetVPCList returns the list of VPCs as an array of VPC
-func (dm *VPCService) GetVPCList() (vpcs []*types.Vpc, err error) {
-	log.Debug("GetVPCList")
+// ListVPCs returns the list of VPCs as an array of VPC
+func (vs *VPCService) ListVPCs() (vpcs []*types.Vpc, err error) {
+	log.Debug("ListVPCs")
 
-	data, status, err := dm.concertoService.Get("/network/vpcs")
+	data, status, err := vs.concertoService.Get("/network/vpcs")
 
 	if err != nil {
 		return nil, err
@@ -46,10 +46,10 @@ func (dm *VPCService) GetVPCList() (vpcs []*types.Vpc, err error) {
 }
 
 // GetVPC returns a VPC by its ID
-func (dm *VPCService) GetVPC(ID string) (vpc *types.Vpc, err error) {
+func (vs *VPCService) GetVPC(vpcID string) (vpc *types.Vpc, err error) {
 	log.Debug("GetVPC")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/network/vpcs/%s", ID))
+	data, status, err := vs.concertoService.Get(fmt.Sprintf("/network/vpcs/%s", vpcID))
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +66,11 @@ func (dm *VPCService) GetVPC(ID string) (vpc *types.Vpc, err error) {
 }
 
 // CreateVPC creates a VPC
-func (dm *VPCService) CreateVPC(vpcParams *map[string]interface{}) (vpc *types.Vpc, err error) {
+func (vs *VPCService) CreateVPC(vpcParams *map[string]interface{}) (vpc *types.Vpc, err error) {
 	log.Debug("CreateVPC")
 
-	data, status, err := dm.concertoService.Post("/network/vpcs/", vpcParams)
+	data, status, err := vs.concertoService.Post("/network/vpcs/", vpcParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +87,11 @@ func (dm *VPCService) CreateVPC(vpcParams *map[string]interface{}) (vpc *types.V
 }
 
 // UpdateVPC updates a VPC by its ID
-func (dm *VPCService) UpdateVPC(vpcParams *map[string]interface{}, ID string) (vpc *types.Vpc, err error) {
+func (vs *VPCService) UpdateVPC(vpcID string, vpcParams *map[string]interface{}) (vpc *types.Vpc, err error) {
 	log.Debug("UpdateVPC")
 
-	data, status, err := dm.concertoService.Put(fmt.Sprintf("/network/vpcs/%s", ID), vpcParams)
+	data, status, err := vs.concertoService.Put(fmt.Sprintf("/network/vpcs/%s", vpcID), vpcParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -106,10 +108,10 @@ func (dm *VPCService) UpdateVPC(vpcParams *map[string]interface{}, ID string) (v
 }
 
 // DeleteVPC deletes a VPC by its ID
-func (dm *VPCService) DeleteVPC(ID string) (err error) {
+func (vs *VPCService) DeleteVPC(vpcID string) (err error) {
 	log.Debug("DeleteVPC")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/network/vpcs/%s", ID))
+	data, status, err := vs.concertoService.Delete(fmt.Sprintf("/network/vpcs/%s", vpcID))
 	if err != nil {
 		return err
 	}
@@ -122,10 +124,10 @@ func (dm *VPCService) DeleteVPC(ID string) (err error) {
 }
 
 // DiscardVPC discards a VPC by its ID
-func (dm *VPCService) DiscardVPC(ID string) (err error) {
+func (vs *VPCService) DiscardVPC(vpcID string) (err error) {
 	log.Debug("DiscardVPC")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/network/vpcs/%s/discard", ID))
+	data, status, err := vs.concertoService.Delete(fmt.Sprintf("/network/vpcs/%s/discard", vpcID))
 	if err != nil {
 		return err
 	}

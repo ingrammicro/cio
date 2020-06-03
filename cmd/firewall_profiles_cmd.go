@@ -35,7 +35,7 @@ func FirewallProfileList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	firewallProfileSvc, formatter := WireUpFirewallProfile(c)
 
-	firewallProfiles, err := firewallProfileSvc.GetFirewallProfileList()
+	firewallProfiles, err := firewallProfileSvc.ListFirewallProfiles()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive firewallProfile data", err)
 	}
@@ -141,7 +141,7 @@ func FirewallProfileUpdate(c *cli.Context) error {
 		firewallProfileIn["rules"] = fw.Rules
 	}
 
-	firewallProfile, err := firewallProfileSvc.UpdateFirewallProfile(&firewallProfileIn, c.String("id"))
+	firewallProfile, err := firewallProfileSvc.UpdateFirewallProfile(c.String("id"), &firewallProfileIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update firewallProfile", err)
 	}

@@ -13,13 +13,13 @@ func TestNewFloatingIPServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetFloatingIPList(t *testing.T) {
+func TestListFloatingIPs(t *testing.T) {
 	floatingIPsIn := testdata.GetFloatingIPData()
-	GetFloatingIPListMocked(t, floatingIPsIn)
-	GetFloatingIPListMockedFilteredByServer(t, floatingIPsIn)
-	GetFloatingIPListFailErrMocked(t, floatingIPsIn)
-	GetFloatingIPListFailStatusMocked(t, floatingIPsIn)
-	GetFloatingIPListFailJSONMocked(t, floatingIPsIn)
+	ListFloatingIPsMocked(t, floatingIPsIn)
+	ListFloatingIPsMockedFilteredByServer(t, floatingIPsIn)
+	ListFloatingIPsFailErrMocked(t, floatingIPsIn)
+	ListFloatingIPsFailStatusMocked(t, floatingIPsIn)
+	ListFloatingIPsFailJSONMocked(t, floatingIPsIn)
 }
 
 func TestGetFloatingIP(t *testing.T) {

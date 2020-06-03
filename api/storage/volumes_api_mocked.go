@@ -12,8 +12,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetVolumeListMocked test mocked function
-func GetVolumeListMocked(t *testing.T, volumesIn []*types.Volume) []*types.Volume {
+// ListVolumesMocked test mocked function
+func ListVolumesMocked(t *testing.T, volumesIn []*types.Volume) []*types.Volume {
 
 	assert := assert.New(t)
 
@@ -29,14 +29,14 @@ func GetVolumeListMocked(t *testing.T, volumesIn []*types.Volume) []*types.Volum
 
 	// call service
 	cs.On("Get", "/storage/volumes").Return(dIn, 200, nil)
-	volumesOut, err := ds.GetVolumeList("")
+	volumesOut, err := ds.ListVolumes("")
 	assert.Nil(err, "Error getting volume list")
-	assert.Equal(volumesIn, volumesOut, "GetVolumeList returned different volumes")
+	assert.Equal(volumesIn, volumesOut, "ListVolumes returned different volumes")
 
 	return volumesOut
 }
 
-func GetVolumeListMockedFilteredByServer(t *testing.T, volumesIn []*types.Volume) []*types.Volume {
+func ListVolumesMockedFilteredByServer(t *testing.T, volumesIn []*types.Volume) []*types.Volume {
 
 	assert := assert.New(t)
 
@@ -52,15 +52,15 @@ func GetVolumeListMockedFilteredByServer(t *testing.T, volumesIn []*types.Volume
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/volumes", volumesIn[0].AttachedServerID)).Return(dIn, 200, nil)
-	volumesOut, err := ds.GetVolumeList(volumesIn[0].AttachedServerID)
+	volumesOut, err := ds.ListVolumes(volumesIn[0].AttachedServerID)
 	assert.Nil(err, "Error getting volume list filtered by server")
-	assert.Equal(volumesIn, volumesOut, "GetVolumeList returned different volumes")
+	assert.Equal(volumesIn, volumesOut, "ListVolumes returned different volumes")
 
 	return volumesOut
 }
 
-// GetVolumeListFailErrMocked test mocked function
-func GetVolumeListFailErrMocked(t *testing.T, volumesIn []*types.Volume) []*types.Volume {
+// ListVolumesFailErrMocked test mocked function
+func ListVolumesFailErrMocked(t *testing.T, volumesIn []*types.Volume) []*types.Volume {
 
 	assert := assert.New(t)
 
@@ -76,7 +76,7 @@ func GetVolumeListFailErrMocked(t *testing.T, volumesIn []*types.Volume) []*type
 
 	// call service
 	cs.On("Get", "/storage/volumes").Return(dIn, 200, fmt.Errorf("mocked error"))
-	volumesOut, err := ds.GetVolumeList("")
+	volumesOut, err := ds.ListVolumes("")
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(volumesOut, "Expecting nil output")
@@ -85,8 +85,8 @@ func GetVolumeListFailErrMocked(t *testing.T, volumesIn []*types.Volume) []*type
 	return volumesOut
 }
 
-// GetVolumeListFailStatusMocked test mocked function
-func GetVolumeListFailStatusMocked(t *testing.T, volumesIn []*types.Volume) []*types.Volume {
+// ListVolumesFailStatusMocked test mocked function
+func ListVolumesFailStatusMocked(t *testing.T, volumesIn []*types.Volume) []*types.Volume {
 
 	assert := assert.New(t)
 
@@ -102,7 +102,7 @@ func GetVolumeListFailStatusMocked(t *testing.T, volumesIn []*types.Volume) []*t
 
 	// call service
 	cs.On("Get", "/storage/volumes").Return(dIn, 499, nil)
-	volumesOut, err := ds.GetVolumeList("")
+	volumesOut, err := ds.ListVolumes("")
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(volumesOut, "Expecting nil output")
@@ -111,8 +111,8 @@ func GetVolumeListFailStatusMocked(t *testing.T, volumesIn []*types.Volume) []*t
 	return volumesOut
 }
 
-// GetVolumeListFailJSONMocked test mocked function
-func GetVolumeListFailJSONMocked(t *testing.T, volumesIn []*types.Volume) []*types.Volume {
+// ListVolumesFailJSONMocked test mocked function
+func ListVolumesFailJSONMocked(t *testing.T, volumesIn []*types.Volume) []*types.Volume {
 
 	assert := assert.New(t)
 
@@ -127,7 +127,7 @@ func GetVolumeListFailJSONMocked(t *testing.T, volumesIn []*types.Volume) []*typ
 
 	// call service
 	cs.On("Get", "/storage/volumes").Return(dIn, 200, nil)
-	volumesOut, err := ds.GetVolumeList("")
+	volumesOut, err := ds.ListVolumes("")
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(volumesOut, "Expecting nil output")
@@ -375,7 +375,7 @@ func UpdateVolumeMocked(t *testing.T, volumeIn *types.Volume) *types.Volume {
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/storage/volumes/%s", volumeIn.ID), mapIn).Return(dOut, 200, nil)
-	volumeOut, err := ds.UpdateVolume(mapIn, volumeIn.ID)
+	volumeOut, err := ds.UpdateVolume(volumeIn.ID, mapIn)
 	assert.Nil(err, "Error updating volume list")
 	assert.Equal(volumeIn, volumeOut, "UpdateVolume returned different volumes")
 
@@ -403,7 +403,7 @@ func UpdateVolumeFailErrMocked(t *testing.T, volumeIn *types.Volume) *types.Volu
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/storage/volumes/%s", volumeIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	volumeOut, err := ds.UpdateVolume(mapIn, volumeIn.ID)
+	volumeOut, err := ds.UpdateVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(volumeOut, "Expecting nil output")
@@ -433,7 +433,7 @@ func UpdateVolumeFailStatusMocked(t *testing.T, volumeIn *types.Volume) *types.V
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/storage/volumes/%s", volumeIn.ID), mapIn).Return(dOut, 499, nil)
-	volumeOut, err := ds.UpdateVolume(mapIn, volumeIn.ID)
+	volumeOut, err := ds.UpdateVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(volumeOut, "Expecting nil output")
@@ -461,7 +461,7 @@ func UpdateVolumeFailJSONMocked(t *testing.T, volumeIn *types.Volume) *types.Vol
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/storage/volumes/%s", volumeIn.ID), mapIn).Return(dIn, 200, nil)
-	volumeOut, err := ds.UpdateVolume(mapIn, volumeIn.ID)
+	volumeOut, err := ds.UpdateVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(volumeOut, "Expecting nil output")
@@ -491,7 +491,7 @@ func AttachVolumeMocked(t *testing.T, volumeIn *types.Volume) *types.Server {
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/storage/volumes/%s/attached_server", volumeIn.ID), mapIn).Return(dOut, 200, nil)
-	serverOut, err := ds.AttachVolume(mapIn, volumeIn.ID)
+	serverOut, err := ds.AttachVolume(volumeIn.ID, mapIn)
 	assert.Nil(err, "Error attaching volume")
 	assert.Equal(volumeIn.AttachedServerID, serverOut.ID, "AttachVolume returned invalid values")
 
@@ -519,7 +519,7 @@ func AttachVolumeFailErrMocked(t *testing.T, volumeIn *types.Volume) *types.Serv
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/storage/volumes/%s/attached_server", volumeIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	serverOut, err := ds.AttachVolume(mapIn, volumeIn.ID)
+	serverOut, err := ds.AttachVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serverOut, "Expecting nil output")
@@ -549,7 +549,7 @@ func AttachVolumeFailStatusMocked(t *testing.T, volumeIn *types.Volume) *types.S
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/storage/volumes/%s/attached_server", volumeIn.ID), mapIn).Return(dOut, 499, nil)
-	serverOut, err := ds.AttachVolume(mapIn, volumeIn.ID)
+	serverOut, err := ds.AttachVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serverOut, "Expecting nil output")
@@ -577,7 +577,7 @@ func AttachVolumeFailJSONMocked(t *testing.T, volumeIn *types.Volume) *types.Ser
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/storage/volumes/%s/attached_server", volumeIn.ID), mapIn).Return(dIn, 200, nil)
-	serverOut, err := ds.AttachVolume(mapIn, volumeIn.ID)
+	serverOut, err := ds.AttachVolume(volumeIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serverOut, "Expecting nil output")

@@ -13,12 +13,12 @@ func TestNewCookbookVersionServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetCookbookVersionList(t *testing.T) {
+func TestListCookbookVersions(t *testing.T) {
 	cbsIn := testdata.GetCookbookVersionData()
-	GetCookbookVersionListMocked(t, cbsIn)
-	GetCookbookVersionListFailErrMocked(t, cbsIn)
-	GetCookbookVersionListFailStatusMocked(t, cbsIn)
-	GetCookbookVersionListFailJSONMocked(t, cbsIn)
+	ListCookbookVersionsMocked(t, cbsIn)
+	ListCookbookVersionsFailErrMocked(t, cbsIn)
+	ListCookbookVersionsFailStatusMocked(t, cbsIn)
+	ListCookbookVersionsFailJSONMocked(t, cbsIn)
 }
 
 func TestGetCookbookVersion(t *testing.T) {

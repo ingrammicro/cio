@@ -8,7 +8,7 @@ import (
 )
 
 // WireUpWizServerPlan prepares common resources to send request to Concerto API
-func WireUpWizServerPlan(c *cli.Context) (ds *wizard.WizServerPlanService, f format.Formatter) {
+func WireUpWizServerPlan(c *cli.Context) (ds *wizard.WizardServerPlanService, f format.Formatter) {
 
 	f = format.GetFormatter()
 
@@ -20,7 +20,7 @@ func WireUpWizServerPlan(c *cli.Context) (ds *wizard.WizServerPlanService, f for
 	if err != nil {
 		f.PrintFatal("Couldn't wire up concerto service", err)
 	}
-	ds, err = wizard.NewWizServerPlanService(hcs)
+	ds, err = wizard.NewWizardServerPlanService(hcs)
 	if err != nil {
 		f.PrintFatal("Couldn't wire up wizard server plan service", err)
 	}
@@ -35,7 +35,7 @@ func WizServerPlanList(c *cli.Context) error {
 
 	checkRequiredFlags(c, []string{"app-id", "location-id", "cloud-provider-id"}, formatter)
 
-	serverPlans, err := serverPlanSvc.GetWizServerPlanList(c.String("app-id"), c.String("location-id"), c.String("cloud-provider-id"))
+	serverPlans, err := serverPlanSvc.ListWizardServerPlans(c.String("app-id"), c.String("location-id"), c.String("cloud-provider-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive serverPlan data", err)
 	}

@@ -14,12 +14,12 @@ func TestNewAppServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetAppList(t *testing.T) {
+func TestListApps(t *testing.T) {
 	appsIn := testdata.GetAppData()
-	GetAppListMocked(t, appsIn)
-	GetAppListFailErrMocked(t, appsIn)
-	GetAppListFailStatusMocked(t, appsIn)
-	GetAppListFailJSONMocked(t, appsIn)
+	ListAppsMocked(t, appsIn)
+	ListAppsFailErrMocked(t, appsIn)
+	ListAppsFailStatusMocked(t, appsIn)
+	ListAppsFailJSONMocked(t, appsIn)
 }
 
 func TestDeployApp(t *testing.T) {

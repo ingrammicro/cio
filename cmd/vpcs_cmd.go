@@ -35,7 +35,7 @@ func VPCList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	vpcSvc, formatter := WireUpVPC(c)
 
-	vpcs, err := vpcSvc.GetVPCList()
+	vpcs, err := vpcSvc.ListVPCs()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive VPC data", err)
 	}
@@ -124,7 +124,7 @@ func VPCUpdate(c *cli.Context) error {
 		"name": c.String("name"),
 	}
 
-	vpc, err := vpcSvc.UpdateVPC(&vpcIn, c.String("id"))
+	vpc, err := vpcSvc.UpdateVPC(c.String("id"), &vpcIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update VPC", err)
 	}

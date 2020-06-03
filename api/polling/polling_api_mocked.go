@@ -248,7 +248,7 @@ func UpdateCommandMocked(t *testing.T, commandIn *types.PollingCommand) *types.P
 	// call service
 	payload := make(map[string]interface{})
 	cs.On("Put", fmt.Sprintf("/command_polling/commands/%s", commandIn.ID), &payload).Return(dOut, 200, nil)
-	commandOut, status, err := ds.UpdateCommand(&payload, commandIn.ID)
+	commandOut, status, err := ds.UpdateCommand(commandIn.ID, &payload)
 	assert.Nil(err, "Error getting polling command")
 	assert.Equal(status, 200, "UpdateCommand returned invalid response")
 	assert.Equal(*commandIn, *commandOut, "UpdateCommand returned different nodes")
@@ -276,7 +276,7 @@ func UpdateCommandFailErrMocked(t *testing.T, commandIn *types.PollingCommand) *
 	// call service
 	payload := make(map[string]interface{})
 	cs.On("Put", fmt.Sprintf("/command_polling/commands/%s", commandIn.ID), &payload).Return(dIn, 400, fmt.Errorf("mocked error"))
-	commandOut, _, err := ds.UpdateCommand(&payload, commandIn.ID)
+	commandOut, _, err := ds.UpdateCommand(commandIn.ID, &payload)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(commandOut, "Expecting nil output")
@@ -305,7 +305,7 @@ func UpdateCommandFailStatusMocked(t *testing.T, commandIn *types.PollingCommand
 	// call service
 	payload := make(map[string]interface{})
 	cs.On("Put", fmt.Sprintf("/command_polling/commands/%s", commandIn.ID), &payload).Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
-	commandOut, status, err := ds.UpdateCommand(&payload, commandIn.ID)
+	commandOut, status, err := ds.UpdateCommand(commandIn.ID, &payload)
 
 	assert.Equal(status, 499, "UpdateCommand returned an unexpected status code")
 	assert.NotNil(err, "We are expecting a status code error")
@@ -332,7 +332,7 @@ func UpdateCommandFailJSONMocked(t *testing.T, commandIn *types.PollingCommand) 
 	// call service
 	payload := make(map[string]interface{})
 	cs.On("Put", fmt.Sprintf("/command_polling/commands/%s", commandIn.ID), &payload).Return(dIn, 200, nil)
-	commandOut, _, err := ds.UpdateCommand(&payload, commandIn.ID)
+	commandOut, _, err := ds.UpdateCommand(commandIn.ID, &payload)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(commandOut, "Expecting nil output")

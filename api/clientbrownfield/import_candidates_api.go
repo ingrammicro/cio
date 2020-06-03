@@ -25,10 +25,10 @@ func NewImportCandidateService(concertoService utils.ConcertoService) (*ImportCa
 }
 
 // ImportServer imports a brownfield server import candidate
-func (ics *ImportCandidateService) ImportServer(serverID string, serverIn *map[string]interface{}) (server *types.Server, err error) {
+func (ics *ImportCandidateService) ImportServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("ImportServer")
 
-	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/import_candidates/%s/import", serverID), serverIn)
+	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/import_candidates/%s/import", serverID), serverParams)
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +45,10 @@ func (ics *ImportCandidateService) ImportServer(serverID string, serverIn *map[s
 }
 
 // ImportVPC imports a brownfield vpc import candidate
-func (ics *ImportCandidateService) ImportVPC(vpcID string, vpcIn *map[string]interface{}) (vpc *types.Vpc, err error) {
+func (ics *ImportCandidateService) ImportVPC(vpcID string, vpcParams *map[string]interface{}) (vpc *types.Vpc, err error) {
 	log.Debug("ImportVPC")
 
-	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/vpc_import_candidates/%s/import", vpcID), vpcIn)
+	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/vpc_import_candidates/%s/import", vpcID), vpcParams)
 	if err != nil {
 		return nil, err
 	}
@@ -65,10 +65,10 @@ func (ics *ImportCandidateService) ImportVPC(vpcID string, vpcIn *map[string]int
 }
 
 // ImportFloatingIP imports a brownfield floating ip import candidate
-func (ics *ImportCandidateService) ImportFloatingIP(floatingIPID string, floatingIPIn *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
+func (ics *ImportCandidateService) ImportFloatingIP(floatingIPID string, floatingIPParams *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
 	log.Debug("ImportFloatingIP")
 
-	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/floating_ip_import_candidates/%s/import", floatingIPID), floatingIPIn)
+	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/floating_ip_import_candidates/%s/import", floatingIPID), floatingIPParams)
 	if err != nil {
 		return nil, err
 	}
@@ -85,10 +85,10 @@ func (ics *ImportCandidateService) ImportFloatingIP(floatingIPID string, floatin
 }
 
 // ImportVolume imports a brownfield volume import candidate
-func (ics *ImportCandidateService) ImportVolume(volumeID string, volumeIn *map[string]interface{}) (volume *types.Volume, err error) {
+func (ics *ImportCandidateService) ImportVolume(volumeID string, volumeParams *map[string]interface{}) (volume *types.Volume, err error) {
 	log.Debug("ImportVolume")
 
-	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/volume_import_candidates/%s/import", volumeID), volumeIn)
+	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/volume_import_candidates/%s/import", volumeID), volumeParams)
 	if err != nil {
 		return nil, err
 	}

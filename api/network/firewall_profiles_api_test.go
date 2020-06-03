@@ -13,12 +13,12 @@ func TestNewFirewallProfileServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetFirewallProfileList(t *testing.T) {
+func TestListFirewallProfiles(t *testing.T) {
 	firewallProfilesIn := testdata.GetFirewallProfileData()
-	GetFirewallProfileListMocked(t, firewallProfilesIn)
-	GetFirewallProfileListFailErrMocked(t, firewallProfilesIn)
-	GetFirewallProfileListFailStatusMocked(t, firewallProfilesIn)
-	GetFirewallProfileListFailJSONMocked(t, firewallProfilesIn)
+	ListFirewallProfilesMocked(t, firewallProfilesIn)
+	ListFirewallProfilesFailErrMocked(t, firewallProfilesIn)
+	ListFirewallProfilesFailStatusMocked(t, firewallProfilesIn)
+	ListFirewallProfilesFailJSONMocked(t, firewallProfilesIn)
 }
 
 func TestGetFirewallProfile(t *testing.T) {

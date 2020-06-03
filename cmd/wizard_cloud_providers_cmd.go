@@ -8,7 +8,7 @@ import (
 )
 
 // WireUpWizCloudProvider prepares common resources to send request to Concerto API
-func WireUpWizCloudProvider(c *cli.Context) (cs *wizard.WizCloudProvidersService, f format.Formatter) {
+func WireUpWizCloudProvider(c *cli.Context) (cs *wizard.WizardCloudProviderService, f format.Formatter) {
 
 	f = format.GetFormatter()
 
@@ -20,7 +20,7 @@ func WireUpWizCloudProvider(c *cli.Context) (cs *wizard.WizCloudProvidersService
 	if err != nil {
 		f.PrintFatal("Couldn't wire up concerto service", err)
 	}
-	cs, err = wizard.NewWizCloudProvidersService(hcs)
+	cs, err = wizard.NewWizardCloudProviderService(hcs)
 	if err != nil {
 		f.PrintFatal("Couldn't wire up cloudProvider service", err)
 	}
@@ -35,7 +35,7 @@ func WizCloudProviderList(c *cli.Context) error {
 
 	checkRequiredFlags(c, []string{"app-id", "location-id"}, formatter)
 
-	cloudProviders, err := cloudProviderSvc.GetWizCloudProviderList(c.String("app-id"), c.String("location-id"))
+	cloudProviders, err := cloudProviderSvc.ListWizardCloudProviders(c.String("app-id"), c.String("location-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive cloudProvider data", err)
 	}

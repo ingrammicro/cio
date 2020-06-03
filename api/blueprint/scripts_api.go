@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ScriptService manages scripts operations
+// ScriptService manages script operations
 type ScriptService struct {
 	concertoService utils.ConcertoService
 }
@@ -24,9 +24,9 @@ func NewScriptService(concertoService utils.ConcertoService) (*ScriptService, er
 	}, nil
 }
 
-// GetScriptList returns the list of scripts as an array of Scripts
-func (sc *ScriptService) GetScriptList() (scripts []*types.Script, err error) {
-	log.Debug("GetScriptsList")
+// ListScripts returns the list of scripts as an array of Scripts
+func (sc *ScriptService) ListScripts() (scripts []*types.Script, err error) {
+	log.Debug("ListScripts")
 
 	data, status, err := sc.concertoService.Get("/blueprint/scripts")
 	if err != nil {
@@ -85,7 +85,7 @@ func (sc *ScriptService) CreateScript(scriptParams *map[string]interface{}) (scr
 }
 
 // UpdateScript updates a script by its ID
-func (sc *ScriptService) UpdateScript(scriptParams *map[string]interface{}, scriptID string) (script *types.Script, err error) {
+func (sc *ScriptService) UpdateScript(scriptID string, scriptParams *map[string]interface{}) (script *types.Script, err error) {
 	log.Debug("UpdateScript")
 
 	data, status, err := sc.concertoService.Put(fmt.Sprintf("/blueprint/scripts/%s", scriptID), scriptParams)
@@ -121,7 +121,7 @@ func (sc *ScriptService) DeleteScript(scriptID string) (err error) {
 }
 
 // AddScriptAttachment adds an attachment to script by its ID
-func (sc *ScriptService) AddScriptAttachment(attachmentIn *map[string]interface{}, scriptID string) (script *types.Attachment, err error) {
+func (sc *ScriptService) AddScriptAttachment(scriptID string, attachmentIn *map[string]interface{}) (script *types.Attachment, err error) {
 	log.Debug("AddScriptAttachment")
 
 	data, status, err := sc.concertoService.Post(fmt.Sprintf("/blueprint/scripts/%s/attachments", scriptID), attachmentIn)
@@ -157,7 +157,7 @@ func (sc *ScriptService) UploadScriptAttachment(sourceFilePath string, targetURL
 }
 
 // UploadedScriptAttachment sets "uploaded" status to the attachment by its ID
-func (sc *ScriptService) UploadedScriptAttachment(attachmentParams *map[string]interface{}, attachmentID string) (attachment *types.Attachment, err error) {
+func (sc *ScriptService) UploadedScriptAttachment(attachmentID string, attachmentParams *map[string]interface{}) (attachment *types.Attachment, err error) {
 	log.Debug("UploadedScriptAttachment")
 
 	data, status, err := sc.concertoService.Put(fmt.Sprintf("/blueprint/attachments/%s/uploaded", attachmentID), attachmentParams)

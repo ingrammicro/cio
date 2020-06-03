@@ -39,7 +39,7 @@ func TemplateList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	templateSvc, formatter := WireUpTemplate(c)
 
-	templates, err := templateSvc.GetTemplateList()
+	templates, err := templateSvc.ListTemplates()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive template data", err)
 	}
@@ -193,7 +193,7 @@ func TemplateUpdate(c *cli.Context) error {
 		templateIn["cookbook_versions"] = cbIn
 	}
 
-	template, err := templateSvc.UpdateTemplate(&templateIn, c.String("id"))
+	template, err := templateSvc.UpdateTemplate(c.String("id"), &templateIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update template", err)
 	}
@@ -216,7 +216,7 @@ func TemplateCompile(c *cli.Context) error {
 	templateSvc, formatter := WireUpTemplate(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	template, err := templateSvc.CompileTemplate(utils.FlagConvertParams(c), c.String("id"))
+	template, err := templateSvc.CompileTemplate(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't compile template", err)
 	}
@@ -254,7 +254,7 @@ func TemplateScriptList(c *cli.Context) error {
 	templateScriptSvc, formatter := WireUpTemplate(c)
 
 	checkRequiredFlags(c, []string{"template-id", "type"}, formatter)
-	templateScripts, err := templateScriptSvc.GetTemplateScriptList(c.String("template-id"), c.String("type"))
+	templateScripts, err := templateScriptSvc.ListTemplateScripts(c.String("template-id"), c.String("type"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive templateScript data", err)
 	}
@@ -310,7 +310,7 @@ func TemplateScriptCreate(c *cli.Context) error {
 		templateScriptIn["parameter_values"] = (*params)["parameter-values"]
 	}
 
-	templateScript, err := templateScriptSvc.CreateTemplateScript(&templateScriptIn, c.String("template-id"))
+	templateScript, err := templateScriptSvc.CreateTemplateScript(c.String("template-id"), &templateScriptIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't create templateScript", err)
 	}
@@ -348,7 +348,7 @@ func TemplateScriptUpdate(c *cli.Context) error {
 		templateScriptIn["parameter_values"] = (*params)["parameter-values"]
 	}
 
-	templateScript, err := templateScriptSvc.UpdateTemplateScript(&templateScriptIn, c.String("template-id"), c.String("id"))
+	templateScript, err := templateScriptSvc.UpdateTemplateScript(c.String("template-id"), c.String("id"), &templateScriptIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update templateScript", err)
 	}
@@ -382,7 +382,7 @@ func TemplateScriptReorder(c *cli.Context) error {
 		"script_ids": utils.RemoveDuplicates(strings.Split(c.String("script-ids"), ",")),
 	}
 
-	templateScript, err := templateScriptSvc.ReorderTemplateScript(&templateScriptIn, c.String("template-id"))
+	templateScript, err := templateScriptSvc.ReorderTemplateScript(c.String("template-id"), &templateScriptIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't reorder templateScript", err)
 	}
@@ -400,7 +400,7 @@ func TemplateServersList(c *cli.Context) error {
 	templateSvc, formatter := WireUpTemplate(c)
 
 	checkRequiredFlags(c, []string{"template-id"}, formatter)
-	templateServers, err := templateSvc.GetTemplateServerList(c.String("template-id"))
+	templateServers, err := templateSvc.ListTemplateServers(c.String("template-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive template servers data", err)
 	}
@@ -432,7 +432,7 @@ func convertFlagParamsToCookbookVersions(c *cli.Context, cbvsIn string) (map[str
 			if len(cookbookVersions) == 0 {
 				// data is loaded only once
 				svc, formatter := WireUpCookbookVersion(c)
-				cbvs, err := svc.GetCookbookVersionList()
+				cbvs, err := svc.ListCookbookVersions()
 				if err != nil {
 					formatter.PrintFatal("cannot receive uploaded cookbook versions data", err)
 				}
@@ -458,7 +458,7 @@ func convertFlagParamsToCookbookVersions(c *cli.Context, cbvsIn string) (map[str
 // resolveCookbookVersions resolves adequate cookbook version ids
 func resolveCookbookVersions(c *cli.Context, template *types.Template) error {
 	svc, _ := WireUpCookbookVersion(c)
-	cbvs, err := svc.GetCookbookVersionList()
+	cbvs, err := svc.ListCookbookVersions()
 	if err != nil {
 		return err
 	}

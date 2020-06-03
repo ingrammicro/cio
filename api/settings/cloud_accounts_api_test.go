@@ -14,12 +14,12 @@ func TestNewCloudAccountServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetCloudAccountList(t *testing.T) {
+func TestListCloudAccounts(t *testing.T) {
 	cloudAccountsIn := testdata.GetCloudAccountData()
-	GetCloudAccountListMocked(t, cloudAccountsIn)
-	GetCloudAccountListFailErrMocked(t, cloudAccountsIn)
-	GetCloudAccountListFailStatusMocked(t, cloudAccountsIn)
-	GetCloudAccountListFailJSONMocked(t, cloudAccountsIn)
+	ListCloudAccountsMocked(t, cloudAccountsIn)
+	ListCloudAccountsFailErrMocked(t, cloudAccountsIn)
+	ListCloudAccountsFailStatusMocked(t, cloudAccountsIn)
+	ListCloudAccountsFailJSONMocked(t, cloudAccountsIn)
 }
 
 func TestGetCloudAccount(t *testing.T) {

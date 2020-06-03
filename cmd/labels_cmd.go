@@ -38,7 +38,7 @@ func LabelList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 
 	labelsSvc, formatter := WireUpLabel(c)
-	labels, err := labelsSvc.GetLabelList()
+	labels, err := labelsSvc.ListLabels()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive labels data", err)
 	}
@@ -104,7 +104,7 @@ func LabelLoadsMapping(c *cli.Context) (map[string]string, map[string]string) {
 	debugCmdFuncInfo(c)
 
 	labelsSvc, formatter := WireUpLabel(c)
-	labels, err := labelsSvc.GetLabelList()
+	labels, err := labelsSvc.ListLabels()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive labels data", err)
 	}
@@ -192,7 +192,7 @@ func LabelAdd(c *cli.Context) error {
 		"resources": resourcesData,
 	}
 
-	labeledResources, err := labelsSvc.AddLabel(&labelIn, labelID)
+	labeledResources, err := labelsSvc.AddLabel(labelID, &labelIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't add label data", err)
 	}

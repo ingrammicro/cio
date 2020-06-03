@@ -25,9 +25,9 @@ func NewServerArrayService(concertoService utils.ConcertoService) (*ServerArrayS
 	}, nil
 }
 
-// GetServerArrayList returns the list of server arrays as an array of ServerArray
-func (sas *ServerArrayService) GetServerArrayList() (serverArrays []*types.ServerArray, err error) {
-	log.Debug("GetServerArrayList")
+// ListServerArrays returns the list of server arrays as an array of ServerArray
+func (sas *ServerArrayService) ListServerArrays() (serverArrays []*types.ServerArray, err error) {
+	log.Debug("ListServerArrays")
 
 	data, status, err := sas.concertoService.Get("/cloud/server_arrays")
 	if err != nil {
@@ -86,7 +86,7 @@ func (sas *ServerArrayService) CreateServerArray(serverArrayParams *map[string]i
 }
 
 // UpdateServerArray updates a server array by its ID
-func (sas *ServerArrayService) UpdateServerArray(serverArrayParams *map[string]interface{}, serverArrayID string) (serverArray *types.ServerArray, err error) {
+func (sas *ServerArrayService) UpdateServerArray(serverArrayID string, serverArrayParams *map[string]interface{}) (serverArray *types.ServerArray, err error) {
 	log.Debug("UpdateServerArray")
 
 	data, status, err := sas.concertoService.Put(fmt.Sprintf("/cloud/server_arrays/%s", serverArrayID), serverArrayParams)
@@ -106,7 +106,7 @@ func (sas *ServerArrayService) UpdateServerArray(serverArrayParams *map[string]i
 }
 
 // BootServerArray boots a server array by its ID
-func (sas *ServerArrayService) BootServerArray(serverArrayParams *map[string]interface{}, serverArrayID string) (serverArray *types.ServerArray, err error) {
+func (sas *ServerArrayService) BootServerArray(serverArrayID string, serverArrayParams *map[string]interface{}) (serverArray *types.ServerArray, err error) {
 	log.Debug("BootServerArray")
 
 	data, status, err := sas.concertoService.Put(fmt.Sprintf("/cloud/server_arrays/%s/boot", serverArrayID), serverArrayParams)
@@ -126,7 +126,7 @@ func (sas *ServerArrayService) BootServerArray(serverArrayParams *map[string]int
 }
 
 // ShutdownServerArray shuts down a server array by its ID
-func (sas *ServerArrayService) ShutdownServerArray(serverArrayParams *map[string]interface{}, serverArrayID string) (serverArray *types.ServerArray, err error) {
+func (sas *ServerArrayService) ShutdownServerArray(serverArrayID string, serverArrayParams *map[string]interface{}) (serverArray *types.ServerArray, err error) {
 	log.Debug("ShutdownServerArray")
 
 	data, status, err := sas.concertoService.Put(fmt.Sprintf("/cloud/server_arrays/%s/shutdown", serverArrayID), serverArrayParams)
@@ -146,7 +146,7 @@ func (sas *ServerArrayService) ShutdownServerArray(serverArrayParams *map[string
 }
 
 // EmptyServerArray empties a server array by its ID
-func (sas *ServerArrayService) EmptyServerArray(serverArrayParams *map[string]interface{}, serverArrayID string) (serverArray *types.ServerArray, err error) {
+func (sas *ServerArrayService) EmptyServerArray(serverArrayID string, serverArrayParams *map[string]interface{}) (serverArray *types.ServerArray, err error) {
 	log.Debug("EmptyServerArray")
 
 	data, status, err := sas.concertoService.Put(fmt.Sprintf("/cloud/server_arrays/%s/empty", serverArrayID), serverArrayParams)
@@ -166,7 +166,7 @@ func (sas *ServerArrayService) EmptyServerArray(serverArrayParams *map[string]in
 }
 
 // EnlargeServerArray enlarges a server array by its ID
-func (sas *ServerArrayService) EnlargeServerArray(serverArrayParams *map[string]interface{}, serverArrayID string) (serverArray *types.ServerArray, err error) {
+func (sas *ServerArrayService) EnlargeServerArray(serverArrayID string, serverArrayParams *map[string]interface{}) (serverArray *types.ServerArray, err error) {
 	log.Debug("EnlargeServerArray")
 
 	data, status, err := sas.concertoService.Post(fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID), serverArrayParams)
@@ -185,9 +185,9 @@ func (sas *ServerArrayService) EnlargeServerArray(serverArrayParams *map[string]
 	return serverArray, nil
 }
 
-// GetServerArrayServerList returns the list of servers in a server array as an array of Server
-func (sas *ServerArrayService) GetServerArrayServerList(serverArrayID string) (servers []*types.Server, err error) {
-	log.Debug("GetServerArrayServerList")
+// ListServerArrayServers returns the list of servers in a server array as an array of Server
+func (sas *ServerArrayService) ListServerArrayServers(serverArrayID string) (servers []*types.Server, err error) {
+	log.Debug("ListServerArrayServers")
 
 	data, status, err := sas.concertoService.Get(fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID))
 	if err != nil {

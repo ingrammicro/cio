@@ -158,7 +158,7 @@ func processingCommandRoutine(pollingSvc *polling.PollingService, formatter form
 			"exit_code": command.ExitCode,
 		}
 
-		_, status, err := pollingSvc.UpdateCommand(&commandIn, command.ID)
+		_, status, err := pollingSvc.UpdateCommand(command.ID, &commandIn)
 		if err != nil {
 			formatter.PrintError("Couldn't send polling command report data", err)
 		}

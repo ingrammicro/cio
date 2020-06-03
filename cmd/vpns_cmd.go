@@ -59,7 +59,7 @@ func VPNCreate(c *cli.Context) error {
 		"vpn_plan_id":   c.String("vpn-plan-id"),
 	}
 
-	vpn, err := vpnSvc.CreateVPN(&vpnIn, c.String("vpc-id"))
+	vpn, err := vpnSvc.CreateVPN(c.String("vpc-id"), &vpnIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't create VPN", err)
 	}
@@ -89,7 +89,7 @@ func VPNPlanList(c *cli.Context) error {
 	vpcSvc, formatter := WireUpVPN(c)
 	checkRequiredFlags(c, []string{"vpc-id"}, formatter)
 
-	vpns, err := vpcSvc.GetVPNPlanList(c.String("vpc-id"))
+	vpns, err := vpcSvc.ListVPNPlans(c.String("vpc-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive VPN data", err)
 	}

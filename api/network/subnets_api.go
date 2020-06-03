@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// SubnetService manages Subnet operations
+// SubnetService manages subnet operations
 type SubnetService struct {
 	concertoService utils.ConcertoService
 }
@@ -24,11 +24,11 @@ func NewSubnetService(concertoService utils.ConcertoService) (*SubnetService, er
 	}, nil
 }
 
-// GetSubnetList returns the list of Subnets of a VPC as an array of Subnet
-func (dm *SubnetService) GetSubnetList(vpcID string) (subnets []*types.Subnet, err error) {
-	log.Debug("GetSubnetList")
+// ListSubnets returns the list of Subnets of a VPC as an array of Subnet
+func (ss *SubnetService) ListSubnets(vpcID string) (subnets []*types.Subnet, err error) {
+	log.Debug("ListSubnets")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/network/vpcs/%s/subnets", vpcID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf("/network/vpcs/%s/subnets", vpcID))
 
 	if err != nil {
 		return nil, err
@@ -46,10 +46,10 @@ func (dm *SubnetService) GetSubnetList(vpcID string) (subnets []*types.Subnet, e
 }
 
 // GetSubnet returns a Subnet by its ID
-func (dm *SubnetService) GetSubnet(ID string) (subnet *types.Subnet, err error) {
+func (ss *SubnetService) GetSubnet(subnetID string) (subnet *types.Subnet, err error) {
 	log.Debug("GetSubnet")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/network/subnets/%s", ID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf("/network/subnets/%s", subnetID))
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +66,11 @@ func (dm *SubnetService) GetSubnet(ID string) (subnet *types.Subnet, err error) 
 }
 
 // CreateSubnet creates a Subnet
-func (dm *SubnetService) CreateSubnet(subnetParams *map[string]interface{}, vpcID string) (subnet *types.Subnet, err error) {
+func (ss *SubnetService) CreateSubnet(vpcID string, subnetParams *map[string]interface{}) (subnet *types.Subnet, err error) {
 	log.Debug("CreateSubnet")
 
-	data, status, err := dm.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/subnets", vpcID), subnetParams)
+	data, status, err := ss.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/subnets", vpcID), subnetParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +87,11 @@ func (dm *SubnetService) CreateSubnet(subnetParams *map[string]interface{}, vpcI
 }
 
 // UpdateSubnet updates a Subnet by its ID
-func (dm *SubnetService) UpdateSubnet(subnetParams *map[string]interface{}, ID string) (subnet *types.Subnet, err error) {
+func (ss *SubnetService) UpdateSubnet(subnetID string, subnetParams *map[string]interface{}) (subnet *types.Subnet, err error) {
 	log.Debug("UpdateSubnet")
 
-	data, status, err := dm.concertoService.Put(fmt.Sprintf("/network/subnets/%s", ID), subnetParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf("/network/subnets/%s", subnetID), subnetParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -106,10 +108,10 @@ func (dm *SubnetService) UpdateSubnet(subnetParams *map[string]interface{}, ID s
 }
 
 // DeleteSubnet deletes a Subnet by its ID
-func (dm *SubnetService) DeleteSubnet(ID string) (err error) {
+func (ss *SubnetService) DeleteSubnet(subnetID string) (err error) {
 	log.Debug("DeleteSubnet")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/network/subnets/%s", ID))
+	data, status, err := ss.concertoService.Delete(fmt.Sprintf("/network/subnets/%s", subnetID))
 	if err != nil {
 		return err
 	}
@@ -121,11 +123,11 @@ func (dm *SubnetService) DeleteSubnet(ID string) (err error) {
 	return nil
 }
 
-// GetSubnetServerList returns the list of Servers of a Subnet as an array of Server
-func (dm *SubnetService) GetSubnetServerList(subnetID string) (servers []*types.Server, err error) {
-	log.Debug("GetSubnetServerList")
+// ListSubnetServers returns the list of Servers of a Subnet as an array of Server
+func (ss *SubnetService) ListSubnetServers(subnetID string) (servers []*types.Server, err error) {
+	log.Debug("ListSubnetServers")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/network/subnets/%s/servers", subnetID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf("/network/subnets/%s/servers", subnetID))
 
 	if err != nil {
 		return nil, err
@@ -142,11 +144,11 @@ func (dm *SubnetService) GetSubnetServerList(subnetID string) (servers []*types.
 	return servers, nil
 }
 
-// GetSubnetServerArrayList returns the list of Server arrays of a Subnet as an array of ServerArray
-func (dm *SubnetService) GetSubnetServerArrayList(subnetID string) (serverArrays []*types.ServerArray, err error) {
-	log.Debug("GetSubnetServerArrayList")
+// ListSubnetServerArrays returns the list of Server arrays of a Subnet as an array of ServerArray
+func (ss *SubnetService) ListSubnetServerArrays(subnetID string) (serverArrays []*types.ServerArray, err error) {
+	log.Debug("ListSubnetServerArrays")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/network/subnets/%s/server_arrays", subnetID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf("/network/subnets/%s/server_arrays", subnetID))
 
 	if err != nil {
 		return nil, err

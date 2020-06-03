@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// GenericImageService manages genericImage operations
+// GenericImageService manages generic image operations
 type GenericImageService struct {
 	concertoService utils.ConcertoService
 }
@@ -24,11 +24,11 @@ func NewGenericImageService(concertoService utils.ConcertoService) (*GenericImag
 	}, nil
 }
 
-// GetGenericImageList returns the list of generic images as an array of GenericImage
-func (cl *GenericImageService) GetGenericImageList() (genericImages []*types.GenericImage, err error) {
-	log.Debug("GetGenericImageList")
+// ListGenericImages returns the list of generic images as an array of GenericImage
+func (gis *GenericImageService) ListGenericImages() (genericImages []*types.GenericImage, err error) {
+	log.Debug("ListGenericImages")
 
-	data, status, err := cl.concertoService.Get("/cloud/generic_images")
+	data, status, err := gis.concertoService.Get("/cloud/generic_images")
 	if err != nil {
 		return nil, err
 	}

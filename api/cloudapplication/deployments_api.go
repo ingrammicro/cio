@@ -93,10 +93,10 @@ func (cads *CloudApplicationDeploymentService) DeleteDeployment(deploymentID str
 }
 
 // CreateDeploymentTask creates a cloud application deployment task by a given CAT ID
-func (cads *CloudApplicationDeploymentService) CreateDeploymentTask(catID string, deploymentIn *map[string]interface{}) (deploymentTask *types.CloudApplicationDeploymentTask, err error) {
+func (cads *CloudApplicationDeploymentService) CreateDeploymentTask(catID string, deploymentParams *map[string]interface{}) (deploymentTask *types.CloudApplicationDeploymentTask, err error) {
 	log.Debug("CreateDeploymentTask")
 
-	data, status, err := cads.concertoService.Post(fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks", catID), deploymentIn)
+	data, status, err := cads.concertoService.Post(fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks", catID), deploymentParams)
 	if err != nil {
 		return nil, err
 	}

@@ -24,11 +24,11 @@ func NewEventService(concertoService utils.ConcertoService) (*EventService, erro
 	}, nil
 }
 
-// GetEventList returns the list of events as an array of Event
-func (cl *EventService) GetEventList() (events []*types.Event, err error) {
-	log.Debug("GetEventList")
+// ListEvents returns the list of events as an array of Event
+func (es *EventService) ListEvents() (events []*types.Event, err error) {
+	log.Debug("ListEvents")
 
-	data, status, err := cl.concertoService.Get("/audit/events")
+	data, status, err := es.concertoService.Get("/audit/events")
 	if err != nil {
 		return nil, err
 	}
@@ -44,11 +44,11 @@ func (cl *EventService) GetEventList() (events []*types.Event, err error) {
 	return events, nil
 }
 
-// GetSysEventList returns the list of events as an array of Event
-func (cl *EventService) GetSysEventList() (events []*types.Event, err error) {
-	log.Debug("GetSysEventList")
+// ListSysEvents returns the list of events as an array of Event
+func (es *EventService) ListSysEvents() (events []*types.Event, err error) {
+	log.Debug("ListSysEvents")
 
-	data, status, err := cl.concertoService.Get("/audit/system_events")
+	data, status, err := es.concertoService.Get("/audit/system_events")
 	if err != nil {
 		return nil, err
 	}

@@ -13,12 +13,12 @@ func TestNewScriptServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetScriptList(t *testing.T) {
+func TestListScripts(t *testing.T) {
 	scriptsIn := testdata.GetScriptData()
-	GetScriptListMocked(t, scriptsIn)
-	GetScriptListFailErrMocked(t, scriptsIn)
-	GetScriptListFailStatusMocked(t, scriptsIn)
-	GetScriptListFailJSONMocked(t, scriptsIn)
+	ListScriptsMocked(t, scriptsIn)
+	ListScriptsFailErrMocked(t, scriptsIn)
+	ListScriptsFailStatusMocked(t, scriptsIn)
+	ListScriptsFailJSONMocked(t, scriptsIn)
 }
 
 func TestGetScript(t *testing.T) {

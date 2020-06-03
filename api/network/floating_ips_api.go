@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// FloatingIPService manages FloatingIP operations
+// FloatingIPService manages floating IP operations
 type FloatingIPService struct {
 	concertoService utils.ConcertoService
 }
@@ -24,16 +24,16 @@ func NewFloatingIPService(concertoService utils.ConcertoService) (*FloatingIPSer
 	}, nil
 }
 
-// GetFloatingIPList returns the list of FloatingIPs as an array of FloatingIP
-func (dm *FloatingIPService) GetFloatingIPList(serverID string) (floatingIPs []*types.FloatingIP, err error) {
-	log.Debug("GetFloatingIPList")
+// ListFloatingIPs returns the list of FloatingIPs as an array of FloatingIP
+func (fips *FloatingIPService) ListFloatingIPs(serverID string) (floatingIPs []*types.FloatingIP, err error) {
+	log.Debug("ListFloatingIPs")
 
 	path := "/network/floating_ips"
 	if serverID != "" {
 		path = fmt.Sprintf("/cloud/servers/%s/floating_ips", serverID)
 
 	}
-	data, status, err := dm.concertoService.Get(path)
+	data, status, err := fips.concertoService.Get(path)
 
 	if err != nil {
 		return nil, err
@@ -51,10 +51,10 @@ func (dm *FloatingIPService) GetFloatingIPList(serverID string) (floatingIPs []*
 }
 
 // GetFloatingIP returns a FloatingIP by its ID
-func (dm *FloatingIPService) GetFloatingIP(ID string) (floatingIP *types.FloatingIP, err error) {
+func (fips *FloatingIPService) GetFloatingIP(floatingIPID string) (floatingIP *types.FloatingIP, err error) {
 	log.Debug("GetFloatingIP")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/network/floating_ips/%s", ID))
+	data, status, err := fips.concertoService.Get(fmt.Sprintf("/network/floating_ips/%s", floatingIPID))
 	if err != nil {
 		return nil, err
 	}
@@ -71,10 +71,11 @@ func (dm *FloatingIPService) GetFloatingIP(ID string) (floatingIP *types.Floatin
 }
 
 // CreateFloatingIP creates a FloatingIP
-func (dm *FloatingIPService) CreateFloatingIP(floatingIPParams *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
+func (fips *FloatingIPService) CreateFloatingIP(floatingIPParams *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
 	log.Debug("CreateFloatingIP")
 
-	data, status, err := dm.concertoService.Post("/network/floating_ips/", floatingIPParams)
+	data, status, err := fips.concertoService.Post("/network/floating_ips/", floatingIPParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -91,10 +92,11 @@ func (dm *FloatingIPService) CreateFloatingIP(floatingIPParams *map[string]inter
 }
 
 // UpdateFloatingIP updates a FloatingIP by its ID
-func (dm *FloatingIPService) UpdateFloatingIP(floatingIPParams *map[string]interface{}, ID string) (floatingIP *types.FloatingIP, err error) {
+func (fips *FloatingIPService) UpdateFloatingIP(floatingIPID string, floatingIPParams *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
 	log.Debug("UpdateFloatingIP")
 
-	data, status, err := dm.concertoService.Put(fmt.Sprintf("/network/floating_ips/%s", ID), floatingIPParams)
+	data, status, err := fips.concertoService.Put(fmt.Sprintf("/network/floating_ips/%s", floatingIPID), floatingIPParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -111,10 +113,11 @@ func (dm *FloatingIPService) UpdateFloatingIP(floatingIPParams *map[string]inter
 }
 
 // AttachFloatingIP attaches a FloatingIP by its ID
-func (dm *FloatingIPService) AttachFloatingIP(floatingIPParams *map[string]interface{}, ID string) (server *types.Server, err error) {
+func (fips *FloatingIPService) AttachFloatingIP(floatingIPID string, floatingIPParams *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("AttachFloatingIP")
 
-	data, status, err := dm.concertoService.Post(fmt.Sprintf("/network/floating_ips/%s/attached_server", ID), floatingIPParams)
+	data, status, err := fips.concertoService.Post(fmt.Sprintf("/network/floating_ips/%s/attached_server", floatingIPID), floatingIPParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -131,10 +134,10 @@ func (dm *FloatingIPService) AttachFloatingIP(floatingIPParams *map[string]inter
 }
 
 // DetachFloatingIP detaches a FloatingIP by its ID
-func (dm *FloatingIPService) DetachFloatingIP(ID string) (err error) {
+func (fips *FloatingIPService) DetachFloatingIP(floatingIPID string) (err error) {
 	log.Debug("DetachFloatingIP")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/network/floating_ips/%s/attached_server", ID))
+	data, status, err := fips.concertoService.Delete(fmt.Sprintf("/network/floating_ips/%s/attached_server", floatingIPID))
 	if err != nil {
 		return err
 	}
@@ -147,10 +150,10 @@ func (dm *FloatingIPService) DetachFloatingIP(ID string) (err error) {
 }
 
 // DeleteFloatingIP deletes a FloatingIP by its ID
-func (dm *FloatingIPService) DeleteFloatingIP(ID string) (err error) {
+func (fips *FloatingIPService) DeleteFloatingIP(floatingIPID string) (err error) {
 	log.Debug("DeleteFloatingIP")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/network/floating_ips/%s", ID))
+	data, status, err := fips.concertoService.Delete(fmt.Sprintf("/network/floating_ips/%s", floatingIPID))
 	if err != nil {
 		return err
 	}
@@ -163,10 +166,10 @@ func (dm *FloatingIPService) DeleteFloatingIP(ID string) (err error) {
 }
 
 // DiscardFloatingIP discards a FloatingIP by its ID
-func (dm *FloatingIPService) DiscardFloatingIP(ID string) (err error) {
+func (fips *FloatingIPService) DiscardFloatingIP(floatingIPID string) (err error) {
 	log.Debug("DiscardFloatingIP")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/network/floating_ips/%s/discard", ID))
+	data, status, err := fips.concertoService.Delete(fmt.Sprintf("/network/floating_ips/%s/discard", floatingIPID))
 	if err != nil {
 		return err
 	}

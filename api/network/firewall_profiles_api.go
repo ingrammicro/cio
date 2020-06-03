@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// FirewallProfileService manages firewallProfile operations
+// FirewallProfileService manages firewall profile operations
 type FirewallProfileService struct {
 	concertoService utils.ConcertoService
 }
@@ -25,11 +25,11 @@ func NewFirewallProfileService(concertoService utils.ConcertoService) (*Firewall
 	}, nil
 }
 
-// GetFirewallProfileList returns the list of firewallProfiles as an array of FirewallProfile
-func (dm *FirewallProfileService) GetFirewallProfileList() (firewallProfiles []*types.FirewallProfile, err error) {
-	log.Debug("GetFirewallProfileList")
+// ListFirewallProfiles returns the list of firewallProfiles as an array of FirewallProfile
+func (fps *FirewallProfileService) ListFirewallProfiles() (firewallProfiles []*types.FirewallProfile, err error) {
+	log.Debug("ListFirewallProfiles")
 
-	data, status, err := dm.concertoService.Get("/network/firewall_profiles")
+	data, status, err := fps.concertoService.Get("/network/firewall_profiles")
 	if err != nil {
 		return nil, err
 	}
@@ -46,10 +46,10 @@ func (dm *FirewallProfileService) GetFirewallProfileList() (firewallProfiles []*
 }
 
 // GetFirewallProfile returns a firewallProfile by its ID
-func (dm *FirewallProfileService) GetFirewallProfile(ID string) (firewallProfile *types.FirewallProfile, err error) {
+func (fps *FirewallProfileService) GetFirewallProfile(firewallProfileID string) (firewallProfile *types.FirewallProfile, err error) {
 	log.Debug("GetFirewallProfile")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/network/firewall_profiles/%s", ID))
+	data, status, err := fps.concertoService.Get(fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileID))
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +66,11 @@ func (dm *FirewallProfileService) GetFirewallProfile(ID string) (firewallProfile
 }
 
 // CreateFirewallProfile creates a firewallProfile
-func (dm *FirewallProfileService) CreateFirewallProfile(firewallProfileParams *map[string]interface{}) (firewallProfile *types.FirewallProfile, err error) {
+func (fps *FirewallProfileService) CreateFirewallProfile(firewallProfileParams *map[string]interface{}) (firewallProfile *types.FirewallProfile, err error) {
 	log.Debug("CreateFirewallProfile")
 
-	data, status, err := dm.concertoService.Post("/network/firewall_profiles/", firewallProfileParams)
+	data, status, err := fps.concertoService.Post("/network/firewall_profiles/", firewallProfileParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +87,11 @@ func (dm *FirewallProfileService) CreateFirewallProfile(firewallProfileParams *m
 }
 
 // UpdateFirewallProfile updates a firewallProfile by its ID
-func (dm *FirewallProfileService) UpdateFirewallProfile(firewallProfileParams *map[string]interface{}, ID string) (firewallProfile *types.FirewallProfile, err error) {
+func (fps *FirewallProfileService) UpdateFirewallProfile(firewallProfileID string, firewallProfileParams *map[string]interface{}) (firewallProfile *types.FirewallProfile, err error) {
 	log.Debug("UpdateFirewallProfile")
 
-	data, status, err := dm.concertoService.Put(fmt.Sprintf("/network/firewall_profiles/%s", ID), firewallProfileParams)
+	data, status, err := fps.concertoService.Put(fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileID), firewallProfileParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -106,10 +108,10 @@ func (dm *FirewallProfileService) UpdateFirewallProfile(firewallProfileParams *m
 }
 
 // DeleteFirewallProfile deletes a firewallProfile by its ID
-func (dm *FirewallProfileService) DeleteFirewallProfile(ID string) (err error) {
+func (fps *FirewallProfileService) DeleteFirewallProfile(firewallProfileID string) (err error) {
 	log.Debug("DeleteFirewallProfile")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/network/firewall_profiles/%s", ID))
+	data, status, err := fps.concertoService.Delete(fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileID))
 	if err != nil {
 		return err
 	}
