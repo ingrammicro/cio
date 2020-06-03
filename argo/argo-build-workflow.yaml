@@ -1,0 +1,219 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: -build-wf-
+spec:
+  entrypoint: build-pipeline
+  onExit: cleanup
+  ttlSecondsAfterFinished: 86400
+  activeDeadlineSeconds: 7200
+  serviceAccountName: argo
+  nodeSelector:
+    agentpool: argopool
+  tolerations:
+  - effect: NoSchedule
+    key: pooltype
+    operator: Equal
+    value: lowpri
+  - effect: NoSchedule
+    key: argo
+    operator: Equal
+    value: dedicated
+  arguments:
+    parameters:
+    - name: repo
+      value: REPLACED
+    - name: branch
+      value: REPLACED
+    - name: pull_request
+      value: REPLACED
+    - name: devregistry
+      value: imdevregistry.azurecr.io
+    - name: prodregistry
+      value: imregistry.azurecr.io
+    - name: skip_tests
+      value: "false"
+    - name: pull_request_base
+      value: REPLACED
+  volumes:
+    - name: github-keypair
+      secret:
+        secretName: github-keypair # name of an existing k8s secret
+        defaultMode: 256
+    - name: kaniko-acr-secret
+      secret:
+        secretName: azurecr-credentials-generated-by-kustomize
+    - name: git-known-hosts
+      secret:
+        secretName: git-known-hosts
+  templates:
+  - name: build-pipeline
+    dag:
+      tasks:
+      - name: dependencies
+        templateRef:
+          name: workflow-template-common-template-1.0
+          template: get-src
+        arguments:
+          parameters:
+          - name: repo
+            value: "{{workflow.parameters.repo}}"
+          - name: branch
+            value: "{{workflow.parameters.branch}}"
+
+      - name: go-build
+        dependencies: [dependencies]
+        template: go-build
+        arguments:
+          parameters:
+          - name: notifiable_commits
+            value: "{{tasks.dependencies.outputs.parameters.notifiable_commits}}"
+          artifacts:
+          - name: src
+            from: "{{tasks.dependencies.outputs.artifacts.src}}"
+
+      - name: go-tests
+        dependencies: [go-build]
+        templateRef:
+          name: workflow-template-common-template-1.0
+          template: go-tests
+        arguments:
+          parameters:
+          - name: notifiable_commits
+            value: "{{tasks.dependencies.outputs.parameters.notifiable_commits}}"
+          - name: repo
+            value: "{{workflow.parameters.repo}}"
+          - name: test_path
+            value: .
+        when: "{{workflow.parameters.skip_tests}} == false"
+
+      - name: sonar-branch-analysis
+        dependencies: [go-tests]
+        templateRef:
+          name: workflow-template-sonar-template-1.0
+          template: sonar-branch-analysis
+        arguments:
+          parameters:
+          - name: sonar_projectKey
+            value: "{{workflow.parameters.repo}}"
+          - name: sonar_sources
+            value: .
+          - name: sonar_tests
+            value: .
+          - name: sonar_branch_name
+            value: "{{workflow.parameters.branch}}"
+          artifacts:
+          - name: coverage
+            from: "{{tasks.go-tests.outputs.artifacts.coverage}}"
+            optional: true
+        when: "!('{{workflow.parameters.pull_request}}' =~ '^[0-9]+$')"
+
+      - name: sonar-pr-analysis
+        dependencies: [go-tests]
+        templateRef:
+          name: workflow-template-sonar-template-1.0
+          template: sonar-pr-analysis
+        arguments:
+          parameters:
+          - name: sonar_projectKey
+            value: "{{workflow.parameters.repo}}"
+          - name: sonar_sources
+            value: .
+          - name: sonar_tests
+            value: .
+          - name: sonar_pullrequest_key
+            value: "{{workflow.parameters.pull_request}}"
+          - name: sonar_pullrequest_branch
+            value: "{{workflow.parameters.branch}}"
+          - name: sonar_pullrequest_base
+            value: "{{workflow.parameters.pull_request_base}}"
+          artifacts:
+          - name: coverage
+            from: "{{tasks.go-tests.outputs.artifacts.coverage}}"
+            optional: true
+        when: "('{{workflow.parameters.pull_request}}' =~ '^[0-9]+$')"
+
+
+  - name: go-build
+    inputs:
+      parameters:
+      - name: go-image
+        value: golang:1.14.0
+      - name: notifiable_commits
+      - name: source_mountpath
+        value: /usr/src
+      artifacts:
+      - name: src
+        path: "{{inputs.parameters.source_mountpath}}"
+        s3:
+          endpoint: local-minio-service:9000
+          bucket: argo-workflow
+          insecure: true
+          key: "{{workflow.uid}}/src.tgz"
+          accessKeySecret:
+            name: s3-credentials-generated-by-kustomize
+            key: S3_ACCESS_KEY_ID
+          secretKeySecret:
+            name: s3-credentials-generated-by-kustomize
+            key: S3_SECRET_ACCESS_KEY
+    script:
+      image: "{{inputs.parameters.go-image}}"
+      env:
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: github-token
+            key: token
+      - name: NOTIFIABLE_COMMITS
+        value: "{{inputs.parameters.notifiable_commits}}"
+      - name: COMMIT_STATUS_CONTEXT
+        value: "go-build in argo"
+      - name: REPO
+        value: "{{workflow.parameters.repo}}"
+      command: [bash]
+      source: |
+        #!/bin/bash
+        cd {{inputs.parameters.source_mountpath}}
+        if echo "{{workflow.parameters.branch}}" | grep -P '^v[0123456789]+' >/dev/null; then
+          export COMMIT_STATUS_CONTEXT="${COMMIT_STATUS_CONTEXT} for {{workflow.parameters.branch}}"
+        fi
+        cat <<EOS >/notify.sh
+          #!/bin/bash
+          REPO=\$1
+          COMMIT_SHA=\$2
+          CONTEXT=\$3
+          STATE=\$4
+          DESCRIPTION=\$5
+          echo "Setting context '\${CONTEXT}' status for commit '\${COMMIT_SHA}' on repo '\${REPO}': state='\${STATE}', description='\${DESCRIPTION}'..."
+          curl -i --header "Content-Type: application/json" --request POST --data "{\"state\": \"\${STATE}\",\"description\": \"\${DESCRIPTION}\",\"context\": \"\${CONTEXT}\"}" -u ":\${GITHUB_TOKEN}" "https://api.github.com/repos/ingrammicro/\${REPO}/statuses/\${COMMIT_SHA}" 2>/dev/null
+          true
+        EOS
+        chmod +x /notify.sh
+        echo $NOTIFIABLE_COMMITS | sed "s/,/\n/g" | awk '{print "/notify.sh "$1" "$2" \"$COMMIT_STATUS_CONTEXT\" pending \"Starting go build\""}' | bash
+
+        ssh-keyscan github.com >> /root/.ssh/known_hosts
+        git config --global url.git@github.com:.insteadOf https://github.com/
+
+
+        echo "Running go build ..."
+        export FAILURE_DESCRIPTION="Go build failed"
+        
+        export GOPROXY="http://athens-proxy:3000"
+        export GOSUMDB=off
+        go build
+        BUILD_RESULT=$?
+        if [ $BUILD_RESULT -eq 0 ]; then
+          echo $NOTIFIABLE_COMMITS | sed "s/,/\n/g" | awk '{print "/notify.sh "$1" "$2" \"$COMMIT_STATUS_CONTEXT\" success \"Go build run successfully\""}' | bash
+        else
+          echo $NOTIFIABLE_COMMITS | sed "s/,/\n/g" | awk '{print "/notify.sh "$1" "$2" \"$COMMIT_STATUS_CONTEXT\" failure \"${FAILURE_DESCRIPTION:-Failed}\""}' | bash
+          false
+        fi
+      volumeMounts:
+      - name: github-keypair
+        mountPath: /root/.ssh/id_rsa
+        subPath: id_rsa
+      resources:
+        requests:
+          cpu: 900m
+        limits:
+          cpu: 900m
