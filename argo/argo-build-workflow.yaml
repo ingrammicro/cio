@@ -137,7 +137,7 @@ spec:
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.14.0
+        value: golang:1.14.4
       - name: notifiable_commits
       - name: source_mountpath
         value: /usr/src
