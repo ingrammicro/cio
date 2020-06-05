@@ -1,0 +1,3 @@
+<concerto version="1.0" server="https://clients.test.imco.io/v3/" log_file="/var/log/concerto-client.log" log_level="info">
+ <ssl cert="testdata/ssl/cert.crt" key="testdata/ssl/private/cert.key" server_ca="testdata/ssl/ca_cert.pem" />
+</concerto>

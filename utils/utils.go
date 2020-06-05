@@ -1,16 +1,13 @@
-// Copyright (c) 2017-2021 Ingram Micro Inc.
+// Copyright (c) 2017-2022 Ingram Micro Inc.
 
 package utils
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"math/rand"
 	"os"
 	"os/exec"
 	"runtime"
-	"strings"
 	"time"
 )
 
@@ -30,7 +27,6 @@ func init() {
 
 // Untar decompresses the source file to target file
 func Untar(ctx context.Context, source, target string) error {
-
 	if err := os.MkdirAll(target, 0600); err != nil {
 		return err
 	}
@@ -40,38 +36,6 @@ func Untar(ctx context.Context, source, target string) error {
 	}
 
 	return nil
-}
-
-// CheckStandardStatus return error if status is not OK
-func CheckStandardStatus(status int, response []byte) error {
-
-	if status < 300 {
-		return nil
-	}
-
-	// default, raw, not parsing
-	message := string(response[:])
-
-	var responseContent map[string]interface{}
-	err := json.Unmarshal(response, &responseContent)
-	if err == nil {
-		if responseContent["errors"] != nil {
-			message = ""
-			for key, value := range responseContent["errors"].(map[string]interface{}) {
-				subMessages := make([]string, len(value.([]interface{})))
-				for i, v := range value.([]interface{}) {
-					subMessages[i] = fmt.Sprint(v)
-				}
-				composedMsg := strings.Join(subMessages, ",")
-				message = fmt.Sprintf("%s#%s:%s", message, key, composedMsg)
-			}
-		}
-		if responseContent["errors"] == nil && responseContent["error"] != nil {
-			message = responseContent["error"].(string)
-		}
-	}
-
-	return fmt.Errorf("HTTP request failed: (%d) [%s]", status, message)
 }
 
 // FileExists checks file existence
@@ -101,7 +65,7 @@ func RemoveDuplicates(elements []string) []string {
 	}
 
 	// Place all keys from the map into a slice.
-	result := []string{}
+	var result []string
 	for key := range encountered {
 		result = append(result, key)
 	}
