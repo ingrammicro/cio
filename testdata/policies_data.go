@@ -1,12 +1,14 @@
-// Copyright (c) 2017-2021 Ingram Micro Inc.
+// Copyright (c) 2017-2022 Ingram Micro Inc.
 
 package testdata
 
-import "github.com/ingrammicro/cio/api/types"
+import (
+	types2 "github.com/ingrammicro/cio/types"
+)
 
 // GetPolicyDefinitionData loads test data
-func GetPolicyDefinitionData() []*types.PolicyDefinition {
-	return []*types.PolicyDefinition{
+func GetPolicyDefinitionData() []*types2.PolicyDefinition {
+	return []*types2.PolicyDefinition{
 		{
 			ID:          "fakeID0",
 			Name:        "fakeName0",
@@ -28,8 +30,8 @@ func GetPolicyDefinitionData() []*types.PolicyDefinition {
 }
 
 // GetPolicyAssignmentData loads test data
-func GetPolicyAssignmentData() []*types.PolicyAssignment {
-	return []*types.PolicyAssignment{
+func GetPolicyAssignmentData() []*types2.PolicyAssignment {
+	return []*types2.PolicyAssignment{
 		{
 			ID:              "fakeID0",
 			Name:            "fakeName0",
