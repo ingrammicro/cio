@@ -3,7 +3,7 @@
 package testdata
 
 import (
-	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/types"
 )
 
 // GetCookbookVersionData loads test data

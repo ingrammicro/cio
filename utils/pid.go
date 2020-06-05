@@ -4,6 +4,7 @@ package utils
 
 import (
 	"errors"
+	"github.com/ingrammicro/cio/logger"
 	"io/ioutil"
 	"os"
 	"runtime"
@@ -15,7 +16,7 @@ import (
 
 // SetProcessIdToFile obtains the process id and save it inside a file
 func SetProcessIdToFile(pidFileName string) error {
-	log.Debug("SetProcessIdToFile")
+	logger.DebugFuncInfo()
 
 	pidValue := os.Getpid()
 	log.Debug("current pid:", pidValue)
@@ -28,7 +29,7 @@ func SetProcessIdToFile(pidFileName string) error {
 
 // GetProcessIdFromFile reads the process id previously stored in the file
 func GetProcessIdFromFile(pidFileName string) (int, error) {
-	log.Debug("GetProcessIdFromFile")
+	logger.DebugFuncInfo()
 
 	var pid int64
 
@@ -47,7 +48,7 @@ func GetProcessIdFromFile(pidFileName string) (int, error) {
 
 // StopProcessId stops the process by the given id
 func StopProcessId(pid int) error {
-	log.Debug("StopProcessId")
+	logger.DebugFuncInfo()
 
 	if pid <= 0 {
 		return errors.New("invalid pid, a positive value is required")
@@ -84,7 +85,7 @@ func StopProcessId(pid int) error {
 
 // StopProcess reads the process id from given file and stops the process
 func StopProcess(pidFileName string) error {
-	log.Debug("StopProcess")
+	logger.DebugFuncInfo()
 
 	if pid, err := GetProcessIdFromFile(pidFileName); err != nil {
 		return errors.New("cannot read the pid file." + err.Error())

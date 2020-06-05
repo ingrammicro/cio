@@ -2,7 +2,7 @@
 
 package testdata
 
-import "github.com/ingrammicro/cio/api/types"
+import "github.com/ingrammicro/cio/types"
 
 // GetCloudAccountData loads test data
 func GetCloudAccountData() []*types.CloudAccount {

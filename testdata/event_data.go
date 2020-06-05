@@ -5,7 +5,7 @@ package testdata
 import (
 	"time"
 
-	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/types"
 )
 
 // GetEventData loads test data

@@ -4,7 +4,6 @@ metadata:
   generateName: -build-wf-
 spec:
   entrypoint: build-pipeline
-  ttlSecondsAfterFinished: 86400
   activeDeadlineSeconds: 7200
   serviceAccountName: argo
   nodeSelector:

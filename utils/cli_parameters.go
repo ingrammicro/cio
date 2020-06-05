@@ -10,48 +10,19 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/urfave/cli"
+	"github.com/spf13/viper"
 )
 
-// FlagConvertParams converts cli parameters in API callable params
-func FlagConvertParams(c *cli.Context) *map[string]interface{} {
-	v := make(map[string]interface{})
-	for _, flag := range c.FlagNames() {
-		if c.IsSet(flag) {
-			v[flag] = c.String(flag)
-		}
-	}
-	return &v
-}
-
-func isJSON(jsonFlags []string, flag string) bool {
-	if jsonFlags != nil {
-		for _, js := range jsonFlags {
-			if js == flag {
-				return true
-			}
-		}
-	}
-	return false
-}
-
 // FlagConvertParamsJSON converts cli parameters in API callable params, and encodes JSON parameters
-func FlagConvertParamsJSON(c *cli.Context, jsonFlags []string) (*map[string]interface{}, error) {
+func FlagConvertParamsJSON(flagName string) (*map[string]interface{}, error) {
 	v := make(map[string]interface{})
-	for _, flag := range c.FlagNames() {
-		if c.IsSet(flag) {
-			if isJSON(jsonFlags, flag) {
-				// parse json before assigning to map
-				var p interface{}
-				err := json.Unmarshal([]byte(c.String(flag)), &p)
-				if err != nil {
-					return nil, fmt.Errorf("flag %s isn't a valid JSON. %s", flag, err)
-				}
-				v[flag] = p
-			} else {
-				v[flag] = c.String(flag)
-			}
+	if viper.IsSet(flagName) {
+		var p interface{}
+		err := json.Unmarshal([]byte(viper.GetString(flagName)), &p)
+		if err != nil {
+			return nil, fmt.Errorf("flag %s isn't a valid JSON. %s", flagName, err)
 		}
+		v[flagName] = p
 	}
 	return &v, nil
 }
@@ -76,7 +47,7 @@ func ItemConvertParams(item interface{}) (*map[string]interface{}, error) {
 }
 
 // ConvertFlagParamsJsonFromFileOrStdin returns the json representation of parameters taken from the input file or STDIN
-func ConvertFlagParamsJsonFromFileOrStdin(c *cli.Context, dataIn string) (map[string]interface{}, error) {
+func ConvertFlagParamsJsonFromFileOrStdin(dataIn string) (map[string]interface{}, error) {
 	var reader io.Reader
 	var content map[string]interface{}
 	if dataIn == "-" {
@@ -98,7 +69,7 @@ func ConvertFlagParamsJsonFromFileOrStdin(c *cli.Context, dataIn string) (map[st
 
 // ConvertFlagParamsJsonStringFromFileOrStdin returns the json string representation of parameters taken from the input
 // file or STDIN
-func ConvertFlagParamsJsonStringFromFileOrStdin(c *cli.Context, dataIn string) (string, error) {
+func ConvertFlagParamsJsonStringFromFileOrStdin(dataIn string) (string, error) {
 	var reader io.Reader
 
 	if dataIn == "-" {

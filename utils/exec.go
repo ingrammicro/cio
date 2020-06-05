@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/ingrammicro/cio/logger"
 	"io"
 	"io/ioutil"
 	"os"
@@ -195,7 +196,7 @@ func deleteTmpCommandFilename(cmdFileName string) {
 func RunTracedCmd(
 	command string,
 ) (exitCode int, stdOut string, stdErr string, startedAt time.Time, finishedAt time.Time) {
-	log.Debug("RunTracedCmd")
+	logger.DebugFuncInfo()
 
 	// Saves script/command in a temp file
 	var cmd, cmdFileName = createCommandWithFilename(command)
@@ -256,10 +257,11 @@ func RunTracedCmd(
 	return
 }
 
-// thresholdTime  > 0 continuous report
-// thresholdLines > 0 bootstrapping
+// RunContinuousCmd
+// 	thresholdTime  > 0 continuous report
+// 	thresholdLines > 0 bootstrapping
 func RunContinuousCmd(fn func(chunk string) error, command string, thresholdTime int, thresholdLines int) (int, error) {
-	log.Debug("RunContinuousCmd")
+	logger.DebugFuncInfo()
 
 	// Saves script/command in a temp file
 	var cmd, cmdFileName = createCommandWithFilename(command)
@@ -316,7 +318,7 @@ func RunContinuousCmd(fn func(chunk string) error, command string, thresholdTime
 }
 
 func Retry(attempts int, sleep time.Duration, fn func() error) error {
-	log.Debug("Retry")
+	logger.DebugFuncInfo()
 
 	if err := fn(); err != nil {
 		if attempts--; attempts > 0 {

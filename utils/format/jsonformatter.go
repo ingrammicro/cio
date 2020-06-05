@@ -5,6 +5,7 @@ package format
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ingrammicro/cio/logger"
 	"io"
 
 	log "github.com/sirupsen/logrus"
@@ -33,7 +34,7 @@ func NewJSONFormatter(out io.Writer) *JSONFormatter {
 
 // PrintItem prints an item
 func (f *JSONFormatter) PrintItem(item interface{}) error {
-	log.Debug("PrintItem")
+	logger.DebugFuncInfo()
 
 	b, err := json.Marshal(item)
 	if err != nil {
@@ -47,7 +48,7 @@ func (f *JSONFormatter) PrintItem(item interface{}) error {
 
 // PrintList prints item list
 func (f *JSONFormatter) PrintList(items interface{}) error {
-	log.Debug("PrintList")
+	logger.DebugFuncInfo()
 
 	b, err := json.Marshal(items)
 	if err != nil {
@@ -61,7 +62,7 @@ func (f *JSONFormatter) PrintList(items interface{}) error {
 
 // PrintError prints an error
 func (f *JSONFormatter) PrintError(context string, err error) {
-	log.Debug("PrintError")
+	logger.DebugFuncInfo()
 
 	msg := JSONMessage{
 		Type:    "Error",
@@ -81,7 +82,7 @@ func (f *JSONFormatter) PrintError(context string, err error) {
 
 // PrintFatal prints an error and exists
 func (f *JSONFormatter) PrintFatal(context string, err error) {
-	log.Debug("PrintFatal")
+	logger.DebugFuncInfo()
 
 	f.PrintError(context, err)
 	osExit(1)

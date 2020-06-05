@@ -2,7 +2,7 @@
 
 package testdata
 
-import "github.com/ingrammicro/cio/api/types"
+import "github.com/ingrammicro/cio/types"
 
 // GetVPNData loads test data
 func GetVPNData() []*types.Vpn {

@@ -2,7 +2,7 @@
 
 package testdata
 
-import "github.com/ingrammicro/cio/api/types"
+import "github.com/ingrammicro/cio/types"
 
 // GetRealmData loads test data
 func GetRealmData() []*types.Realm {

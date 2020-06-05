@@ -2,7 +2,7 @@
 
 package testdata
 
-import "github.com/ingrammicro/cio/api/types"
+import "github.com/ingrammicro/cio/types"
 
 // GetVPCData loads test data
 func GetVPCData() []*types.Vpc {

@@ -2,7 +2,7 @@
 
 package testdata
 
-import "github.com/ingrammicro/cio/api/types"
+import "github.com/ingrammicro/cio/types"
 
 // GetCloudApplicationDeploymentData loads test data
 func GetCloudApplicationDeploymentData() []*types.CloudApplicationDeployment {

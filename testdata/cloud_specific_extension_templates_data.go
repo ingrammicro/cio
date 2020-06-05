@@ -2,7 +2,7 @@
 
 package testdata
 
-import "github.com/ingrammicro/cio/api/types"
+import "github.com/ingrammicro/cio/types"
 
 // GetCloudSpecificExtensionTemplateData loads test data
 func GetCloudSpecificExtensionTemplateData() []*types.CloudSpecificExtensionTemplate {

@@ -2,7 +2,7 @@
 
 package testdata
 
-import "github.com/ingrammicro/cio/api/types"
+import "github.com/ingrammicro/cio/types"
 
 // GetTemporaryArchiveData loads test data
 func GetTemporaryArchiveData() []*types.TemporaryArchive {

@@ -2,7 +2,7 @@
 
 package testdata
 
-import "github.com/ingrammicro/cio/api/types"
+import "github.com/ingrammicro/cio/types"
 
 // GetCloudProviderData loads test data
 func GetCloudProviderData() []*types.CloudProvider {
