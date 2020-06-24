@@ -136,9 +136,8 @@ func DomainRetry(c *cli.Context) error {
 	svc, formatter := WireUpDomain(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	domainIn := map[string]interface{}{}
 
-	domain, err := svc.RetryDomain(c.String("id"), &domainIn)
+	domain, err := svc.RetryDomain(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't retry dns domain", err)
 	}
@@ -309,9 +308,8 @@ func DomainRetryRecord(c *cli.Context) error {
 	svc, formatter := WireUpDomain(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	recordIn := map[string]interface{}{}
 
-	record, err := svc.RetryRecord(c.String("id"), &recordIn)
+	record, err := svc.RetryRecord(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't retry dns record", err)
 	}

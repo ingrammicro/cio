@@ -437,9 +437,7 @@ func RetryDomainMocked(t *testing.T, domainIn *types.Domain) *types.Domain {
 	assert.Nil(err, "Couldn't load domain service")
 	assert.NotNil(ds, "Domain service not instanced")
 
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*domainIn)
-	assert.Nil(err, "Domain test data corrupted")
+	mapIn := new(map[string]interface{})
 
 	// to json
 	dOut, err := json.Marshal(domainIn)
@@ -447,7 +445,7 @@ func RetryDomainMocked(t *testing.T, domainIn *types.Domain) *types.Domain {
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/dns/domains/%s/retry", domainIn.ID), mapIn).Return(dOut, 200, nil)
-	domainOut, err := ds.RetryDomain(domainIn.ID, mapIn)
+	domainOut, err := ds.RetryDomain(domainIn.ID)
 
 	assert.Nil(err, "Error retrying domain")
 	assert.Equal(domainIn, domainOut, "RetryDomain returned different domain")
@@ -466,9 +464,7 @@ func RetryDomainFailErrMocked(t *testing.T, domainIn *types.Domain) *types.Domai
 	assert.Nil(err, "Couldn't load domain service")
 	assert.NotNil(ds, "Domain service not instanced")
 
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*domainIn)
-	assert.Nil(err, "Domain test data corrupted")
+	mapIn := new(map[string]interface{})
 
 	// to json
 	dOut, err := json.Marshal(domainIn)
@@ -476,7 +472,7 @@ func RetryDomainFailErrMocked(t *testing.T, domainIn *types.Domain) *types.Domai
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/dns/domains/%s/retry", domainIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	domainOut, err := ds.RetryDomain(domainIn.ID, mapIn)
+	domainOut, err := ds.RetryDomain(domainIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(domainOut, "Expecting nil output")
@@ -496,9 +492,7 @@ func RetryDomainFailStatusMocked(t *testing.T, domainIn *types.Domain) *types.Do
 	assert.Nil(err, "Couldn't load domain service")
 	assert.NotNil(ds, "Domain service not instanced")
 
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*domainIn)
-	assert.Nil(err, "Domain test data corrupted")
+	mapIn := new(map[string]interface{})
 
 	// to json
 	dOut, err := json.Marshal(domainIn)
@@ -506,7 +500,7 @@ func RetryDomainFailStatusMocked(t *testing.T, domainIn *types.Domain) *types.Do
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/dns/domains/%s/retry", domainIn.ID), mapIn).Return(dOut, 499, nil)
-	domainOut, err := ds.RetryDomain(domainIn.ID, mapIn)
+	domainOut, err := ds.RetryDomain(domainIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(domainOut, "Expecting nil output")
@@ -526,16 +520,14 @@ func RetryDomainFailJSONMocked(t *testing.T, domainIn *types.Domain) *types.Doma
 	assert.Nil(err, "Couldn't load domain service")
 	assert.NotNil(ds, "Domain service not instanced")
 
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*domainIn)
-	assert.Nil(err, "Domain test data corrupted")
+	mapIn := new(map[string]interface{})
 
 	// wrong json
 	dIn := []byte{10, 20, 30}
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/dns/domains/%s/retry", domainIn.ID), mapIn).Return(dIn, 200, nil)
-	domainOut, err := ds.RetryDomain(domainIn.ID, mapIn)
+	domainOut, err := ds.RetryDomain(domainIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(domainOut, "Expecting nil output")
@@ -1091,9 +1083,7 @@ func RetryRecordMocked(t *testing.T, recordIn *types.Record) *types.Record {
 	assert.Nil(err, "Couldn't load domain service")
 	assert.NotNil(ds, "Domain service not instanced")
 
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*recordIn)
-	assert.Nil(err, "Record test data corrupted")
+	mapIn := new(map[string]interface{})
 
 	// to json
 	dOut, err := json.Marshal(recordIn)
@@ -1101,7 +1091,7 @@ func RetryRecordMocked(t *testing.T, recordIn *types.Record) *types.Record {
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/dns/records/%s/retry", recordIn.ID), mapIn).Return(dOut, 200, nil)
-	recordOut, err := ds.RetryRecord(recordIn.ID, mapIn)
+	recordOut, err := ds.RetryRecord(recordIn.ID)
 
 	assert.Nil(err, "Error retrying record")
 	assert.Equal(recordIn, recordOut, "RetryRecord returned different record")
@@ -1120,9 +1110,7 @@ func RetryRecordFailErrMocked(t *testing.T, recordIn *types.Record) *types.Recor
 	assert.Nil(err, "Couldn't load domain service")
 	assert.NotNil(ds, "Domain service not instanced")
 
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*recordIn)
-	assert.Nil(err, "Record test data corrupted")
+	mapIn := new(map[string]interface{})
 
 	// to json
 	dOut, err := json.Marshal(recordIn)
@@ -1130,7 +1118,7 @@ func RetryRecordFailErrMocked(t *testing.T, recordIn *types.Record) *types.Recor
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/dns/records/%s/retry", recordIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	recordOut, err := ds.RetryRecord(recordIn.ID, mapIn)
+	recordOut, err := ds.RetryRecord(recordIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(recordOut, "Expecting nil output")
@@ -1150,9 +1138,7 @@ func RetryRecordFailStatusMocked(t *testing.T, recordIn *types.Record) *types.Re
 	assert.Nil(err, "Couldn't load domain service")
 	assert.NotNil(ds, "Domain service not instanced")
 
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*recordIn)
-	assert.Nil(err, "Record test data corrupted")
+	mapIn := new(map[string]interface{})
 
 	// to json
 	dOut, err := json.Marshal(recordIn)
@@ -1160,7 +1146,7 @@ func RetryRecordFailStatusMocked(t *testing.T, recordIn *types.Record) *types.Re
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/dns/records/%s/retry", recordIn.ID), mapIn).Return(dOut, 499, nil)
-	recordOut, err := ds.RetryRecord(recordIn.ID, mapIn)
+	recordOut, err := ds.RetryRecord(recordIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(recordOut, "Expecting nil output")
@@ -1180,16 +1166,14 @@ func RetryRecordFailJSONMocked(t *testing.T, recordIn *types.Record) *types.Reco
 	assert.Nil(err, "Couldn't load domain service")
 	assert.NotNil(ds, "Domain service not instanced")
 
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*recordIn)
-	assert.Nil(err, "Record test data corrupted")
+	mapIn := new(map[string]interface{})
 
 	// wrong json
 	dIn := []byte{10, 20, 30}
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/dns/records/%s/retry", recordIn.ID), mapIn).Return(dIn, 200, nil)
-	recordOut, err := ds.RetryRecord(recordIn.ID, mapIn)
+	recordOut, err := ds.RetryRecord(recordIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(recordOut, "Expecting nil output")

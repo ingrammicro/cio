@@ -106,9 +106,10 @@ func (ds *DomainService) DeleteDomain(domainID string) (domain *types.Domain, er
 }
 
 // RetryDomain retries a domain by its ID
-func (ds *DomainService) RetryDomain(domainID string, domainParams *map[string]interface{}) (domain *types.Domain, err error) {
+func (ds *DomainService) RetryDomain(domainID string) (domain *types.Domain, err error) {
 	log.Debug("RetryDomain")
 
+	domainParams := new(map[string]interface{})
 	data, status, err := ds.concertoService.Put(fmt.Sprintf("/network/dns/domains/%s/retry", domainID), domainParams)
 	if err != nil {
 		return nil, err
@@ -227,9 +228,10 @@ func (ds *DomainService) DeleteRecord(recordID string) (record *types.Record, er
 }
 
 // RetryRecord retries a record by its ID
-func (ds *DomainService) RetryRecord(recordID string, recordParams *map[string]interface{}) (record *types.Record, err error) {
+func (ds *DomainService) RetryRecord(recordID string) (record *types.Record, err error) {
 	log.Debug("RetryRecord")
 
+	recordParams := new(map[string]interface{})
 	data, status, err := ds.concertoService.Put(fmt.Sprintf("/network/dns/records/%s/retry", recordID), recordParams)
 	if err != nil {
 		return nil, err
