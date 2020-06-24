@@ -204,6 +204,10 @@ func DomainCreateRecord(c *cli.Context) error {
 	// If provided, only include in adequate context
 	switch recordType {
 	case "a":
+		if c.IsSet("content") &&
+			(c.IsSet("server-id") || c.IsSet("floating-ip-id")) {
+			return fmt.Errorf("invalid parameters detected. Please provide only one: 'content', 'server-id' or 'floating-ip-id'")
+		}
 		// one and only one of the fields must be provided.
 		if c.IsSet("server-id") && c.IsSet("floating-ip-id") {
 			return fmt.Errorf("invalid parameters detected. Please provide only one: 'server-id' or 'floating-ip-id'")
@@ -215,6 +219,9 @@ func DomainCreateRecord(c *cli.Context) error {
 			recordIn["floating_ip_id"] = c.String("floating-ip-id")
 		}
 	case "cname":
+		if c.IsSet("content") && c.IsSet("load-balancer-id") {
+			return fmt.Errorf("invalid parameters detected. Please provide only one: 'content' or 'load-balancer-id'")
+		}
 		if c.IsSet("load-balancer-id") {
 			recordIn["load_balancer_id"] = c.String("load-balancer-id")
 		}
