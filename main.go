@@ -119,7 +119,7 @@ var clientCommands = []cli.Command{
 	{
 		Name:        "settings",
 		ShortName:   "set",
-		Usage:       "Provides settings for cloud accounts",
+		Usage:       "Provides settings for cloud accounts and policies",
 		Subcommands: append(settings.SubCommands()),
 	},
 	{
