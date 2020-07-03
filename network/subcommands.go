@@ -1,6 +1,7 @@
 package network
 
 import (
+	"github.com/ingrammicro/cio/network/domains"
 	"github.com/ingrammicro/cio/network/firewall_profiles"
 	"github.com/ingrammicro/cio/network/floating_ips"
 	"github.com/ingrammicro/cio/network/load_balancers"
@@ -42,6 +43,11 @@ func SubCommands() []cli.Command {
 			Name:        "vpns",
 			Usage:       "Provides information about VPC Virtual Private Networks (VPNs)",
 			Subcommands: append(vpns.SubCommands()),
+		},
+		{
+			Name:        "dns-domains",
+			Usage:       "Provides information about DNS domains and records",
+			Subcommands: append(domains.SubCommands()),
 		},
 	}
 }
