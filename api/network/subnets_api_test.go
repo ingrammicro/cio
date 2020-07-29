@@ -13,12 +13,12 @@ func TestNewSubnetServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetSubnetList(t *testing.T) {
+func TestListSubnets(t *testing.T) {
 	subnetsIn := testdata.GetSubnetData()
-	GetSubnetListMocked(t, subnetsIn)
-	GetSubnetListFailErrMocked(t, subnetsIn)
-	GetSubnetListFailStatusMocked(t, subnetsIn)
-	GetSubnetListFailJSONMocked(t, subnetsIn)
+	ListSubnetsMocked(t, subnetsIn)
+	ListSubnetsFailErrMocked(t, subnetsIn)
+	ListSubnetsFailStatusMocked(t, subnetsIn)
+	ListSubnetsFailJSONMocked(t, subnetsIn)
 }
 
 func TestGetSubnet(t *testing.T) {
@@ -60,18 +60,18 @@ func TestDeleteSubnet(t *testing.T) {
 	}
 }
 
-func TestGetSubnetServerList(t *testing.T) {
+func TestListSubnetServers(t *testing.T) {
 	serversIn := testdata.GetSubnetServersData()
-	GetSubnetServerListMocked(t, serversIn)
-	GetSubnetServerListFailErrMocked(t, serversIn)
-	GetSubnetServerListFailStatusMocked(t, serversIn)
-	GetSubnetServerListFailJSONMocked(t, serversIn)
+	ListSubnetServersMocked(t, serversIn)
+	ListSubnetServersFailErrMocked(t, serversIn)
+	ListSubnetServersFailStatusMocked(t, serversIn)
+	ListSubnetServersFailJSONMocked(t, serversIn)
 }
 
-func TestGetSubnetServerArrayList(t *testing.T) {
+func TestListSubnetServerArrays(t *testing.T) {
 	serverArraysIn := testdata.GetServerArrayData()
-	GetSubnetServerArrayListMocked(t, serverArraysIn)
-	GetSubnetServerArrayListFailErrMocked(t, serverArraysIn)
-	GetSubnetServerArrayListFailStatusMocked(t, serverArraysIn)
-	GetSubnetServerArrayListFailJSONMocked(t, serverArraysIn)
+	ListSubnetServerArraysMocked(t, serverArraysIn)
+	ListSubnetServerArraysFailErrMocked(t, serverArraysIn)
+	ListSubnetServerArraysFailStatusMocked(t, serverArraysIn)
+	ListSubnetServerArraysFailJSONMocked(t, serverArraysIn)
 }

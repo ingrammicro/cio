@@ -64,7 +64,7 @@ func TestPrintListTXT(t *testing.T) {
 
 	assert := assert.New(t)
 	serversIn := testdata.GetServerData()
-	serversOut := cloud.GetServerListMocked(t, serversIn)
+	serversOut := cloud.ListServersMocked(t, serversIn)
 
 	var b bytes.Buffer
 	mockOut := bufio.NewWriter(&b)
@@ -84,7 +84,7 @@ func TestPrintListTemplateTXT(t *testing.T) {
 
 	assert := assert.New(t)
 	templatesIn := testdata.GetTemplateData()
-	templatesOut := blueprint.GetTemplateListMocked(t, templatesIn)
+	templatesOut := blueprint.ListTemplatesMocked(t, templatesIn)
 
 	var b bytes.Buffer
 	mockOut := bufio.NewWriter(&b)
@@ -106,7 +106,7 @@ func TestPrintListTemplateScriptsTXT(t *testing.T) {
 	tScriptsIn := testdata.GetTemplateScriptData()
 
 	for _, tsIn := range tScriptsIn {
-		tScriptsOut := blueprint.GetTemplateScriptListMocked(t, tScriptsIn, tsIn.ID, tsIn.Type)
+		tScriptsOut := blueprint.ListTemplateScriptsMocked(t, tScriptsIn, tsIn.ID, tsIn.Type)
 
 		var b bytes.Buffer
 		mockOut := bufio.NewWriter(&b)

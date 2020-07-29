@@ -1,15 +1,12 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/ingrammicro/cio/api/blueprint"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	"github.com/urfave/cli"
-	"io"
-	"os"
 	"regexp"
 	"strings"
 )
@@ -42,7 +39,7 @@ func TemplateList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	templateSvc, formatter := WireUpTemplate(c)
 
-	templates, err := templateSvc.GetTemplateList()
+	templates, err := templateSvc.ListTemplates()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive template data", err)
 	}
@@ -110,7 +107,7 @@ func TemplateCreate(c *cli.Context) error {
 		"generic_image_id": c.String("generic-image-id"),
 	}
 	if c.IsSet("configuration-attributes-from-file") {
-		caIn, err := convertFlagParamsJsonFromFileOrStdin(c, c.String("configuration-attributes-from-file"))
+		caIn, err := utils.ConvertFlagParamsJsonFromFileOrStdin(c, c.String("configuration-attributes-from-file"))
 		if err != nil {
 			formatter.PrintFatal("Cannot parse input configuration attributes", err)
 		}
@@ -172,7 +169,7 @@ func TemplateUpdate(c *cli.Context) error {
 		templateIn["name"] = c.String("name")
 	}
 	if c.IsSet("configuration-attributes-from-file") {
-		caIn, err := convertFlagParamsJsonFromFileOrStdin(c, c.String("configuration-attributes-from-file"))
+		caIn, err := utils.ConvertFlagParamsJsonFromFileOrStdin(c, c.String("configuration-attributes-from-file"))
 		if err != nil {
 			formatter.PrintFatal("Cannot parse input configuration attributes", err)
 		}
@@ -196,7 +193,7 @@ func TemplateUpdate(c *cli.Context) error {
 		templateIn["cookbook_versions"] = cbIn
 	}
 
-	template, err := templateSvc.UpdateTemplate(&templateIn, c.String("id"))
+	template, err := templateSvc.UpdateTemplate(c.String("id"), &templateIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update template", err)
 	}
@@ -219,7 +216,7 @@ func TemplateCompile(c *cli.Context) error {
 	templateSvc, formatter := WireUpTemplate(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	template, err := templateSvc.CompileTemplate(utils.FlagConvertParams(c), c.String("id"))
+	template, err := templateSvc.CompileTemplate(c.String("id"), utils.FlagConvertParams(c))
 	if err != nil {
 		formatter.PrintFatal("Couldn't compile template", err)
 	}
@@ -257,7 +254,7 @@ func TemplateScriptList(c *cli.Context) error {
 	templateScriptSvc, formatter := WireUpTemplate(c)
 
 	checkRequiredFlags(c, []string{"template-id", "type"}, formatter)
-	templateScripts, err := templateScriptSvc.GetTemplateScriptList(c.String("template-id"), c.String("type"))
+	templateScripts, err := templateScriptSvc.ListTemplateScripts(c.String("template-id"), c.String("type"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive templateScript data", err)
 	}
@@ -299,7 +296,7 @@ func TemplateScriptCreate(c *cli.Context) error {
 		"script_id": c.String("script-id"),
 	}
 	if c.IsSet("parameter-values-from-file") {
-		pvIn, err := convertFlagParamsJsonFromFileOrStdin(c, c.String("parameter-values-from-file"))
+		pvIn, err := utils.ConvertFlagParamsJsonFromFileOrStdin(c, c.String("parameter-values-from-file"))
 		if err != nil {
 			formatter.PrintFatal("Cannot parse input parameter values", err)
 		}
@@ -313,7 +310,7 @@ func TemplateScriptCreate(c *cli.Context) error {
 		templateScriptIn["parameter_values"] = (*params)["parameter-values"]
 	}
 
-	templateScript, err := templateScriptSvc.CreateTemplateScript(&templateScriptIn, c.String("template-id"))
+	templateScript, err := templateScriptSvc.CreateTemplateScript(c.String("template-id"), &templateScriptIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't create templateScript", err)
 	}
@@ -337,7 +334,7 @@ func TemplateScriptUpdate(c *cli.Context) error {
 	templateScriptIn := map[string]interface{}{}
 
 	if c.IsSet("parameter-values-from-file") {
-		pvIn, err := convertFlagParamsJsonFromFileOrStdin(c, c.String("parameter-values-from-file"))
+		pvIn, err := utils.ConvertFlagParamsJsonFromFileOrStdin(c, c.String("parameter-values-from-file"))
 		if err != nil {
 			formatter.PrintFatal("Cannot parse input parameter values", err)
 		}
@@ -351,7 +348,7 @@ func TemplateScriptUpdate(c *cli.Context) error {
 		templateScriptIn["parameter_values"] = (*params)["parameter-values"]
 	}
 
-	templateScript, err := templateScriptSvc.UpdateTemplateScript(&templateScriptIn, c.String("template-id"), c.String("id"))
+	templateScript, err := templateScriptSvc.UpdateTemplateScript(c.String("template-id"), c.String("id"), &templateScriptIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update templateScript", err)
 	}
@@ -385,7 +382,7 @@ func TemplateScriptReorder(c *cli.Context) error {
 		"script_ids": utils.RemoveDuplicates(strings.Split(c.String("script-ids"), ",")),
 	}
 
-	templateScript, err := templateScriptSvc.ReorderTemplateScript(&templateScriptIn, c.String("template-id"))
+	templateScript, err := templateScriptSvc.ReorderTemplateScript(c.String("template-id"), &templateScriptIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't reorder templateScript", err)
 	}
@@ -403,7 +400,7 @@ func TemplateServersList(c *cli.Context) error {
 	templateSvc, formatter := WireUpTemplate(c)
 
 	checkRequiredFlags(c, []string{"template-id"}, formatter)
-	templateServers, err := templateSvc.GetTemplateServerList(c.String("template-id"))
+	templateServers, err := templateSvc.ListTemplateServers(c.String("template-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive template servers data", err)
 	}
@@ -435,7 +432,7 @@ func convertFlagParamsToCookbookVersions(c *cli.Context, cbvsIn string) (map[str
 			if len(cookbookVersions) == 0 {
 				// data is loaded only once
 				svc, formatter := WireUpCookbookVersion(c)
-				cbvs, err := svc.GetCookbookVersionList()
+				cbvs, err := svc.ListCookbookVersions()
 				if err != nil {
 					formatter.PrintFatal("cannot receive uploaded cookbook versions data", err)
 				}
@@ -458,31 +455,10 @@ func convertFlagParamsToCookbookVersions(c *cli.Context, cbvsIn string) (map[str
 	return result, nil
 }
 
-// convertFlagParamsJsonFromFileOrStdin returns the json representation of parameters taken from the input file or STDIN
-func convertFlagParamsJsonFromFileOrStdin(c *cli.Context, dataIn string) (map[string]interface{}, error) {
-	var reader io.Reader
-	var content map[string]interface{}
-	if dataIn == "-" {
-		reader = os.Stdin
-		dataIn = "STDIN"
-	} else {
-		jsonFile, err := os.Open(dataIn)
-		if err != nil {
-			return nil, fmt.Errorf("cannot open %s to read JSON params: %v", dataIn, err)
-		}
-		defer jsonFile.Close()
-		reader = jsonFile
-	}
-	if err := json.NewDecoder(reader).Decode(&content); err != nil {
-		return nil, fmt.Errorf("cannot read JSON params from %s: %v", dataIn, err)
-	}
-	return content, nil
-}
-
 // resolveCookbookVersions resolves adequate cookbook version ids
 func resolveCookbookVersions(c *cli.Context, template *types.Template) error {
 	svc, _ := WireUpCookbookVersion(c)
-	cbvs, err := svc.GetCookbookVersionList()
+	cbvs, err := svc.ListCookbookVersions()
 	if err != nil {
 		return err
 	}

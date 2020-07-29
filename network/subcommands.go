@@ -1,8 +1,10 @@
 package network
 
 import (
+	"github.com/ingrammicro/cio/network/domains"
 	"github.com/ingrammicro/cio/network/firewall_profiles"
 	"github.com/ingrammicro/cio/network/floating_ips"
+	"github.com/ingrammicro/cio/network/load_balancers"
 	"github.com/ingrammicro/cio/network/subnets"
 	"github.com/ingrammicro/cio/network/vpcs"
 	"github.com/ingrammicro/cio/network/vpns"
@@ -23,6 +25,11 @@ func SubCommands() []cli.Command {
 			Subcommands: append(floating_ips.SubCommands()),
 		},
 		{
+			Name:        "load-balancers",
+			Usage:       "Provides information about load balancers",
+			Subcommands: append(load_balancers.SubCommands()),
+		},
+		{
 			Name:        "vpcs",
 			Usage:       "Provides information about Virtual Private Clouds (VPCs)",
 			Subcommands: append(vpcs.SubCommands()),
@@ -36,6 +43,11 @@ func SubCommands() []cli.Command {
 			Name:        "vpns",
 			Usage:       "Provides information about VPC Virtual Private Networks (VPNs)",
 			Subcommands: append(vpns.SubCommands()),
+		},
+		{
+			Name:        "dns-domains",
+			Usage:       "Provides information about DNS domains and records",
+			Subcommands: append(domains.SubCommands()),
 		},
 	}
 }

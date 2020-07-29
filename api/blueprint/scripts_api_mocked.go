@@ -11,8 +11,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetScriptListMocked test mocked function
-func GetScriptListMocked(t *testing.T, scriptsIn []*types.Script) []*types.Script {
+// ListScriptsMocked test mocked function
+func ListScriptsMocked(t *testing.T, scriptsIn []*types.Script) []*types.Script {
 
 	assert := assert.New(t)
 
@@ -28,15 +28,15 @@ func GetScriptListMocked(t *testing.T, scriptsIn []*types.Script) []*types.Scrip
 
 	// call service
 	cs.On("Get", "/blueprint/scripts").Return(dIn, 200, nil)
-	scriptsOut, err := ds.GetScriptList()
+	scriptsOut, err := ds.ListScripts()
 	assert.Nil(err, "Error getting script list")
-	assert.Equal(scriptsIn, scriptsOut, "GetScriptList returned different scripts")
+	assert.Equal(scriptsIn, scriptsOut, "ListScripts returned different scripts")
 
 	return scriptsOut
 }
 
-// GetScriptListFailErrMocked test mocked function
-func GetScriptListFailErrMocked(t *testing.T, scriptsIn []*types.Script) []*types.Script {
+// ListScriptsFailErrMocked test mocked function
+func ListScriptsFailErrMocked(t *testing.T, scriptsIn []*types.Script) []*types.Script {
 
 	assert := assert.New(t)
 
@@ -52,7 +52,7 @@ func GetScriptListFailErrMocked(t *testing.T, scriptsIn []*types.Script) []*type
 
 	// call service
 	cs.On("Get", "/blueprint/scripts").Return(dIn, 200, fmt.Errorf("mocked error"))
-	scriptsOut, err := ds.GetScriptList()
+	scriptsOut, err := ds.ListScripts()
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(scriptsOut, "Expecting nil output")
@@ -61,8 +61,8 @@ func GetScriptListFailErrMocked(t *testing.T, scriptsIn []*types.Script) []*type
 	return scriptsOut
 }
 
-// GetScriptListFailStatusMocked test mocked function
-func GetScriptListFailStatusMocked(t *testing.T, scriptsIn []*types.Script) []*types.Script {
+// ListScriptsFailStatusMocked test mocked function
+func ListScriptsFailStatusMocked(t *testing.T, scriptsIn []*types.Script) []*types.Script {
 
 	assert := assert.New(t)
 
@@ -78,7 +78,7 @@ func GetScriptListFailStatusMocked(t *testing.T, scriptsIn []*types.Script) []*t
 
 	// call service
 	cs.On("Get", "/blueprint/scripts").Return(dIn, 499, nil)
-	scriptsOut, err := ds.GetScriptList()
+	scriptsOut, err := ds.ListScripts()
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(scriptsOut, "Expecting nil output")
@@ -87,8 +87,8 @@ func GetScriptListFailStatusMocked(t *testing.T, scriptsIn []*types.Script) []*t
 	return scriptsOut
 }
 
-// GetScriptListFailJSONMocked test mocked function
-func GetScriptListFailJSONMocked(t *testing.T, scriptsIn []*types.Script) []*types.Script {
+// ListScriptsFailJSONMocked test mocked function
+func ListScriptsFailJSONMocked(t *testing.T, scriptsIn []*types.Script) []*types.Script {
 
 	assert := assert.New(t)
 
@@ -103,7 +103,7 @@ func GetScriptListFailJSONMocked(t *testing.T, scriptsIn []*types.Script) []*typ
 
 	// call service
 	cs.On("Get", "/blueprint/scripts").Return(dIn, 200, nil)
-	scriptsOut, err := ds.GetScriptList()
+	scriptsOut, err := ds.ListScripts()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(scriptsOut, "Expecting nil output")
@@ -351,7 +351,7 @@ func UpdateScriptMocked(t *testing.T, scriptIn *types.Script) *types.Script {
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/scripts/%s", scriptIn.ID), mapIn).Return(dOut, 200, nil)
-	scriptOut, err := ds.UpdateScript(mapIn, scriptIn.ID)
+	scriptOut, err := ds.UpdateScript(scriptIn.ID, mapIn)
 	assert.Nil(err, "Error updating script list")
 	assert.Equal(*scriptIn, *scriptOut, "UpdateScript returned different scripts")
 
@@ -379,7 +379,7 @@ func UpdateScriptFailErrMocked(t *testing.T, scriptIn *types.Script) *types.Scri
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/scripts/%s", scriptIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	scriptOut, err := ds.UpdateScript(mapIn, scriptIn.ID)
+	scriptOut, err := ds.UpdateScript(scriptIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(scriptOut, "Expecting nil output")
@@ -409,7 +409,7 @@ func UpdateScriptFailStatusMocked(t *testing.T, scriptIn *types.Script) *types.S
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/scripts/%s", scriptIn.ID), mapIn).Return(dOut, 499, nil)
-	scriptOut, err := ds.UpdateScript(mapIn, scriptIn.ID)
+	scriptOut, err := ds.UpdateScript(scriptIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(scriptOut, "Expecting nil output")
@@ -437,7 +437,7 @@ func UpdateScriptFailJSONMocked(t *testing.T, scriptIn *types.Script) *types.Scr
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/scripts/%s", scriptIn.ID), mapIn).Return(dIn, 200, nil)
-	scriptOut, err := ds.UpdateScript(mapIn, scriptIn.ID)
+	scriptOut, err := ds.UpdateScript(scriptIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(scriptOut, "Expecting nil output")
@@ -535,7 +535,7 @@ func AddScriptAttachmentMocked(t *testing.T, attachmentIn *types.Attachment, scr
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/blueprint/scripts/%s/attachments", scriptID), mapIn).Return(dIn, 200, nil)
-	attachmentOut, err := ds.AddScriptAttachment(mapIn, scriptID)
+	attachmentOut, err := ds.AddScriptAttachment(scriptID, mapIn)
 	assert.Nil(err, "Error getting template list")
 	assert.Equal(attachmentIn, attachmentOut, "AddScriptAttachment returned different attachments")
 
@@ -563,7 +563,7 @@ func AddScriptAttachmentFailErrMocked(t *testing.T, attachmentIn *types.Attachme
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/blueprint/scripts/%s/attachments", scriptID), mapIn).Return(dIn, 200, fmt.Errorf("mocked error"))
-	attachmentOut, err := ds.AddScriptAttachment(mapIn, scriptID)
+	attachmentOut, err := ds.AddScriptAttachment(scriptID, mapIn)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(attachmentOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -592,7 +592,7 @@ func AddScriptAttachmentFailStatusMocked(t *testing.T, attachmentIn *types.Attac
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/blueprint/scripts/%s/attachments", scriptID), mapIn).Return(dIn, 499, nil)
-	attachmentOut, err := ds.AddScriptAttachment(mapIn, scriptID)
+	attachmentOut, err := ds.AddScriptAttachment(scriptID, mapIn)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(attachmentOut, "Expecting nil output")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -620,7 +620,7 @@ func AddScriptAttachmentFailJSONMocked(t *testing.T, attachmentIn *types.Attachm
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/blueprint/scripts/%s/attachments", scriptID), mapIn).Return(dIn, 200, nil)
-	attachmentOut, err := ds.AddScriptAttachment(mapIn, scriptID)
+	attachmentOut, err := ds.AddScriptAttachment(scriptID, mapIn)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(attachmentOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
@@ -713,7 +713,7 @@ func UploadedScriptAttachmentMocked(t *testing.T, attachmentIn *types.Attachment
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/attachments/%s/uploaded", attachmentIn.ID), mapIn).Return(dIn, 200, nil)
-	attachmentOut, err := ds.UploadedScriptAttachment(mapIn, attachmentIn.ID)
+	attachmentOut, err := ds.UploadedScriptAttachment(attachmentIn.ID, mapIn)
 	assert.Nil(err, "Error setting uploaded status to attachmentIn")
 	assert.Equal(*attachmentIn, *attachmentOut, "UploadedScriptAttachment returned different attachments")
 
@@ -741,7 +741,7 @@ func UploadedScriptAttachmentFailErrMocked(t *testing.T, attachmentIn *types.Att
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/attachments/%s/uploaded", attachmentIn.ID), mapIn).Return(dIn, 200, fmt.Errorf("mocked error"))
-	attachmentOut, err := ds.UploadedScriptAttachment(mapIn, attachmentIn.ID)
+	attachmentOut, err := ds.UploadedScriptAttachment(attachmentIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(attachmentOut, "Expecting nil output")
@@ -771,7 +771,7 @@ func UploadedScriptAttachmentFailStatusMocked(t *testing.T, attachmentIn *types.
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/attachments/%s/uploaded", attachmentIn.ID), mapIn).Return(dIn, 499, nil)
-	attachmentOut, err := ds.UploadedScriptAttachment(mapIn, attachmentIn.ID)
+	attachmentOut, err := ds.UploadedScriptAttachment(attachmentIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(attachmentOut, "Expecting nil output")
@@ -799,7 +799,7 @@ func UploadedScriptAttachmentFailJSONMocked(t *testing.T, attachmentIn *types.At
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/attachments/%s/uploaded", attachmentIn.ID), mapIn).Return(dIn, 200, nil)
-	attachmentOut, err := ds.UploadedScriptAttachment(mapIn, attachmentIn.ID)
+	attachmentOut, err := ds.UploadedScriptAttachment(attachmentIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(attachmentOut, "Expecting nil output")

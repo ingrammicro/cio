@@ -25,11 +25,11 @@ func NewLocationService(concertoService utils.ConcertoService) (*LocationService
 	}, nil
 }
 
-// GetLocationList returns the list of locations as an array of Location
-func (dm *LocationService) GetLocationList() (locations []*types.Location, err error) {
-	log.Debug("GetLocationList")
+// ListLocations returns the list of locations as an array of Location
+func (ls *LocationService) ListLocations() (locations []*types.Location, err error) {
+	log.Debug("ListLocations")
 
-	data, status, err := dm.concertoService.Get("/wizard/locations")
+	data, status, err := ls.concertoService.Get("/wizard/locations")
 	if err != nil {
 		return nil, err
 	}

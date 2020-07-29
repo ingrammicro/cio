@@ -12,8 +12,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetLocationListMocked test mocked function
-func GetLocationListMocked(t *testing.T, locationsIn []*types.Location) []*types.Location {
+// ListLocationsMocked test mocked function
+func ListLocationsMocked(t *testing.T, locationsIn []*types.Location) []*types.Location {
 
 	assert := assert.New(t)
 
@@ -29,15 +29,15 @@ func GetLocationListMocked(t *testing.T, locationsIn []*types.Location) []*types
 
 	// call service
 	cs.On("Get", "/wizard/locations").Return(dIn, 200, nil)
-	locationsOut, err := ds.GetLocationList()
+	locationsOut, err := ds.ListLocations()
 	assert.Nil(err, "Error getting location list")
-	assert.Equal(locationsIn, locationsOut, "GetLocationList returned different locations")
+	assert.Equal(locationsIn, locationsOut, "ListLocations returned different locations")
 
 	return locationsOut
 }
 
-// GetLocationListFailErrMocked test mocked function
-func GetLocationListFailErrMocked(t *testing.T, locationsIn []*types.Location) []*types.Location {
+// ListLocationsFailErrMocked test mocked function
+func ListLocationsFailErrMocked(t *testing.T, locationsIn []*types.Location) []*types.Location {
 
 	assert := assert.New(t)
 
@@ -53,7 +53,7 @@ func GetLocationListFailErrMocked(t *testing.T, locationsIn []*types.Location) [
 
 	// call service
 	cs.On("Get", "/wizard/locations").Return(dIn, 200, fmt.Errorf("mocked error"))
-	locationsOut, err := ds.GetLocationList()
+	locationsOut, err := ds.ListLocations()
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(locationsOut, "Expecting nil output")
@@ -62,8 +62,8 @@ func GetLocationListFailErrMocked(t *testing.T, locationsIn []*types.Location) [
 	return locationsOut
 }
 
-// GetLocationListFailStatusMocked test mocked function
-func GetLocationListFailStatusMocked(t *testing.T, locationsIn []*types.Location) []*types.Location {
+// ListLocationsFailStatusMocked test mocked function
+func ListLocationsFailStatusMocked(t *testing.T, locationsIn []*types.Location) []*types.Location {
 
 	assert := assert.New(t)
 
@@ -79,7 +79,7 @@ func GetLocationListFailStatusMocked(t *testing.T, locationsIn []*types.Location
 
 	// call service
 	cs.On("Get", "/wizard/locations").Return(dIn, 499, nil)
-	locationsOut, err := ds.GetLocationList()
+	locationsOut, err := ds.ListLocations()
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(locationsOut, "Expecting nil output")
@@ -88,8 +88,8 @@ func GetLocationListFailStatusMocked(t *testing.T, locationsIn []*types.Location
 	return locationsOut
 }
 
-// GetLocationListFailJSONMocked test mocked function
-func GetLocationListFailJSONMocked(t *testing.T, locationsIn []*types.Location) []*types.Location {
+// ListLocationsFailJSONMocked test mocked function
+func ListLocationsFailJSONMocked(t *testing.T, locationsIn []*types.Location) []*types.Location {
 
 	assert := assert.New(t)
 
@@ -104,7 +104,7 @@ func GetLocationListFailJSONMocked(t *testing.T, locationsIn []*types.Location) 
 
 	// call service
 	cs.On("Get", "/wizard/locations").Return(dIn, 200, nil)
-	locationsOut, err := ds.GetLocationList()
+	locationsOut, err := ds.ListLocations()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(locationsOut, "Expecting nil output")

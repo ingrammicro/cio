@@ -47,10 +47,10 @@ func (fs *FirewallService) GetPolicy() (policy *types.Policy, err error) {
 }
 
 // AddPolicyRule adds a new firewall policy rule
-func (fs *FirewallService) AddPolicyRule(ruleVector *map[string]interface{}) (policyRule *types.PolicyRule, err error) {
+func (fs *FirewallService) AddPolicyRule(ruleParams *map[string]interface{}) (policyRule *types.PolicyRule, err error) {
 	log.Debug("AddPolicyRule")
 
-	data, status, err := fs.concertoService.Post("/cloud/firewall_profile/rules", ruleVector)
+	data, status, err := fs.concertoService.Post("/cloud/firewall_profile/rules", ruleParams)
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +66,10 @@ func (fs *FirewallService) AddPolicyRule(ruleVector *map[string]interface{}) (po
 }
 
 // UpdatePolicy update firewall policy
-func (fs *FirewallService) UpdatePolicy(policyVector *map[string]interface{}) (policy *types.Policy, err error) {
+func (fs *FirewallService) UpdatePolicy(policyParams *map[string]interface{}) (policy *types.Policy, err error) {
 	log.Debug("UpdatePolicy")
 
-	data, status, err := fs.concertoService.Put("/cloud/firewall_profile", policyVector)
+	data, status, err := fs.concertoService.Put("/cloud/firewall_profile", policyParams)
 	if err != nil {
 		return nil, err
 	}

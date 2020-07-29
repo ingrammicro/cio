@@ -2,6 +2,7 @@ package settings
 
 import (
 	"github.com/ingrammicro/cio/settings/cloud_accounts"
+	"github.com/ingrammicro/cio/settings/policies"
 	"github.com/urfave/cli"
 )
 
@@ -12,6 +13,11 @@ func SubCommands() []cli.Command {
 			Name:        "cloud-accounts",
 			Usage:       "Provides information about cloud accounts",
 			Subcommands: append(cloud_accounts.SubCommands()),
+		},
+		{
+			Name:        "policies",
+			Usage:       "Provides information about policies",
+			Subcommands: append(policies.SubCommands()),
 		},
 	}
 }

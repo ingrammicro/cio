@@ -15,12 +15,12 @@ func TestNewTemplateServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetTemplateList(t *testing.T) {
+func TestListTemplates(t *testing.T) {
 	templatesIn := testdata.GetTemplateData()
-	GetTemplateListMocked(t, templatesIn)
-	GetTemplateListFailErrMocked(t, templatesIn)
-	GetTemplateListFailStatusMocked(t, templatesIn)
-	GetTemplateListFailJSONMocked(t, templatesIn)
+	ListTemplatesMocked(t, templatesIn)
+	ListTemplatesFailErrMocked(t, templatesIn)
+	ListTemplatesFailStatusMocked(t, templatesIn)
+	ListTemplatesFailJSONMocked(t, templatesIn)
 }
 
 func TestGetTemplate(t *testing.T) {
@@ -75,10 +75,10 @@ func TestDeleteTemplate(t *testing.T) {
 func TestListTemplateScripts(t *testing.T) {
 	drsIn := testdata.GetTemplateScriptData()
 	for _, drIn := range drsIn {
-		GetTemplateScriptListMocked(t, drsIn, drIn.ID, drIn.Type)
-		GetTemplateScriptListFailErrMocked(t, drsIn, drIn.ID, drIn.Type)
-		GetTemplateScriptListFailStatusMocked(t, drsIn, drIn.ID, drIn.Type)
-		GetTemplateScriptListFailJSONMocked(t, drsIn, drIn.ID, drIn.Type)
+		ListTemplateScriptsMocked(t, drsIn, drIn.ID, drIn.Type)
+		ListTemplateScriptsFailErrMocked(t, drsIn, drIn.ID, drIn.Type)
+		ListTemplateScriptsFailStatusMocked(t, drsIn, drIn.ID, drIn.Type)
+		ListTemplateScriptsFailJSONMocked(t, drsIn, drIn.ID, drIn.Type)
 	}
 }
 
@@ -124,10 +124,10 @@ func TestDeleteTemplateScripts(t *testing.T) {
 func TestListTemplateServers(t *testing.T) {
 	drsIn := testdata.GetTemplateServerData()
 	for _, drIn := range drsIn {
-		GetTemplateServerListMocked(t, drsIn, drIn.ID)
-		GetTemplateServerListFailErrMocked(t, drsIn, drIn.ID)
-		GetTemplateServerListFailStatusMocked(t, drsIn, drIn.ID)
-		GetTemplateServerListFailJSONMocked(t, drsIn, drIn.ID)
+		ListTemplateServersMocked(t, drsIn, drIn.ID)
+		ListTemplateServersFailErrMocked(t, drsIn, drIn.ID)
+		ListTemplateServersFailStatusMocked(t, drsIn, drIn.ID)
+		ListTemplateServersFailJSONMocked(t, drsIn, drIn.ID)
 	}
 }
 

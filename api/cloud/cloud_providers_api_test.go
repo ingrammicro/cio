@@ -13,18 +13,26 @@ func TestNewCloudProviderServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetCloudProviderList(t *testing.T) {
+func TestListCloudProviders(t *testing.T) {
 	cloudProvidersIn := testdata.GetCloudProviderData()
-	GetCloudProviderListMocked(t, cloudProvidersIn)
-	GetCloudProviderListFailErrMocked(t, cloudProvidersIn)
-	GetCloudProviderListFailStatusMocked(t, cloudProvidersIn)
-	GetCloudProviderListFailJSONMocked(t, cloudProvidersIn)
+	ListCloudProvidersMocked(t, cloudProvidersIn)
+	ListCloudProvidersFailErrMocked(t, cloudProvidersIn)
+	ListCloudProvidersFailStatusMocked(t, cloudProvidersIn)
+	ListCloudProvidersFailJSONMocked(t, cloudProvidersIn)
 }
 
-func TestGetServerStoragePlanList(t *testing.T) {
+func TestListServerStoragePlans(t *testing.T) {
 	storagePlansIn := testdata.GetStoragePlanData()
-	GetServerStoragePlanListMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
-	GetServerStoragePlanListFailErrMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
-	GetServerStoragePlanListFailStatusMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
-	GetServerStoragePlanListFailJSONMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
+	ListServerStoragePlansMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
+	ListServerStoragePlansFailErrMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
+	ListServerStoragePlansFailStatusMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
+	ListServerStoragePlansFailJSONMocked(t, storagePlansIn, storagePlansIn[0].CloudProviderID)
+}
+
+func TestListLoadBalancerPlans(t *testing.T) {
+	loadBalancerPlansIn := testdata.GetLoadBalancerPlanData()
+	ListLoadBalancerPlansMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
+	ListLoadBalancerPlansFailErrMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
+	ListLoadBalancerPlansFailStatusMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
+	ListLoadBalancerPlansFailJSONMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
 }

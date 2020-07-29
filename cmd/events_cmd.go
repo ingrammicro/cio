@@ -33,7 +33,7 @@ func EventList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	eventSvc, formatter := WireUpEvent(c)
 
-	events, err := eventSvc.GetEventList()
+	events, err := eventSvc.ListEvents()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive event data", err)
 	}
@@ -48,7 +48,7 @@ func SysEventList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	eventSvc, formatter := WireUpEvent(c)
 
-	events, err := eventSvc.GetSysEventList()
+	events, err := eventSvc.ListSysEvents()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive system event data", err)
 	}

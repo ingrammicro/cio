@@ -25,10 +25,10 @@ func NewVPNService(concertoService utils.ConcertoService) (*VPNService, error) {
 }
 
 // GetVPN returns a VPN by VPC ID
-func (dm *VPNService) GetVPN(vpcID string) (vpn *types.Vpn, err error) {
+func (vs *VPNService) GetVPN(vpcID string) (vpn *types.Vpn, err error) {
 	log.Debug("GetVPN")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID))
+	data, status, err := vs.concertoService.Get(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID))
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +45,11 @@ func (dm *VPNService) GetVPN(vpcID string) (vpn *types.Vpn, err error) {
 }
 
 // CreateVPN creates a VPN
-func (dm *VPNService) CreateVPN(vpnVector *map[string]interface{}, vpcID string) (vpn *types.Vpn, err error) {
+func (vs *VPNService) CreateVPN(vpcID string, vpnParams *map[string]interface{}) (vpn *types.Vpn, err error) {
 	log.Debug("CreateVPN")
 
-	data, status, err := dm.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID), vpnVector)
+	data, status, err := vs.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID), vpnParams)
+
 	if err != nil {
 		return nil, err
 	}
@@ -65,10 +66,10 @@ func (dm *VPNService) CreateVPN(vpnVector *map[string]interface{}, vpcID string)
 }
 
 // DeleteVPN deletes VPN by VPC ID
-func (dm *VPNService) DeleteVPN(vpcID string) (err error) {
+func (vs *VPNService) DeleteVPN(vpcID string) (err error) {
 	log.Debug("DeleteVPN")
 
-	data, status, err := dm.concertoService.Delete(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID))
+	data, status, err := vs.concertoService.Delete(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID))
 	if err != nil {
 		return err
 	}
@@ -80,11 +81,11 @@ func (dm *VPNService) DeleteVPN(vpcID string) (err error) {
 	return nil
 }
 
-// GetVPNPlanList returns the list of VPN plans for a given VPC ID
-func (dm *VPNService) GetVPNPlanList(vpcID string) (vpnPlans []*types.VpnPlan, err error) {
-	log.Debug("GetVPNPlanList")
+// ListVPNPlans returns the list of VPN plans for a given VPC ID
+func (vs *VPNService) ListVPNPlans(vpcID string) (vpnPlans []*types.VpnPlan, err error) {
+	log.Debug("ListVPNPlans")
 
-	data, status, err := dm.concertoService.Get(fmt.Sprintf("/network/vpcs/%s/vpn_plans", vpcID))
+	data, status, err := vs.concertoService.Get(fmt.Sprintf("/network/vpcs/%s/vpn_plans", vpcID))
 
 	if err != nil {
 		return nil, err

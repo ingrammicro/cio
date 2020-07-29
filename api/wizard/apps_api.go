@@ -25,9 +25,9 @@ func NewAppService(concertoService utils.ConcertoService) (*AppService, error) {
 	}, nil
 }
 
-// GetAppList returns the list of apps as an array of App
-func (as *AppService) GetAppList() (apps []*types.WizardApp, err error) {
-	log.Debug("GetAppList")
+// ListApps returns the list of apps as an array of App
+func (as *AppService) ListApps() (apps []*types.WizardApp, err error) {
+	log.Debug("ListApps")
 
 	data, status, err := as.concertoService.Get("/wizard/apps")
 	if err != nil {
@@ -46,10 +46,11 @@ func (as *AppService) GetAppList() (apps []*types.WizardApp, err error) {
 }
 
 // DeployApp deploys a app
-func (as *AppService) DeployApp(appVector *map[string]interface{}, ID string) (app *types.Server, err error) {
+func (as *AppService) DeployApp(appID string, appParams *map[string]interface{}) (app *types.Server, err error) {
 	log.Debug("DeployApp")
 
-	data, status, err := as.concertoService.Post(fmt.Sprintf("/wizard/apps/%s/deploy", ID), appVector)
+	data, status, err := as.concertoService.Post(fmt.Sprintf("/wizard/apps/%s/deploy", appID), appParams)
+
 	if err != nil {
 		return nil, err
 	}

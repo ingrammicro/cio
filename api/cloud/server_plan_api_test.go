@@ -13,13 +13,13 @@ func TestNewServerPlanServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetServerPlanList(t *testing.T) {
+func TestListServerPlans(t *testing.T) {
 	serverPlansIn := testdata.GetServerPlanData()
 	for _, serverPlanIn := range serverPlansIn {
-		GetServerPlanListMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
-		GetServerPlanListFailErrMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
-		GetServerPlanListFailStatusMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
-		GetServerPlanListFailJSONMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
+		ListServerPlansMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
+		ListServerPlansFailErrMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
+		ListServerPlansFailStatusMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
+		ListServerPlansFailJSONMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
 	}
 }
 

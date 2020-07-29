@@ -35,7 +35,7 @@ func VolumeList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	volumeSvc, formatter := WireUpVolume(c)
 
-	volumes, err := volumeSvc.GetVolumeList(c.String("server-id"))
+	volumes, err := volumeSvc.ListVolumes(c.String("server-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive volume data", err)
 	}
@@ -124,7 +124,7 @@ func VolumeUpdate(c *cli.Context) error {
 		"name": c.String("name"),
 	}
 
-	volume, err := volumeSvc.UpdateVolume(&volumeIn, c.String("id"))
+	volume, err := volumeSvc.UpdateVolume(c.String("id"), &volumeIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update volume", err)
 	}
@@ -148,7 +148,7 @@ func VolumeAttach(c *cli.Context) error {
 		"attached_server_id": c.String("server-id"),
 	}
 
-	server, err := volumeSvc.AttachVolume(&volumeIn, c.String("id"))
+	server, err := volumeSvc.AttachVolume(c.String("id"), &volumeIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't attach volume", err)
 	}

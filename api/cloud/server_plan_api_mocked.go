@@ -12,8 +12,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetServerPlanListMocked test mocked function
-func GetServerPlanListMocked(t *testing.T, serverPlansIn []*types.ServerPlan, cloudProviderId string) []*types.ServerPlan {
+// ListServerPlansMocked test mocked function
+func ListServerPlansMocked(t *testing.T, serverPlansIn []*types.ServerPlan, cloudProviderId string) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
@@ -29,15 +29,15 @@ func GetServerPlanListMocked(t *testing.T, serverPlansIn []*types.ServerPlan, cl
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/server_plans", cloudProviderId)).Return(dIn, 200, nil)
-	serverPlansOut, err := ds.GetServerPlanList(cloudProviderId)
+	serverPlansOut, err := ds.ListServerPlans(cloudProviderId)
 	assert.Nil(err, "Error getting serverPlan list")
-	assert.Equal(serverPlansIn, serverPlansOut, "GetServerPlanList returned different serverPlans")
+	assert.Equal(serverPlansIn, serverPlansOut, "ListServerPlans returned different serverPlans")
 
 	return serverPlansOut
 }
 
-// GetServerPlanListFailErrMocked test mocked function
-func GetServerPlanListFailErrMocked(t *testing.T, serverPlansIn []*types.ServerPlan, cloudProviderId string) []*types.ServerPlan {
+// ListServerPlansFailErrMocked test mocked function
+func ListServerPlansFailErrMocked(t *testing.T, serverPlansIn []*types.ServerPlan, cloudProviderId string) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
@@ -53,7 +53,7 @@ func GetServerPlanListFailErrMocked(t *testing.T, serverPlansIn []*types.ServerP
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/server_plans", cloudProviderId)).Return(dIn, 200, fmt.Errorf("mocked error"))
-	serverPlansOut, err := ds.GetServerPlanList(cloudProviderId)
+	serverPlansOut, err := ds.ListServerPlans(cloudProviderId)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serverPlansOut, "Expecting nil output")
@@ -62,8 +62,8 @@ func GetServerPlanListFailErrMocked(t *testing.T, serverPlansIn []*types.ServerP
 	return serverPlansOut
 }
 
-// GetServerPlanListFailStatusMocked test mocked function
-func GetServerPlanListFailStatusMocked(t *testing.T, serverPlansIn []*types.ServerPlan, cloudProviderId string) []*types.ServerPlan {
+// ListServerPlansFailStatusMocked test mocked function
+func ListServerPlansFailStatusMocked(t *testing.T, serverPlansIn []*types.ServerPlan, cloudProviderId string) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
@@ -79,7 +79,7 @@ func GetServerPlanListFailStatusMocked(t *testing.T, serverPlansIn []*types.Serv
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/server_plans", cloudProviderId)).Return(dIn, 499, nil)
-	serverPlansOut, err := ds.GetServerPlanList(cloudProviderId)
+	serverPlansOut, err := ds.ListServerPlans(cloudProviderId)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serverPlansOut, "Expecting nil output")
@@ -88,8 +88,8 @@ func GetServerPlanListFailStatusMocked(t *testing.T, serverPlansIn []*types.Serv
 	return serverPlansOut
 }
 
-// GetServerPlanListFailJSONMocked test mocked function
-func GetServerPlanListFailJSONMocked(t *testing.T, serverPlansIn []*types.ServerPlan, cloudProviderId string) []*types.ServerPlan {
+// ListServerPlansFailJSONMocked test mocked function
+func ListServerPlansFailJSONMocked(t *testing.T, serverPlansIn []*types.ServerPlan, cloudProviderId string) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
@@ -104,7 +104,7 @@ func GetServerPlanListFailJSONMocked(t *testing.T, serverPlansIn []*types.Server
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/server_plans", cloudProviderId)).Return(dIn, 200, nil)
-	serverPlansOut, err := ds.GetServerPlanList(cloudProviderId)
+	serverPlansOut, err := ds.ListServerPlans(cloudProviderId)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serverPlansOut, "Expecting nil output")

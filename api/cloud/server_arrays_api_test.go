@@ -14,12 +14,12 @@ func TestNewServerArrayServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetServerArrayList(t *testing.T) {
+func TestListServerArrays(t *testing.T) {
 	serverArraysIn := testdata.GetServerArrayData()
-	GetServerArrayListMocked(t, serverArraysIn)
-	GetServerArrayListFailErrMocked(t, serverArraysIn)
-	GetServerArrayListFailStatusMocked(t, serverArraysIn)
-	GetServerArrayListFailJSONMocked(t, serverArraysIn)
+	ListServerArraysMocked(t, serverArraysIn)
+	ListServerArraysFailErrMocked(t, serverArraysIn)
+	ListServerArraysFailStatusMocked(t, serverArraysIn)
+	ListServerArraysFailJSONMocked(t, serverArraysIn)
 }
 
 func TestGetServerArray(t *testing.T) {
@@ -92,14 +92,14 @@ func TestEnlargeServerArray(t *testing.T) {
 	}
 }
 
-func TestGetServerArrayServerList(t *testing.T) {
+func TestListServerArrayServers(t *testing.T) {
 	serverArraysIn := testdata.GetServerArrayData()
 	serversIn := testdata.GetServerData()
 	for _, serverArrayIn := range serverArraysIn {
-		GetServerArrayServerListMocked(t, serversIn, serverArrayIn.ID)
-		GetServerArrayServerListFailErrMocked(t, serversIn, serverArrayIn.ID)
-		GetServerArrayServerListFailStatusMocked(t, serversIn, serverArrayIn.ID)
-		GetServerArrayServerListFailJSONMocked(t, serversIn, serverArrayIn.ID)
+		ListServerArrayServersMocked(t, serversIn, serverArrayIn.ID)
+		ListServerArrayServersFailErrMocked(t, serversIn, serverArrayIn.ID)
+		ListServerArrayServersFailStatusMocked(t, serversIn, serverArrayIn.ID)
+		ListServerArrayServersFailJSONMocked(t, serversIn, serverArrayIn.ID)
 	}
 }
 

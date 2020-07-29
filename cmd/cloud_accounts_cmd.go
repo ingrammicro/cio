@@ -33,7 +33,7 @@ func CloudAccountList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 
 	cloudAccountSvc, formatter := WireUpCloudAccount(c)
-	cloudAccounts, err := cloudAccountSvc.GetCloudAccountList()
+	cloudAccounts, err := cloudAccountSvc.ListCloudAccounts()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive cloudAccount data", err)
 	}

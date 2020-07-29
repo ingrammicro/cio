@@ -11,8 +11,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetEventListMocked test mocked function
-func GetEventListMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
+// ListEventsMocked test mocked function
+func ListEventsMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 
 	assert := assert.New(t)
 
@@ -28,15 +28,15 @@ func GetEventListMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 
 	// call service
 	cs.On("Get", "/audit/events").Return(dIn, 200, nil)
-	eventsOut, err := ds.GetEventList()
+	eventsOut, err := ds.ListEvents()
 	assert.Nil(err, "Error getting event list")
-	assert.Equal(eventsIn, eventsOut, "GetEventList returned different events")
+	assert.Equal(eventsIn, eventsOut, "ListEvents returned different events")
 
 	return eventsOut
 }
 
-// GetEventListFailErrMocked test mocked function
-func GetEventListFailErrMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
+// ListEventsFailErrMocked test mocked function
+func ListEventsFailErrMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 
 	assert := assert.New(t)
 
@@ -52,7 +52,7 @@ func GetEventListFailErrMocked(t *testing.T, eventsIn []*types.Event) []*types.E
 
 	// call service
 	cs.On("Get", "/audit/events").Return(dIn, 200, fmt.Errorf("mocked error"))
-	eventsOut, err := ds.GetEventList()
+	eventsOut, err := ds.ListEvents()
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(eventsOut, "Expecting nil output")
@@ -61,8 +61,8 @@ func GetEventListFailErrMocked(t *testing.T, eventsIn []*types.Event) []*types.E
 	return eventsOut
 }
 
-// GetEventListFailStatusMocked test mocked function
-func GetEventListFailStatusMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
+// ListEventsFailStatusMocked test mocked function
+func ListEventsFailStatusMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 
 	assert := assert.New(t)
 
@@ -78,7 +78,7 @@ func GetEventListFailStatusMocked(t *testing.T, eventsIn []*types.Event) []*type
 
 	// call service
 	cs.On("Get", "/audit/events").Return(dIn, 499, nil)
-	eventsOut, err := ds.GetEventList()
+	eventsOut, err := ds.ListEvents()
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(eventsOut, "Expecting nil output")
@@ -87,8 +87,8 @@ func GetEventListFailStatusMocked(t *testing.T, eventsIn []*types.Event) []*type
 	return eventsOut
 }
 
-// GetEventListFailJSONMocked test mocked function
-func GetEventListFailJSONMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
+// ListEventsFailJSONMocked test mocked function
+func ListEventsFailJSONMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 
 	assert := assert.New(t)
 
@@ -103,7 +103,7 @@ func GetEventListFailJSONMocked(t *testing.T, eventsIn []*types.Event) []*types.
 
 	// call service
 	cs.On("Get", "/audit/events").Return(dIn, 200, nil)
-	eventsOut, err := ds.GetEventList()
+	eventsOut, err := ds.ListEvents()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(eventsOut, "Expecting nil output")
@@ -112,8 +112,8 @@ func GetEventListFailJSONMocked(t *testing.T, eventsIn []*types.Event) []*types.
 	return eventsOut
 }
 
-// GetSysEventListMocked test mocked function
-func GetSysEventListMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
+// ListSysEventsMocked test mocked function
+func ListSysEventsMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 
 	assert := assert.New(t)
 
@@ -129,15 +129,15 @@ func GetSysEventListMocked(t *testing.T, eventsIn []*types.Event) []*types.Event
 
 	// call service
 	cs.On("Get", "/audit/system_events").Return(dIn, 200, nil)
-	eventsOut, err := ds.GetSysEventList()
+	eventsOut, err := ds.ListSysEvents()
 	assert.Nil(err, "Error getting event list")
-	assert.Equal(eventsIn, eventsOut, "GetSysEventList returned different events")
+	assert.Equal(eventsIn, eventsOut, "ListSysEvents returned different events")
 
 	return eventsOut
 }
 
-// GetSysEventListFailErrMocked test mocked function
-func GetSysEventListFailErrMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
+// ListSysEventsFailErrMocked test mocked function
+func ListSysEventsFailErrMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 
 	assert := assert.New(t)
 
@@ -153,7 +153,7 @@ func GetSysEventListFailErrMocked(t *testing.T, eventsIn []*types.Event) []*type
 
 	// call service
 	cs.On("Get", "/audit/system_events").Return(dIn, 200, fmt.Errorf("mocked error"))
-	eventsOut, err := ds.GetSysEventList()
+	eventsOut, err := ds.ListSysEvents()
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(eventsOut, "Expecting nil output")
@@ -162,8 +162,8 @@ func GetSysEventListFailErrMocked(t *testing.T, eventsIn []*types.Event) []*type
 	return eventsOut
 }
 
-// GetSysEventListFailStatusMocked test mocked function
-func GetSysEventListFailStatusMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
+// ListSysEventsFailStatusMocked test mocked function
+func ListSysEventsFailStatusMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 
 	assert := assert.New(t)
 
@@ -179,7 +179,7 @@ func GetSysEventListFailStatusMocked(t *testing.T, eventsIn []*types.Event) []*t
 
 	// call service
 	cs.On("Get", "/audit/system_events").Return(dIn, 499, nil)
-	eventsOut, err := ds.GetSysEventList()
+	eventsOut, err := ds.ListSysEvents()
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(eventsOut, "Expecting nil output")
@@ -188,8 +188,8 @@ func GetSysEventListFailStatusMocked(t *testing.T, eventsIn []*types.Event) []*t
 	return eventsOut
 }
 
-// GetSysEventListFailJSONMocked test mocked function
-func GetSysEventListFailJSONMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
+// ListSysEventsFailJSONMocked test mocked function
+func ListSysEventsFailJSONMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 
 	assert := assert.New(t)
 
@@ -204,7 +204,7 @@ func GetSysEventListFailJSONMocked(t *testing.T, eventsIn []*types.Event) []*typ
 
 	// call service
 	cs.On("Get", "/audit/system_events").Return(dIn, 200, nil)
-	eventsOut, err := ds.GetSysEventList()
+	eventsOut, err := ds.ListSysEvents()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(eventsOut, "Expecting nil output")

@@ -14,13 +14,13 @@ func TestNewLabelServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestGetLabelsList(t *testing.T) {
+func TestListLabels(t *testing.T) {
 	labelsIn := testdata.GetLabelData()
-	GetLabelListMocked(t, labelsIn)
-	GetLabelListMockedWithNamespace(t, testdata.GetLabelWithNamespaceData())
-	GetLabelListFailErrMocked(t, labelsIn)
-	GetLabelListFailStatusMocked(t, labelsIn)
-	GetLabelListFailJSONMocked(t, labelsIn)
+	ListLabelsMocked(t, labelsIn)
+	ListLabelsMockedWithNamespace(t, testdata.GetLabelWithNamespaceData())
+	ListLabelsFailErrMocked(t, labelsIn)
+	ListLabelsFailStatusMocked(t, labelsIn)
+	ListLabelsFailJSONMocked(t, labelsIn)
 }
 
 func TestCreateLabel(t *testing.T) {

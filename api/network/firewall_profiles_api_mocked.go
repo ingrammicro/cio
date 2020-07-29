@@ -12,8 +12,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetFirewallProfileListMocked test mocked function
-func GetFirewallProfileListMocked(t *testing.T, firewallProfilesIn []*types.FirewallProfile) []*types.FirewallProfile {
+// ListFirewallProfilesMocked test mocked function
+func ListFirewallProfilesMocked(t *testing.T, firewallProfilesIn []*types.FirewallProfile) []*types.FirewallProfile {
 
 	assert := assert.New(t)
 
@@ -29,15 +29,15 @@ func GetFirewallProfileListMocked(t *testing.T, firewallProfilesIn []*types.Fire
 
 	// call service
 	cs.On("Get", "/network/firewall_profiles").Return(dIn, 200, nil)
-	firewallProfilesOut, err := ds.GetFirewallProfileList()
+	firewallProfilesOut, err := ds.ListFirewallProfiles()
 	assert.Nil(err, "Error getting firewallProfile list")
-	assert.Equal(firewallProfilesIn, firewallProfilesOut, "GetFirewallProfileList returned different firewallProfiles")
+	assert.Equal(firewallProfilesIn, firewallProfilesOut, "ListFirewallProfiles returned different firewallProfiles")
 
 	return firewallProfilesOut
 }
 
-// GetFirewallProfileListFailErrMocked test mocked function
-func GetFirewallProfileListFailErrMocked(t *testing.T, firewallProfilesIn []*types.FirewallProfile) []*types.FirewallProfile {
+// ListFirewallProfilesFailErrMocked test mocked function
+func ListFirewallProfilesFailErrMocked(t *testing.T, firewallProfilesIn []*types.FirewallProfile) []*types.FirewallProfile {
 
 	assert := assert.New(t)
 
@@ -53,7 +53,7 @@ func GetFirewallProfileListFailErrMocked(t *testing.T, firewallProfilesIn []*typ
 
 	// call service
 	cs.On("Get", "/network/firewall_profiles").Return(dIn, 200, fmt.Errorf("mocked error"))
-	firewallProfilesOut, err := ds.GetFirewallProfileList()
+	firewallProfilesOut, err := ds.ListFirewallProfiles()
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(firewallProfilesOut, "Expecting nil output")
@@ -62,8 +62,8 @@ func GetFirewallProfileListFailErrMocked(t *testing.T, firewallProfilesIn []*typ
 	return firewallProfilesOut
 }
 
-// GetFirewallProfileListFailStatusMocked test mocked function
-func GetFirewallProfileListFailStatusMocked(t *testing.T, firewallProfilesIn []*types.FirewallProfile) []*types.FirewallProfile {
+// ListFirewallProfilesFailStatusMocked test mocked function
+func ListFirewallProfilesFailStatusMocked(t *testing.T, firewallProfilesIn []*types.FirewallProfile) []*types.FirewallProfile {
 
 	assert := assert.New(t)
 
@@ -79,7 +79,7 @@ func GetFirewallProfileListFailStatusMocked(t *testing.T, firewallProfilesIn []*
 
 	// call service
 	cs.On("Get", "/network/firewall_profiles").Return(dIn, 499, nil)
-	firewallProfilesOut, err := ds.GetFirewallProfileList()
+	firewallProfilesOut, err := ds.ListFirewallProfiles()
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(firewallProfilesOut, "Expecting nil output")
@@ -88,8 +88,8 @@ func GetFirewallProfileListFailStatusMocked(t *testing.T, firewallProfilesIn []*
 	return firewallProfilesOut
 }
 
-// GetFirewallProfileListFailJSONMocked test mocked function
-func GetFirewallProfileListFailJSONMocked(t *testing.T, firewallProfilesIn []*types.FirewallProfile) []*types.FirewallProfile {
+// ListFirewallProfilesFailJSONMocked test mocked function
+func ListFirewallProfilesFailJSONMocked(t *testing.T, firewallProfilesIn []*types.FirewallProfile) []*types.FirewallProfile {
 
 	assert := assert.New(t)
 
@@ -104,7 +104,7 @@ func GetFirewallProfileListFailJSONMocked(t *testing.T, firewallProfilesIn []*ty
 
 	// call service
 	cs.On("Get", "/network/firewall_profiles").Return(dIn, 200, nil)
-	firewallProfilesOut, err := ds.GetFirewallProfileList()
+	firewallProfilesOut, err := ds.ListFirewallProfiles()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(firewallProfilesOut, "Expecting nil output")
@@ -352,7 +352,7 @@ func UpdateFirewallProfileMocked(t *testing.T, firewallProfileIn *types.Firewall
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileIn.ID), mapIn).Return(dOut, 200, nil)
-	firewallProfileOut, err := ds.UpdateFirewallProfile(mapIn, firewallProfileIn.ID)
+	firewallProfileOut, err := ds.UpdateFirewallProfile(firewallProfileIn.ID, mapIn)
 	assert.Nil(err, "Error updating firewallProfile list")
 	assert.Equal(firewallProfileIn, firewallProfileOut, "UpdateFirewallProfile returned different firewallProfiles")
 
@@ -380,7 +380,7 @@ func UpdateFirewallProfileFailErrMocked(t *testing.T, firewallProfileIn *types.F
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	firewallProfileOut, err := ds.UpdateFirewallProfile(mapIn, firewallProfileIn.ID)
+	firewallProfileOut, err := ds.UpdateFirewallProfile(firewallProfileIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(firewallProfileOut, "Expecting nil output")
@@ -410,7 +410,7 @@ func UpdateFirewallProfileFailStatusMocked(t *testing.T, firewallProfileIn *type
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileIn.ID), mapIn).Return(dOut, 499, nil)
-	firewallProfileOut, err := ds.UpdateFirewallProfile(mapIn, firewallProfileIn.ID)
+	firewallProfileOut, err := ds.UpdateFirewallProfile(firewallProfileIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(firewallProfileOut, "Expecting nil output")
@@ -438,7 +438,7 @@ func UpdateFirewallProfileFailJSONMocked(t *testing.T, firewallProfileIn *types.
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/network/firewall_profiles/%s", firewallProfileIn.ID), mapIn).Return(dIn, 200, nil)
-	firewallProfileOut, err := ds.UpdateFirewallProfile(mapIn, firewallProfileIn.ID)
+	firewallProfileOut, err := ds.UpdateFirewallProfile(firewallProfileIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(firewallProfileOut, "Expecting nil output")

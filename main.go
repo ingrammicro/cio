@@ -9,7 +9,10 @@ import (
 	"github.com/ingrammicro/cio/blueprint"
 	"github.com/ingrammicro/cio/bootstrapping"
 	"github.com/ingrammicro/cio/brownfield"
+	"github.com/ingrammicro/cio/clientbrownfield"
 	"github.com/ingrammicro/cio/cloud"
+	"github.com/ingrammicro/cio/cloudapplications"
+	"github.com/ingrammicro/cio/cloudspecificextensions"
 	"github.com/ingrammicro/cio/cmdpolling"
 	"github.com/ingrammicro/cio/converge"
 	"github.com/ingrammicro/cio/dispatcher"
@@ -66,10 +69,28 @@ var clientCommands = []cli.Command{
 		Subcommands: append(blueprint.SubCommands()),
 	},
 	{
+		Name:        "brownfield",
+		ShortName:   "bf",
+		Usage:       "Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs and volumes from different cloud accounts into the system.",
+		Subcommands: append(clientbrownfield.SubCommands()),
+	},
+	{
+		Name:        "cloud-applications",
+		ShortName:   "ca",
+		Usage:       "Manages cloud application templates -CATs- and deployments",
+		Subcommands: append(cloudapplications.SubCommands()),
+	},
+	{
 		Name:        "cloud",
 		ShortName:   "clo",
-		Usage:       "Manages cloud related commands for server arrays, servers, generic images, ssh profiles, cloud providers and server plans",
+		Usage:       "Manages cloud related commands for server arrays, servers, generic images, ssh profiles, cloud providers server plans and infrastructure archives",
 		Subcommands: append(cloud.SubCommands()),
+	},
+	{
+		Name:        "cloud-specific-extensions",
+		ShortName:   "cse",
+		Usage:       "Manages cloud specific extensions -CSEs- templates and deployments",
+		Subcommands: append(cloudspecificextensions.SubCommands()),
 	},
 	{
 		Name:        "events",
@@ -86,7 +107,7 @@ var clientCommands = []cli.Command{
 	{
 		Name:        "network",
 		ShortName:   "net",
-		Usage:       "Manages network related commands for firewall profiles",
+		Usage:       "Manages network related commands",
 		Subcommands: append(network.SubCommands()),
 	},
 	{
@@ -98,7 +119,7 @@ var clientCommands = []cli.Command{
 	{
 		Name:        "settings",
 		ShortName:   "set",
-		Usage:       "Provides settings for cloud accounts",
+		Usage:       "Provides settings for cloud accounts and policies",
 		Subcommands: append(settings.SubCommands()),
 	},
 	{

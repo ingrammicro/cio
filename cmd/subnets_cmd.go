@@ -34,7 +34,7 @@ func SubnetList(c *cli.Context) error {
 	subnetSvc, formatter := WireUpSubnet(c)
 
 	checkRequiredFlags(c, []string{"vpc-id"}, formatter)
-	subnets, err := subnetSvc.GetSubnetList(c.String("vpc-id"))
+	subnets, err := subnetSvc.ListSubnets(c.String("vpc-id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive Subnet data", err)
 	}
@@ -76,7 +76,7 @@ func SubnetCreate(c *cli.Context) error {
 		"type":             c.String("type"),
 	}
 
-	subnet, err := subnetSvc.CreateSubnet(&subnetIn, c.String("vpc-id"))
+	subnet, err := subnetSvc.CreateSubnet(c.String("vpc-id"), &subnetIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't create Subnet", err)
 	}
@@ -98,7 +98,7 @@ func SubnetUpdate(c *cli.Context) error {
 		"name": c.String("name"),
 	}
 
-	subnet, err := subnetSvc.UpdateSubnet(&subnetIn, c.String("id"))
+	subnet, err := subnetSvc.UpdateSubnet(c.String("id"), &subnetIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't update Subnet", err)
 	}
@@ -128,7 +128,7 @@ func SubnetServerList(c *cli.Context) error {
 	subnetSvc, formatter := WireUpSubnet(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	servers, err := subnetSvc.GetSubnetServerList(c.String("id"))
+	servers, err := subnetSvc.ListSubnetServers(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive servers data", err)
 	}
@@ -145,7 +145,7 @@ func SubnetServerArrayList(c *cli.Context) error {
 	subnetSvc, formatter := WireUpSubnet(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
-	serverArrays, err := subnetSvc.GetSubnetServerArrayList(c.String("id"))
+	serverArrays, err := subnetSvc.ListSubnetServerArrays(c.String("id"))
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive server arrays data", err)
 	}

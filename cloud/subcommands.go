@@ -7,6 +7,7 @@ import (
 	"github.com/ingrammicro/cio/cloud/server_plan"
 	"github.com/ingrammicro/cio/cloud/servers"
 	"github.com/ingrammicro/cio/cloud/ssh_profiles"
+	"github.com/ingrammicro/cio/cloud/temporary_archives"
 	"github.com/urfave/cli"
 )
 
@@ -42,6 +43,11 @@ func SubCommands() []cli.Command {
 			Name:        "server-plans",
 			Usage:       "Provides information on server plans",
 			Subcommands: append(server_plan.SubCommands()),
+		},
+		{
+			Name:        "infrastructure",
+			Usage:       "Provides infrastructure archives management",
+			Subcommands: append(temporary_archives.SubCommands()),
 		},
 	}
 }

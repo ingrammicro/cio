@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// GetLabelListMocked test mocked function
-func GetLabelListMocked(t *testing.T, labelsIn []*types.Label) []*types.Label {
+// ListLabelsMocked test mocked function
+func ListLabelsMocked(t *testing.T, labelsIn []*types.Label) []*types.Label {
 
 	assert := assert.New(t)
 
@@ -27,15 +27,15 @@ func GetLabelListMocked(t *testing.T, labelsIn []*types.Label) []*types.Label {
 
 	// call service
 	cs.On("Get", "/labels").Return(dIn, 200, nil)
-	labelsOut, err := ds.GetLabelList()
+	labelsOut, err := ds.ListLabels()
 	assert.Nil(err, "Error getting labels list")
-	assert.Equal(labelsIn, labelsOut, "GetLabelList returned different labels")
+	assert.Equal(labelsIn, labelsOut, "ListLabels returned different labels")
 
 	return labelsOut
 }
 
-// GetLabelListMockedWithNamespace test mocked function
-func GetLabelListMockedWithNamespace(t *testing.T, labelsIn []*types.Label) []*types.Label {
+// ListLabelsMockedWithNamespace test mocked function
+func ListLabelsMockedWithNamespace(t *testing.T, labelsIn []*types.Label) []*types.Label {
 
 	assert := assert.New(t)
 
@@ -51,15 +51,15 @@ func GetLabelListMockedWithNamespace(t *testing.T, labelsIn []*types.Label) []*t
 
 	// call service
 	cs.On("Get", "/labels").Return(dIn, 200, nil)
-	labelsOut, err := ds.GetLabelList()
+	labelsOut, err := ds.ListLabels()
 	assert.Nil(err, "Error getting labels list")
-	assert.NotEqual(labelsIn, labelsOut, "GetLabelList returned labels with Namespaces")
+	assert.NotEqual(labelsIn, labelsOut, "ListLabels returned labels with Namespaces")
 
 	return labelsOut
 }
 
-// GetLabelListFailErrMocked test mocked function
-func GetLabelListFailErrMocked(t *testing.T, labelsIn []*types.Label) []*types.Label {
+// ListLabelsFailErrMocked test mocked function
+func ListLabelsFailErrMocked(t *testing.T, labelsIn []*types.Label) []*types.Label {
 
 	assert := assert.New(t)
 
@@ -75,7 +75,7 @@ func GetLabelListFailErrMocked(t *testing.T, labelsIn []*types.Label) []*types.L
 
 	// call service
 	cs.On("Get", "/labels").Return(dIn, 200, fmt.Errorf("mocked error"))
-	labelsOut, err := ds.GetLabelList()
+	labelsOut, err := ds.ListLabels()
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(labelsOut, "Expecting nil output")
@@ -84,8 +84,8 @@ func GetLabelListFailErrMocked(t *testing.T, labelsIn []*types.Label) []*types.L
 	return labelsOut
 }
 
-// GetLabelListFailStatusMocked test mocked function
-func GetLabelListFailStatusMocked(t *testing.T, labelsIn []*types.Label) []*types.Label {
+// ListLabelsFailStatusMocked test mocked function
+func ListLabelsFailStatusMocked(t *testing.T, labelsIn []*types.Label) []*types.Label {
 
 	assert := assert.New(t)
 
@@ -101,7 +101,7 @@ func GetLabelListFailStatusMocked(t *testing.T, labelsIn []*types.Label) []*type
 
 	// call service
 	cs.On("Get", "/labels").Return(dIn, 499, nil)
-	labelsOut, err := ds.GetLabelList()
+	labelsOut, err := ds.ListLabels()
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(labelsOut, "Expecting nil output")
@@ -110,8 +110,8 @@ func GetLabelListFailStatusMocked(t *testing.T, labelsIn []*types.Label) []*type
 	return labelsOut
 }
 
-// GetLabelListFailJSONMocked test mocked function
-func GetLabelListFailJSONMocked(t *testing.T, labelsIn []*types.Label) []*types.Label {
+// ListLabelsFailJSONMocked test mocked function
+func ListLabelsFailJSONMocked(t *testing.T, labelsIn []*types.Label) []*types.Label {
 
 	assert := assert.New(t)
 
@@ -126,7 +126,7 @@ func GetLabelListFailJSONMocked(t *testing.T, labelsIn []*types.Label) []*types.
 
 	// call service
 	cs.On("Get", "/labels").Return(dIn, 200, nil)
-	labelsOut, err := ds.GetLabelList()
+	labelsOut, err := ds.ListLabels()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(labelsOut, "Expecting nil output")
@@ -273,7 +273,7 @@ func AddLabelMocked(t *testing.T, labelIn *types.Label, labeledResourcesOut []*t
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/labels/%s/resources", labelIn.ID), mapIn).Return(dOut, 200, nil)
-	labeledOut, err := ds.AddLabel(mapIn, labelIn.ID)
+	labeledOut, err := ds.AddLabel(labelIn.ID, mapIn)
 	assert.Nil(err, "Error creating label")
 	assert.Equal(labeledOut, labeledResourcesOut, "CreateLabel returned invalid labeled resources")
 
@@ -301,7 +301,7 @@ func AddLabelFailErrMocked(t *testing.T, labelIn *types.Label, labeledResourcesO
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/labels/%s/resources", labelIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	labeledOut, err := ds.AddLabel(mapIn, labelIn.ID)
+	labeledOut, err := ds.AddLabel(labelIn.ID, mapIn)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(labeledOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -330,7 +330,7 @@ func AddLabelFailStatusMocked(t *testing.T, labelIn *types.Label, labeledResourc
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/labels/%s/resources", labelIn.ID), mapIn).Return(dOut, 404, nil)
-	labeledOut, err := ds.AddLabel(mapIn, labelIn.ID)
+	labeledOut, err := ds.AddLabel(labelIn.ID, mapIn)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(labeledOut, "Expecting nil output")
 	assert.Contains(err.Error(), "404", "Error should contain http code 404")
@@ -358,7 +358,7 @@ func AddLabelFailJSONMocked(t *testing.T, labelIn *types.Label, labeledResources
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/labels/%s/resources", labelIn.ID), mapIn).Return(dOut, 200, nil)
-	labeledOut, err := ds.AddLabel(mapIn, labelIn.ID)
+	labeledOut, err := ds.AddLabel(labelIn.ID, mapIn)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(labeledOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")

@@ -33,7 +33,7 @@ func AppList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	appSvc, formatter := WireUpApp(c)
 
-	apps, err := appSvc.GetAppList()
+	apps, err := appSvc.ListApps()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive app data", err)
 	}
@@ -59,7 +59,7 @@ func AppDeploy(c *cli.Context) error {
 		appIn["server_plan_id"] = c.String("server-plan-id")
 	}
 
-	app, err := appSvc.DeployApp(&appIn, c.String("id"))
+	app, err := appSvc.DeployApp(c.String("id"), &appIn)
 	if err != nil {
 		formatter.PrintFatal("Couldn't deploy app", err)
 	}

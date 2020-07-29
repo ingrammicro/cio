@@ -33,7 +33,7 @@ func LocationList(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	locationSvc, formatter := WireUpLocation(c)
 
-	locations, err := locationSvc.GetLocationList()
+	locations, err := locationSvc.ListLocations()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive location data", err)
 	}
@@ -48,7 +48,7 @@ func LoadLocationsMapping(c *cli.Context) map[string]string {
 	debugCmdFuncInfo(c)
 
 	locationSvc, formatter := WireUpLocation(c)
-	locations, err := locationSvc.GetLocationList()
+	locations, err := locationSvc.ListLocations()
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive location data", err)
 	}

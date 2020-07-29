@@ -12,8 +12,8 @@ import (
 
 // TODO exclude from release compile
 
-// GetTemplateListMocked test mocked function
-func GetTemplateListMocked(t *testing.T, templatesIn []*types.Template) []*types.Template {
+// ListTemplatesMocked test mocked function
+func ListTemplatesMocked(t *testing.T, templatesIn []*types.Template) []*types.Template {
 
 	assert := assert.New(t)
 
@@ -29,15 +29,15 @@ func GetTemplateListMocked(t *testing.T, templatesIn []*types.Template) []*types
 
 	// call service
 	cs.On("Get", "/blueprint/templates").Return(dIn, 200, nil)
-	templatesOut, err := ds.GetTemplateList()
+	templatesOut, err := ds.ListTemplates()
 	assert.Nil(err, "Error getting template list")
-	assert.Equal(templatesIn, templatesOut, "GetTemplateList returned different templates")
+	assert.Equal(templatesIn, templatesOut, "ListTemplates returned different templates")
 
 	return templatesOut
 }
 
-// GetTemplateListFailErrMocked test mocked function
-func GetTemplateListFailErrMocked(t *testing.T, templatesIn []*types.Template) []*types.Template {
+// ListTemplatesFailErrMocked test mocked function
+func ListTemplatesFailErrMocked(t *testing.T, templatesIn []*types.Template) []*types.Template {
 
 	assert := assert.New(t)
 
@@ -53,7 +53,7 @@ func GetTemplateListFailErrMocked(t *testing.T, templatesIn []*types.Template) [
 
 	// call service
 	cs.On("Get", "/blueprint/templates").Return(dIn, 200, fmt.Errorf("mocked error"))
-	templatesOut, err := ds.GetTemplateList()
+	templatesOut, err := ds.ListTemplates()
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(templatesOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -61,8 +61,8 @@ func GetTemplateListFailErrMocked(t *testing.T, templatesIn []*types.Template) [
 	return templatesOut
 }
 
-// GetTemplateListFailStatusMocked test mocked function
-func GetTemplateListFailStatusMocked(t *testing.T, templatesIn []*types.Template) []*types.Template {
+// ListTemplatesFailStatusMocked test mocked function
+func ListTemplatesFailStatusMocked(t *testing.T, templatesIn []*types.Template) []*types.Template {
 
 	assert := assert.New(t)
 
@@ -78,7 +78,7 @@ func GetTemplateListFailStatusMocked(t *testing.T, templatesIn []*types.Template
 
 	// call service
 	cs.On("Get", "/blueprint/templates").Return(dIn, 499, nil)
-	templatesOut, err := ds.GetTemplateList()
+	templatesOut, err := ds.ListTemplates()
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(templatesOut, "Expecting nil output")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -86,8 +86,8 @@ func GetTemplateListFailStatusMocked(t *testing.T, templatesIn []*types.Template
 	return templatesOut
 }
 
-// GetTemplateListFailJSONMocked test mocked function
-func GetTemplateListFailJSONMocked(t *testing.T, templatesIn []*types.Template) []*types.Template {
+// ListTemplatesFailJSONMocked test mocked function
+func ListTemplatesFailJSONMocked(t *testing.T, templatesIn []*types.Template) []*types.Template {
 
 	assert := assert.New(t)
 
@@ -102,7 +102,7 @@ func GetTemplateListFailJSONMocked(t *testing.T, templatesIn []*types.Template) 
 
 	// call service
 	cs.On("Get", "/blueprint/templates").Return(dIn, 200, nil)
-	templatesOut, err := ds.GetTemplateList()
+	templatesOut, err := ds.ListTemplates()
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(templatesOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
@@ -343,7 +343,7 @@ func UpdateTemplateMocked(t *testing.T, templateIn *types.Template) *types.Templ
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s", templateIn.ID), mapIn).Return(dOut, 200, nil)
-	templateOut, err := ds.UpdateTemplate(mapIn, templateIn.ID)
+	templateOut, err := ds.UpdateTemplate(templateIn.ID, mapIn)
 	assert.Nil(err, "Error updating template list")
 	assert.Equal(templateIn, templateOut, "UpdateTemplate returned different templates")
 
@@ -371,7 +371,7 @@ func UpdateTemplateFailErrMocked(t *testing.T, templateIn *types.Template) *type
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s", templateIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	templateOut, err := ds.UpdateTemplate(mapIn, templateIn.ID)
+	templateOut, err := ds.UpdateTemplate(templateIn.ID, mapIn)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(templateOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -400,7 +400,7 @@ func UpdateTemplateFailStatusMocked(t *testing.T, templateIn *types.Template) *t
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s", templateIn.ID), mapIn).Return(dOut, 499, nil)
-	templateOut, err := ds.UpdateTemplate(mapIn, templateIn.ID)
+	templateOut, err := ds.UpdateTemplate(templateIn.ID, mapIn)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(templateOut, "Expecting nil output")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -428,7 +428,7 @@ func UpdateTemplateFailJSONMocked(t *testing.T, templateIn *types.Template) *typ
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s", templateIn.ID), mapIn).Return(dOut, 200, nil)
-	templateOut, err := ds.UpdateTemplate(mapIn, templateIn.ID)
+	templateOut, err := ds.UpdateTemplate(templateIn.ID, mapIn)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(templateOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
@@ -454,7 +454,7 @@ func CompileTemplateMocked(t *testing.T, templateIn *types.Template) *types.Temp
 	// call service
 	payload := new(map[string]interface{})
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/compile", templateIn.ID), payload).Return(dOut, 200, nil)
-	templateOut, err := ds.CompileTemplate(payload, templateIn.ID)
+	templateOut, err := ds.CompileTemplate(templateIn.ID, payload)
 	assert.Nil(err, "Error compiling template list")
 	assert.Equal(templateIn, templateOut, "CompileTemplate returned different templates")
 
@@ -479,7 +479,7 @@ func CompileTemplateFailErrMocked(t *testing.T, templateIn *types.Template) *typ
 	// call service
 	payload := new(map[string]interface{})
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/compile", templateIn.ID), payload).Return(dOut, 200, fmt.Errorf("mocked error"))
-	templateOut, err := ds.CompileTemplate(payload, templateIn.ID)
+	templateOut, err := ds.CompileTemplate(templateIn.ID, payload)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(templateOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -505,7 +505,7 @@ func CompileTemplateFailStatusMocked(t *testing.T, templateIn *types.Template) *
 	// call service
 	payload := new(map[string]interface{})
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/compile", templateIn.ID), payload).Return(dOut, 409, nil)
-	templateOut, err := ds.CompileTemplate(payload, templateIn.ID)
+	templateOut, err := ds.CompileTemplate(templateIn.ID, payload)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(templateOut, "Expecting nil output")
 	assert.Contains(err.Error(), "409", "Error should contain http code 409")
@@ -530,7 +530,7 @@ func CompileTemplateFailJSONMocked(t *testing.T, templateIn *types.Template) *ty
 	// call service
 	payload := new(map[string]interface{})
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/compile", templateIn.ID), payload).Return(dOut, 200, nil)
-	templateOut, err := ds.CompileTemplate(payload, templateIn.ID)
+	templateOut, err := ds.CompileTemplate(templateIn.ID, payload)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(templateOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
@@ -606,8 +606,8 @@ func DeleteTemplateFailStatusMocked(t *testing.T, templateIn *types.Template) {
 
 }
 
-// GetTemplateScriptListMocked test mocked function
-func GetTemplateScriptListMocked(t *testing.T, templateScriptsIn []*types.TemplateScript, templateID string, scriptType string) []*types.TemplateScript {
+// ListTemplateScriptsMocked test mocked function
+func ListTemplateScriptsMocked(t *testing.T, templateScriptsIn []*types.TemplateScript, templateID string, scriptType string) []*types.TemplateScript {
 
 	assert := assert.New(t)
 
@@ -623,15 +623,15 @@ func GetTemplateScriptListMocked(t *testing.T, templateScriptsIn []*types.Templa
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/blueprint/templates/%s/scripts?type=%s", templateID, scriptType)).Return(drsIn, 200, nil)
-	templateScriptsOut, err := ds.GetTemplateScriptList(templateID, scriptType)
+	templateScriptsOut, err := ds.ListTemplateScripts(templateID, scriptType)
 	assert.Nil(err, "Error getting template list")
-	assert.Equal(templateScriptsIn, templateScriptsOut, "GetTemplateList returned different templates")
+	assert.Equal(templateScriptsIn, templateScriptsOut, "ListTemplates returned different templates")
 
 	return templateScriptsOut
 }
 
-// GetTemplateScriptListFailErrMocked test mocked function
-func GetTemplateScriptListFailErrMocked(t *testing.T, templateScriptsIn []*types.TemplateScript, templateID string, scriptType string) []*types.TemplateScript {
+// ListTemplateScriptsFailErrMocked test mocked function
+func ListTemplateScriptsFailErrMocked(t *testing.T, templateScriptsIn []*types.TemplateScript, templateID string, scriptType string) []*types.TemplateScript {
 
 	assert := assert.New(t)
 
@@ -647,7 +647,7 @@ func GetTemplateScriptListFailErrMocked(t *testing.T, templateScriptsIn []*types
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/blueprint/templates/%s/scripts?type=%s", templateID, scriptType)).Return(drsIn, 200, fmt.Errorf("mocked error"))
-	templateScriptsOut, err := ds.GetTemplateScriptList(templateID, scriptType)
+	templateScriptsOut, err := ds.ListTemplateScripts(templateID, scriptType)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(templateScriptsOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -655,8 +655,8 @@ func GetTemplateScriptListFailErrMocked(t *testing.T, templateScriptsIn []*types
 	return templateScriptsOut
 }
 
-// GetTemplateScriptListFailStatusMocked test mocked function
-func GetTemplateScriptListFailStatusMocked(t *testing.T, templateScriptsIn []*types.TemplateScript, templateID string, scriptType string) []*types.TemplateScript {
+// ListTemplateScriptsFailStatusMocked test mocked function
+func ListTemplateScriptsFailStatusMocked(t *testing.T, templateScriptsIn []*types.TemplateScript, templateID string, scriptType string) []*types.TemplateScript {
 
 	assert := assert.New(t)
 
@@ -672,7 +672,7 @@ func GetTemplateScriptListFailStatusMocked(t *testing.T, templateScriptsIn []*ty
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/blueprint/templates/%s/scripts?type=%s", templateID, scriptType)).Return(drsIn, 499, nil)
-	templateScriptsOut, err := ds.GetTemplateScriptList(templateID, scriptType)
+	templateScriptsOut, err := ds.ListTemplateScripts(templateID, scriptType)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(templateScriptsOut, "Expecting nil output")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -680,8 +680,8 @@ func GetTemplateScriptListFailStatusMocked(t *testing.T, templateScriptsIn []*ty
 	return templateScriptsOut
 }
 
-// GetTemplateScriptListFailJSONMocked test mocked function
-func GetTemplateScriptListFailJSONMocked(t *testing.T, templateScriptsIn []*types.TemplateScript, templateID string, scriptType string) []*types.TemplateScript {
+// ListTemplateScriptsFailJSONMocked test mocked function
+func ListTemplateScriptsFailJSONMocked(t *testing.T, templateScriptsIn []*types.TemplateScript, templateID string, scriptType string) []*types.TemplateScript {
 
 	assert := assert.New(t)
 
@@ -696,7 +696,7 @@ func GetTemplateScriptListFailJSONMocked(t *testing.T, templateScriptsIn []*type
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/blueprint/templates/%s/scripts?type=%s", templateID, scriptType)).Return(drsIn, 200, nil)
-	templateScriptsOut, err := ds.GetTemplateScriptList(templateID, scriptType)
+	templateScriptsOut, err := ds.ListTemplateScripts(templateID, scriptType)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(templateScriptsOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
@@ -823,7 +823,7 @@ func CreateTemplateScriptMocked(t *testing.T, dr *types.TemplateScript) *types.T
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/blueprint/templates/%s/scripts", dr.TemplateID), mapIn).Return(drIn, 200, nil)
-	drOut, err := ds.CreateTemplateScript(mapIn, dr.TemplateID)
+	drOut, err := ds.CreateTemplateScript(dr.TemplateID, mapIn)
 	assert.Nil(err, "Error getting template")
 	assert.Equal(*dr, *drOut, "CreateTemplateScript returned different template scripts")
 
@@ -851,7 +851,7 @@ func CreateTemplateScriptFailErrMocked(t *testing.T, dr *types.TemplateScript) *
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/blueprint/templates/%s/scripts", dr.TemplateID), mapIn).Return(drIn, 200, fmt.Errorf("mocked error"))
-	drOut, err := ds.CreateTemplateScript(mapIn, dr.TemplateID)
+	drOut, err := ds.CreateTemplateScript(dr.TemplateID, mapIn)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(drOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -880,7 +880,7 @@ func CreateTemplateScriptFailStatusMocked(t *testing.T, dr *types.TemplateScript
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/blueprint/templates/%s/scripts", dr.TemplateID), mapIn).Return(drIn, 499, nil)
-	drOut, err := ds.CreateTemplateScript(mapIn, dr.TemplateID)
+	drOut, err := ds.CreateTemplateScript(dr.TemplateID, mapIn)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(drOut, "Expecting nil output")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -908,7 +908,7 @@ func CreateTemplateScriptFailJSONMocked(t *testing.T, dr *types.TemplateScript) 
 
 	// call service
 	cs.On("Post", fmt.Sprintf("/blueprint/templates/%s/scripts", dr.TemplateID), mapIn).Return(drIn, 200, nil)
-	drOut, err := ds.CreateTemplateScript(mapIn, dr.TemplateID)
+	drOut, err := ds.CreateTemplateScript(dr.TemplateID, mapIn)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(drOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
@@ -937,7 +937,7 @@ func UpdateTemplateScriptMocked(t *testing.T, dr *types.TemplateScript) *types.T
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/scripts/%s", dr.TemplateID, dr.ID), mapIn).Return(drIn, 200, nil)
-	drOut, err := ds.UpdateTemplateScript(mapIn, dr.TemplateID, dr.ID)
+	drOut, err := ds.UpdateTemplateScript(dr.TemplateID, dr.ID, mapIn)
 	assert.Nil(err, "Error updating template list")
 	assert.Equal(*dr, *drOut, "UpdateTemplateScript returned different template scripts")
 
@@ -965,7 +965,7 @@ func UpdateTemplateScriptFailErrMocked(t *testing.T, dr *types.TemplateScript) *
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/scripts/%s", dr.TemplateID, dr.ID), mapIn).Return(drIn, 200, fmt.Errorf("mocked error"))
-	drOut, err := ds.UpdateTemplateScript(mapIn, dr.TemplateID, dr.ID)
+	drOut, err := ds.UpdateTemplateScript(dr.TemplateID, dr.ID, mapIn)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(drOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -994,7 +994,7 @@ func UpdateTemplateScriptFailStatusMocked(t *testing.T, dr *types.TemplateScript
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/scripts/%s", dr.TemplateID, dr.ID), mapIn).Return(drIn, 499, nil)
-	drOut, err := ds.UpdateTemplateScript(mapIn, dr.TemplateID, dr.ID)
+	drOut, err := ds.UpdateTemplateScript(dr.TemplateID, dr.ID, mapIn)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(drOut, "Expecting nil output")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -1022,7 +1022,7 @@ func UpdateTemplateScriptFailJSONMocked(t *testing.T, dr *types.TemplateScript) 
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/scripts/%s", dr.TemplateID, dr.ID), mapIn).Return(drIn, 200, nil)
-	drOut, err := ds.UpdateTemplateScript(mapIn, dr.TemplateID, dr.ID)
+	drOut, err := ds.UpdateTemplateScript(dr.TemplateID, dr.ID, mapIn)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(drOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
@@ -1049,7 +1049,7 @@ func ReorderTemplateScriptMocked(t *testing.T, tsOut []*types.TemplateScript, te
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/scripts/reorder", templateID), &v).Return(tsOutJSON, 200, nil)
-	out, err := ds.ReorderTemplateScript(&v, templateID)
+	out, err := ds.ReorderTemplateScript(templateID, &v)
 	assert.Nil(err, "Error updating template list")
 	assert.Equal(tsOut, out, "ReorderTemplateScript returned different template scripts")
 
@@ -1075,7 +1075,7 @@ func ReorderTemplateScriptFailErrMocked(t *testing.T, tsOut []*types.TemplateScr
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/scripts/reorder", templateID), &v).Return(tsOutJSON, 200, fmt.Errorf("mocked error"))
-	out, err := ds.ReorderTemplateScript(&v, templateID)
+	out, err := ds.ReorderTemplateScript(templateID, &v)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(out, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -1102,7 +1102,7 @@ func ReorderTemplateScriptFailStatusMocked(t *testing.T, tsOut []*types.Template
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/scripts/reorder", templateID), &v).Return(tsOutJSON, 499, nil)
-	out, err := ds.ReorderTemplateScript(&v, templateID)
+	out, err := ds.ReorderTemplateScript(templateID, &v)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(out, "Expecting nil output")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -1128,7 +1128,7 @@ func ReorderTemplateScriptFailJSONMocked(t *testing.T, tsOut []*types.TemplateSc
 
 	// call service
 	cs.On("Put", fmt.Sprintf("/blueprint/templates/%s/scripts/reorder", templateID), &v).Return(tsOutJSON, 200, nil)
-	out, err := ds.ReorderTemplateScript(&v, templateID)
+	out, err := ds.ReorderTemplateScript(templateID, &v)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(out, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
@@ -1202,8 +1202,8 @@ func DeleteTemplateScriptFailStatusMocked(t *testing.T, dr *types.TemplateScript
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
 }
 
-// GetTemplateServerListMocked test mocked function
-func GetTemplateServerListMocked(t *testing.T, templateServersIn []*types.TemplateServer, templateID string) []*types.TemplateServer {
+// ListTemplateServersMocked test mocked function
+func ListTemplateServersMocked(t *testing.T, templateServersIn []*types.TemplateServer, templateID string) []*types.TemplateServer {
 
 	assert := assert.New(t)
 
@@ -1219,15 +1219,15 @@ func GetTemplateServerListMocked(t *testing.T, templateServersIn []*types.Templa
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/blueprint/templates/%s/servers", templateID)).Return(drsIn, 200, nil)
-	templateServersOut, err := ds.GetTemplateServerList(templateID)
-	assert.Nil(err, "Error getting template list")
-	assert.Equal(templateServersIn, templateServersOut, "GetTemplateList returned different templates")
+	templateServersOut, err := ds.ListTemplateServers(templateID)
+	assert.Nil(err, "Error getting template server list")
+	assert.Equal(templateServersIn, templateServersOut, "ListTemplates returned different template servers")
 
 	return templateServersOut
 }
 
-// GetTemplateServerListFailErrMocked test mocked function
-func GetTemplateServerListFailErrMocked(t *testing.T, templateServersIn []*types.TemplateServer, templateID string) []*types.TemplateServer {
+// ListTemplateServersFailErrMocked test mocked function
+func ListTemplateServersFailErrMocked(t *testing.T, templateServersIn []*types.TemplateServer, templateID string) []*types.TemplateServer {
 
 	assert := assert.New(t)
 
@@ -1243,7 +1243,7 @@ func GetTemplateServerListFailErrMocked(t *testing.T, templateServersIn []*types
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/blueprint/templates/%s/servers", templateID)).Return(drsIn, 200, fmt.Errorf("mocked error"))
-	templateServersOut, err := ds.GetTemplateServerList(templateID)
+	templateServersOut, err := ds.ListTemplateServers(templateID)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(templateServersOut, "Expecting nil output")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
@@ -1251,8 +1251,8 @@ func GetTemplateServerListFailErrMocked(t *testing.T, templateServersIn []*types
 	return templateServersOut
 }
 
-// GetTemplateServerListFailStatusMocked test mocked function
-func GetTemplateServerListFailStatusMocked(t *testing.T, templateServersIn []*types.TemplateServer, templateID string) []*types.TemplateServer {
+// ListTemplateServersFailStatusMocked test mocked function
+func ListTemplateServersFailStatusMocked(t *testing.T, templateServersIn []*types.TemplateServer, templateID string) []*types.TemplateServer {
 
 	assert := assert.New(t)
 
@@ -1268,7 +1268,7 @@ func GetTemplateServerListFailStatusMocked(t *testing.T, templateServersIn []*ty
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/blueprint/templates/%s/servers", templateID)).Return(drsIn, 499, nil)
-	templateServersOut, err := ds.GetTemplateServerList(templateID)
+	templateServersOut, err := ds.ListTemplateServers(templateID)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(templateServersOut, "Expecting nil output")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -1276,8 +1276,8 @@ func GetTemplateServerListFailStatusMocked(t *testing.T, templateServersIn []*ty
 	return templateServersOut
 }
 
-// GetTemplateServerListFailJSONMocked test mocked function
-func GetTemplateServerListFailJSONMocked(t *testing.T, templateServersIn []*types.TemplateServer, templateID string) []*types.TemplateServer {
+// ListTemplateServersFailJSONMocked test mocked function
+func ListTemplateServersFailJSONMocked(t *testing.T, templateServersIn []*types.TemplateServer, templateID string) []*types.TemplateServer {
 
 	assert := assert.New(t)
 
@@ -1292,7 +1292,7 @@ func GetTemplateServerListFailJSONMocked(t *testing.T, templateServersIn []*type
 
 	// call service
 	cs.On("Get", fmt.Sprintf("/blueprint/templates/%s/servers", templateID)).Return(drsIn, 200, nil)
-	templateServersOut, err := ds.GetTemplateServerList(templateID)
+	templateServersOut, err := ds.ListTemplateServers(templateID)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(templateServersOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")

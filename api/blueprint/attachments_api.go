@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// AttachmentService manages attachments operations
+// AttachmentService manages attachment operations
 type AttachmentService struct {
 	concertoService utils.ConcertoService
 }
