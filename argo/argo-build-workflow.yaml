@@ -34,6 +34,18 @@ spec:
       value: "false"
     - name: pull_request_base
       value: REPLACED
+    - name: git_url
+      value: git@github.com:ingrammicro/cio.git
+    - name: PLACEHOLDER_1
+      value: REPLACED
+    - name: PLACEHOLDER_2
+      value: REPLACED
+    - name: PLACEHOLDER_3
+      value: REPLACED
+    - name: PLACEHOLDER_4
+      value: REPLACED
+    - name: PLACEHOLDER_5
+      value: REPLACED
   volumes:
     - name: github-keypair
       secret:
@@ -89,7 +101,7 @@ spec:
       - name: sonar-branch-analysis
         dependencies: [go-tests]
         templateRef:
-          name: workflow-template-sonar-template-1.0
+          name: workflow-template-sonar-template-1.1
           template: sonar-branch-analysis
         arguments:
           parameters:
@@ -110,7 +122,7 @@ spec:
       - name: sonar-pr-analysis
         dependencies: [go-tests]
         templateRef:
-          name: workflow-template-sonar-template-1.0
+          name: workflow-template-sonar-template-1.1
           template: sonar-pr-analysis
         arguments:
           parameters:
