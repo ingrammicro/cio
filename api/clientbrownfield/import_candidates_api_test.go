@@ -13,46 +13,62 @@ func TestImportCandidateServiceNil(t *testing.T) {
 	assert.NotNil(err, "Uninitialized service should return error")
 }
 
-func TestImportServer(t *testing.T) {
-	serversIn := testdata.GetServerData()
+func TestImportServers(t *testing.T) {
 	cloudAccountsIn := testdata.GetBrownfieldCloudAccountsData()
-	for _, serverIn := range serversIn {
-		ImportServerMocked(t, serverIn, cloudAccountsIn[0].ID)
-		ImportServerFailErrMocked(t, serverIn, cloudAccountsIn[0].ID)
-		ImportServerFailStatusMocked(t, serverIn, cloudAccountsIn[0].ID)
-		ImportServerFailJSONMocked(t, serverIn, cloudAccountsIn[0].ID)
+	for _, cloudAccountIn := range cloudAccountsIn {
+		ImportServersMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportServersFailErrMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportServersFailStatusMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportServersFailJSONMocked(t, cloudAccountIn, cloudAccountIn.ID)
 	}
 }
 
-func TestImportVPC(t *testing.T) {
-	vpcsIn := testdata.GetVPCData()
+func TestImportVPCs(t *testing.T) {
 	cloudAccountsIn := testdata.GetBrownfieldCloudAccountsData()
-	for _, vpcIn := range vpcsIn {
-		ImportVPCMocked(t, vpcIn, cloudAccountsIn[0].ID)
-		ImportVPCFailErrMocked(t, vpcIn, cloudAccountsIn[0].ID)
-		ImportVPCFailStatusMocked(t, vpcIn, cloudAccountsIn[0].ID)
-		ImportVPCFailJSONMocked(t, vpcIn, cloudAccountsIn[0].ID)
+	for _, cloudAccountIn := range cloudAccountsIn {
+		ImportVPCsMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportVPCsFailErrMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportVPCsFailStatusMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportVPCsFailJSONMocked(t, cloudAccountIn, cloudAccountIn.ID)
 	}
 }
 
-func TestImportFloatingIP(t *testing.T) {
-	floatingIPsIn := testdata.GetFloatingIPData()
+func TestImportFloatingIPs(t *testing.T) {
 	cloudAccountsIn := testdata.GetBrownfieldCloudAccountsData()
-	for _, floatingIPIn := range floatingIPsIn {
-		ImportFloatingIPMocked(t, floatingIPIn, cloudAccountsIn[0].ID)
-		ImportFloatingIPFailErrMocked(t, floatingIPIn, cloudAccountsIn[0].ID)
-		ImportFloatingIPFailStatusMocked(t, floatingIPIn, cloudAccountsIn[0].ID)
-		ImportFloatingIPFailJSONMocked(t, floatingIPIn, cloudAccountsIn[0].ID)
+	for _, cloudAccountIn := range cloudAccountsIn {
+		ImportFloatingIPsMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportFloatingIPsFailErrMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportFloatingIPsFailStatusMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportFloatingIPsFailJSONMocked(t, cloudAccountIn, cloudAccountIn.ID)
 	}
 }
 
-func TestImportVolume(t *testing.T) {
-	volumesIn := testdata.GetVolumeData()
+func TestImportVolumes(t *testing.T) {
 	cloudAccountsIn := testdata.GetBrownfieldCloudAccountsData()
-	for _, volumeIn := range volumesIn {
-		ImportVolumeMocked(t, volumeIn, cloudAccountsIn[0].ID)
-		ImportVolumeFailErrMocked(t, volumeIn, cloudAccountsIn[0].ID)
-		ImportVolumeFailStatusMocked(t, volumeIn, cloudAccountsIn[0].ID)
-		ImportVolumeFailJSONMocked(t, volumeIn, cloudAccountsIn[0].ID)
+	for _, cloudAccountIn := range cloudAccountsIn {
+		ImportVolumesMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportVolumesFailErrMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportVolumesFailStatusMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportVolumesFailJSONMocked(t, cloudAccountIn, cloudAccountIn.ID)
+	}
+}
+
+func TestImportKubernetesClusters(t *testing.T) {
+	cloudAccountsIn := testdata.GetBrownfieldCloudAccountsData()
+	for _, cloudAccountIn := range cloudAccountsIn {
+		ImportKubernetesClustersMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportKubernetesClustersFailErrMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportKubernetesClustersFailStatusMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportKubernetesClustersFailJSONMocked(t, cloudAccountIn, cloudAccountIn.ID)
+	}
+}
+
+func TestImportPolicies(t *testing.T) {
+	cloudAccountsIn := testdata.GetBrownfieldCloudAccountsData()
+	for _, cloudAccountIn := range cloudAccountsIn {
+		ImportPoliciesMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportPoliciesFailErrMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportPoliciesFailStatusMocked(t, cloudAccountIn, cloudAccountIn.ID)
+		ImportPoliciesFailJSONMocked(t, cloudAccountIn, cloudAccountIn.ID)
 	}
 }

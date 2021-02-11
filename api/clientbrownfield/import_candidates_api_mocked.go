@@ -9,67 +9,8 @@ import (
 	"testing"
 )
 
-// ImportServerMocked test mocked function
-func ImportServerMocked(t *testing.T, serverIn *types.Server, cloudAccountID string) *types.Server {
-
-	assert := assert.New(t)
-
-	// wire up
-	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
-
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*serverIn)
-	assert.Nil(err, "Server test data corrupted")
-
-	// to json
-	dOut, err := json.Marshal(serverIn)
-	assert.Nil(err, "Server test data corrupted")
-
-	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 200, nil)
-	serverOut, err := ds.ImportServer(cloudAccountID, mapIn)
-
-	assert.Nil(err, "Error importing server for cloud account")
-	assert.Equal(serverIn, serverOut, "ImportServer returned different server")
-
-	return serverOut
-}
-
-// ImportServerFailErrMocked test mocked function
-func ImportServerFailErrMocked(t *testing.T, serverIn *types.Server, cloudAccountID string) *types.Server {
-
-	assert := assert.New(t)
-
-	// wire up
-	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
-
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*serverIn)
-	assert.Nil(err, "Server test data corrupted")
-
-	// to json
-	dOut, err := json.Marshal(serverIn)
-	assert.Nil(err, "Server test data corrupted")
-
-	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	serverOut, err := ds.ImportServer(cloudAccountID, mapIn)
-
-	assert.NotNil(err, "We are expecting an error")
-	assert.Nil(serverOut, "Expecting nil output")
-	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
-
-	return serverOut
-}
-
-// ImportServerFailStatusMocked test mocked function
-func ImportServerFailStatusMocked(t *testing.T, serverIn *types.Server, cloudAccountID string) *types.Server {
+// ImportServersMocked test mocked function
+func ImportServersMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -82,22 +23,77 @@ func ImportServerFailStatusMocked(t *testing.T, serverIn *types.Server, cloudAcc
 	mapIn := new(map[string]interface{})
 
 	// to json
-	dOut, err := json.Marshal(serverIn)
-	assert.Nil(err, "Server test data corrupted")
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportServers test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 499, nil)
-	serverOut, err := ds.ImportServer(cloudAccountID, mapIn)
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_servers", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cloudAccountOut, err := ds.ImportServers(cloudAccountID, mapIn)
 
-	assert.NotNil(err, "We are expecting an status code error")
-	assert.Nil(serverOut, "Expecting nil output")
-	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+	assert.Nil(err, "Error importing servers for cloud account")
+	assert.Equal(cloudAccountIn, cloudAccountOut, "ImportServers returned different cloud account")
 
-	return serverOut
+	return cloudAccountOut
 }
 
-// ImportServerFailJSONMocked test mocked function
-func ImportServerFailJSONMocked(t *testing.T, serverIn *types.Server, cloudAccountID string) *types.Server {
+// ImportServersFailErrMocked test mocked function
+func ImportServersFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportServers test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_servers", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cloudAccountOut, err := ds.ImportServers(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
+
+	return cloudAccountOut
+}
+
+// ImportServersFailStatusMocked test mocked function
+func ImportServersFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportServers test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_servers", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cloudAccountOut, err := ds.ImportServers(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an status code error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+
+	return cloudAccountOut
+}
+
+// ImportServersFailJSONMocked test mocked function
+func ImportServersFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -113,77 +109,18 @@ func ImportServerFailJSONMocked(t *testing.T, serverIn *types.Server, cloudAccou
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/import_candidates/%s/import", cloudAccountID), mapIn).Return(dIn, 200, nil)
-	serverOut, err := ds.ImportServer(cloudAccountID, mapIn)
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_servers", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cloudAccountOut, err := ds.ImportServers(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
-	assert.Nil(serverOut, "Expecting nil output")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
 
-	return serverOut
+	return cloudAccountOut
 }
 
-// ImportVPCMocked test mocked function
-func ImportVPCMocked(t *testing.T, vpcIn *types.Vpc, cloudAccountID string) *types.Vpc {
-
-	assert := assert.New(t)
-
-	// wire up
-	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
-
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*vpcIn)
-	assert.Nil(err, "VPC test data corrupted")
-
-	// to json
-	dOut, err := json.Marshal(vpcIn)
-	assert.Nil(err, "VPC test data corrupted")
-
-	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/vpc_import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 200, nil)
-	vpcOut, err := ds.ImportVPC(cloudAccountID, mapIn)
-
-	assert.Nil(err, "Error importing VPC for cloud account")
-	assert.Equal(vpcIn, vpcOut, "ImportVPC returned different VPC")
-
-	return vpcOut
-}
-
-// ImportVPCFailErrMocked test mocked function
-func ImportVPCFailErrMocked(t *testing.T, vpcIn *types.Vpc, cloudAccountID string) *types.Vpc {
-
-	assert := assert.New(t)
-
-	// wire up
-	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
-
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*vpcIn)
-	assert.Nil(err, "VPC test data corrupted")
-
-	// to json
-	dOut, err := json.Marshal(vpcIn)
-	assert.Nil(err, "VPC test data corrupted")
-
-	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/vpc_import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	vpcOut, err := ds.ImportVPC(cloudAccountID, mapIn)
-
-	assert.NotNil(err, "We are expecting an error")
-	assert.Nil(vpcOut, "Expecting nil output")
-	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
-
-	return vpcOut
-}
-
-// ImportVPCFailStatusMocked test mocked function
-func ImportVPCFailStatusMocked(t *testing.T, vpcIn *types.Vpc, cloudAccountID string) *types.Vpc {
+// ImportVPCsMocked test mocked function
+func ImportVPCsMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -196,22 +133,77 @@ func ImportVPCFailStatusMocked(t *testing.T, vpcIn *types.Vpc, cloudAccountID st
 	mapIn := new(map[string]interface{})
 
 	// to json
-	dOut, err := json.Marshal(vpcIn)
-	assert.Nil(err, "VPC test data corrupted")
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportVPCs test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/vpc_import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 499, nil)
-	vpcOut, err := ds.ImportVPC(cloudAccountID, mapIn)
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_vpcs", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cloudAccountOut, err := ds.ImportVPCs(cloudAccountID, mapIn)
 
-	assert.NotNil(err, "We are expecting an status code error")
-	assert.Nil(vpcOut, "Expecting nil output")
-	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+	assert.Nil(err, "Error importing VPCs for cloud account")
+	assert.Equal(cloudAccountIn, cloudAccountOut, "ImportVPCs returned different cloud account")
 
-	return vpcOut
+	return cloudAccountOut
 }
 
-// ImportVPCFailJSONMocked test mocked function
-func ImportVPCFailJSONMocked(t *testing.T, vpcIn *types.Vpc, cloudAccountID string) *types.Vpc {
+// ImportVPCsFailErrMocked test mocked function
+func ImportVPCsFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportVPCs test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_vpcs", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cloudAccountOut, err := ds.ImportVPCs(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
+
+	return cloudAccountOut
+}
+
+// ImportVPCsFailStatusMocked test mocked function
+func ImportVPCsFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportVPCs test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_vpcs", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cloudAccountOut, err := ds.ImportVPCs(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an status code error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+
+	return cloudAccountOut
+}
+
+// ImportVPCsFailJSONMocked test mocked function
+func ImportVPCsFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -227,77 +219,18 @@ func ImportVPCFailJSONMocked(t *testing.T, vpcIn *types.Vpc, cloudAccountID stri
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/vpc_import_candidates/%s/import", cloudAccountID), mapIn).Return(dIn, 200, nil)
-	vpcOut, err := ds.ImportVPC(cloudAccountID, mapIn)
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_vpcs", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cloudAccountOut, err := ds.ImportVPCs(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
-	assert.Nil(vpcOut, "Expecting nil output")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
 
-	return vpcOut
+	return cloudAccountOut
 }
 
-// ImportFloatingIPMocked test mocked function
-func ImportFloatingIPMocked(t *testing.T, floatingIPIn *types.FloatingIP, cloudAccountID string) *types.FloatingIP {
-
-	assert := assert.New(t)
-
-	// wire up
-	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
-
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*floatingIPIn)
-	assert.Nil(err, "Floating IP test data corrupted")
-
-	// to json
-	dOut, err := json.Marshal(floatingIPIn)
-	assert.Nil(err, "Floating IP test data corrupted")
-
-	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/floating_ip_import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 200, nil)
-	floatingIPOut, err := ds.ImportFloatingIP(cloudAccountID, mapIn)
-
-	assert.Nil(err, "Error importing floating IP for cloud account")
-	assert.Equal(floatingIPIn, floatingIPOut, "ImportFloatingIP returned different floating IP")
-
-	return floatingIPOut
-}
-
-// ImportFloatingIPFailErrMocked test mocked function
-func ImportFloatingIPFailErrMocked(t *testing.T, floatingIPIn *types.FloatingIP, cloudAccountID string) *types.FloatingIP {
-
-	assert := assert.New(t)
-
-	// wire up
-	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
-
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*floatingIPIn)
-	assert.Nil(err, "Floating IP test data corrupted")
-
-	// to json
-	dOut, err := json.Marshal(floatingIPIn)
-	assert.Nil(err, "Floating IP test data corrupted")
-
-	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/floating_ip_import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	floatingIPOut, err := ds.ImportFloatingIP(cloudAccountID, mapIn)
-
-	assert.NotNil(err, "We are expecting an error")
-	assert.Nil(floatingIPOut, "Expecting nil output")
-	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
-
-	return floatingIPOut
-}
-
-// ImportFloatingIPFailStatusMocked test mocked function
-func ImportFloatingIPFailStatusMocked(t *testing.T, floatingIPIn *types.FloatingIP, cloudAccountID string) *types.FloatingIP {
+// ImportFloatingIPsMocked test mocked function
+func ImportFloatingIPsMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -310,22 +243,77 @@ func ImportFloatingIPFailStatusMocked(t *testing.T, floatingIPIn *types.Floating
 	mapIn := new(map[string]interface{})
 
 	// to json
-	dOut, err := json.Marshal(floatingIPIn)
-	assert.Nil(err, "Floating IP test data corrupted")
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportFloatingIPs test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/floating_ip_import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 499, nil)
-	floatingIPOut, err := ds.ImportFloatingIP(cloudAccountID, mapIn)
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_floating_ips", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cloudAccountOut, err := ds.ImportFloatingIPs(cloudAccountID, mapIn)
 
-	assert.NotNil(err, "We are expecting an status code error")
-	assert.Nil(floatingIPOut, "Expecting nil output")
-	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+	assert.Nil(err, "Error importing floating IPs for cloud account")
+	assert.Equal(cloudAccountIn, cloudAccountOut, "ImportFloatingIPs returned different cloud account")
 
-	return floatingIPOut
+	return cloudAccountOut
 }
 
-// ImportFloatingIPFailJSONMocked test mocked function
-func ImportFloatingIPFailJSONMocked(t *testing.T, floatingIPIn *types.FloatingIP, cloudAccountID string) *types.FloatingIP {
+// ImportFloatingIPsFailErrMocked test mocked function
+func ImportFloatingIPsFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportFloatingIPs test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_floating_ips", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cloudAccountOut, err := ds.ImportFloatingIPs(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
+
+	return cloudAccountOut
+}
+
+// ImportFloatingIPsFailStatusMocked test mocked function
+func ImportFloatingIPsFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportFloatingIPs test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_floating_ips", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cloudAccountOut, err := ds.ImportFloatingIPs(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an status code error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+
+	return cloudAccountOut
+}
+
+// ImportFloatingIPsFailJSONMocked test mocked function
+func ImportFloatingIPsFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -341,77 +329,18 @@ func ImportFloatingIPFailJSONMocked(t *testing.T, floatingIPIn *types.FloatingIP
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/floating_ip_import_candidates/%s/import", cloudAccountID), mapIn).Return(dIn, 200, nil)
-	floatingIPOut, err := ds.ImportFloatingIP(cloudAccountID, mapIn)
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_floating_ips", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cloudAccountOut, err := ds.ImportFloatingIPs(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
-	assert.Nil(floatingIPOut, "Expecting nil output")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
 
-	return floatingIPOut
+	return cloudAccountOut
 }
 
-// ImportVolumeMocked test mocked function
-func ImportVolumeMocked(t *testing.T, volumeIn *types.Volume, cloudAccountID string) *types.Volume {
-
-	assert := assert.New(t)
-
-	// wire up
-	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
-
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*volumeIn)
-	assert.Nil(err, "Volume test data corrupted")
-
-	// to json
-	dOut, err := json.Marshal(volumeIn)
-	assert.Nil(err, "Volume test data corrupted")
-
-	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/volume_import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 200, nil)
-	volumeOut, err := ds.ImportVolume(cloudAccountID, mapIn)
-
-	assert.Nil(err, "Error importing volume for cloud account")
-	assert.Equal(volumeIn, volumeOut, "ImportVolume returned different volume")
-
-	return volumeOut
-}
-
-// ImportVolumeFailErrMocked test mocked function
-func ImportVolumeFailErrMocked(t *testing.T, volumeIn *types.Volume, cloudAccountID string) *types.Volume {
-
-	assert := assert.New(t)
-
-	// wire up
-	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
-
-	// convertMap
-	mapIn, err := utils.ItemConvertParams(*volumeIn)
-	assert.Nil(err, "Volume test data corrupted")
-
-	// to json
-	dOut, err := json.Marshal(volumeIn)
-	assert.Nil(err, "Volume test data corrupted")
-
-	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/volume_import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
-	volumeOut, err := ds.ImportVolume(cloudAccountID, mapIn)
-
-	assert.NotNil(err, "We are expecting an error")
-	assert.Nil(volumeOut, "Expecting nil output")
-	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
-
-	return volumeOut
-}
-
-// ImportVolumeFailStatusMocked test mocked function
-func ImportVolumeFailStatusMocked(t *testing.T, volumeIn *types.Volume, cloudAccountID string) *types.Volume {
+// ImportVolumesMocked test mocked function
+func ImportVolumesMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -424,22 +353,77 @@ func ImportVolumeFailStatusMocked(t *testing.T, volumeIn *types.Volume, cloudAcc
 	mapIn := new(map[string]interface{})
 
 	// to json
-	dOut, err := json.Marshal(volumeIn)
-	assert.Nil(err, "Volume test data corrupted")
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportVolumes test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/volume_import_candidates/%s/import", cloudAccountID), mapIn).Return(dOut, 499, nil)
-	volumeOut, err := ds.ImportVolume(cloudAccountID, mapIn)
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_volumes", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cloudAccountOut, err := ds.ImportVolumes(cloudAccountID, mapIn)
 
-	assert.NotNil(err, "We are expecting an status code error")
-	assert.Nil(volumeOut, "Expecting nil output")
-	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+	assert.Nil(err, "Error importing volumes for cloud account")
+	assert.Equal(cloudAccountIn, cloudAccountOut, "ImportVolumes returned different cloud account")
 
-	return volumeOut
+	return cloudAccountOut
 }
 
-// ImportVolumeFailJSONMocked test mocked function
-func ImportVolumeFailJSONMocked(t *testing.T, volumeIn *types.Volume, cloudAccountID string) *types.Volume {
+// ImportVolumesFailErrMocked test mocked function
+func ImportVolumesFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportVolumes test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_volumes", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cloudAccountOut, err := ds.ImportVolumes(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
+
+	return cloudAccountOut
+}
+
+// ImportVolumesFailStatusMocked test mocked function
+func ImportVolumesFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportVolumes test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_volumes", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cloudAccountOut, err := ds.ImportVolumes(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an status code error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+
+	return cloudAccountOut
+}
+
+// ImportVolumesFailJSONMocked test mocked function
+func ImportVolumesFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -455,12 +439,232 @@ func ImportVolumeFailJSONMocked(t *testing.T, volumeIn *types.Volume, cloudAccou
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/brownfield/volume_import_candidates/%s/import", cloudAccountID), mapIn).Return(dIn, 200, nil)
-	volumeOut, err := ds.ImportVolume(cloudAccountID, mapIn)
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_volumes", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cloudAccountOut, err := ds.ImportVolumes(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
-	assert.Nil(volumeOut, "Expecting nil output")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
 	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
 
-	return volumeOut
+	return cloudAccountOut
+}
+
+// ImportKubernetesClustersMocked test mocked function
+func ImportKubernetesClustersMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportKubernetesClusters test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_kubernetes_clusters", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cloudAccountOut, err := ds.ImportKubernetesClusters(cloudAccountID, mapIn)
+
+	assert.Nil(err, "Error importing kubernetes clusters for cloud account")
+	assert.Equal(cloudAccountIn, cloudAccountOut, "ImportKubernetesClusters returned different cloud account")
+
+	return cloudAccountOut
+}
+
+// ImportKubernetesClustersFailErrMocked test mocked function
+func ImportKubernetesClustersFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportKubernetesClusters test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_kubernetes_clusters", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cloudAccountOut, err := ds.ImportKubernetesClusters(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
+
+	return cloudAccountOut
+}
+
+// ImportKubernetesClustersFailStatusMocked test mocked function
+func ImportKubernetesClustersFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportKubernetesClusters test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_kubernetes_clusters", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cloudAccountOut, err := ds.ImportKubernetesClusters(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an status code error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+
+	return cloudAccountOut
+}
+
+// ImportKubernetesClustersFailJSONMocked test mocked function
+func ImportKubernetesClustersFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// wrong json
+	dIn := []byte{10, 20, 30}
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_kubernetes_clusters", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cloudAccountOut, err := ds.ImportKubernetesClusters(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting a marshalling error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
+
+	return cloudAccountOut
+}
+
+// ImportPoliciesMocked test mocked function
+func ImportPoliciesMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportPolicies test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_policies", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cloudAccountOut, err := ds.ImportPolicies(cloudAccountID, mapIn)
+
+	assert.Nil(err, "Error importing policies for cloud account")
+	assert.Equal(cloudAccountIn, cloudAccountOut, "ImportPolicies returned different cloud account")
+
+	return cloudAccountOut
+}
+
+// ImportPoliciesFailErrMocked test mocked function
+func ImportPoliciesFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportPolicies test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_policies", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cloudAccountOut, err := ds.ImportPolicies(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
+
+	return cloudAccountOut
+}
+
+// ImportPoliciesFailStatusMocked test mocked function
+func ImportPoliciesFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// to json
+	dOut, err := json.Marshal(cloudAccountIn)
+	assert.Nil(err, "ImportPolicies test data corrupted")
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_policies", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cloudAccountOut, err := ds.ImportPolicies(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting an status code error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Contains(err.Error(), "499", "Error should contain http code 499")
+
+	return cloudAccountOut
+}
+
+// ImportPoliciesFailJSONMocked test mocked function
+func ImportPoliciesFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+
+	assert := assert.New(t)
+
+	// wire up
+	cs := &utils.MockConcertoService{}
+	ds, err := NewImportCandidateService(cs)
+	assert.Nil(err, "Couldn't load ImportCandidate service")
+	assert.NotNil(ds, "ImportCandidate service not instanced")
+
+	mapIn := new(map[string]interface{})
+
+	// wrong json
+	dIn := []byte{10, 20, 30}
+
+	// call service
+	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_policies", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cloudAccountOut, err := ds.ImportPolicies(cloudAccountID, mapIn)
+
+	assert.NotNil(err, "We are expecting a marshalling error")
+	assert.Nil(cloudAccountOut, "Expecting nil output")
+	assert.Contains(err.Error(), "invalid character", "Error message should include the string 'invalid character'")
+
+	return cloudAccountOut
 }

@@ -24,11 +24,11 @@ func NewImportCandidateService(concertoService utils.ConcertoService) (*ImportCa
 	}, nil
 }
 
-// ImportServer imports a brownfield server import candidate
-func (ics *ImportCandidateService) ImportServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
-	log.Debug("ImportServer")
+// ImportServers imports brownfield servers candidates
+func (ics *ImportCandidateService) ImportServers(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+	log.Debug("ImportServers")
 
-	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/import_candidates/%s/import", serverID), serverParams)
+	data, status, err := ics.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_servers", cloudAccountID), params)
 	if err != nil {
 		return nil, err
 	}
@@ -37,18 +37,18 @@ func (ics *ImportCandidateService) ImportServer(serverID string, serverParams *m
 		return nil, err
 	}
 
-	if err = json.Unmarshal(data, &server); err != nil {
+	if err = json.Unmarshal(data, &cloudAccount); err != nil {
 		return nil, err
 	}
 
-	return server, nil
+	return cloudAccount, nil
 }
 
-// ImportVPC imports a brownfield vpc import candidate
-func (ics *ImportCandidateService) ImportVPC(vpcID string, vpcParams *map[string]interface{}) (vpc *types.Vpc, err error) {
-	log.Debug("ImportVPC")
+// ImportVPCs imports brownfield vpcs candidates
+func (ics *ImportCandidateService) ImportVPCs(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+	log.Debug("ImportVPCs")
 
-	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/vpc_import_candidates/%s/import", vpcID), vpcParams)
+	data, status, err := ics.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_vpcs", cloudAccountID), params)
 	if err != nil {
 		return nil, err
 	}
@@ -57,18 +57,18 @@ func (ics *ImportCandidateService) ImportVPC(vpcID string, vpcParams *map[string
 		return nil, err
 	}
 
-	if err = json.Unmarshal(data, &vpc); err != nil {
+	if err = json.Unmarshal(data, &cloudAccount); err != nil {
 		return nil, err
 	}
 
-	return vpc, nil
+	return cloudAccount, nil
 }
 
-// ImportFloatingIP imports a brownfield floating ip import candidate
-func (ics *ImportCandidateService) ImportFloatingIP(floatingIPID string, floatingIPParams *map[string]interface{}) (floatingIP *types.FloatingIP, err error) {
-	log.Debug("ImportFloatingIP")
+// ImportFloatingIPs imports brownfield floating ips candidates
+func (ics *ImportCandidateService) ImportFloatingIPs(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+	log.Debug("ImportFloatingIPs")
 
-	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/floating_ip_import_candidates/%s/import", floatingIPID), floatingIPParams)
+	data, status, err := ics.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_floating_ips", cloudAccountID), params)
 	if err != nil {
 		return nil, err
 	}
@@ -77,18 +77,18 @@ func (ics *ImportCandidateService) ImportFloatingIP(floatingIPID string, floatin
 		return nil, err
 	}
 
-	if err = json.Unmarshal(data, &floatingIP); err != nil {
+	if err = json.Unmarshal(data, &cloudAccount); err != nil {
 		return nil, err
 	}
 
-	return floatingIP, nil
+	return cloudAccount, nil
 }
 
-// ImportVolume imports a brownfield volume import candidate
-func (ics *ImportCandidateService) ImportVolume(volumeID string, volumeParams *map[string]interface{}) (volume *types.Volume, err error) {
-	log.Debug("ImportVolume")
+// ImportVolumes imports brownfield volumes candidates
+func (ics *ImportCandidateService) ImportVolumes(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+	log.Debug("ImportVolumes")
 
-	data, status, err := ics.concertoService.Post(fmt.Sprintf("/brownfield/volume_import_candidates/%s/import", volumeID), volumeParams)
+	data, status, err := ics.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_volumes", cloudAccountID), params)
 	if err != nil {
 		return nil, err
 	}
@@ -97,9 +97,49 @@ func (ics *ImportCandidateService) ImportVolume(volumeID string, volumeParams *m
 		return nil, err
 	}
 
-	if err = json.Unmarshal(data, &volume); err != nil {
+	if err = json.Unmarshal(data, &cloudAccount); err != nil {
 		return nil, err
 	}
 
-	return volume, nil
+	return cloudAccount, nil
+}
+
+// ImportKubernetesClusters imports brownfield kubernetes clusters candidates
+func (ics *ImportCandidateService) ImportKubernetesClusters(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+	log.Debug("ImportKubernetesClusters")
+
+	data, status, err := ics.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_kubernetes_clusters", cloudAccountID), params)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(data, &cloudAccount); err != nil {
+		return nil, err
+	}
+
+	return cloudAccount, nil
+}
+
+// ImportPolicies imports brownfield policies candidates
+func (ics *ImportCandidateService) ImportPolicies(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+	log.Debug("ImportPolicies")
+
+	data, status, err := ics.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_policies", cloudAccountID), params)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(data, &cloudAccount); err != nil {
+		return nil, err
+	}
+
+	return cloudAccount, nil
 }
