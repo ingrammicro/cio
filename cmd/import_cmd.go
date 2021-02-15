@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// WireUpImportCandidate prepares common resources to send request to Concerto API
-func WireUpImportCandidate(c *cli.Context) (ds *clientbrownfield.ImportCandidateService, f format.Formatter) {
+// WireUpImport prepares common resources to send request to Concerto API
+func WireUpImport(c *cli.Context) (ds *clientbrownfield.ImportService, f format.Formatter) {
 
 	f = format.GetFormatter()
 
@@ -23,9 +23,9 @@ func WireUpImportCandidate(c *cli.Context) (ds *clientbrownfield.ImportCandidate
 	if err != nil {
 		f.PrintFatal("Couldn't wire up concerto service", err)
 	}
-	ds, err = clientbrownfield.NewImportCandidateService(hcs)
+	ds, err = clientbrownfield.NewImportService(hcs)
 	if err != nil {
-		f.PrintFatal("Couldn't wire up Import Candidate service", err)
+		f.PrintFatal("Couldn't wire up Import service", err)
 	}
 
 	return ds, f
@@ -54,14 +54,14 @@ func checkCloudAccountImportingState(c *cli.Context, cloudAccount *types.CloudAc
 	}
 }
 
-// ImportCandidateServers subcommand function
-func ImportCandidateServers(c *cli.Context) error {
+// ImportServers subcommand function
+func ImportServers(c *cli.Context) error {
 	debugCmdFuncInfo(c)
-	importCandidateSvc, formatter := WireUpImportCandidate(c)
+	importSvc, formatter := WireUpImport(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
 
-	cloudAccount, err := importCandidateSvc.ImportServers(c.String("id"), &map[string]interface{}{})
+	cloudAccount, err := importSvc.ImportServers(c.String("id"), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintFatal("Couldn't import servers", err)
 	}
@@ -77,14 +77,14 @@ func ImportCandidateServers(c *cli.Context) error {
 	return nil
 }
 
-// ImportCandidateVPCs subcommand function
-func ImportCandidateVPCs(c *cli.Context) error {
+// ImportVPCs subcommand function
+func ImportVPCs(c *cli.Context) error {
 	debugCmdFuncInfo(c)
-	importCandidateSvc, formatter := WireUpImportCandidate(c)
+	importSvc, formatter := WireUpImport(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
 
-	cloudAccount, err := importCandidateSvc.ImportVPCs(c.String("id"), &map[string]interface{}{})
+	cloudAccount, err := importSvc.ImportVPCs(c.String("id"), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintFatal("Couldn't import vpcs", err)
 	}
@@ -100,14 +100,14 @@ func ImportCandidateVPCs(c *cli.Context) error {
 	return nil
 }
 
-// ImportCandidateFloatingIPs subcommand function
-func ImportCandidateFloatingIPs(c *cli.Context) error {
+// ImportFloatingIPs subcommand function
+func ImportFloatingIPs(c *cli.Context) error {
 	debugCmdFuncInfo(c)
-	importCandidateSvc, formatter := WireUpImportCandidate(c)
+	importSvc, formatter := WireUpImport(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
 
-	cloudAccount, err := importCandidateSvc.ImportFloatingIPs(c.String("id"), &map[string]interface{}{})
+	cloudAccount, err := importSvc.ImportFloatingIPs(c.String("id"), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintFatal("Couldn't import floating IPs", err)
 	}
@@ -123,14 +123,14 @@ func ImportCandidateFloatingIPs(c *cli.Context) error {
 	return nil
 }
 
-// ImportCandidateVolumes subcommand function
-func ImportCandidateVolumes(c *cli.Context) error {
+// ImportVolumes subcommand function
+func ImportVolumes(c *cli.Context) error {
 	debugCmdFuncInfo(c)
-	importCandidateSvc, formatter := WireUpImportCandidate(c)
+	importSvc, formatter := WireUpImport(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
 
-	cloudAccount, err := importCandidateSvc.ImportVolumes(c.String("id"), &map[string]interface{}{})
+	cloudAccount, err := importSvc.ImportVolumes(c.String("id"), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintFatal("Couldn't import volumes", err)
 	}
@@ -146,14 +146,14 @@ func ImportCandidateVolumes(c *cli.Context) error {
 	return nil
 }
 
-// ImportCandidateKubernetesClusters subcommand function
-func ImportCandidateKubernetesClusters(c *cli.Context) error {
+// ImportKubernetesClusters subcommand function
+func ImportKubernetesClusters(c *cli.Context) error {
 	debugCmdFuncInfo(c)
-	importCandidateSvc, formatter := WireUpImportCandidate(c)
+	importSvc, formatter := WireUpImport(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
 
-	cloudAccount, err := importCandidateSvc.ImportKubernetesClusters(c.String("id"), &map[string]interface{}{})
+	cloudAccount, err := importSvc.ImportKubernetesClusters(c.String("id"), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintFatal("Couldn't import kubernetes clusters", err)
 	}
@@ -169,14 +169,14 @@ func ImportCandidateKubernetesClusters(c *cli.Context) error {
 	return nil
 }
 
-// ImportCandidatePolicies subcommand function
-func ImportCandidatePolicies(c *cli.Context) error {
+// ImportPolicies subcommand function
+func ImportPolicies(c *cli.Context) error {
 	debugCmdFuncInfo(c)
-	importCandidateSvc, formatter := WireUpImportCandidate(c)
+	importSvc, formatter := WireUpImport(c)
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
 
-	cloudAccount, err := importCandidateSvc.ImportPolicies(c.String("id"), &map[string]interface{}{})
+	cloudAccount, err := importSvc.ImportPolicies(c.String("id"), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintFatal("Couldn't import policies", err)
 	}

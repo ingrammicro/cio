@@ -6,9 +6,9 @@ import (
 	"testing"
 )
 
-func TestImportCandidateServiceNil(t *testing.T) {
+func TestImportServiceNil(t *testing.T) {
 	assert := assert.New(t)
-	rs, err := NewImportCandidateService(nil)
+	rs, err := NewImportService(nil)
 	assert.Nil(rs, "Uninitialized service should return nil")
 	assert.NotNil(err, "Uninitialized service should return error")
 }

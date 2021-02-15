@@ -71,7 +71,7 @@ var clientCommands = []cli.Command{
 	{
 		Name:        "brownfield",
 		ShortName:   "bf",
-		Usage:       "Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs, volumes, kubernetes clusters and policies from different cloud accounts into the system.",
+		Usage:       "Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs, volumes and policies from different cloud accounts into the system.",
 		Subcommands: append(clientbrownfield.SubCommands()),
 	},
 	{

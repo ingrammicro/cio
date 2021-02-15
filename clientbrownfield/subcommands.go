@@ -11,13 +11,13 @@ func SubCommands() []cli.Command {
 	return []cli.Command{
 		{
 			Name:        "cloud-accounts",
-			Usage:       "Provides information about brownfield cloud accounts. Allows querying cloud accounts to import candidate resources from IMCO.",
+			Usage:       "Provides information about brownfield cloud accounts. Allows querying cloud accounts to import resources from IMCO.",
 			Subcommands: append(cloud_accounts.SubCommands()),
 		},
 		{
 			Name:   "import-servers",
-			Usage:  "Import servers candidates, by given cloud account id",
-			Action: cmd.ImportCandidateServers,
+			Usage:  "Import servers for a given cloud account id",
+			Action: cmd.ImportServers,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "id",
@@ -27,8 +27,8 @@ func SubCommands() []cli.Command {
 		},
 		{
 			Name:   "import-vpcs",
-			Usage:  "Import VPCs candidates, by given cloud account id",
-			Action: cmd.ImportCandidateVPCs,
+			Usage:  "Import VPCs for a given cloud account id",
+			Action: cmd.ImportVPCs,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "id",
@@ -38,8 +38,8 @@ func SubCommands() []cli.Command {
 		},
 		{
 			Name:   "import-floating-ips",
-			Usage:  "Import Floating IPs candidates, by given cloud account id",
-			Action: cmd.ImportCandidateFloatingIPs,
+			Usage:  "Import Floating IPs for a given cloud account id",
+			Action: cmd.ImportFloatingIPs,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "id",
@@ -49,19 +49,8 @@ func SubCommands() []cli.Command {
 		},
 		{
 			Name:   "import-volumes",
-			Usage:  "Import volumes candidates, by given cloud account id",
-			Action: cmd.ImportCandidateVolumes,
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "id",
-					Usage: "Cloud account Id",
-				},
-			},
-		},
-		{
-			Name:   "import-kb-clusters",
-			Usage:  "Import kubernetes clusters candidates, by given cloud account id",
-			Action: cmd.ImportCandidateKubernetesClusters,
+			Usage:  "Import volumes for a given cloud account id",
+			Action: cmd.ImportVolumes,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "id",
@@ -71,8 +60,8 @@ func SubCommands() []cli.Command {
 		},
 		{
 			Name:   "import-policies",
-			Usage:  "Import policies candidates, by given cloud account id",
-			Action: cmd.ImportCandidatePolicies,
+			Usage:  "Import policies for a given cloud account id",
+			Action: cmd.ImportPolicies,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "id",

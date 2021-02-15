@@ -16,9 +16,9 @@ func ImportServersMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloud
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -43,9 +43,9 @@ func ImportServersFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -71,9 +71,9 @@ func ImportServersFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAcco
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -99,9 +99,9 @@ func ImportServersFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccoun
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -126,9 +126,9 @@ func ImportVPCsMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAcc
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -153,9 +153,9 @@ func ImportVPCsFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, c
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -181,9 +181,9 @@ func ImportVPCsFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -209,9 +209,9 @@ func ImportVPCsFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, 
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -236,9 +236,9 @@ func ImportFloatingIPsMocked(t *testing.T, cloudAccountIn *types.CloudAccount, c
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -263,9 +263,9 @@ func ImportFloatingIPsFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAcc
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -291,9 +291,9 @@ func ImportFloatingIPsFailStatusMocked(t *testing.T, cloudAccountIn *types.Cloud
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -319,9 +319,9 @@ func ImportFloatingIPsFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAc
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -346,9 +346,9 @@ func ImportVolumesMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloud
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -373,9 +373,9 @@ func ImportVolumesFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -401,9 +401,9 @@ func ImportVolumesFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAcco
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -429,9 +429,9 @@ func ImportVolumesFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccoun
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -456,9 +456,9 @@ func ImportKubernetesClustersMocked(t *testing.T, cloudAccountIn *types.CloudAcc
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -483,9 +483,9 @@ func ImportKubernetesClustersFailErrMocked(t *testing.T, cloudAccountIn *types.C
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -511,9 +511,9 @@ func ImportKubernetesClustersFailStatusMocked(t *testing.T, cloudAccountIn *type
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -539,9 +539,9 @@ func ImportKubernetesClustersFailJSONMocked(t *testing.T, cloudAccountIn *types.
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -566,9 +566,9 @@ func ImportPoliciesMocked(t *testing.T, cloudAccountIn *types.CloudAccount, clou
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -593,9 +593,9 @@ func ImportPoliciesFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccoun
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -621,9 +621,9 @@ func ImportPoliciesFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAcc
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
@@ -649,9 +649,9 @@ func ImportPoliciesFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccou
 
 	// wire up
 	cs := &utils.MockConcertoService{}
-	ds, err := NewImportCandidateService(cs)
-	assert.Nil(err, "Couldn't load ImportCandidate service")
-	assert.NotNil(ds, "ImportCandidate service not instanced")
+	ds, err := NewImportService(cs)
+	assert.Nil(err, "Couldn't load Import service")
+	assert.NotNil(ds, "Import service not instanced")
 
 	mapIn := new(map[string]interface{})
 
