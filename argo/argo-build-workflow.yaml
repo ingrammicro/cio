@@ -97,7 +97,7 @@ spec:
           - name: test_path
             value: .
           - name: go-image
-            value: golang:1.15
+            value: golang:1.16
         when: "{{workflow.parameters.skip_tests}} == false"
 
       - name: sonar-branch-analysis
@@ -151,7 +151,7 @@ spec:
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.15
+        value: golang:1.16
       - name: notifiable_commits
       - name: source_mountpath
         value: /usr/src
