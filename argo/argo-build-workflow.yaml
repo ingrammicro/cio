@@ -63,7 +63,7 @@ spec:
       tasks:
       - name: dependencies
         templateRef:
-          name: workflow-template-common-template-1.0
+          name: workflow-template-common-template-1.2
           template: get-src
         arguments:
           parameters:
@@ -86,7 +86,7 @@ spec:
       - name: go-tests
         dependencies: [go-build]
         templateRef:
-          name: workflow-template-common-template-1.0
+          name: workflow-template-common-template-1.2
           template: go-tests
         arguments:
           parameters:
@@ -96,6 +96,8 @@ spec:
             value: "{{workflow.parameters.repo}}"
           - name: test_path
             value: .
+          - name: go-image
+            value: golang:1.16
         when: "{{workflow.parameters.skip_tests}} == false"
 
       - name: sonar-branch-analysis
@@ -149,7 +151,7 @@ spec:
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.14.4
+        value: golang:1.16
       - name: notifiable_commits
       - name: source_mountpath
         value: /usr/src
