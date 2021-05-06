@@ -17,6 +17,7 @@ import (
 	"github.com/ingrammicro/cio/converge"
 	"github.com/ingrammicro/cio/dispatcher"
 	"github.com/ingrammicro/cio/firewall"
+	"github.com/ingrammicro/cio/kubernetes"
 	"github.com/ingrammicro/cio/labels"
 	"github.com/ingrammicro/cio/network"
 	"github.com/ingrammicro/cio/settings"
@@ -115,6 +116,12 @@ var clientCommands = []cli.Command{
 		ShortName:   "st",
 		Usage:       "Manages storage commands for plans and volumes",
 		Subcommands: append(storage.SubCommands()),
+	},
+	{
+		Name:        "kubernetes",
+		ShortName:   "k8s",
+		Usage:       "Manages kubernetes commands for clusters and node pools",
+		Subcommands: append(kubernetes.SubCommands()),
 	},
 	{
 		Name:        "settings",

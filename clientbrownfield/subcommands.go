@@ -69,5 +69,16 @@ func SubCommands() []cli.Command {
 				},
 			},
 		},
+		{
+			Name:   "import-k8s-clusters",
+			Usage:  "Import kubernetes clusters for a given cloud account id",
+			Action: cmd.ImportKubernetesClusters,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "id",
+					Usage: "Cloud account Id",
+				},
+			},
+		},
 	}
 }

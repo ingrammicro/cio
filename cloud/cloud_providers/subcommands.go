@@ -35,5 +35,27 @@ func SubCommands() []cli.Command {
 				},
 			},
 		},
+		{
+			Name:   "list-cluster-plans",
+			Usage:  "This action lists the cluster plans offered by the cloud provider identified by the given id",
+			Action: cmd.CloudProviderClusterPlansList,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "cloud-provider-id",
+					Usage: "Cloud provider id",
+				},
+			},
+		},
+		{
+			Name:   "list-node-pool-plans",
+			Usage:  "This action lists the node pool plans offered by the cloud provider identified by the given id",
+			Action: cmd.CloudProviderNodePoolPlansList,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "cloud-provider-id",
+					Usage: "Cloud provider id",
+				},
+			},
+		},
 	}
 }

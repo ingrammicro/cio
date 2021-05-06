@@ -83,3 +83,43 @@ func (cps *CloudProviderService) ListLoadBalancerPlans(providerID string) (loadB
 
 	return loadBalancerPlans, nil
 }
+
+// ListClusterPlans returns the list of cluster plans as an array of ClusterPlan
+func (cps *CloudProviderService) ListClusterPlans(providerID string) (clusterPlans []*types.ClusterPlan, err error) {
+	log.Debug("ListClusterPlans")
+
+	data, status, err := cps.concertoService.Get(fmt.Sprintf("/cloud/cloud_providers/%s/cluster_plans", providerID))
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(data, &clusterPlans); err != nil {
+		return nil, err
+	}
+
+	return clusterPlans, nil
+}
+
+// ListNodePoolPlans returns the list of node pool plans as an array of NodePoolPlan
+func (cps *CloudProviderService) ListNodePoolPlans(providerID string) (nodePoolPlans []*types.NodePoolPlan, err error) {
+	log.Debug("ListNodePoolPlans")
+
+	data, status, err := cps.concertoService.Get(fmt.Sprintf("/cloud/cloud_providers/%s/node_pool_plans", providerID))
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.CheckStandardStatus(status, data); err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(data, &nodePoolPlans); err != nil {
+		return nil, err
+	}
+
+	return nodePoolPlans, nil
+}
