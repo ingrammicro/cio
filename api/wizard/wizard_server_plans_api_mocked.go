@@ -1,16 +1,25 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package wizard
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListWizardServerPlansMocked test mocked function
-func ListWizardServerPlansMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
+func ListWizardServerPlansMocked(
+	t *testing.T,
+	serverPlansIn []*types.ServerPlan,
+	AppID string,
+	LocID string,
+	ProviderID string,
+) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
@@ -25,7 +34,8 @@ func ListWizardServerPlansMocked(t *testing.T, serverPlansIn []*types.ServerPlan
 	assert.Nil(err, "WizServerPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", AppID, LocID, ProviderID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathWizardServerPlansByAppLocationCloudProvider, AppID, LocID, ProviderID)).
+		Return(dIn, 200, nil)
 	serverPlansOut, err := ds.ListWizardServerPlans(AppID, LocID, ProviderID)
 	assert.Nil(err, "Error getting serverPlan list")
 	assert.Equal(serverPlansIn, serverPlansOut, "ListWizardServerPlans returned different serverPlans")
@@ -34,7 +44,13 @@ func ListWizardServerPlansMocked(t *testing.T, serverPlansIn []*types.ServerPlan
 }
 
 // ListWizardServerPlansFailErrMocked test mocked function
-func ListWizardServerPlansFailErrMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
+func ListWizardServerPlansFailErrMocked(
+	t *testing.T,
+	serverPlansIn []*types.ServerPlan,
+	AppID string,
+	LocID string,
+	ProviderID string,
+) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
@@ -49,7 +65,8 @@ func ListWizardServerPlansFailErrMocked(t *testing.T, serverPlansIn []*types.Ser
 	assert.Nil(err, "WizServerPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", AppID, LocID, ProviderID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathWizardServerPlansByAppLocationCloudProvider, AppID, LocID, ProviderID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	serverPlansOut, err := ds.ListWizardServerPlans(AppID, LocID, ProviderID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -60,7 +77,13 @@ func ListWizardServerPlansFailErrMocked(t *testing.T, serverPlansIn []*types.Ser
 }
 
 // ListWizardServerPlansFailStatusMocked test mocked function
-func ListWizardServerPlansFailStatusMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
+func ListWizardServerPlansFailStatusMocked(
+	t *testing.T,
+	serverPlansIn []*types.ServerPlan,
+	AppID string,
+	LocID string,
+	ProviderID string,
+) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
@@ -75,7 +98,8 @@ func ListWizardServerPlansFailStatusMocked(t *testing.T, serverPlansIn []*types.
 	assert.Nil(err, "WizServerPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", AppID, LocID, ProviderID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathWizardServerPlansByAppLocationCloudProvider, AppID, LocID, ProviderID)).
+		Return(dIn, 499, nil)
 	serverPlansOut, err := ds.ListWizardServerPlans(AppID, LocID, ProviderID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -86,7 +110,13 @@ func ListWizardServerPlansFailStatusMocked(t *testing.T, serverPlansIn []*types.
 }
 
 // ListWizardServerPlansFailJSONMocked test mocked function
-func ListWizardServerPlansFailJSONMocked(t *testing.T, serverPlansIn []*types.ServerPlan, AppID string, LocID string, ProviderID string) []*types.ServerPlan {
+func ListWizardServerPlansFailJSONMocked(
+	t *testing.T,
+	serverPlansIn []*types.ServerPlan,
+	AppID string,
+	LocID string,
+	ProviderID string,
+) []*types.ServerPlan {
 
 	assert := assert.New(t)
 
@@ -100,7 +130,8 @@ func ListWizardServerPlansFailJSONMocked(t *testing.T, serverPlansIn []*types.Se
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", AppID, LocID, ProviderID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathWizardServerPlansByAppLocationCloudProvider, AppID, LocID, ProviderID)).
+		Return(dIn, 200, nil)
 	serverPlansOut, err := ds.ListWizardServerPlans(AppID, LocID, ProviderID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

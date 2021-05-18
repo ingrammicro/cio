@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package blueprint
 
 import (
@@ -8,6 +10,15 @@ import (
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathBlueprintTemplates = "/blueprint/templates"
+const APIPathBlueprintTemplate = "/blueprint/templates/%s"
+const APIPathBlueprintTemplateCompile = "/blueprint/templates/%s/compile"
+const APIPathBlueprintTemplateScriptsByType = "/blueprint/templates/%s/scripts?type=%s"
+const APIPathBlueprintTemplateScripts = "/blueprint/templates/%s/scripts"
+const APIPathBlueprintTemplateScript = "/blueprint/templates/%s/scripts/%s"
+const APIPathBlueprintTemplateScriptsReorder = "/blueprint/templates/%s/scripts/reorder"
+const APIPathBlueprintTemplateServers = "/blueprint/templates/%s/servers"
 
 // TemplateService manages template operations
 type TemplateService struct {
@@ -29,7 +40,7 @@ func NewTemplateService(concertoService utils.ConcertoService) (*TemplateService
 func (ts *TemplateService) ListTemplates() (templates []*types.Template, err error) {
 	log.Debug("ListTemplates")
 
-	data, status, err := ts.concertoService.Get("/blueprint/templates")
+	data, status, err := ts.concertoService.Get(APIPathBlueprintTemplates)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +60,7 @@ func (ts *TemplateService) ListTemplates() (templates []*types.Template, err err
 func (ts *TemplateService) GetTemplate(templateID string) (template *types.Template, err error) {
 	log.Debug("GetTemplate")
 
-	data, status, err := ts.concertoService.Get(fmt.Sprintf("/blueprint/templates/%s", templateID))
+	data, status, err := ts.concertoService.Get(fmt.Sprintf(APIPathBlueprintTemplate, templateID))
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +77,12 @@ func (ts *TemplateService) GetTemplate(templateID string) (template *types.Templ
 }
 
 // CreateTemplate creates a template
-func (ts *TemplateService) CreateTemplate(templateParams *map[string]interface{}) (template *types.Template, err error) {
+func (ts *TemplateService) CreateTemplate(
+	templateParams *map[string]interface{},
+) (template *types.Template, err error) {
 	log.Debug("CreateTemplate")
 
-	data, status, err := ts.concertoService.Post("/blueprint/templates/", templateParams)
+	data, status, err := ts.concertoService.Post(APIPathBlueprintTemplates, templateParams)
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +99,13 @@ func (ts *TemplateService) CreateTemplate(templateParams *map[string]interface{}
 }
 
 // UpdateTemplate updates a template by its ID
-func (ts *TemplateService) UpdateTemplate(templateID string, templateParams *map[string]interface{}) (template *types.Template, err error) {
+func (ts *TemplateService) UpdateTemplate(
+	templateID string,
+	templateParams *map[string]interface{},
+) (template *types.Template, err error) {
 	log.Debug("UpdateTemplate")
 
-	data, status, err := ts.concertoService.Put(fmt.Sprintf("/blueprint/templates/%s", templateID), templateParams)
+	data, status, err := ts.concertoService.Put(fmt.Sprintf(APIPathBlueprintTemplate, templateID), templateParams)
 
 	if err != nil {
 		return nil, err
@@ -107,10 +123,13 @@ func (ts *TemplateService) UpdateTemplate(templateID string, templateParams *map
 }
 
 // CompileTemplate requests compile for a given template by its ID
-func (ts *TemplateService) CompileTemplate(templateID string, payload *map[string]interface{}) (template *types.Template, err error) {
+func (ts *TemplateService) CompileTemplate(
+	templateID string,
+	payload *map[string]interface{},
+) (template *types.Template, err error) {
 	log.Debug("CompileTemplate")
 
-	data, status, err := ts.concertoService.Put(fmt.Sprintf("/blueprint/templates/%s/compile", templateID), payload)
+	data, status, err := ts.concertoService.Put(fmt.Sprintf(APIPathBlueprintTemplateCompile, templateID), payload)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +149,7 @@ func (ts *TemplateService) CompileTemplate(templateID string, payload *map[strin
 func (ts *TemplateService) DeleteTemplate(templateID string) (err error) {
 	log.Debug("DeleteTemplate")
 
-	data, status, err := ts.concertoService.Delete(fmt.Sprintf("/blueprint/templates/%s", templateID))
+	data, status, err := ts.concertoService.Delete(fmt.Sprintf(APIPathBlueprintTemplate, templateID))
 	if err != nil {
 		return err
 	}
@@ -145,10 +164,15 @@ func (ts *TemplateService) DeleteTemplate(templateID string) (err error) {
 // ================ Template Script =================
 
 // ListTemplateScripts returns a list of templateScript by template ID
-func (ts *TemplateService) ListTemplateScripts(templateID string, scriptType string) (templateScript []*types.TemplateScript, err error) {
+func (ts *TemplateService) ListTemplateScripts(
+	templateID string,
+	scriptType string,
+) (templateScript []*types.TemplateScript, err error) {
 	log.Debug("ListTemplateScripts")
 
-	data, status, err := ts.concertoService.Get(fmt.Sprintf("/blueprint/templates/%s/scripts?type=%s", templateID, scriptType))
+	data, status, err := ts.concertoService.Get(
+		fmt.Sprintf(APIPathBlueprintTemplateScriptsByType, templateID, scriptType),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -165,10 +189,15 @@ func (ts *TemplateService) ListTemplateScripts(templateID string, scriptType str
 }
 
 // GetTemplateScript returns a templateScript
-func (ts *TemplateService) GetTemplateScript(templateID string, templateScriptID string) (templateScript *types.TemplateScript, err error) {
+func (ts *TemplateService) GetTemplateScript(
+	templateID string,
+	templateScriptID string,
+) (templateScript *types.TemplateScript, err error) {
 	log.Debug("GetTemplateScript")
 
-	data, status, err := ts.concertoService.Get(fmt.Sprintf("/blueprint/templates/%s/scripts/%s", templateID, templateScriptID))
+	data, status, err := ts.concertoService.Get(
+		fmt.Sprintf(APIPathBlueprintTemplateScript, templateID, templateScriptID),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -185,10 +214,16 @@ func (ts *TemplateService) GetTemplateScript(templateID string, templateScriptID
 }
 
 // CreateTemplateScript creates a templateScript
-func (ts *TemplateService) CreateTemplateScript(templateID string, templateScriptParams *map[string]interface{}) (templateScript *types.TemplateScript, err error) {
+func (ts *TemplateService) CreateTemplateScript(
+	templateID string,
+	templateScriptParams *map[string]interface{},
+) (templateScript *types.TemplateScript, err error) {
 	log.Debug("CreateTemplateScript")
 
-	data, status, err := ts.concertoService.Post(fmt.Sprintf("/blueprint/templates/%s/scripts", templateID), templateScriptParams)
+	data, status, err := ts.concertoService.Post(
+		fmt.Sprintf(APIPathBlueprintTemplateScripts, templateID),
+		templateScriptParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -205,10 +240,17 @@ func (ts *TemplateService) CreateTemplateScript(templateID string, templateScrip
 }
 
 // UpdateTemplateScript updates a templateScript
-func (ts *TemplateService) UpdateTemplateScript(templateID string, templateScriptID string, templateScriptParams *map[string]interface{}) (templateScript *types.TemplateScript, err error) {
+func (ts *TemplateService) UpdateTemplateScript(
+	templateID string,
+	templateScriptID string,
+	templateScriptParams *map[string]interface{},
+) (templateScript *types.TemplateScript, err error) {
 	log.Debug("UpdateTemplateScript")
 
-	data, status, err := ts.concertoService.Put(fmt.Sprintf("/blueprint/templates/%s/scripts/%s", templateID, templateScriptID), templateScriptParams)
+	data, status, err := ts.concertoService.Put(
+		fmt.Sprintf(APIPathBlueprintTemplateScript, templateID, templateScriptID),
+		templateScriptParams,
+	)
 
 	if err != nil {
 		return nil, err
@@ -229,7 +271,9 @@ func (ts *TemplateService) UpdateTemplateScript(templateID string, templateScrip
 func (ts *TemplateService) DeleteTemplateScript(templateID string, templateScriptID string) (err error) {
 	log.Debug("DeleteTemplateScript")
 
-	data, status, err := ts.concertoService.Delete(fmt.Sprintf("/blueprint/templates/%s/scripts/%s", templateID, templateScriptID))
+	data, status, err := ts.concertoService.Delete(
+		fmt.Sprintf(APIPathBlueprintTemplateScript, templateID, templateScriptID),
+	)
 	if err != nil {
 		return err
 	}
@@ -242,10 +286,16 @@ func (ts *TemplateService) DeleteTemplateScript(templateID string, templateScrip
 }
 
 // ReorderTemplateScript returns a list of templateScript
-func (ts *TemplateService) ReorderTemplateScript(templateID string, templateScriptParams *map[string]interface{}) (templateScript []*types.TemplateScript, err error) {
+func (ts *TemplateService) ReorderTemplateScript(
+	templateID string,
+	templateScriptParams *map[string]interface{},
+) (templateScript []*types.TemplateScript, err error) {
 	log.Debug("ReorderTemplateScript")
 
-	data, status, err := ts.concertoService.Put(fmt.Sprintf("/blueprint/templates/%s/scripts/reorder", templateID), templateScriptParams)
+	data, status, err := ts.concertoService.Put(
+		fmt.Sprintf(APIPathBlueprintTemplateScriptsReorder, templateID),
+		templateScriptParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -267,7 +317,7 @@ func (ts *TemplateService) ReorderTemplateScript(templateID string, templateScri
 func (ts *TemplateService) ListTemplateServers(templateID string) (templateServer []*types.TemplateServer, err error) {
 	log.Debug("ListTemplateServers")
 
-	data, status, err := ts.concertoService.Get(fmt.Sprintf("/blueprint/templates/%s/servers", templateID))
+	data, status, err := ts.concertoService.Get(fmt.Sprintf(APIPathBlueprintTemplateServers, templateID))
 	if err != nil {
 		return nil, err
 	}

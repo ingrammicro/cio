@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package utils
 
 import (
@@ -23,7 +25,7 @@ import (
 
 const windowsServerConfigFile = "c:\\cio\\client.xml"
 const nixServerConfigFile = "/etc/cio/client.xml"
-const defaultConcertoEndpoint = "https://clients.concerto.io:886/"
+const defaultConcertoEndpoint = "https://clients.concerto.io/"
 
 const windowsServerLogFilePath = "c:\\cio\\log\\concerto-client.log"
 const windowsServerCaCertPath = "c:\\cio\\client_ssl\\ca_cert.pem"
@@ -304,12 +306,40 @@ func (config *Config) evaluateCurrentUser() (*user.User, error) {
 	if runtime.GOOS == "windows" {
 		currUser.Username = currUser.Username[strings.LastIndex(currUser.Username, "\\")+1:]
 		log.Debugf("Windows username is %s", currUser.Username)
-		config.CurrentUserIsAdmin = currUser.Gid == "S-1-5-32-544" || isWinAdministrator(currUser.Username) || canPerformAdministratorTasks()
+		config.CurrentUserIsAdmin = currUser.Gid == "S-1-5-32-544" || isWinAdministrator(currUser.Username) ||
+			canPerformAdministratorTasks()
 	} else {
 		config.CurrentUserIsAdmin = currUser.Uid == "0" || currUser.Username == "root"
 	}
 	config.CurrentUserName = currUser.Username
 	return currUser, nil
+}
+
+func (config *Config) setConcertoConfigFile(c *cli.Context, currUser *user.User) {
+	if runtime.GOOS == "windows" {
+		if config.CurrentUserIsAdmin &&
+			(config.BrownfieldTokenDefined() ||
+				config.PollingTokenAndServerIdDefined() ||
+				FileExists(windowsServerConfigFile)) {
+			log.Debugf("Current user is administrator, setting config file as %s", windowsServerConfigFile)
+			config.ConfFile = windowsServerConfigFile
+		} else {
+			// User mode Windows
+			log.Debugf("Current user is regular user: %s", currUser.Username)
+			config.ConfFile = filepath.Join(currUser.HomeDir, ".concerto/client.xml")
+		}
+	} else {
+		// Server mode *nix
+		if config.CurrentUserIsAdmin &&
+			(config.BrownfieldTokenDefined() ||
+				config.PollingTokenAndServerIdDefined() ||
+				FileExists(nixServerConfigFile)) {
+			config.ConfFile = nixServerConfigFile
+		} else {
+			// User mode *nix
+			config.ConfFile = filepath.Join(currUser.HomeDir, ".concerto/client.xml")
+		}
+	}
 }
 
 // evaluateConcertoConfigFile returns path to concerto config file
@@ -320,33 +350,24 @@ func (config *Config) evaluateConcertoConfigFile(c *cli.Context) error {
 		return err
 	}
 	if configFile := c.String("concerto-config"); configFile != "" {
-
 		log.Debug("Concerto configuration file location taken from env/args")
 		config.ConfFile = configFile
-
 	} else {
+		config.setConcertoConfigFile(c, currUser)
 
-		if runtime.GOOS == "windows" {
-			if config.CurrentUserIsAdmin && (config.BrownfieldToken != "" || (config.CommandPollingToken != "" && config.ServerID != "") || FileExists(windowsServerConfigFile)) {
-				log.Debugf("Current user is administrator, setting config file as %s", windowsServerConfigFile)
-				config.ConfFile = windowsServerConfigFile
-			} else {
-				// User mode Windows
-				log.Debugf("Current user is regular user: %s", currUser.Username)
-				config.ConfFile = filepath.Join(currUser.HomeDir, ".concerto/client.xml")
-			}
-		} else {
-			// Server mode *nix
-			if config.CurrentUserIsAdmin && (config.BrownfieldToken != "" || (config.CommandPollingToken != "" && config.ServerID != "") || FileExists(nixServerConfigFile)) {
-				config.ConfFile = nixServerConfigFile
-			} else {
-				// User mode *nix
-				config.ConfFile = filepath.Join(currUser.HomeDir, ".concerto/client.xml")
-			}
-		}
 	}
 	config.ConfLocation = path.Dir(config.ConfFile)
 	return nil
+}
+
+// BrownfieldTokenDefined returns whether brownfield token is defined
+func (config *Config) BrownfieldTokenDefined() bool {
+	return config.BrownfieldToken != ""
+}
+
+// PollingTokenAndServerIdDefined returns whether polling token and server are defined
+func (config *Config) PollingTokenAndServerIdDefined() bool {
+	return config.CommandPollingToken != "" && config.ServerID != ""
 }
 
 // getUsername gets username by env variable.
@@ -370,6 +391,7 @@ func getUsername() string {
 		if isWinAdministrator(osUser) {
 			osUser = "Administrator"
 		}
+	default:
 	}
 
 	if osUser != "" {
@@ -379,15 +401,23 @@ func getUsername() string {
 }
 
 func isWinAdministrator(user string) bool {
-	return user == "Järjestelmänvalvoja" ||
-		user == "Administrateur" ||
-		user == "Rendszergazda" ||
-		user == "Administrador" ||
-		user == "Администратор" ||
-		user == "Administratör" ||
-		user == "Administrator" ||
-		user == "SYSTEM" ||
-		user == "imco"
+	users := []string{
+		"Järjestelmänvalvoja",
+		"Administrateur",
+		"Rendszergazda",
+		"Administrador",
+		"Администратор",
+		"Administratör",
+		"Administrator",
+		"SYSTEM",
+		"imco",
+	}
+	for _, u := range users {
+		if u == user {
+			return true
+		}
+	}
+	return false
 }
 
 func canPerformAdministratorTasks() bool {
@@ -479,23 +509,21 @@ func (config *Config) evaluateCertificate() error {
 			return err
 		}
 
-		if len(cert.Subject.OrganizationalUnit) > 0 {
-			if cert.Subject.OrganizationalUnit[0] == "Hosts" {
-				config.IsHost = true
-				return nil
-			}
-		} else if len(cert.Issuer.Organization) > 0 {
-			if cert.Issuer.Organization[0] == "Tapp" {
-				config.IsHost = true
-				return nil
-			}
+		if len(cert.Subject.OrganizationalUnit) > 0 && cert.Subject.OrganizationalUnit[0] == "Hosts" {
+			config.IsHost = true
+			return nil
+		}
+		if len(cert.Issuer.Organization) > 0 && cert.Issuer.Organization[0] == "Tapp" {
+			config.IsHost = true
+			return nil
 		}
 	}
 	config.IsHost = false
 	return nil
 }
 
-// evaluateAPIEndpointURL evaluates if API endpoint url is valid, advising if invalid version defined, and adapting if required
+// evaluateAPIEndpointURL evaluates if API endpoint url is valid, advising if invalid version defined, and adapting if
+// required
 func (config *Config) evaluateAPIEndpointURL() error {
 	log.Debug("evaluateAPIEndpointURL")
 
@@ -510,9 +538,16 @@ func (config *Config) evaluateAPIEndpointURL() error {
 		}
 		if cURL.Path == "" {
 			config.APIEndpoint = strings.Join([]string{config.APIEndpoint, VERSION_API_USER_MODE}, "/")
-			log.Warnf("Defined API server endpoint url does not include API version. Normalized to latest version (%s): %s", VERSION_API_USER_MODE, config.APIEndpoint)
-		} else if cURL.Path != strings.Join([]string{"/", VERSION_API_USER_MODE}, "") {
-			log.Warnf("Defined API server endpoint url does not match the latest supported API version (%s). Found %s", VERSION_API_USER_MODE, cURL.Path)
+			log.Warnf(
+				"Defined API server endpoint url does not include API version. Normalized to latest version (%s): %s",
+				VERSION_API_USER_MODE, config.APIEndpoint,
+			)
+		}
+		if cURL.Path != "" && cURL.Path != strings.Join([]string{"/", VERSION_API_USER_MODE}, "") {
+			log.Warnf(
+				"Defined API server endpoint url does not match the latest supported API version (%s). Found %s",
+				VERSION_API_USER_MODE, cURL.Path,
+			)
 		}
 	}
 

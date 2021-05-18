@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -38,7 +40,7 @@ func CloudProviderList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive cloudProvider data", err)
 	}
 	if err = formatter.PrintList(cloudProviders); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -63,7 +65,7 @@ func CloudProviderStoragePlansList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(storagePlans); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -85,7 +87,7 @@ func CloudProviderLoadBalancerPlansList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(loadBalancerPlans); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -107,7 +109,7 @@ func CloudProviderClusterPlansList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(clusterPlans); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

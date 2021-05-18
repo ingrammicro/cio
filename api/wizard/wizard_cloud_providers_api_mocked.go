@@ -1,16 +1,24 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package wizard
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListWizardCloudProvidersMocked test mocked function
-func ListWizardCloudProvidersMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
+func ListWizardCloudProvidersMocked(
+	t *testing.T,
+	cloudProvidersIn []*types.CloudProvider,
+	AppID string,
+	LocID string,
+) []*types.CloudProvider {
 
 	assert := assert.New(t)
 
@@ -25,7 +33,7 @@ func ListWizardCloudProvidersMocked(t *testing.T, cloudProvidersIn []*types.Clou
 	assert.Nil(err, "WizCloudProvider test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", AppID, LocID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathWizardCloudProvidersByAppLocation, AppID, LocID)).Return(dIn, 200, nil)
 	cloudProvidersOut, err := ds.ListWizardCloudProviders(AppID, LocID)
 	assert.Nil(err, "Error getting cloudProvider list")
 	assert.Equal(cloudProvidersIn, cloudProvidersOut, "ListWizardCloudProviders returned different cloudProviders")
@@ -34,7 +42,12 @@ func ListWizardCloudProvidersMocked(t *testing.T, cloudProvidersIn []*types.Clou
 }
 
 // ListWizardCloudProvidersFailErrMocked test mocked function
-func ListWizardCloudProvidersFailErrMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
+func ListWizardCloudProvidersFailErrMocked(
+	t *testing.T,
+	cloudProvidersIn []*types.CloudProvider,
+	AppID string,
+	LocID string,
+) []*types.CloudProvider {
 
 	assert := assert.New(t)
 
@@ -49,7 +62,8 @@ func ListWizardCloudProvidersFailErrMocked(t *testing.T, cloudProvidersIn []*typ
 	assert.Nil(err, "WizCloudProvider test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", AppID, LocID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathWizardCloudProvidersByAppLocation, AppID, LocID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudProvidersOut, err := ds.ListWizardCloudProviders(AppID, LocID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -60,7 +74,12 @@ func ListWizardCloudProvidersFailErrMocked(t *testing.T, cloudProvidersIn []*typ
 }
 
 // ListWizardCloudProvidersFailStatusMocked test mocked function
-func ListWizardCloudProvidersFailStatusMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
+func ListWizardCloudProvidersFailStatusMocked(
+	t *testing.T,
+	cloudProvidersIn []*types.CloudProvider,
+	AppID string,
+	LocID string,
+) []*types.CloudProvider {
 
 	assert := assert.New(t)
 
@@ -75,7 +94,7 @@ func ListWizardCloudProvidersFailStatusMocked(t *testing.T, cloudProvidersIn []*
 	assert.Nil(err, "WizCloudProvider test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", AppID, LocID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathWizardCloudProvidersByAppLocation, AppID, LocID)).Return(dIn, 499, nil)
 	cloudProvidersOut, err := ds.ListWizardCloudProviders(AppID, LocID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -86,7 +105,12 @@ func ListWizardCloudProvidersFailStatusMocked(t *testing.T, cloudProvidersIn []*
 }
 
 // ListWizardCloudProvidersFailJSONMocked test mocked function
-func ListWizardCloudProvidersFailJSONMocked(t *testing.T, cloudProvidersIn []*types.CloudProvider, AppID string, LocID string) []*types.CloudProvider {
+func ListWizardCloudProvidersFailJSONMocked(
+	t *testing.T,
+	cloudProvidersIn []*types.CloudProvider,
+	AppID string,
+	LocID string,
+) []*types.CloudProvider {
 
 	assert := assert.New(t)
 
@@ -100,7 +124,7 @@ func ListWizardCloudProvidersFailJSONMocked(t *testing.T, cloudProvidersIn []*ty
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", AppID, LocID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathWizardCloudProvidersByAppLocation, AppID, LocID)).Return(dIn, 200, nil)
 	cloudProvidersOut, err := ds.ListWizardCloudProviders(AppID, LocID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

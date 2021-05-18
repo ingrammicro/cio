@@ -1,11 +1,14 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package format
 
 import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/ingrammicro/cio/api/cloud"
 	"testing"
+
+	"github.com/ingrammicro/cio/api/cloud"
 
 	"github.com/ingrammicro/cio/api/blueprint"
 	"github.com/ingrammicro/cio/testdata"
@@ -112,7 +115,11 @@ func TestPrintErrorJSON(t *testing.T) {
 	f.PrintError("testing errors", fmt.Errorf("this is a test error %s", "TEST"))
 	mockOut.Flush()
 
-	assert.Regexp("^\\{\\\"type\\\":\\\"Error\\\",\\\"context\\\":\\\"testing errors\\\",\\\"message\\\":\\\"this is a test error TEST\\\"\\}", b.String(), "JSON output didn't match regular expression")
+	assert.Regexp(
+		"^\\{\\\"type\\\":\\\"Error\\\",\\\"context\\\":\\\"testing errors\\\",\\\"message\\\":\\\"this is a test error TEST\\\"\\}",
+		b.String(),
+		"JSON output didn't match regular expression",
+	)
 }
 
 func TestPrintItemWrongBytesJSON(t *testing.T) {

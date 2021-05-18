@@ -1,12 +1,19 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package settings
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathPolicyDefinitions = "/policy/definitions"
+const APIPathPolicyDefinition = "/policy/definitions/%s"
+const APIPathPolicyDefinitionAssignments = "/policy/definitions/%s/assignments"
 
 // PolicyDefinitionService manages policy definition operations
 type PolicyDefinitionService struct {
@@ -28,7 +35,7 @@ func NewPolicyDefinitionService(concertoService utils.ConcertoService) (*PolicyD
 func (pds *PolicyDefinitionService) ListDefinitions() (definitions []*types.PolicyDefinition, err error) {
 	log.Debug("ListDefinitions")
 
-	data, status, err := pds.concertoService.Get("/policy/definitions")
+	data, status, err := pds.concertoService.Get(APIPathPolicyDefinitions)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +55,7 @@ func (pds *PolicyDefinitionService) ListDefinitions() (definitions []*types.Poli
 func (pds *PolicyDefinitionService) GetDefinition(definitionID string) (definition *types.PolicyDefinition, err error) {
 	log.Debug("GetDefinition")
 
-	data, status, err := pds.concertoService.Get(fmt.Sprintf("/policy/definitions/%s", definitionID))
+	data, status, err := pds.concertoService.Get(fmt.Sprintf(APIPathPolicyDefinition, definitionID))
 	if err != nil {
 		return nil, err
 	}
@@ -65,10 +72,12 @@ func (pds *PolicyDefinitionService) GetDefinition(definitionID string) (definiti
 }
 
 // CreateDefinition creates a policy definition
-func (pds *PolicyDefinitionService) CreateDefinition(definitionParams *map[string]interface{}) (definition *types.PolicyDefinition, err error) {
+func (pds *PolicyDefinitionService) CreateDefinition(
+	definitionParams *map[string]interface{},
+) (definition *types.PolicyDefinition, err error) {
 	log.Debug("CreateDefinition")
 
-	data, status, err := pds.concertoService.Post("/policy/definitions", definitionParams)
+	data, status, err := pds.concertoService.Post(APIPathPolicyDefinitions, definitionParams)
 	if err != nil {
 		return nil, err
 	}
@@ -85,10 +94,13 @@ func (pds *PolicyDefinitionService) CreateDefinition(definitionParams *map[strin
 }
 
 // UpdateDefinition updates a policy definition by its ID
-func (pds *PolicyDefinitionService) UpdateDefinition(definitionID string, definitionParams *map[string]interface{}) (definition *types.PolicyDefinition, err error) {
+func (pds *PolicyDefinitionService) UpdateDefinition(
+	definitionID string,
+	definitionParams *map[string]interface{},
+) (definition *types.PolicyDefinition, err error) {
 	log.Debug("UpdateDefinition")
 
-	data, status, err := pds.concertoService.Put(fmt.Sprintf("/policy/definitions/%s", definitionID), definitionParams)
+	data, status, err := pds.concertoService.Put(fmt.Sprintf(APIPathPolicyDefinition, definitionID), definitionParams)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +120,7 @@ func (pds *PolicyDefinitionService) UpdateDefinition(definitionID string, defini
 func (pds *PolicyDefinitionService) DeleteDefinition(definitionID string) (err error) {
 	log.Debug("DeleteDefinition")
 
-	data, status, err := pds.concertoService.Delete(fmt.Sprintf("/policy/definitions/%s", definitionID))
+	data, status, err := pds.concertoService.Delete(fmt.Sprintf(APIPathPolicyDefinition, definitionID))
 	if err != nil {
 		return err
 	}
@@ -121,10 +133,12 @@ func (pds *PolicyDefinitionService) DeleteDefinition(definitionID string) (err e
 }
 
 // ListAssignments returns the list of policy assignments for a policy definition as an array of PolicyAssignment
-func (pds *PolicyDefinitionService) ListAssignments(definitionID string) (assignments []*types.PolicyAssignment, err error) {
+func (pds *PolicyDefinitionService) ListAssignments(
+	definitionID string,
+) (assignments []*types.PolicyAssignment, err error) {
 	log.Debug("ListAssignments")
 
-	data, status, err := pds.concertoService.Get(fmt.Sprintf("/policy/definitions/%s/assignments", definitionID))
+	data, status, err := pds.concertoService.Get(fmt.Sprintf(APIPathPolicyDefinitionAssignments, definitionID))
 	if err != nil {
 		return nil, err
 	}

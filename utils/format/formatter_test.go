@@ -1,8 +1,11 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package format
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDefaultFormatter(t *testing.T) {

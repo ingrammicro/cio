@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/storage"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -52,13 +55,13 @@ func VolumeList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.Volume)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.Volume, got a %T", labelable))
 		}
 		volumes[i] = v
 	}
 	if err = formatter.PrintList(volumes); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -76,7 +79,7 @@ func VolumeShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	volume.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*volume); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -108,7 +111,7 @@ func VolumeCreate(c *cli.Context) error {
 
 	volume.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*volume); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -132,7 +135,7 @@ func VolumeUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	volume.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*volume); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -156,7 +159,7 @@ func VolumeAttach(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

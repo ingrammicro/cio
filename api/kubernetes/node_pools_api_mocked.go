@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package kubernetes
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListNodePoolsMocked test mocked function
@@ -25,7 +28,7 @@ func ListNodePoolsMocked(t *testing.T, clusterID string, nodePoolsIn []*types.No
 	assert.Nil(err, "NodePools test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesClusterNodePools, clusterID)).Return(dIn, 200, nil)
 	nodePoolsOut, err := ds.ListNodePools(clusterID)
 
 	assert.Nil(err, "Error getting node pools")
@@ -50,7 +53,8 @@ func ListNodePoolsFailErrMocked(t *testing.T, clusterID string, nodePoolsIn []*t
 	assert.Nil(err, "NodePools test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesClusterNodePools, clusterID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	nodePoolsOut, err := ds.ListNodePools(clusterID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -76,7 +80,7 @@ func ListNodePoolsFailStatusMocked(t *testing.T, clusterID string, nodePoolsIn [
 	assert.Nil(err, "NodePools test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesClusterNodePools, clusterID)).Return(dIn, 499, nil)
 	nodePoolsOut, err := ds.ListNodePools(clusterID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -101,7 +105,7 @@ func ListNodePoolsFailJSONMocked(t *testing.T, clusterID string, nodePoolsIn []*
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesClusterNodePools, clusterID)).Return(dIn, 200, nil)
 	nodePoolsOut, err := ds.ListNodePools(clusterID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -127,7 +131,7 @@ func GetNodePoolMocked(t *testing.T, nodePoolIn *types.NodePool) *types.NodePool
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID)).Return(dIn, 200, nil)
 	nodePoolOut, err := ds.GetNodePool(nodePoolIn.ID)
 
 	assert.Nil(err, "Error getting node pool")
@@ -152,7 +156,7 @@ func GetNodePoolFailErrMocked(t *testing.T, nodePoolIn *types.NodePool) *types.N
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	nodePoolOut, err := ds.GetNodePool(nodePoolIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -178,7 +182,7 @@ func GetNodePoolFailStatusMocked(t *testing.T, nodePoolIn *types.NodePool) *type
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID)).Return(dIn, 499, nil)
 	nodePoolOut, err := ds.GetNodePool(nodePoolIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -203,7 +207,7 @@ func GetNodePoolFailJSONMocked(t *testing.T, nodePoolIn *types.NodePool) *types.
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID)).Return(dIn, 200, nil)
 	nodePoolOut, err := ds.GetNodePool(nodePoolIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -233,7 +237,7 @@ func CreateNodePoolMocked(t *testing.T, clusterID string, nodePoolIn *types.Node
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathKubernetesClusterNodePools, clusterID), mapIn).Return(dOut, 200, nil)
 	nodePoolOut, err := ds.CreateNodePool(clusterID, mapIn)
 
 	assert.Nil(err, "Error creating node pool")
@@ -262,7 +266,8 @@ func CreateNodePoolFailErrMocked(t *testing.T, clusterID string, nodePoolIn *typ
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathKubernetesClusterNodePools, clusterID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	nodePoolOut, err := ds.CreateNodePool(clusterID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -292,7 +297,7 @@ func CreateNodePoolFailStatusMocked(t *testing.T, clusterID string, nodePoolIn *
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathKubernetesClusterNodePools, clusterID), mapIn).Return(dOut, 499, nil)
 	nodePoolOut, err := ds.CreateNodePool(clusterID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -321,7 +326,7 @@ func CreateNodePoolFailJSONMocked(t *testing.T, clusterID string, nodePoolIn *ty
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathKubernetesClusterNodePools, clusterID), mapIn).Return(dIn, 200, nil)
 	nodePoolOut, err := ds.CreateNodePool(clusterID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -351,7 +356,7 @@ func UpdateNodePoolMocked(t *testing.T, nodePoolIn *types.NodePool) *types.NodeP
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID), mapIn).Return(dOut, 200, nil)
 	nodePoolOut, err := ds.UpdateNodePool(nodePoolIn.ID, mapIn)
 
 	assert.Nil(err, "Error updating node pool")
@@ -380,7 +385,8 @@ func UpdateNodePoolFailErrMocked(t *testing.T, nodePoolIn *types.NodePool) *type
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	nodePoolOut, err := ds.UpdateNodePool(nodePoolIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -410,7 +416,7 @@ func UpdateNodePoolFailStatusMocked(t *testing.T, nodePoolIn *types.NodePool) *t
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID), mapIn).Return(dOut, 499, nil)
 	nodePoolOut, err := ds.UpdateNodePool(nodePoolIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -439,7 +445,7 @@ func UpdateNodePoolFailJSONMocked(t *testing.T, nodePoolIn *types.NodePool) *typ
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID), mapIn).Return(dIn, 200, nil)
 	nodePoolOut, err := ds.UpdateNodePool(nodePoolIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -465,7 +471,7 @@ func DeleteNodePoolMocked(t *testing.T, nodePoolIn *types.NodePool) {
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID)).Return(dIn, 200, nil)
 	nodePoolOut, err := ds.DeleteNodePool(nodePoolIn.ID)
 
 	assert.Nil(err, "Error deleting node pool")
@@ -489,7 +495,8 @@ func DeleteNodePoolFailErrMocked(t *testing.T, nodePoolIn *types.NodePool) {
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	nodePoolOut, err := ds.DeleteNodePool(nodePoolIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -513,7 +520,7 @@ func DeleteNodePoolFailStatusMocked(t *testing.T, nodePoolIn *types.NodePool) {
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID)).Return(dIn, 499, nil)
 	nodePoolOut, err := ds.DeleteNodePool(nodePoolIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -536,7 +543,7 @@ func DeleteNodePoolFailJSONMocked(t *testing.T, nodePoolIn *types.NodePool) {
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesNodePool, nodePoolIn.ID)).Return(dIn, 200, nil)
 	nodePoolOut, err := ds.DeleteNodePool(nodePoolIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -564,7 +571,7 @@ func RetryNodePoolMocked(t *testing.T, nodePoolIn *types.NodePool) *types.NodePo
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/node_pools/%s/retry", nodePoolIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesNodePoolRetry, nodePoolIn.ID), mapIn).Return(dOut, 200, nil)
 	nodePoolOut, err := ds.RetryNodePool(nodePoolIn.ID, mapIn)
 
 	assert.Nil(err, "Error retrying node pool")
@@ -593,7 +600,8 @@ func RetryNodePoolFailErrMocked(t *testing.T, nodePoolIn *types.NodePool) *types
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/node_pools/%s/retry", nodePoolIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesNodePoolRetry, nodePoolIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	nodePoolOut, err := ds.RetryNodePool(nodePoolIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -623,7 +631,7 @@ func RetryNodePoolFailStatusMocked(t *testing.T, nodePoolIn *types.NodePool) *ty
 	assert.Nil(err, "NodePool test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/node_pools/%s/retry", nodePoolIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesNodePoolRetry, nodePoolIn.ID), mapIn).Return(dOut, 499, nil)
 	nodePoolOut, err := ds.RetryNodePool(nodePoolIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -652,7 +660,7 @@ func RetryNodePoolFailJSONMocked(t *testing.T, nodePoolIn *types.NodePool) *type
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/node_pools/%s/retry", nodePoolIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesNodePoolRetry, nodePoolIn.ID), mapIn).Return(dIn, 200, nil)
 	nodePoolOut, err := ds.RetryNodePool(nodePoolIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -663,7 +671,11 @@ func RetryNodePoolFailJSONMocked(t *testing.T, nodePoolIn *types.NodePool) *type
 }
 
 // GetNodePoolPlanMocked test mocked function
-func GetNodePoolPlanMocked(t *testing.T, nodePoolPlanID string, nodePoolPlanIn *types.NodePoolPlan) *types.NodePoolPlan {
+func GetNodePoolPlanMocked(
+	t *testing.T,
+	nodePoolPlanID string,
+	nodePoolPlanIn *types.NodePoolPlan,
+) *types.NodePoolPlan {
 
 	assert := assert.New(t)
 
@@ -678,7 +690,7 @@ func GetNodePoolPlanMocked(t *testing.T, nodePoolPlanID string, nodePoolPlanIn *
 	assert.Nil(err, "NodePoolPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/node_pool_plans/%s", nodePoolPlanID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesNodePoolPlan, nodePoolPlanID)).Return(dIn, 200, nil)
 	nodePoolPlanOut, err := ds.GetNodePoolPlan(nodePoolPlanID)
 
 	assert.Nil(err, "Error getting node pool plan")
@@ -688,7 +700,11 @@ func GetNodePoolPlanMocked(t *testing.T, nodePoolPlanID string, nodePoolPlanIn *
 }
 
 // GetNodePoolPlanFailErrMocked test mocked function
-func GetNodePoolPlanFailErrMocked(t *testing.T, nodePoolPlanID string, nodePoolPlanIn *types.NodePoolPlan) *types.NodePoolPlan {
+func GetNodePoolPlanFailErrMocked(
+	t *testing.T,
+	nodePoolPlanID string,
+	nodePoolPlanIn *types.NodePoolPlan,
+) *types.NodePoolPlan {
 
 	assert := assert.New(t)
 
@@ -703,7 +719,8 @@ func GetNodePoolPlanFailErrMocked(t *testing.T, nodePoolPlanID string, nodePoolP
 	assert.Nil(err, "NodePoolPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/node_pool_plans/%s", nodePoolPlanID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesNodePoolPlan, nodePoolPlanID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	nodePoolPlanOut, err := ds.GetNodePoolPlan(nodePoolPlanID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -714,7 +731,11 @@ func GetNodePoolPlanFailErrMocked(t *testing.T, nodePoolPlanID string, nodePoolP
 }
 
 // GetNodePoolPlanFailStatusMocked test mocked function
-func GetNodePoolPlanFailStatusMocked(t *testing.T, nodePoolPlanID string, nodePoolPlanIn *types.NodePoolPlan) *types.NodePoolPlan {
+func GetNodePoolPlanFailStatusMocked(
+	t *testing.T,
+	nodePoolPlanID string,
+	nodePoolPlanIn *types.NodePoolPlan,
+) *types.NodePoolPlan {
 
 	assert := assert.New(t)
 
@@ -729,7 +750,7 @@ func GetNodePoolPlanFailStatusMocked(t *testing.T, nodePoolPlanID string, nodePo
 	assert.Nil(err, "NodePoolPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/node_pool_plans/%s", nodePoolPlanID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesNodePoolPlan, nodePoolPlanID)).Return(dIn, 499, nil)
 	nodePoolPlanOut, err := ds.GetNodePoolPlan(nodePoolPlanID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -740,7 +761,11 @@ func GetNodePoolPlanFailStatusMocked(t *testing.T, nodePoolPlanID string, nodePo
 }
 
 // GetNodePoolPlanFailJSONMocked test mocked function
-func GetNodePoolPlanFailJSONMocked(t *testing.T, nodePoolPlanID string, nodePoolPlanIn *types.NodePoolPlan) *types.NodePoolPlan {
+func GetNodePoolPlanFailJSONMocked(
+	t *testing.T,
+	nodePoolPlanID string,
+	nodePoolPlanIn *types.NodePoolPlan,
+) *types.NodePoolPlan {
 
 	assert := assert.New(t)
 
@@ -754,7 +779,7 @@ func GetNodePoolPlanFailJSONMocked(t *testing.T, nodePoolPlanID string, nodePool
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/node_pool_plans/%s", nodePoolPlanID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesNodePoolPlan, nodePoolPlanID)).Return(dIn, 200, nil)
 	nodePoolPlanOut, err := ds.GetNodePoolPlan(nodePoolPlanID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

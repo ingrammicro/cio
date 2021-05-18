@@ -1,12 +1,17 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathCloudGenericImages = "/cloud/generic_images"
 
 // GenericImageService manages generic image operations
 type GenericImageService struct {
@@ -28,7 +33,7 @@ func NewGenericImageService(concertoService utils.ConcertoService) (*GenericImag
 func (gis *GenericImageService) ListGenericImages() (genericImages []*types.GenericImage, err error) {
 	log.Debug("ListGenericImages")
 
-	data, status, err := gis.concertoService.Get("/cloud/generic_images")
+	data, status, err := gis.concertoService.Get(APIPathCloudGenericImages)
 	if err != nil {
 		return nil, err
 	}

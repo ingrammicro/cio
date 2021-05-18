@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 // +build windows
 
 package firewall
@@ -26,7 +28,12 @@ func Apply(policy types.Policy) error {
 			cidr = "any"
 		}
 		ruleCmd := fmt.Sprintf(
-			"netsh advfirewall firewall add rule name=\"Concerto firewall %d\" dir=in action=allow remoteip=\"%s\" protocol=\"%s\" localport=\"%d-%d\"",
+			"netsh advfirewall firewall add rule "+
+				"name=\"Concerto firewall %d\" "+
+				"dir=in action=allow "+
+				"remoteip=\"%s\" "+
+				"protocol=\"%s\" "+
+				"localport=\"%d-%d\"",
 			i, cidr, rule.Protocol, rule.MinPort, rule.MaxPort)
 		utils.RunCmd(ruleCmd)
 	}

@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -39,7 +41,7 @@ func TargetGroupList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive load balancer target groups data", err)
 	}
 	if err = formatter.PrintList(targetGroups); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -55,7 +57,7 @@ func TargetGroupShow(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive load balancer target group data", err)
 	}
 	if err = formatter.PrintItem(*lb); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -65,7 +67,21 @@ func TargetGroupCreate(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	svc, formatter := WireUpTargetGroup(c)
 
-	checkRequiredFlags(c, []string{"load-balancer-id", "name", "protocol", "port", "health-check-protocol", "health-check-port", "health-check-interval", "health-check-threshold-count", "health-check-path"}, formatter)
+	checkRequiredFlags(
+		c,
+		[]string{
+			"load-balancer-id",
+			"name",
+			"protocol",
+			"port",
+			"health-check-protocol",
+			"health-check-port",
+			"health-check-interval",
+			"health-check-threshold-count",
+			"health-check-path",
+		},
+		formatter,
+	)
 	targetGroupIn := map[string]interface{}{
 		"name":                         c.String("name"),
 		"protocol":                     c.String("protocol"),
@@ -86,7 +102,7 @@ func TargetGroupCreate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*targetGroup); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -96,7 +112,21 @@ func TargetGroupUpdate(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	svc, formatter := WireUpTargetGroup(c)
 
-	checkRequiredFlags(c, []string{"id", "name", "protocol", "port", "health-check-protocol", "health-check-port", "health-check-interval", "health-check-threshold-count", "health-check-path"}, formatter)
+	checkRequiredFlags(
+		c,
+		[]string{
+			"id",
+			"name",
+			"protocol",
+			"port",
+			"health-check-protocol",
+			"health-check-port",
+			"health-check-interval",
+			"health-check-threshold-count",
+			"health-check-path",
+		},
+		formatter,
+	)
 	targetGroupIn := map[string]interface{}{
 		"name":                         c.String("name"),
 		"protocol":                     c.String("protocol"),
@@ -117,7 +147,7 @@ func TargetGroupUpdate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*targetGroup); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -134,7 +164,7 @@ func TargetGroupDelete(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*targetGroup); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -153,7 +183,7 @@ func TargetGroupRetry(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*targetGroup); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -169,7 +199,7 @@ func TargetGroupListTargets(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive targets data", err)
 	}
 	if err = formatter.PrintList(targets); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -191,7 +221,7 @@ func TargetGroupCreateTarget(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*target); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

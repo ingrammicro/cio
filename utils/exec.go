@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package utils
 
 import (
@@ -22,6 +24,12 @@ const (
 	RetriesFactor            = 3
 )
 
+const shellPath = "/bin/sh"
+
+const startingTimeMsg = "Starting Time: %s"
+const endTimeMsg = "End Time: %s"
+const exitCodeMsg = "Exit Code: %d"
+
 func extractExitCode(err error) int {
 	if err != nil {
 		switch err.(type) {
@@ -29,12 +37,17 @@ func extractExitCode(err error) int {
 			return err.(*exec.ExitError).Sys().(syscall.WaitStatus).ExitStatus()
 		case *os.PathError:
 			return 127
+		default:
 		}
 	}
 	return 0
 }
 
-func ExecCode(code string, path string, filename string) (output string, exitCode int, startedAt time.Time, finishedAt time.Time) {
+func ExecCode(
+	code string,
+	path string,
+	filename string,
+) (output string, exitCode int, startedAt time.Time, finishedAt time.Time) {
 	var err error
 	var tmp *os.File
 
@@ -74,8 +87,8 @@ func RunFile(command string) (output string, exitCode int, startedAt time.Time, 
 		log.Infof("Command: %s", command)
 		cmd = exec.Command("cmd", "/C", command)
 	} else {
-		log.Infof("Command: %s %s", "/bin/sh", command)
-		cmd = exec.Command("/bin/sh", command)
+		log.Infof("Command: %s %s", shellPath, command)
+		cmd = exec.Command(shellPath, command)
 	}
 
 	stdout, err := cmd.StdoutPipe()
@@ -109,13 +122,13 @@ func RunFile(command string) (output string, exitCode int, startedAt time.Time, 
 	}
 	output = b.String()
 
-	log.Debugf("Starting Time: %s", startedAt.Format(TimeStampLayout))
-	log.Debugf("End Time: %s", finishedAt.Format(TimeStampLayout))
+	log.Debugf(startingTimeMsg, startedAt.Format(TimeStampLayout))
+	log.Debugf(endTimeMsg, finishedAt.Format(TimeStampLayout))
 	log.Debugf("Output")
 	log.Debugf("")
 	log.Debugf("%s", output)
 	log.Debugf("")
-	log.Infof("Exit Code: %d", exitCode)
+	log.Infof(exitCodeMsg, exitCode)
 	return
 }
 
@@ -128,7 +141,7 @@ func RunCmd(command string) (output string, exitCode int, startedAt time.Time, f
 		cmd = exec.Command("cmd", "/C", command)
 	} else {
 		log.Infof("Command: %s %s", "/bin/sh -c", command)
-		cmd = exec.Command("/bin/sh", "-c", command)
+		cmd = exec.Command(shellPath, "-c", command)
 	}
 
 	startedAt = time.Now()
@@ -137,13 +150,13 @@ func RunCmd(command string) (output string, exitCode int, startedAt time.Time, f
 	output = strings.TrimSpace(string(bytes))
 	exitCode = extractExitCode(err)
 
-	log.Debugf("Starting Time: %s", startedAt.Format(TimeStampLayout))
-	log.Debugf("End Time: %s", finishedAt.Format(TimeStampLayout))
+	log.Debugf(startingTimeMsg, startedAt.Format(TimeStampLayout))
+	log.Debugf(endTimeMsg, finishedAt.Format(TimeStampLayout))
 	log.Debugf("Output")
 	log.Debugf("")
 	log.Debugf("%s", output)
 	log.Debugf("")
-	log.Infof("Exit Code: %d", exitCode)
+	log.Infof(exitCodeMsg, exitCode)
 	return
 }
 
@@ -164,7 +177,7 @@ func createCommandWithFilename(command string) (cmd *exec.Cmd, cmdFileName strin
 	if runtime.GOOS == "windows" {
 		cmd = exec.Command("cmd", "/C", cmdFileName)
 	} else {
-		cmd = exec.Command("/bin/sh", cmdFileName)
+		cmd = exec.Command(shellPath, cmdFileName)
 	}
 	return
 }
@@ -179,7 +192,9 @@ func deleteTmpCommandFilename(cmdFileName string) {
 
 // RunTracedCmd executes the received command and manages two output pipes (output and error)
 // It shouldn't throw any exception/error or stop the process.
-func RunTracedCmd(command string) (exitCode int, stdOut string, stdErr string, startedAt time.Time, finishedAt time.Time) {
+func RunTracedCmd(
+	command string,
+) (exitCode int, stdOut string, stdErr string, startedAt time.Time, finishedAt time.Time) {
 	log.Debug("RunTracedCmd")
 
 	// Saves script/command in a temp file
@@ -233,11 +248,11 @@ func RunTracedCmd(command string) (exitCode int, stdOut string, stdErr string, s
 	startedAt = time.Now()
 	finishedAt = time.Now()
 
-	log.Infof("Exit Code: %d", exitCode)
+	log.Infof(exitCodeMsg, exitCode)
 	log.Debugf("Stdout: %s", stdOut)
 	log.Debugf("Stderr: %s", stdErr)
-	log.Debugf("Starting Time: %s", startedAt.Format(TimeStampLayout))
-	log.Debugf("End Time: %s", finishedAt.Format(TimeStampLayout))
+	log.Debugf(startingTimeMsg, startedAt.Format(TimeStampLayout))
+	log.Debugf(endTimeMsg, finishedAt.Format(TimeStampLayout))
 	return
 }
 

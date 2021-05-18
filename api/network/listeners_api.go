@@ -1,12 +1,21 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathNetworkLoadBalancerListeners = "/network/load_balancers/%s/listeners"
+const APIPathNetworkListener = "/network/listeners/%s"
+const APIPathNetworkListenerRetry = "/network/listeners/%s/retry"
+const APIPathNetworkListenerRules = "/network/listeners/%s/rules"
+const APIPathNetworkListenerRule = "/network/listeners/%s/rules/%s"
 
 // ListenerService manages listener operations
 type ListenerService struct {
@@ -28,7 +37,7 @@ func NewListenerService(concertoService utils.ConcertoService) (*ListenerService
 func (ls *ListenerService) ListListeners(loadBalancerID string) (listeners []*types.Listener, err error) {
 	log.Debug("ListListeners")
 
-	data, status, err := ls.concertoService.Get(fmt.Sprintf("/network/load_balancers/%s/listeners", loadBalancerID))
+	data, status, err := ls.concertoService.Get(fmt.Sprintf(APIPathNetworkLoadBalancerListeners, loadBalancerID))
 
 	if err != nil {
 		return nil, err
@@ -49,7 +58,7 @@ func (ls *ListenerService) ListListeners(loadBalancerID string) (listeners []*ty
 func (ls *ListenerService) GetListener(listenerID string) (listener *types.Listener, err error) {
 	log.Debug("GetListener")
 
-	data, status, err := ls.concertoService.Get(fmt.Sprintf("/network/listeners/%s", listenerID))
+	data, status, err := ls.concertoService.Get(fmt.Sprintf(APIPathNetworkListener, listenerID))
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +75,16 @@ func (ls *ListenerService) GetListener(listenerID string) (listener *types.Liste
 }
 
 // CreateListener creates a listener in a load balancer by its ID
-func (ls *ListenerService) CreateListener(loadBalancerID string, listenerParams *map[string]interface{}) (listener *types.Listener, err error) {
+func (ls *ListenerService) CreateListener(
+	loadBalancerID string,
+	listenerParams *map[string]interface{},
+) (listener *types.Listener, err error) {
 	log.Debug("CreateListener")
 
-	data, status, err := ls.concertoService.Post(fmt.Sprintf("/network/load_balancers/%s/listeners", loadBalancerID), listenerParams)
+	data, status, err := ls.concertoService.Post(
+		fmt.Sprintf(APIPathNetworkLoadBalancerListeners, loadBalancerID),
+		listenerParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +101,13 @@ func (ls *ListenerService) CreateListener(loadBalancerID string, listenerParams 
 }
 
 // UpdateListener updates a listener by its ID
-func (ls *ListenerService) UpdateListener(listenerID string, listenerParams *map[string]interface{}) (listener *types.Listener, err error) {
+func (ls *ListenerService) UpdateListener(
+	listenerID string,
+	listenerParams *map[string]interface{},
+) (listener *types.Listener, err error) {
 	log.Debug("UpdateListener")
 
-	data, status, err := ls.concertoService.Put(fmt.Sprintf("/network/listeners/%s", listenerID), listenerParams)
+	data, status, err := ls.concertoService.Put(fmt.Sprintf(APIPathNetworkListener, listenerID), listenerParams)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +127,7 @@ func (ls *ListenerService) UpdateListener(listenerID string, listenerParams *map
 func (ls *ListenerService) DeleteListener(listenerID string) (listener *types.Listener, err error) {
 	log.Debug("DeleteListener")
 
-	data, status, err := ls.concertoService.Delete(fmt.Sprintf("/network/listeners/%s", listenerID))
+	data, status, err := ls.concertoService.Delete(fmt.Sprintf(APIPathNetworkListener, listenerID))
 	if err != nil {
 		return nil, err
 	}
@@ -126,10 +144,13 @@ func (ls *ListenerService) DeleteListener(listenerID string) (listener *types.Li
 }
 
 // RetryListener retries a listener by its ID
-func (ls *ListenerService) RetryListener(listenerID string, listenerParams *map[string]interface{}) (listener *types.Listener, err error) {
+func (ls *ListenerService) RetryListener(
+	listenerID string,
+	listenerParams *map[string]interface{},
+) (listener *types.Listener, err error) {
 	log.Debug("RetryListener")
 
-	data, status, err := ls.concertoService.Put(fmt.Sprintf("/network/listeners/%s/retry", listenerID), listenerParams)
+	data, status, err := ls.concertoService.Put(fmt.Sprintf(APIPathNetworkListenerRetry, listenerID), listenerParams)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +170,7 @@ func (ls *ListenerService) RetryListener(listenerID string, listenerParams *map[
 func (ls *ListenerService) ListRules(listenerID string) (listenerRules []*types.ListenerRule, err error) {
 	log.Debug("ListRules")
 
-	data, status, err := ls.concertoService.Get(fmt.Sprintf("/network/listeners/%s/rules", listenerID))
+	data, status, err := ls.concertoService.Get(fmt.Sprintf(APIPathNetworkListenerRules, listenerID))
 	if err != nil {
 		return nil, err
 	}
@@ -166,10 +187,16 @@ func (ls *ListenerService) ListRules(listenerID string) (listenerRules []*types.
 }
 
 // CreateRule creates a rule in a listener by its ID
-func (ls *ListenerService) CreateRule(listenerID string, listenerRuleParams *map[string]interface{}) (listenerRule *types.ListenerRule, err error) {
+func (ls *ListenerService) CreateRule(
+	listenerID string,
+	listenerRuleParams *map[string]interface{},
+) (listenerRule *types.ListenerRule, err error) {
 	log.Debug("CreateRule")
 
-	data, status, err := ls.concertoService.Post(fmt.Sprintf("/network/listeners/%s/rules", listenerID), listenerRuleParams)
+	data, status, err := ls.concertoService.Post(
+		fmt.Sprintf(APIPathNetworkListenerRules, listenerID),
+		listenerRuleParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -186,10 +213,17 @@ func (ls *ListenerService) CreateRule(listenerID string, listenerRuleParams *map
 }
 
 // UpdateRule updates a rule in a listener by its ID
-func (ls *ListenerService) UpdateRule(listenerID string, listenerRuleID string, listenerRuleParams *map[string]interface{}) (listenerRule *types.ListenerRule, err error) {
+func (ls *ListenerService) UpdateRule(
+	listenerID string,
+	listenerRuleID string,
+	listenerRuleParams *map[string]interface{},
+) (listenerRule *types.ListenerRule, err error) {
 	log.Debug("UpdateRule")
 
-	data, status, err := ls.concertoService.Put(fmt.Sprintf("/network/listeners/%s/rules/%s", listenerID, listenerRuleID), listenerRuleParams)
+	data, status, err := ls.concertoService.Put(
+		fmt.Sprintf(APIPathNetworkListenerRule, listenerID, listenerRuleID),
+		listenerRuleParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +243,9 @@ func (ls *ListenerService) UpdateRule(listenerID string, listenerRuleID string, 
 func (ls *ListenerService) DeleteRule(listenerID string, listenerRuleID string) (err error) {
 	log.Debug("DeleteRule")
 
-	data, status, err := ls.concertoService.Delete(fmt.Sprintf("/network/listeners/%s/rules/%s", listenerID, listenerRuleID))
+	data, status, err := ls.concertoService.Delete(
+		fmt.Sprintf(APIPathNetworkListenerRule, listenerID, listenerRuleID),
+	)
 	if err != nil {
 		return err
 	}

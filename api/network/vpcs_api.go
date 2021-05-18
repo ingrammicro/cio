@@ -1,12 +1,19 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathNetworkVpcs = "/network/vpcs"
+const APIPathNetworkVpc = "/network/vpcs/%s"
+const APIPathNetworkVpcDiscard = "/network/vpcs/%s/discard"
 
 // VPCService manages VPC operations
 type VPCService struct {
@@ -28,7 +35,7 @@ func NewVPCService(concertoService utils.ConcertoService) (*VPCService, error) {
 func (vs *VPCService) ListVPCs() (vpcs []*types.Vpc, err error) {
 	log.Debug("ListVPCs")
 
-	data, status, err := vs.concertoService.Get("/network/vpcs")
+	data, status, err := vs.concertoService.Get(APIPathNetworkVpcs)
 
 	if err != nil {
 		return nil, err
@@ -49,7 +56,7 @@ func (vs *VPCService) ListVPCs() (vpcs []*types.Vpc, err error) {
 func (vs *VPCService) GetVPC(vpcID string) (vpc *types.Vpc, err error) {
 	log.Debug("GetVPC")
 
-	data, status, err := vs.concertoService.Get(fmt.Sprintf("/network/vpcs/%s", vpcID))
+	data, status, err := vs.concertoService.Get(fmt.Sprintf(APIPathNetworkVpc, vpcID))
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +76,7 @@ func (vs *VPCService) GetVPC(vpcID string) (vpc *types.Vpc, err error) {
 func (vs *VPCService) CreateVPC(vpcParams *map[string]interface{}) (vpc *types.Vpc, err error) {
 	log.Debug("CreateVPC")
 
-	data, status, err := vs.concertoService.Post("/network/vpcs/", vpcParams)
+	data, status, err := vs.concertoService.Post(APIPathNetworkVpcs, vpcParams)
 
 	if err != nil {
 		return nil, err
@@ -90,7 +97,7 @@ func (vs *VPCService) CreateVPC(vpcParams *map[string]interface{}) (vpc *types.V
 func (vs *VPCService) UpdateVPC(vpcID string, vpcParams *map[string]interface{}) (vpc *types.Vpc, err error) {
 	log.Debug("UpdateVPC")
 
-	data, status, err := vs.concertoService.Put(fmt.Sprintf("/network/vpcs/%s", vpcID), vpcParams)
+	data, status, err := vs.concertoService.Put(fmt.Sprintf(APIPathNetworkVpc, vpcID), vpcParams)
 
 	if err != nil {
 		return nil, err
@@ -111,7 +118,7 @@ func (vs *VPCService) UpdateVPC(vpcID string, vpcParams *map[string]interface{})
 func (vs *VPCService) DeleteVPC(vpcID string) (err error) {
 	log.Debug("DeleteVPC")
 
-	data, status, err := vs.concertoService.Delete(fmt.Sprintf("/network/vpcs/%s", vpcID))
+	data, status, err := vs.concertoService.Delete(fmt.Sprintf(APIPathNetworkVpc, vpcID))
 	if err != nil {
 		return err
 	}
@@ -127,7 +134,7 @@ func (vs *VPCService) DeleteVPC(vpcID string) (err error) {
 func (vs *VPCService) DiscardVPC(vpcID string) (err error) {
 	log.Debug("DiscardVPC")
 
-	data, status, err := vs.concertoService.Delete(fmt.Sprintf("/network/vpcs/%s/discard", vpcID))
+	data, status, err := vs.concertoService.Delete(fmt.Sprintf(APIPathNetworkVpcDiscard, vpcID))
 	if err != nil {
 		return err
 	}

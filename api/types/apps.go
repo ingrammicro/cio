@@ -1,8 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package types
 
 type WizardApp struct {
-	ID                  string                 `json:"id" header:"ID"`
-	Name                string                 `json:"name" header:"NAME"`
+	ID                  string                 `json:"id"                   header:"ID"`
+	Name                string                 `json:"name"                 header:"NAME"`
 	FlavourRequirements map[string]interface{} `json:"flavour_requirements" header:"FLAVOUR_REQUIREMENTS"`
-	GenericImageID      string                 `json:"generic_image_id" header:"GENERIC_IMAGE_ID"`
+	GenericImageID      string                 `json:"generic_image_id"     header:"GENERIC_IMAGE_ID"`
 }

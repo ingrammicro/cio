@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package deployments
 
 import (
@@ -38,12 +40,17 @@ func SubCommands() []cli.Command {
 					Usage: "Name of the deployment",
 				},
 				cli.StringFlag{
-					Name:  "inputs",
-					Usage: "The inputs used to configure the cloud application deployment, as a json formatted parameter. \n\ti.e: --inputs '{\"region\":{\"cloud_provider\":\"Azure\",\"name\":\"US\"},\"server_plan\":\"Standard_D2_v3\",\"admin_user\":\"admin\",\"admin_password\":\"abc$1\"}'",
+					Name: "inputs",
+					Usage: "The inputs used to configure the cloud application deployment, " +
+						"as a json formatted parameter. \n\t" +
+						"i.e: --inputs '{\"region\":{\"cloud_provider\":\"Azure\",\"name\":\"US\"}," +
+						"\"server_plan\":\"Standard_D2_v3\",\"admin_user\":\"admin\",\"admin_password\":\"abc$1\"}'",
 				},
 				cli.StringFlag{
-					Name:  "inputs-from-file",
-					Usage: "The inputs used to configure the cloud application deployment, from file or STDIN, as a json formatted parameter. \n\tFrom file: --inputs-from-file attrs.json \n\tFrom STDIN: --inputs-from-file -",
+					Name: "inputs-from-file",
+					Usage: "The inputs used to configure the cloud application deployment, " +
+						"from file or STDIN, as a json formatted parameter. \n\t" +
+						"From file: --inputs-from-file attrs.json \n\tFrom STDIN: --inputs-from-file -",
 				},
 				cli.IntFlag{
 					Name:  "time, t",

@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -40,7 +42,7 @@ func NodePoolList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(nodePools); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -57,7 +59,7 @@ func NodePoolShow(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*nodePool); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -101,7 +103,7 @@ func NodePoolCreate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*nodePool); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -133,7 +135,7 @@ func NodePoolUpdate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*nodePool); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -150,7 +152,7 @@ func NodePoolDelete(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*nodePool); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -167,7 +169,7 @@ func NodePoolRetry(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*nodePool); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -187,7 +189,7 @@ func NodePoolPlanShow(c *cli.Context) error {
 	nodePoolPlan.CloudProviderName = cloudProvidersMap[nodePoolPlan.CloudProviderID]
 
 	if err = formatter.PrintItem(*nodePoolPlan); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

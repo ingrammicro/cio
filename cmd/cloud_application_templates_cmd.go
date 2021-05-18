@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/cloudapplication"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
@@ -9,7 +12,9 @@ import (
 )
 
 // WireUpCloudApplicationTemplate prepares common resources to send request to Concerto API
-func WireUpCloudApplicationTemplate(c *cli.Context) (ds *cloudapplication.CloudApplicationTemplateService, f format.Formatter) {
+func WireUpCloudApplicationTemplate(
+	c *cli.Context,
+) (ds *cloudapplication.CloudApplicationTemplateService, f format.Formatter) {
 
 	f = format.GetFormatter()
 
@@ -40,7 +45,7 @@ func CloudApplicationTemplateList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(cats); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -57,7 +62,7 @@ func CloudApplicationTemplateShow(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*cat); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -96,7 +101,7 @@ func CloudApplicationTemplateUpload(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*cat); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

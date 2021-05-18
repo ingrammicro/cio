@@ -1,9 +1,12 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package wizard
 
 import (
+	"testing"
+
 	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestNewWizardCloudProviderServiceNil(t *testing.T) {

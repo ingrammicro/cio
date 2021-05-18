@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/cloudspecificextension"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -10,7 +13,9 @@ import (
 )
 
 // WireUpCloudSpecificExtensionTemplate prepares common resources to send request to Concerto API
-func WireUpCloudSpecificExtensionTemplate(c *cli.Context) (ds *cloudspecificextension.CloudSpecificExtensionTemplateService, f format.Formatter) {
+func WireUpCloudSpecificExtensionTemplate(
+	c *cli.Context,
+) (ds *cloudspecificextension.CloudSpecificExtensionTemplateService, f format.Formatter) {
 
 	f = format.GetFormatter()
 
@@ -52,13 +57,13 @@ func CloudSpecificExtensionTemplateList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.CloudSpecificExtensionTemplate)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.CloudSpecificExtensionTemplate, got a %T", labelable))
 		}
 		csets[i] = v
 	}
 	if err = formatter.PrintList(csets); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -76,7 +81,7 @@ func CloudSpecificExtensionTemplateShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	cset.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cset); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -88,7 +93,9 @@ func CloudSpecificExtensionTemplateImport(c *cli.Context) error {
 
 	checkRequiredFlags(c, []string{"name", "syntax"}, formatter)
 	if c.IsSet("definition") && c.IsSet("definition-from-file") {
-		return fmt.Errorf("invalid parameters detected. Please provide only one: 'definition' or 'definition-from-file'")
+		return fmt.Errorf(
+			"invalid parameters detected. Please provide only one: 'definition' or 'definition-from-file'",
+		)
 	}
 
 	cseTemplateIn := map[string]interface{}{
@@ -118,7 +125,7 @@ func CloudSpecificExtensionTemplateImport(c *cli.Context) error {
 
 	cseTemplate.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cseTemplate); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -141,7 +148,7 @@ func CloudSpecificExtensionTemplateUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	cseTemplate.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cseTemplate); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -169,13 +176,13 @@ func CloudSpecificExtensionTemplateListDeployments(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.CloudSpecificExtensionDeployment)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.CloudSpecificExtensionDeployment, got a %T", labelable))
 		}
 		cseds[i] = v
 	}
 	if err = formatter.PrintList(cseds); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

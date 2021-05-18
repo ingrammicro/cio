@@ -1,15 +1,18 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/ingrammicro/cio/api/cloud"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	"strings"
-	"time"
 )
 
 const (
@@ -18,7 +21,9 @@ const (
 )
 
 // WireUpTemporaryArchive prepares common resources to send request to Concerto API
-func WireUpTemporaryArchive(c *cli.Context) (tas *cloud.TemporaryArchiveService, config *utils.Config, f format.Formatter) {
+func WireUpTemporaryArchive(
+	c *cli.Context,
+) (tas *cloud.TemporaryArchiveService, config *utils.Config, f format.Formatter) {
 
 	f = format.GetFormatter()
 
@@ -38,6 +43,48 @@ func WireUpTemporaryArchive(c *cli.Context) (tas *cloud.TemporaryArchiveService,
 	return tas, config, f
 }
 
+func setExportParams(c *cli.Context, temporaryArchiveIn map[string]interface{}) (int64, error) {
+	debugCmdFuncInfo(c)
+	if !c.IsSet("server-ids") && !c.IsSet("server-array-ids") {
+		return 0, fmt.Errorf(
+			"invalid parameters detected. Please provide at least one: 'server-ids' or 'server-array-ids'",
+		)
+	}
+	if c.IsSet("server-ids") {
+		temporaryArchiveIn["server_ids"] = utils.RemoveDuplicates(strings.Split(c.String("server-ids"), ","))
+	}
+	if c.IsSet("server-array-ids") {
+		temporaryArchiveIn["server_array_ids"] = utils.RemoveDuplicates(
+			strings.Split(c.String("server-array-ids"), ","),
+		)
+	}
+
+	timeLapseExportStatusCheck := c.Int64("time")
+	if timeLapseExportStatusCheck <= 0 {
+		timeLapseExportStatusCheck = DefaultTimeLapseExportStatusCheck
+	}
+	log.Debug("Time lapse -seconds- for export status check:", timeLapseExportStatusCheck)
+	return timeLapseExportStatusCheck, nil
+}
+
+func downloadTemporaryArchive(
+	c *cli.Context,
+	svc *cloud.TemporaryArchiveService,
+	config *utils.Config,
+	temporaryArchiveExportTask *types.TemporaryArchiveExportTask,
+) error {
+	downloadURL := temporaryArchiveExportTask.DownloadURL(config.APIEndpoint)
+	realFileName, status, err := svc.DownloadTemporaryArchiveExport(downloadURL, c.String("filepath"))
+	if err == nil && status != 200 {
+		err = fmt.Errorf("obtained non-ok response when downloading export file %s", downloadURL)
+	}
+	if err != nil {
+		return err
+	}
+	log.Info("Available at:", realFileName)
+	return nil
+}
+
 // TemporaryArchiveExport subcommand function
 func TemporaryArchiveExport(c *cli.Context) error {
 	debugCmdFuncInfo(c)
@@ -47,21 +94,11 @@ func TemporaryArchiveExport(c *cli.Context) error {
 	temporaryArchiveIn := map[string]interface{}{
 		"is_mock": false,
 	}
-	if !c.IsSet("server-ids") && !c.IsSet("server-array-ids") {
-		return fmt.Errorf("invalid parameters detected. Please provide at least one: 'server-ids' or 'server-array-ids'")
-	}
-	if c.IsSet("server-ids") {
-		temporaryArchiveIn["server_ids"] = utils.RemoveDuplicates(strings.Split(c.String("server-ids"), ","))
-	}
-	if c.IsSet("server-array-ids") {
-		temporaryArchiveIn["server_array_ids"] = utils.RemoveDuplicates(strings.Split(c.String("server-array-ids"), ","))
-	}
 
-	timeLapseExportStatusCheck := c.Int64("time")
-	if !(timeLapseExportStatusCheck > 0) {
-		timeLapseExportStatusCheck = DefaultTimeLapseExportStatusCheck
+	timeLapseExportStatusCheck, err := setExportParams(c, temporaryArchiveIn)
+	if err != nil {
+		return err
 	}
-	log.Debug("Time lapse -seconds- for export status check:", timeLapseExportStatusCheck)
 
 	temporaryArchiveExport, err := svc.CreateTemporaryArchiveExport(&temporaryArchiveIn)
 	if err != nil {
@@ -81,27 +118,30 @@ func TemporaryArchiveExport(c *cli.Context) error {
 
 		if temporaryArchiveExportTask.State == "finished" {
 			if err = formatter.PrintItem(*temporaryArchiveExportTask); err != nil {
-				formatter.PrintFatal("Couldn't print/format result", err)
+				formatter.PrintFatal(PrintFormatError, err)
 			}
 			if temporaryArchiveExportTask.ErrorMessage != "" {
-				formatter.PrintFatal("Couldn't export infrastructure file", fmt.Errorf("%s", temporaryArchiveExportTask.ErrorMessage))
+				formatter.PrintFatal(
+					"Couldn't export infrastructure file",
+					fmt.Errorf("%s", temporaryArchiveExportTask.ErrorMessage),
+				)
 			}
 			break
 		}
 		time.Sleep(time.Duration(timeLapseExportStatusCheck) * time.Second)
 	}
+	return downloadTemporaryArchive(c, svc, config, temporaryArchiveExportTask)
+}
 
-	downloadURL := temporaryArchiveExportTask.DownloadURL(config.APIEndpoint)
-	realFileName, status, err := svc.DownloadTemporaryArchiveExport(downloadURL, c.String("filepath"))
-	if err == nil && status != 200 {
-		err = fmt.Errorf("obtained non-ok response when downloading export file %s", downloadURL)
+func getTimeLapseImportStatusCheckParam(c *cli.Context) int64 {
+	debugCmdFuncInfo(c)
+	timeLapseImportStatusCheck := c.Int64("time")
+	if timeLapseImportStatusCheck <= 0 {
+		timeLapseImportStatusCheck = DefaultTimeLapseImportStatusCheck
 	}
-	if err != nil {
-		return err
-	}
-	log.Info("Available at:", realFileName)
+	log.Debug("Time lapse -seconds- for import status check:", timeLapseImportStatusCheck)
 
-	return nil
+	return timeLapseImportStatusCheck
 }
 
 // TemporaryArchiveImport subcommand function
@@ -119,11 +159,7 @@ func TemporaryArchiveImport(c *cli.Context) error {
 		"label_name": c.String("label"),
 	}
 
-	timeLapseImportStatusCheck := c.Int64("time")
-	if !(timeLapseImportStatusCheck > 0) {
-		timeLapseImportStatusCheck = DefaultTimeLapseImportStatusCheck
-	}
-	log.Debug("Time lapse -seconds- for import status check:", timeLapseImportStatusCheck)
+	timeLapseImportStatusCheck := getTimeLapseImportStatusCheckParam(c)
 
 	temporaryArchive, err := svc.CreateTemporaryArchive(&temporaryArchiveIn)
 	if err != nil {
@@ -153,10 +189,13 @@ func TemporaryArchiveImport(c *cli.Context) error {
 
 		if temporaryArchiveImport.State == "finished" {
 			if err = formatter.PrintItem(*temporaryArchiveImport); err != nil {
-				formatter.PrintFatal("Couldn't print/format result", err)
+				formatter.PrintFatal(PrintFormatError, err)
 			}
 			if temporaryArchiveImport.ErrorMessage != "" {
-				formatter.PrintFatal("Couldn't import infrastructure file", fmt.Errorf("%s", temporaryArchiveImport.ErrorMessage))
+				formatter.PrintFatal(
+					"Couldn't import infrastructure file",
+					fmt.Errorf("%s", temporaryArchiveImport.ErrorMessage),
+				)
 			}
 			break
 		}

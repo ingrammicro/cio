@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/blueprint"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -51,14 +54,14 @@ func CookbookVersionList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		cb, ok := labelable.(*types.CookbookVersion)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.CookbookVersion, got a %T", labelable))
 		}
 		cookbookVersions[i] = cb
 	}
 
 	if err = formatter.PrintList(cookbookVersions); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -77,7 +80,7 @@ func CookbookVersionShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	cookbookVersion.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cookbookVersion); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -124,7 +127,7 @@ func CookbookVersionUpload(c *cli.Context) error {
 
 	cookbookVersion.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cookbookVersion); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 
 	return nil

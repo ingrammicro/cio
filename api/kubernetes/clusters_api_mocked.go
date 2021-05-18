@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package kubernetes
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListClustersMocked test mocked function
@@ -25,7 +28,7 @@ func ListClustersMocked(t *testing.T, clustersIn []*types.Cluster) []*types.Clus
 	assert.Nil(err, "Clusters test data corrupted")
 
 	// call service
-	cs.On("Get", "/kubernetes/clusters").Return(dIn, 200, nil)
+	cs.On("Get", APIPathKubernetesClusters).Return(dIn, 200, nil)
 	clustersOut, err := ds.ListClusters()
 
 	assert.Nil(err, "Error getting clusters")
@@ -50,7 +53,7 @@ func ListClustersFailErrMocked(t *testing.T, clustersIn []*types.Cluster) []*typ
 	assert.Nil(err, "Clusters test data corrupted")
 
 	// call service
-	cs.On("Get", "/kubernetes/clusters").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathKubernetesClusters).Return(dIn, 200, fmt.Errorf("mocked error"))
 	clustersOut, err := ds.ListClusters()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -76,7 +79,7 @@ func ListClustersFailStatusMocked(t *testing.T, clustersIn []*types.Cluster) []*
 	assert.Nil(err, "Clusters test data corrupted")
 
 	// call service
-	cs.On("Get", "/kubernetes/clusters").Return(dIn, 499, nil)
+	cs.On("Get", APIPathKubernetesClusters).Return(dIn, 499, nil)
 	clustersOut, err := ds.ListClusters()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -101,7 +104,7 @@ func ListClustersFailJSONMocked(t *testing.T, clustersIn []*types.Cluster) []*ty
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/kubernetes/clusters").Return(dIn, 200, nil)
+	cs.On("Get", APIPathKubernetesClusters).Return(dIn, 200, nil)
 	clustersOut, err := ds.ListClusters()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -127,7 +130,7 @@ func GetClusterMocked(t *testing.T, clusterIn *types.Cluster) *types.Cluster {
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID)).Return(dIn, 200, nil)
 	clusterOut, err := ds.GetCluster(clusterIn.ID)
 
 	assert.Nil(err, "Error getting cluster")
@@ -152,7 +155,7 @@ func GetClusterFailErrMocked(t *testing.T, clusterIn *types.Cluster) *types.Clus
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	clusterOut, err := ds.GetCluster(clusterIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -178,7 +181,7 @@ func GetClusterFailStatusMocked(t *testing.T, clusterIn *types.Cluster) *types.C
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID)).Return(dIn, 499, nil)
 	clusterOut, err := ds.GetCluster(clusterIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -203,7 +206,7 @@ func GetClusterFailJSONMocked(t *testing.T, clusterIn *types.Cluster) *types.Clu
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID)).Return(dIn, 200, nil)
 	clusterOut, err := ds.GetCluster(clusterIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -233,7 +236,7 @@ func CreateClusterMocked(t *testing.T, clusterIn *types.Cluster) *types.Cluster 
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Post", "/kubernetes/clusters", mapIn).Return(dOut, 200, nil)
+	cs.On("Post", APIPathKubernetesClusters, mapIn).Return(dOut, 200, nil)
 	clusterOut, err := ds.CreateCluster(mapIn)
 
 	assert.Nil(err, "Error creating cluster")
@@ -262,7 +265,7 @@ func CreateClusterFailErrMocked(t *testing.T, clusterIn *types.Cluster) *types.C
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Post", "/kubernetes/clusters", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathKubernetesClusters, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	clusterOut, err := ds.CreateCluster(mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -292,7 +295,7 @@ func CreateClusterFailStatusMocked(t *testing.T, clusterIn *types.Cluster) *type
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Post", "/kubernetes/clusters", mapIn).Return(dOut, 499, nil)
+	cs.On("Post", APIPathKubernetesClusters, mapIn).Return(dOut, 499, nil)
 	clusterOut, err := ds.CreateCluster(mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -321,7 +324,7 @@ func CreateClusterFailJSONMocked(t *testing.T, clusterIn *types.Cluster) *types.
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", "/kubernetes/clusters", mapIn).Return(dIn, 200, nil)
+	cs.On("Post", APIPathKubernetesClusters, mapIn).Return(dIn, 200, nil)
 	clusterOut, err := ds.CreateCluster(mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -351,7 +354,7 @@ func UpdateClusterMocked(t *testing.T, clusterIn *types.Cluster) *types.Cluster 
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID), mapIn).Return(dOut, 200, nil)
 	clusterOut, err := ds.UpdateCluster(clusterIn.ID, mapIn)
 
 	assert.Nil(err, "Error updating cluster")
@@ -380,7 +383,8 @@ func UpdateClusterFailErrMocked(t *testing.T, clusterIn *types.Cluster) *types.C
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	clusterOut, err := ds.UpdateCluster(clusterIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -410,7 +414,7 @@ func UpdateClusterFailStatusMocked(t *testing.T, clusterIn *types.Cluster) *type
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID), mapIn).Return(dOut, 499, nil)
 	clusterOut, err := ds.UpdateCluster(clusterIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -439,7 +443,7 @@ func UpdateClusterFailJSONMocked(t *testing.T, clusterIn *types.Cluster) *types.
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID), mapIn).Return(dIn, 200, nil)
 	clusterOut, err := ds.UpdateCluster(clusterIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -465,7 +469,7 @@ func DeleteClusterMocked(t *testing.T, clusterIn *types.Cluster) {
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID)).Return(dIn, 200, nil)
 	clusterOut, err := ds.DeleteCluster(clusterIn.ID)
 
 	assert.Nil(err, "Error deleting cluster")
@@ -489,7 +493,7 @@ func DeleteClusterFailErrMocked(t *testing.T, clusterIn *types.Cluster) {
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	clusterOut, err := ds.DeleteCluster(clusterIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -513,7 +517,7 @@ func DeleteClusterFailStatusMocked(t *testing.T, clusterIn *types.Cluster) {
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID)).Return(dIn, 499, nil)
 	clusterOut, err := ds.DeleteCluster(clusterIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -536,7 +540,7 @@ func DeleteClusterFailJSONMocked(t *testing.T, clusterIn *types.Cluster) {
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/clusters/%s", clusterIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesCluster, clusterIn.ID)).Return(dIn, 200, nil)
 	clusterOut, err := ds.DeleteCluster(clusterIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -564,7 +568,7 @@ func RetryClusterMocked(t *testing.T, clusterIn *types.Cluster) *types.Cluster {
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/clusters/%s/retry", clusterIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesClusterRetry, clusterIn.ID), mapIn).Return(dOut, 200, nil)
 	clusterOut, err := ds.RetryCluster(clusterIn.ID, mapIn)
 
 	assert.Nil(err, "Error retrying cluster")
@@ -593,7 +597,8 @@ func RetryClusterFailErrMocked(t *testing.T, clusterIn *types.Cluster) *types.Cl
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/clusters/%s/retry", clusterIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesClusterRetry, clusterIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	clusterOut, err := ds.RetryCluster(clusterIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -623,7 +628,7 @@ func RetryClusterFailStatusMocked(t *testing.T, clusterIn *types.Cluster) *types
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/clusters/%s/retry", clusterIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesClusterRetry, clusterIn.ID), mapIn).Return(dOut, 499, nil)
 	clusterOut, err := ds.RetryCluster(clusterIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -652,7 +657,7 @@ func RetryClusterFailJSONMocked(t *testing.T, clusterIn *types.Cluster) *types.C
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/kubernetes/clusters/%s/retry", clusterIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathKubernetesClusterRetry, clusterIn.ID), mapIn).Return(dIn, 200, nil)
 	clusterOut, err := ds.RetryCluster(clusterIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -678,7 +683,7 @@ func DiscardClusterMocked(t *testing.T, clusterIn *types.Cluster) {
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/clusters/%s/discard", clusterIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesClusterDiscard, clusterIn.ID)).Return(dIn, 200, nil)
 	err = ds.DiscardCluster(clusterIn.ID)
 	assert.Nil(err, "Error discarding cluster")
 }
@@ -699,7 +704,8 @@ func DiscardClusterFailErrMocked(t *testing.T, clusterIn *types.Cluster) {
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/clusters/%s/discard", clusterIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesClusterDiscard, clusterIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DiscardCluster(clusterIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -722,7 +728,7 @@ func DiscardClusterFailStatusMocked(t *testing.T, clusterIn *types.Cluster) {
 	assert.Nil(err, "Cluster test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/kubernetes/clusters/%s/discard", clusterIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathKubernetesClusterDiscard, clusterIn.ID)).Return(dIn, 499, nil)
 	err = ds.DiscardCluster(clusterIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -745,7 +751,7 @@ func GetClusterPlanMocked(t *testing.T, clusterPlanID string, clusterPlanIn *typ
 	assert.Nil(err, "ClusterPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/cluster_plans/%s", clusterPlanID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesClusterPlan, clusterPlanID)).Return(dIn, 200, nil)
 	clusterPlanOut, err := ds.GetClusterPlan(clusterPlanID)
 
 	assert.Nil(err, "Error getting cluster plan")
@@ -755,7 +761,11 @@ func GetClusterPlanMocked(t *testing.T, clusterPlanID string, clusterPlanIn *typ
 }
 
 // GetClusterPlanFailErrMocked test mocked function
-func GetClusterPlanFailErrMocked(t *testing.T, clusterPlanID string, clusterPlanIn *types.ClusterPlan) *types.ClusterPlan {
+func GetClusterPlanFailErrMocked(
+	t *testing.T,
+	clusterPlanID string,
+	clusterPlanIn *types.ClusterPlan,
+) *types.ClusterPlan {
 
 	assert := assert.New(t)
 
@@ -770,7 +780,8 @@ func GetClusterPlanFailErrMocked(t *testing.T, clusterPlanID string, clusterPlan
 	assert.Nil(err, "ClusterPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/cluster_plans/%s", clusterPlanID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesClusterPlan, clusterPlanID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	clusterPlanOut, err := ds.GetClusterPlan(clusterPlanID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -781,7 +792,11 @@ func GetClusterPlanFailErrMocked(t *testing.T, clusterPlanID string, clusterPlan
 }
 
 // GetClusterPlanFailStatusMocked test mocked function
-func GetClusterPlanFailStatusMocked(t *testing.T, clusterPlanID string, clusterPlanIn *types.ClusterPlan) *types.ClusterPlan {
+func GetClusterPlanFailStatusMocked(
+	t *testing.T,
+	clusterPlanID string,
+	clusterPlanIn *types.ClusterPlan,
+) *types.ClusterPlan {
 
 	assert := assert.New(t)
 
@@ -796,7 +811,7 @@ func GetClusterPlanFailStatusMocked(t *testing.T, clusterPlanID string, clusterP
 	assert.Nil(err, "ClusterPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/cluster_plans/%s", clusterPlanID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesClusterPlan, clusterPlanID)).Return(dIn, 499, nil)
 	clusterPlanOut, err := ds.GetClusterPlan(clusterPlanID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -807,7 +822,11 @@ func GetClusterPlanFailStatusMocked(t *testing.T, clusterPlanID string, clusterP
 }
 
 // GetClusterPlanFailJSONMocked test mocked function
-func GetClusterPlanFailJSONMocked(t *testing.T, clusterPlanID string, clusterPlanIn *types.ClusterPlan) *types.ClusterPlan {
+func GetClusterPlanFailJSONMocked(
+	t *testing.T,
+	clusterPlanID string,
+	clusterPlanIn *types.ClusterPlan,
+) *types.ClusterPlan {
 
 	assert := assert.New(t)
 
@@ -821,7 +840,7 @@ func GetClusterPlanFailJSONMocked(t *testing.T, clusterPlanID string, clusterPla
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/kubernetes/cluster_plans/%s", clusterPlanID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathKubernetesClusterPlan, clusterPlanID)).Return(dIn, 200, nil)
 	clusterPlanOut, err := ds.GetClusterPlan(clusterPlanID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/settings"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
@@ -41,7 +44,7 @@ func PolicyAssignmentList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(assignments); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -58,7 +61,7 @@ func PolicyAssignmentShow(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*assignment); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -70,7 +73,9 @@ func PolicyAssignmentCreate(c *cli.Context) error {
 
 	checkRequiredFlags(c, []string{"name", "description", "cloud-account-id", "definition-id"}, formatter)
 	if c.IsSet("parameters") && c.IsSet("parameters-from-file") {
-		return fmt.Errorf("invalid parameters detected. Please provide only one: 'parameters' or 'parameters-from-file'")
+		return fmt.Errorf(
+			"invalid parameters detected. Please provide only one: 'parameters' or 'parameters-from-file'",
+		)
 	}
 
 	assignmentIn := map[string]interface{}{
@@ -99,7 +104,7 @@ func PolicyAssignmentCreate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*assignment); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -124,7 +129,7 @@ func PolicyAssignmentUpdate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*assignment); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -141,7 +146,7 @@ func PolicyAssignmentDelete(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*assignment); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

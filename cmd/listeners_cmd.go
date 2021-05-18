@@ -1,11 +1,14 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
+	"strings"
+
 	"github.com/ingrammicro/cio/api/network"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	"github.com/urfave/cli"
-	"strings"
 )
 
 // WireUpListener prepares common resources to send request to Concerto API
@@ -40,7 +43,7 @@ func ListenerList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive load balancer listeners data", err)
 	}
 	if err = formatter.PrintList(listeners); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -56,7 +59,7 @@ func ListenerShow(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive load balancer listener data", err)
 	}
 	if err = formatter.PrintItem(*listener); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -79,7 +82,7 @@ func ListenerCreate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*listener); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -100,7 +103,7 @@ func ListenerUpdate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*listener); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -117,7 +120,7 @@ func ListenerDelete(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*listener); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -136,7 +139,7 @@ func ListenerRetry(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*listener); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -152,7 +155,7 @@ func ListenerListRules(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive listener rules data", err)
 	}
 	if err = formatter.PrintList(rules); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -175,7 +178,7 @@ func ListenerCreateRule(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*rule); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -197,7 +200,7 @@ func ListenerUpdateRule(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*rule); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

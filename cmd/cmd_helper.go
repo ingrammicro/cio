@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -10,6 +12,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
+
+const PrintFormatError = "Couldn't print/format result"
+const LabelFilteringUnexpected = "Label filtering returned unexpected result"
 
 // debugCmdFuncInfo writes context info about the calling function
 func debugCmdFuncInfo(c *cli.Context) {
@@ -67,4 +72,16 @@ func checkRequiredFlagsOr(c *cli.Context, flags []string, f format.Formatter) {
 	f.PrintError("Incorrect usage.", fmt.Errorf("Please use one of these parameters: %s\n", missing))
 	cli.ShowCommandHelp(c, c.Command.Name)
 	os.Exit(2)
+}
+
+func setParamString(c *cli.Context, name string, flag string, paramsIn map[string]interface{}) {
+	if c.IsSet(flag) {
+		paramsIn[name] = c.String(flag)
+	}
+}
+
+func setParamInt(c *cli.Context, name string, flag string, paramsIn map[string]interface{}) {
+	if c.IsSet(flag) {
+		paramsIn[name] = c.Int(flag)
+	}
 }

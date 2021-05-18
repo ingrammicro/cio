@@ -1,12 +1,20 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package polling
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathCommandPollingPings = "/command_polling/pings"
+const APIPathCommandPollingNextCommand = "/command_polling/command"
+const APIPathCommandPollingCommand = "/command_polling/commands/%s"
+const APIPathCommandPollingBootstrapLogs = "/command_polling/bootstrap_logs"
 
 // PollingService manages polling operations
 type PollingService struct {
@@ -29,7 +37,7 @@ func (ps *PollingService) Ping() (ping *types.PollingPing, status int, err error
 	log.Debug("Ping")
 
 	payload := make(map[string]interface{})
-	data, status, err := ps.concertoService.Post("/command_polling/pings", &payload)
+	data, status, err := ps.concertoService.Post(APIPathCommandPollingPings, &payload)
 	if err != nil {
 		return nil, status, err
 	}
@@ -45,7 +53,7 @@ func (ps *PollingService) Ping() (ping *types.PollingPing, status int, err error
 func (ps *PollingService) GetNextCommand() (command *types.PollingCommand, status int, err error) {
 	log.Debug("GetNextCommand")
 
-	data, status, err := ps.concertoService.Get("/command_polling/command")
+	data, status, err := ps.concertoService.Get(APIPathCommandPollingNextCommand)
 	if err != nil {
 		return nil, status, err
 	}
@@ -58,10 +66,16 @@ func (ps *PollingService) GetNextCommand() (command *types.PollingCommand, statu
 }
 
 // UpdateCommand updates a command by its ID
-func (ps *PollingService) UpdateCommand(commandID string, pollingCommandParams *map[string]interface{}) (command *types.PollingCommand, status int, err error) {
+func (ps *PollingService) UpdateCommand(
+	commandID string,
+	pollingCommandParams *map[string]interface{},
+) (command *types.PollingCommand, status int, err error) {
 	log.Debug("UpdateCommand")
 
-	data, status, err := ps.concertoService.Put(fmt.Sprintf("/command_polling/commands/%s", commandID), pollingCommandParams)
+	data, status, err := ps.concertoService.Put(
+		fmt.Sprintf(APIPathCommandPollingCommand, commandID),
+		pollingCommandParams,
+	)
 
 	if err != nil {
 		return nil, status, err
@@ -75,10 +89,12 @@ func (ps *PollingService) UpdateCommand(commandID string, pollingCommandParams *
 }
 
 // ReportBootstrapLog reports a command result
-func (ps *PollingService) ReportBootstrapLog(pollingContinuousReportParams *map[string]interface{}) (command *types.PollingContinuousReport, status int, err error) {
+func (ps *PollingService) ReportBootstrapLog(
+	pollingContinuousReportParams *map[string]interface{},
+) (command *types.PollingContinuousReport, status int, err error) {
 	log.Debug("ReportBootstrapLog")
 
-	data, status, err := ps.concertoService.Post("/command_polling/bootstrap_logs", pollingContinuousReportParams)
+	data, status, err := ps.concertoService.Post(APIPathCommandPollingBootstrapLogs, pollingContinuousReportParams)
 
 	if err != nil {
 		return nil, status, err

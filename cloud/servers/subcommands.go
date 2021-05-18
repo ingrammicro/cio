@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package servers
 
 import (
@@ -114,8 +116,9 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "override-server",
-			Usage:  "This action takes the server with the given id from a stalled state to the operational state, at the user's own risk.",
+			Name: "override-server",
+			Usage: "This action takes the server with the given id from a stalled state to the operational state, " +
+				"at the user's own risk.",
 			Action: cmd.ServerOverride,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -125,8 +128,9 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "delete",
-			Usage:  "This action decommissions the server with the given id. The server must be in a inactive, stalled or commission_stalled state.",
+			Name: "delete",
+			Usage: "This action decommissions the server with the given id. The server must be in a inactive, " +
+				"stalled or commission_stalled state.",
 			Action: cmd.ServerDelete,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -147,8 +151,9 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "list-operational-scripts",
-			Usage:  "This action returns information about the operational scripts characterisations related to the server with the given id.",
+			Name: "list-operational-scripts",
+			Usage: "This action returns information about the operational scripts characterisations related to the " +
+				"server with the given id.",
 			Action: cmd.OperationalScriptsList,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -158,8 +163,9 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "execute-script",
-			Usage:  "This action initiates the execution of the script characterisation with the given id on the server with the given id.",
+			Name: "execute-script",
+			Usage: "This action initiates the execution of the script characterisation with the given id on the server " +
+				"with the given id.",
 			Action: cmd.OperationalScriptExecute,
 			Flags: []cli.Flag{
 				cli.StringFlag{

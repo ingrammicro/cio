@@ -1,21 +1,23 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package types
 
 type Label struct {
-	ID           string `json:"id" header:"ID"`
-	Name         string `json:"name" header:"NAME"`
+	ID           string `json:"id"            header:"ID"`
+	Name         string `json:"name"          header:"NAME"`
 	ResourceType string `json:"resource_type" header:"RESOURCE_TYPE"`
-	Namespace    string `json:"namespace" header:"NAMESPACE" show:"nolist"`
-	Value        string `json:"value" header:"VALUE" show:"nolist"`
+	Namespace    string `json:"namespace"     header:"NAMESPACE"     show:"nolist"`
+	Value        string `json:"value"         header:"VALUE"         show:"nolist"`
 }
 
 type LabeledResource struct {
-	ID           string `json:"id" header:"ID"`
+	ID           string `json:"id"            header:"ID"`
 	ResourceType string `json:"resource_type" header:"RESOURCE_TYPE"`
 }
 
 type LabelableFields struct {
 	LabelIDs []string `json:"label_ids" header:"LABEL_IDS" show:"nolist,noshow"`
-	Labels   []string `json:"labels" header:"LABELS"`
+	Labels   []string `json:"labels"    header:"LABELS"`
 }
 
 type Labelable interface {

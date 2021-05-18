@@ -1,12 +1,21 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package kubernetes
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathKubernetesClusters = "/kubernetes/clusters"
+const APIPathKubernetesCluster = "/kubernetes/clusters/%s"
+const APIPathKubernetesClusterRetry = "/kubernetes/clusters/%s/retry"
+const APIPathKubernetesClusterDiscard = "/kubernetes/clusters/%s/discard"
+const APIPathKubernetesClusterPlan = "/kubernetes/cluster_plans/%s"
 
 // ClusterService manages cluster operations
 type ClusterService struct {
@@ -28,7 +37,7 @@ func NewClusterService(concertoService utils.ConcertoService) (*ClusterService, 
 func (cs *ClusterService) ListClusters() (clusters []*types.Cluster, err error) {
 	log.Debug("ListClusters")
 
-	data, status, err := cs.concertoService.Get("/kubernetes/clusters")
+	data, status, err := cs.concertoService.Get(APIPathKubernetesClusters)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +57,7 @@ func (cs *ClusterService) ListClusters() (clusters []*types.Cluster, err error) 
 func (cs *ClusterService) GetCluster(clusterID string) (cluster *types.Cluster, err error) {
 	log.Debug("GetCluster")
 
-	data, status, err := cs.concertoService.Get(fmt.Sprintf("/kubernetes/clusters/%s", clusterID))
+	data, status, err := cs.concertoService.Get(fmt.Sprintf(APIPathKubernetesCluster, clusterID))
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +77,7 @@ func (cs *ClusterService) GetCluster(clusterID string) (cluster *types.Cluster, 
 func (cs *ClusterService) CreateCluster(clusterParams *map[string]interface{}) (cluster *types.Cluster, err error) {
 	log.Debug("CreateCluster")
 
-	data, status, err := cs.concertoService.Post("/kubernetes/clusters", clusterParams)
+	data, status, err := cs.concertoService.Post(APIPathKubernetesClusters, clusterParams)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +99,7 @@ func (cs *ClusterService) UpdateCluster(
 ) (cluster *types.Cluster, err error) {
 	log.Debug("UpdateCluster")
 
-	data, status, err := cs.concertoService.Put(fmt.Sprintf("/kubernetes/clusters/%s", clusterID), clusterParams)
+	data, status, err := cs.concertoService.Put(fmt.Sprintf(APIPathKubernetesCluster, clusterID), clusterParams)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +119,7 @@ func (cs *ClusterService) UpdateCluster(
 func (cs *ClusterService) DeleteCluster(clusterID string) (cluster *types.Cluster, err error) {
 	log.Debug("DeleteCluster")
 
-	data, status, err := cs.concertoService.Delete(fmt.Sprintf("/kubernetes/clusters/%s", clusterID))
+	data, status, err := cs.concertoService.Delete(fmt.Sprintf(APIPathKubernetesCluster, clusterID))
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +141,7 @@ func (cs *ClusterService) RetryCluster(clusterID string, clusterParams *map[stri
 ) {
 	log.Debug("RetryCluster")
 
-	data, status, err := cs.concertoService.Put(fmt.Sprintf("/kubernetes/clusters/%s/retry", clusterID), clusterParams)
+	data, status, err := cs.concertoService.Put(fmt.Sprintf(APIPathKubernetesClusterRetry, clusterID), clusterParams)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +161,7 @@ func (cs *ClusterService) RetryCluster(clusterID string, clusterParams *map[stri
 func (cs *ClusterService) DiscardCluster(clusterID string) (err error) {
 	log.Debug("DiscardCluster")
 
-	data, status, err := cs.concertoService.Delete(fmt.Sprintf("/kubernetes/clusters/%s/discard", clusterID))
+	data, status, err := cs.concertoService.Delete(fmt.Sprintf(APIPathKubernetesClusterDiscard, clusterID))
 	if err != nil {
 		return err
 	}
@@ -168,7 +177,7 @@ func (cs *ClusterService) DiscardCluster(clusterID string) (err error) {
 func (cs *ClusterService) GetClusterPlan(clusterPlanID string) (clusterPlan *types.ClusterPlan, err error) {
 	log.Debug("GetClusterPlan")
 
-	data, status, err := cs.concertoService.Get(fmt.Sprintf("/kubernetes/cluster_plans/%s", clusterPlanID))
+	data, status, err := cs.concertoService.Get(fmt.Sprintf(APIPathKubernetesClusterPlan, clusterPlanID))
 	if err != nil {
 		return nil, err
 	}

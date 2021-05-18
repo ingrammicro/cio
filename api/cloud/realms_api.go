@@ -1,12 +1,19 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathCloudProviderRealms = "/cloud/cloud_providers/%s/realms"
+const APIPathCloudRealm = "/cloud/realms/%s"
+const APIPathCloudRealmNodePoolPlans = "/cloud/realms/%s/node_pool_plans"
 
 // RealmService manages realm operations
 type RealmService struct {
@@ -28,7 +35,7 @@ func NewRealmService(concertoService utils.ConcertoService) (*RealmService, erro
 func (rs *RealmService) ListRealms(providerID string) (realms []*types.Realm, err error) {
 	log.Debug("ListRealms")
 
-	data, status, err := rs.concertoService.Get(fmt.Sprintf("/cloud/cloud_providers/%s/realms", providerID))
+	data, status, err := rs.concertoService.Get(fmt.Sprintf(APIPathCloudProviderRealms, providerID))
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +55,7 @@ func (rs *RealmService) ListRealms(providerID string) (realms []*types.Realm, er
 func (rs *RealmService) GetRealm(realmID string) (realm *types.Realm, err error) {
 	log.Debug("GetRealm")
 
-	data, status, err := rs.concertoService.Get(fmt.Sprintf("/cloud/realms/%s", realmID))
+	data, status, err := rs.concertoService.Get(fmt.Sprintf(APIPathCloudRealm, realmID))
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +75,7 @@ func (rs *RealmService) GetRealm(realmID string) (realm *types.Realm, err error)
 func (rs *RealmService) ListRealmNodePoolPlans(realmID string) (nodePoolPlans []*types.NodePoolPlan, err error) {
 	log.Debug("ListRealmNodePoolPlans")
 
-	data, status, err := rs.concertoService.Get(fmt.Sprintf("/cloud/realms/%s/node_pool_plans", realmID))
+	data, status, err := rs.concertoService.Get(fmt.Sprintf(APIPathCloudRealmNodePoolPlans, realmID))
 	if err != nil {
 		return nil, err
 	}

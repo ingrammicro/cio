@@ -1,12 +1,20 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathNetworkLoadBalancers = "/network/load_balancers"
+const APIPathNetworkLoadBalancer = "/network/load_balancers/%s"
+const APIPathNetworkLoadBalancerRetry = "/network/load_balancers/%s/retry"
+const APIPathNetworkLoadBalancerPlan = "/network/load_balancer_plans/%s"
 
 // LoadBalancerService manages load balancer operations
 type LoadBalancerService struct {
@@ -28,7 +36,7 @@ func NewLoadBalancerService(concertoService utils.ConcertoService) (*LoadBalance
 func (lbs *LoadBalancerService) ListLoadBalancers() (loadBalancers []*types.LoadBalancer, err error) {
 	log.Debug("ListLoadBalancers")
 
-	data, status, err := lbs.concertoService.Get("/network/load_balancers")
+	data, status, err := lbs.concertoService.Get(APIPathNetworkLoadBalancers)
 
 	if err != nil {
 		return nil, err
@@ -49,7 +57,7 @@ func (lbs *LoadBalancerService) ListLoadBalancers() (loadBalancers []*types.Load
 func (lbs *LoadBalancerService) GetLoadBalancer(loadBalancerID string) (loadBalancer *types.LoadBalancer, err error) {
 	log.Debug("GetLoadBalancer")
 
-	data, status, err := lbs.concertoService.Get(fmt.Sprintf("/network/load_balancers/%s", loadBalancerID))
+	data, status, err := lbs.concertoService.Get(fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerID))
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +74,12 @@ func (lbs *LoadBalancerService) GetLoadBalancer(loadBalancerID string) (loadBala
 }
 
 // CreateLoadBalancer creates a load balancer
-func (lbs *LoadBalancerService) CreateLoadBalancer(loadBalancerParams *map[string]interface{}) (loadBalancer *types.LoadBalancer, err error) {
+func (lbs *LoadBalancerService) CreateLoadBalancer(
+	loadBalancerParams *map[string]interface{},
+) (loadBalancer *types.LoadBalancer, err error) {
 	log.Debug("CreateLoadBalancer")
 
-	data, status, err := lbs.concertoService.Post("/network/load_balancers", loadBalancerParams)
+	data, status, err := lbs.concertoService.Post(APIPathNetworkLoadBalancers, loadBalancerParams)
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +96,16 @@ func (lbs *LoadBalancerService) CreateLoadBalancer(loadBalancerParams *map[strin
 }
 
 // UpdateLoadBalancer updates a load balancer by its ID
-func (lbs *LoadBalancerService) UpdateLoadBalancer(loadBalancerID string, loadBalancerParams *map[string]interface{}) (loadBalancer *types.LoadBalancer, err error) {
+func (lbs *LoadBalancerService) UpdateLoadBalancer(
+	loadBalancerID string,
+	loadBalancerParams *map[string]interface{},
+) (loadBalancer *types.LoadBalancer, err error) {
 	log.Debug("UpdateLoadBalancer")
 
-	data, status, err := lbs.concertoService.Put(fmt.Sprintf("/network/load_balancers/%s", loadBalancerID), loadBalancerParams)
+	data, status, err := lbs.concertoService.Put(
+		fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerID),
+		loadBalancerParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -106,10 +122,12 @@ func (lbs *LoadBalancerService) UpdateLoadBalancer(loadBalancerID string, loadBa
 }
 
 // DeleteLoadBalancer deletes a load balancer by its ID
-func (lbs *LoadBalancerService) DeleteLoadBalancer(loadBalancerID string) (loadBalancer *types.LoadBalancer, err error) {
+func (lbs *LoadBalancerService) DeleteLoadBalancer(
+	loadBalancerID string,
+) (loadBalancer *types.LoadBalancer, err error) {
 	log.Debug("DeleteLoadBalancer")
 
-	data, status, err := lbs.concertoService.Delete(fmt.Sprintf("/network/load_balancers/%s", loadBalancerID))
+	data, status, err := lbs.concertoService.Delete(fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerID))
 	if err != nil {
 		return nil, err
 	}
@@ -126,10 +144,16 @@ func (lbs *LoadBalancerService) DeleteLoadBalancer(loadBalancerID string) (loadB
 }
 
 // RetryLoadBalancer retries a load balancer by its ID
-func (lbs *LoadBalancerService) RetryLoadBalancer(loadBalancerID string, loadBalancerParams *map[string]interface{}) (loadBalancer *types.LoadBalancer, err error) {
+func (lbs *LoadBalancerService) RetryLoadBalancer(
+	loadBalancerID string,
+	loadBalancerParams *map[string]interface{},
+) (loadBalancer *types.LoadBalancer, err error) {
 	log.Debug("RetryLoadBalancer")
 
-	data, status, err := lbs.concertoService.Put(fmt.Sprintf("/network/load_balancers/%s/retry", loadBalancerID), loadBalancerParams)
+	data, status, err := lbs.concertoService.Put(
+		fmt.Sprintf(APIPathNetworkLoadBalancerRetry, loadBalancerID),
+		loadBalancerParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -146,10 +170,12 @@ func (lbs *LoadBalancerService) RetryLoadBalancer(loadBalancerID string, loadBal
 }
 
 // GetLoadBalancerPlan returns a load balancer plan by its ID
-func (lbs *LoadBalancerService) GetLoadBalancerPlan(loadBalancerPlanID string) (loadBalancerPlan *types.LoadBalancerPlan, err error) {
+func (lbs *LoadBalancerService) GetLoadBalancerPlan(
+	loadBalancerPlanID string,
+) (loadBalancerPlan *types.LoadBalancerPlan, err error) {
 	log.Debug("GetLoadBalancerPlan")
 
-	data, status, err := lbs.concertoService.Get(fmt.Sprintf("/network/load_balancer_plans/%s", loadBalancerPlanID))
+	data, status, err := lbs.concertoService.Get(fmt.Sprintf(APIPathNetworkLoadBalancerPlan, loadBalancerPlanID))
 	if err != nil {
 		return nil, err
 	}

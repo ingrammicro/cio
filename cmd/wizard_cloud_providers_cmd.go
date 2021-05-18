@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -40,7 +42,7 @@ func WizCloudProviderList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive cloudProvider data", err)
 	}
 	if err = formatter.PrintList(cloudProviders); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

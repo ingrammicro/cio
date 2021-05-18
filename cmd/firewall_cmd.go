@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -51,7 +53,7 @@ func FirewallRuleList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive firewall policy data", err)
 	}
 	if err = formatter.PrintList(policy.ActualRules); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

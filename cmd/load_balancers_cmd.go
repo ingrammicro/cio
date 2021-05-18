@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/network"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -52,13 +55,13 @@ func LoadBalancerList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.LoadBalancer)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.LoadBalancer, got a %T", labelable))
 		}
 		loadBalancers[i] = v
 	}
 	if err = formatter.PrintList(loadBalancers); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -76,7 +79,7 @@ func LoadBalancerShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	loadBalancer.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -106,7 +109,7 @@ func LoadBalancerCreate(c *cli.Context) error {
 
 	loadBalancer.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -129,7 +132,7 @@ func LoadBalancerUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	loadBalancer.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -148,7 +151,7 @@ func LoadBalancerDelete(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	loadBalancer.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -169,7 +172,7 @@ func LoadBalancerRetry(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	loadBalancer.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -189,7 +192,7 @@ func LoadBalancerPlanShow(c *cli.Context) error {
 	lbp.CloudProviderName = cloudProvidersMap[lbp.CloudProviderID]
 
 	if err = formatter.PrintItem(*lbp); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

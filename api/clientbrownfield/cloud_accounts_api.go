@@ -1,12 +1,18 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package clientbrownfield
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathBlueprintCloudAccounts = "/brownfield/cloud_accounts"
+const APIPathBlueprintCloudAccount = "/brownfield/cloud_accounts/%s"
 
 // BrownfieldCloudAccountService manages brownfield cloud account operations
 type BrownfieldCloudAccountService struct {
@@ -25,10 +31,12 @@ func NewBrownfieldCloudAccountService(concertoService utils.ConcertoService) (*B
 }
 
 // ListBrownfieldCloudAccounts returns the list of Brownfield Cloud Accounts as an array of CloudAccount
-func (bcas *BrownfieldCloudAccountService) ListBrownfieldCloudAccounts() (cloudAccounts []*types.CloudAccount, err error) {
+func (bcas *BrownfieldCloudAccountService) ListBrownfieldCloudAccounts() (
+	cloudAccounts []*types.CloudAccount, err error,
+) {
 	log.Debug("ListBrownfieldCloudAccounts")
 
-	data, status, err := bcas.concertoService.Get("/brownfield/cloud_accounts")
+	data, status, err := bcas.concertoService.Get(APIPathBlueprintCloudAccounts)
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +53,12 @@ func (bcas *BrownfieldCloudAccountService) ListBrownfieldCloudAccounts() (cloudA
 }
 
 // GetBrownfieldCloudAccount returns a Brownfield Cloud Account by its ID
-func (bcas *BrownfieldCloudAccountService) GetBrownfieldCloudAccount(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
+func (bcas *BrownfieldCloudAccountService) GetBrownfieldCloudAccount(
+	cloudAccountID string,
+) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("GetBrownfieldCloudAccount")
 
-	data, status, err := bcas.concertoService.Get(fmt.Sprintf("/brownfield/cloud_accounts/%s", cloudAccountID))
+	data, status, err := bcas.concertoService.Get(fmt.Sprintf(APIPathBlueprintCloudAccount, cloudAccountID))
 	if err != nil {
 		return nil, err
 	}

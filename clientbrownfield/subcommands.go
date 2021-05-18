@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package clientbrownfield
 
 import (
@@ -10,8 +12,9 @@ import (
 func SubCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:        "cloud-accounts",
-			Usage:       "Provides information about brownfield cloud accounts. Allows querying cloud accounts to import resources from IMCO.",
+			Name: "cloud-accounts",
+			Usage: "Provides information about brownfield cloud accounts. " +
+				"Allows querying cloud accounts to import resources from IMCO.",
 			Subcommands: append(cloud_accounts.SubCommands()),
 		},
 		{

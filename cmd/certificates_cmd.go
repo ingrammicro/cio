@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -39,7 +41,7 @@ func CertificateList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive load balancer certificates data", err)
 	}
 	if err = formatter.PrintList(certificates); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -55,7 +57,7 @@ func CertificateShow(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive load balancer certificate data", err)
 	}
 	if err = formatter.PrintItem(*certificate); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -79,7 +81,7 @@ func CertificateCreate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*certificate); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -100,7 +102,7 @@ func CertificateUpdate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*certificate); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

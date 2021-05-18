@@ -1,13 +1,16 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/ingrammicro/cio/api/cloudapplication"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	"time"
 )
 
 const (
@@ -16,7 +19,9 @@ const (
 )
 
 // WireUpCloudApplicationDeployment prepares common resources to send request to Concerto API
-func WireUpCloudApplicationDeployment(c *cli.Context) (ds *cloudapplication.CloudApplicationDeploymentService, f format.Formatter) {
+func WireUpCloudApplicationDeployment(c *cli.Context) (
+	ds *cloudapplication.CloudApplicationDeploymentService, f format.Formatter,
+) {
 
 	f = format.GetFormatter()
 
@@ -47,7 +52,7 @@ func CloudApplicationDeploymentList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(deps); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -64,21 +69,12 @@ func CloudApplicationDeploymentShow(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*dep); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
 
-// CloudApplicationDeploymentDeploy subcommand function
-func CloudApplicationDeploymentDeploy(c *cli.Context) error {
-	debugCmdFuncInfo(c)
-	svc, formatter := WireUpCloudApplicationDeployment(c)
-
-	checkRequiredFlags(c, []string{"id", "name"}, formatter)
-	if c.IsSet("inputs") && c.IsSet("inputs-from-file") {
-		return fmt.Errorf("invalid parameters detected. Please provide only one: 'inputs' or 'inputs-from-file'")
-	}
-
+func fillDeploymentInputs(c *cli.Context, formatter format.Formatter) map[string]interface{} {
 	deploymentIn := map[string]interface{}{}
 	deploymentIn["label_name"] = c.String("name")
 	if c.IsSet("inputs-from-file") {
@@ -95,9 +91,23 @@ func CloudApplicationDeploymentDeploy(c *cli.Context) error {
 		}
 		deploymentIn["inputs"] = (*params)["inputs"]
 	}
+	return deploymentIn
+}
+
+// CloudApplicationDeploymentDeploy subcommand function
+func CloudApplicationDeploymentDeploy(c *cli.Context) error {
+	debugCmdFuncInfo(c)
+	svc, formatter := WireUpCloudApplicationDeployment(c)
+
+	checkRequiredFlags(c, []string{"id", "name"}, formatter)
+	if c.IsSet("inputs") && c.IsSet("inputs-from-file") {
+		return fmt.Errorf("invalid parameters detected. Please provide only one: 'inputs' or 'inputs-from-file'")
+	}
+
+	deploymentIn := fillDeploymentInputs(c, formatter)
 
 	timeLapseDeploymentStatusCheck := c.Int64("time")
-	if !(timeLapseDeploymentStatusCheck > 0) {
+	if timeLapseDeploymentStatusCheck <= 0 {
 		timeLapseDeploymentStatusCheck = DefaultTimeLapseDeploymentStatusCheck
 	}
 	log.Debug("Time lapse -seconds- for deployment status check:", timeLapseDeploymentStatusCheck)
@@ -119,7 +129,7 @@ func CloudApplicationDeploymentDeploy(c *cli.Context) error {
 
 		if deploymentTask.State != "pending" {
 			if err = formatter.PrintItem(*deploymentTask); err != nil {
-				formatter.PrintFatal("Couldn't print/format result", err)
+				formatter.PrintFatal(PrintFormatError, err)
 			}
 			break
 		}
@@ -135,7 +145,7 @@ func CloudApplicationDeploymentDelete(c *cli.Context) error {
 
 	checkRequiredFlags(c, []string{"id"}, formatter)
 	timeLapseDeletionStatusCheck := c.Int64("time")
-	if !(timeLapseDeletionStatusCheck > 0) {
+	if timeLapseDeletionStatusCheck <= 0 {
 		timeLapseDeletionStatusCheck = DefaultTimeLapseDeletionStatusCheck
 	}
 	log.Debug("Time lapse -seconds- for deletion status check:", timeLapseDeletionStatusCheck)
@@ -163,7 +173,7 @@ func CloudApplicationDeploymentDelete(c *cli.Context) error {
 		// stops if something fails while undeploying
 		if deployment.Value != "undeploying" {
 			if err = formatter.PrintItem(*deployment); err != nil {
-				formatter.PrintFatal("Couldn't print/format result", err)
+				formatter.PrintFatal(PrintFormatError, err)
 			}
 			break
 		}

@@ -1,12 +1,20 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package kubernetes
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathKubernetesClusterNodePools = "/kubernetes/clusters/%s/node_pools"
+const APIPathKubernetesNodePool = "/kubernetes/node_pools/%s"
+const APIPathKubernetesNodePoolRetry = "/kubernetes/node_pools/%s/retry"
+const APIPathKubernetesNodePoolPlan = "/kubernetes/node_pool_plans/%s"
 
 // NodePoolService manages node pool operations
 type NodePoolService struct {
@@ -28,7 +36,7 @@ func NewNodePoolService(concertoService utils.ConcertoService) (*NodePoolService
 func (nps *NodePoolService) ListNodePools(clusterID string) (nodePools []*types.NodePool, err error) {
 	log.Debug("ListNodePools")
 
-	data, status, err := nps.concertoService.Get(fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID))
+	data, status, err := nps.concertoService.Get(fmt.Sprintf(APIPathKubernetesClusterNodePools, clusterID))
 
 	if err != nil {
 		return nil, err
@@ -49,7 +57,7 @@ func (nps *NodePoolService) ListNodePools(clusterID string) (nodePools []*types.
 func (nps *NodePoolService) GetNodePool(nodePoolID string) (nodePool *types.NodePool, err error) {
 	log.Debug("GetNodePool")
 
-	data, status, err := nps.concertoService.Get(fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolID))
+	data, status, err := nps.concertoService.Get(fmt.Sprintf(APIPathKubernetesNodePool, nodePoolID))
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +79,10 @@ func (nps *NodePoolService) CreateNodePool(
 ) (nodePool *types.NodePool, err error) {
 	log.Debug("CreateNodePool")
 
-	data, status, err := nps.concertoService.Post(fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID), nodePoolParams)
+	data, status, err := nps.concertoService.Post(
+		fmt.Sprintf(APIPathKubernetesClusterNodePools, clusterID),
+		nodePoolParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +104,7 @@ func (nps *NodePoolService) UpdateNodePool(
 ) (nodePool *types.NodePool, err error) {
 	log.Debug("UpdateNodePool")
 
-	data, status, err := nps.concertoService.Put(fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolID), nodePoolParams)
+	data, status, err := nps.concertoService.Put(fmt.Sprintf(APIPathKubernetesNodePool, nodePoolID), nodePoolParams)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +124,7 @@ func (nps *NodePoolService) UpdateNodePool(
 func (nps *NodePoolService) DeleteNodePool(nodePoolID string) (nodePool *types.NodePool, err error) {
 	log.Debug("DeleteNodePool")
 
-	data, status, err := nps.concertoService.Delete(fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolID))
+	data, status, err := nps.concertoService.Delete(fmt.Sprintf(APIPathKubernetesNodePool, nodePoolID))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +146,10 @@ func (nps *NodePoolService) RetryNodePool(
 ) (nodePool *types.NodePool, err error) {
 	log.Debug("RetryNodePool")
 
-	data, status, err := nps.concertoService.Put(fmt.Sprintf("/kubernetes/node_pools/%s/retry", nodePoolID), nodePoolParams)
+	data, status, err := nps.concertoService.Put(
+		fmt.Sprintf(APIPathKubernetesNodePoolRetry, nodePoolID),
+		nodePoolParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +169,7 @@ func (nps *NodePoolService) RetryNodePool(
 func (nps *NodePoolService) GetNodePoolPlan(nodePoolPlanID string) (nodePoolPlan *types.NodePoolPlan, err error) {
 	log.Debug("GetNodePoolPlan")
 
-	data, status, err := nps.concertoService.Get(fmt.Sprintf("/kubernetes/node_pool_plans/%s", nodePoolPlanID))
+	data, status, err := nps.concertoService.Get(fmt.Sprintf(APIPathKubernetesNodePoolPlan, nodePoolPlanID))
 	if err != nil {
 		return nil, err
 	}

@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package templates
 
 import (
@@ -38,12 +40,19 @@ func SubCommands() []cli.Command {
 					Usage: "Cloud provider syntax of the CSE template",
 				},
 				cli.StringFlag{
-					Name:  "definition",
-					Usage: "The definition used to configure the CSE template, as a json formatted parameter. \n\ti.e: --definition '{\"$schema\":\"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#\",\"contentVersion\":\"1.0.0.0\",\"parameters\":{\"vmName\":{\"type\":\"string\",\"defaultValue\": \"simpleLinuxVM\",\"metadata\":{\"description\": \"The name of you Virtual Machine.\"}}}}'",
+					Name: "definition",
+					Usage: "The definition used to configure the CSE template, as a json formatted parameter. \n\t" +
+						"i.e: --definition " +
+						"'{\"$schema\":\"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#\"," +
+						"\"contentVersion\":\"1.0.0.0\",\"parameters\":{\"vmName\":{\"type\":\"string\",\"defaultValue\": " +
+						"\"simpleLinuxVM\",\"metadata\":{\"description\": \"The name of you Virtual Machine.\"}}}}'",
 				},
 				cli.StringFlag{
-					Name:  "definition-from-file",
-					Usage: "The definition used to configure the CSE template, from file or STDIN, as a json formatted parameter. \n\tFrom file: --definition-from-file def.json \n\tFrom STDIN: --definition-from-file -",
+					Name: "definition-from-file",
+					Usage: "The definition used to configure the CSE template, from file or STDIN, " +
+						"as a json formatted parameter. \n\t" +
+						"From file: --definition-from-file def.json \n\t" +
+						"From STDIN: --definition-from-file -",
 				},
 				cli.StringFlag{
 					Name:  "labels",

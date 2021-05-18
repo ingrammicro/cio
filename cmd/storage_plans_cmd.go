@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -46,7 +48,7 @@ func StoragePlanShow(c *cli.Context) error {
 	storagePlans.LocationName = locationsMap[storagePlans.LocationID]
 
 	if err = formatter.PrintItem(*storagePlans); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

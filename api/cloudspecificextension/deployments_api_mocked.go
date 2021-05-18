@@ -1,16 +1,22 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloudspecificextension
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListDeploymentsMocked test mocked function
-func ListDeploymentsMocked(t *testing.T, cloudSpecificExtensionDeploymentsIn []*types.CloudSpecificExtensionDeployment) []*types.CloudSpecificExtensionDeployment {
+func ListDeploymentsMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentsIn []*types.CloudSpecificExtensionDeployment,
+) []*types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -25,17 +31,24 @@ func ListDeploymentsMocked(t *testing.T, cloudSpecificExtensionDeploymentsIn []*
 	assert.Nil(err, "CloudSpecificExtensionDeployments test data corrupted")
 
 	// call service
-	cs.On("Get", "/cse/deployments").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCseDeployments).Return(dIn, 200, nil)
 	cloudSpecificExtensionDeploymentsOut, err := ds.ListDeployments()
 
 	assert.Nil(err, "Error getting cloud specific extension deployments")
-	assert.Equal(cloudSpecificExtensionDeploymentsIn, cloudSpecificExtensionDeploymentsOut, "ListDeployments returned different cloud specific extension deployments")
+	assert.Equal(
+		cloudSpecificExtensionDeploymentsIn,
+		cloudSpecificExtensionDeploymentsOut,
+		"ListDeployments returned different cloud specific extension deployments",
+	)
 
 	return cloudSpecificExtensionDeploymentsOut
 }
 
 // ListDeploymentsFailErrMocked test mocked function
-func ListDeploymentsFailErrMocked(t *testing.T, cloudSpecificExtensionDeploymentsIn []*types.CloudSpecificExtensionDeployment) []*types.CloudSpecificExtensionDeployment {
+func ListDeploymentsFailErrMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentsIn []*types.CloudSpecificExtensionDeployment,
+) []*types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -50,7 +63,7 @@ func ListDeploymentsFailErrMocked(t *testing.T, cloudSpecificExtensionDeployment
 	assert.Nil(err, "CloudSpecificExtensionDeployments test data corrupted")
 
 	// call service
-	cs.On("Get", "/cse/deployments").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathCseDeployments).Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudSpecificExtensionDeploymentsOut, err := ds.ListDeployments()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -61,7 +74,10 @@ func ListDeploymentsFailErrMocked(t *testing.T, cloudSpecificExtensionDeployment
 }
 
 // ListDeploymentsFailStatusMocked test mocked function
-func ListDeploymentsFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploymentsIn []*types.CloudSpecificExtensionDeployment) []*types.CloudSpecificExtensionDeployment {
+func ListDeploymentsFailStatusMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentsIn []*types.CloudSpecificExtensionDeployment,
+) []*types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -76,7 +92,7 @@ func ListDeploymentsFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploym
 	assert.Nil(err, "CloudSpecificExtensionDeployments test data corrupted")
 
 	// call service
-	cs.On("Get", "/cse/deployments").Return(dIn, 499, nil)
+	cs.On("Get", APIPathCseDeployments).Return(dIn, 499, nil)
 	cloudSpecificExtensionDeploymentsOut, err := ds.ListDeployments()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -87,7 +103,10 @@ func ListDeploymentsFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploym
 }
 
 // ListDeploymentsFailJSONMocked test mocked function
-func ListDeploymentsFailJSONMocked(t *testing.T, cloudSpecificExtensionDeploymentsIn []*types.CloudSpecificExtensionDeployment) []*types.CloudSpecificExtensionDeployment {
+func ListDeploymentsFailJSONMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentsIn []*types.CloudSpecificExtensionDeployment,
+) []*types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -101,7 +120,7 @@ func ListDeploymentsFailJSONMocked(t *testing.T, cloudSpecificExtensionDeploymen
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/cse/deployments").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCseDeployments).Return(dIn, 200, nil)
 	cloudSpecificExtensionDeploymentsOut, err := ds.ListDeployments()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -112,7 +131,10 @@ func ListDeploymentsFailJSONMocked(t *testing.T, cloudSpecificExtensionDeploymen
 }
 
 // GetDeploymentMocked test mocked function
-func GetDeploymentMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func GetDeploymentMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -127,17 +149,24 @@ func GetDeploymentMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 200, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.GetDeployment(cloudSpecificExtensionDeploymentIn.ID)
 
 	assert.Nil(err, "Error getting cloud specific extension deployment")
-	assert.Equal(*cloudSpecificExtensionDeploymentIn, *cloudSpecificExtensionDeploymentOut, "GetDeployment returned different cloud specific extension deployment")
+	assert.Equal(
+		*cloudSpecificExtensionDeploymentIn,
+		*cloudSpecificExtensionDeploymentOut,
+		"GetDeployment returned different cloud specific extension deployment",
+	)
 
 	return cloudSpecificExtensionDeploymentOut
 }
 
 // GetDeploymentFailErrMocked test mocked function
-func GetDeploymentFailErrMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func GetDeploymentFailErrMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -152,7 +181,8 @@ func GetDeploymentFailErrMocked(t *testing.T, cloudSpecificExtensionDeploymentIn
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudSpecificExtensionDeploymentOut, err := ds.GetDeployment(cloudSpecificExtensionDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -163,7 +193,10 @@ func GetDeploymentFailErrMocked(t *testing.T, cloudSpecificExtensionDeploymentIn
 }
 
 // GetDeploymentFailStatusMocked test mocked function
-func GetDeploymentFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func GetDeploymentFailStatusMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -178,7 +211,7 @@ func GetDeploymentFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploymen
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 499, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.GetDeployment(cloudSpecificExtensionDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -189,7 +222,10 @@ func GetDeploymentFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploymen
 }
 
 // GetDeploymentFailJSONMocked test mocked function
-func GetDeploymentFailJSONMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func GetDeploymentFailJSONMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -203,7 +239,7 @@ func GetDeploymentFailJSONMocked(t *testing.T, cloudSpecificExtensionDeploymentI
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 200, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.GetDeployment(cloudSpecificExtensionDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -214,7 +250,11 @@ func GetDeploymentFailJSONMocked(t *testing.T, cloudSpecificExtensionDeploymentI
 }
 
 // CreateDeploymentMocked test mocked function
-func CreateDeploymentMocked(t *testing.T, templateID string, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func CreateDeploymentMocked(
+	t *testing.T,
+	templateID string,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -233,17 +273,25 @@ func CreateDeploymentMocked(t *testing.T, templateID string, cloudSpecificExtens
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/cse/templates/%s/deployments", templateID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathCseTemplateDeployments, templateID), mapIn).Return(dOut, 200, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.CreateDeployment(templateID, mapIn)
 
 	assert.Nil(err, "Error creating cloud specific extension deployment")
-	assert.Equal(cloudSpecificExtensionDeploymentIn, cloudSpecificExtensionDeploymentOut, "CreateDeployment returned different cloud specific extension deployment")
+	assert.Equal(
+		cloudSpecificExtensionDeploymentIn,
+		cloudSpecificExtensionDeploymentOut,
+		"CreateDeployment returned different cloud specific extension deployment",
+	)
 
 	return cloudSpecificExtensionDeploymentOut
 }
 
 // CreateDeploymentFailErrMocked test mocked function
-func CreateDeploymentFailErrMocked(t *testing.T, templateID string, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func CreateDeploymentFailErrMocked(
+	t *testing.T,
+	templateID string,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -262,7 +310,8 @@ func CreateDeploymentFailErrMocked(t *testing.T, templateID string, cloudSpecifi
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/cse/templates/%s/deployments", templateID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathCseTemplateDeployments, templateID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	cloudSpecificExtensionDeploymentOut, err := ds.CreateDeployment(templateID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -273,7 +322,11 @@ func CreateDeploymentFailErrMocked(t *testing.T, templateID string, cloudSpecifi
 }
 
 // CreateDeploymentFailStatusMocked test mocked function
-func CreateDeploymentFailStatusMocked(t *testing.T, templateID string, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func CreateDeploymentFailStatusMocked(
+	t *testing.T,
+	templateID string,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -292,7 +345,7 @@ func CreateDeploymentFailStatusMocked(t *testing.T, templateID string, cloudSpec
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/cse/templates/%s/deployments", templateID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathCseTemplateDeployments, templateID), mapIn).Return(dOut, 499, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.CreateDeployment(templateID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -303,7 +356,11 @@ func CreateDeploymentFailStatusMocked(t *testing.T, templateID string, cloudSpec
 }
 
 // CreateDeploymentFailJSONMocked test mocked function
-func CreateDeploymentFailJSONMocked(t *testing.T, templateID string, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func CreateDeploymentFailJSONMocked(
+	t *testing.T,
+	templateID string,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -321,7 +378,7 @@ func CreateDeploymentFailJSONMocked(t *testing.T, templateID string, cloudSpecif
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/cse/templates/%s/deployments", templateID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathCseTemplateDeployments, templateID), mapIn).Return(dIn, 200, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.CreateDeployment(templateID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -332,7 +389,10 @@ func CreateDeploymentFailJSONMocked(t *testing.T, templateID string, cloudSpecif
 }
 
 // UpdateDeploymentMocked test mocked function
-func UpdateDeploymentMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func UpdateDeploymentMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -351,17 +411,25 @@ func UpdateDeploymentMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *ty
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID), mapIn).
+		Return(dOut, 200, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.UpdateDeployment(cloudSpecificExtensionDeploymentIn.ID, mapIn)
 
 	assert.Nil(err, "Error updating cloud specific extension deployment")
-	assert.Equal(cloudSpecificExtensionDeploymentIn, cloudSpecificExtensionDeploymentOut, "UpdateDeployment returned different cloud specific extension deployment")
+	assert.Equal(
+		cloudSpecificExtensionDeploymentIn,
+		cloudSpecificExtensionDeploymentOut,
+		"UpdateDeployment returned different cloud specific extension deployment",
+	)
 
 	return cloudSpecificExtensionDeploymentOut
 }
 
 // UpdateDeploymentFailErrMocked test mocked function
-func UpdateDeploymentFailErrMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func UpdateDeploymentFailErrMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -380,7 +448,8 @@ func UpdateDeploymentFailErrMocked(t *testing.T, cloudSpecificExtensionDeploymen
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	cloudSpecificExtensionDeploymentOut, err := ds.UpdateDeployment(cloudSpecificExtensionDeploymentIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -391,7 +460,10 @@ func UpdateDeploymentFailErrMocked(t *testing.T, cloudSpecificExtensionDeploymen
 }
 
 // UpdateDeploymentFailStatusMocked test mocked function
-func UpdateDeploymentFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func UpdateDeploymentFailStatusMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -410,7 +482,8 @@ func UpdateDeploymentFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploy
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID), mapIn).
+		Return(dOut, 499, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.UpdateDeployment(cloudSpecificExtensionDeploymentIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -421,7 +494,10 @@ func UpdateDeploymentFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploy
 }
 
 // UpdateDeploymentFailJSONMocked test mocked function
-func UpdateDeploymentFailJSONMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func UpdateDeploymentFailJSONMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -439,7 +515,7 @@ func UpdateDeploymentFailJSONMocked(t *testing.T, cloudSpecificExtensionDeployme
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID), mapIn).Return(dIn, 200, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.UpdateDeployment(cloudSpecificExtensionDeploymentIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -465,15 +541,22 @@ func DeleteDeploymentMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *ty
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 200, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.DeleteDeployment(cloudSpecificExtensionDeploymentIn.ID)
 
 	assert.Nil(err, "Error deleting cloud specific extension template")
-	assert.Equal(cloudSpecificExtensionDeploymentIn, cloudSpecificExtensionDeploymentOut, "DeleteDeployment returned different cloud specific extension deployment")
+	assert.Equal(
+		cloudSpecificExtensionDeploymentIn,
+		cloudSpecificExtensionDeploymentOut,
+		"DeleteDeployment returned different cloud specific extension deployment",
+	)
 }
 
 // DeleteDeploymentFailErrMocked test mocked function
-func DeleteDeploymentFailErrMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) {
+func DeleteDeploymentFailErrMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) {
 
 	assert := assert.New(t)
 
@@ -488,7 +571,8 @@ func DeleteDeploymentFailErrMocked(t *testing.T, cloudSpecificExtensionDeploymen
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudSpecificExtensionDeploymentOut, err := ds.DeleteDeployment(cloudSpecificExtensionDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -497,7 +581,10 @@ func DeleteDeploymentFailErrMocked(t *testing.T, cloudSpecificExtensionDeploymen
 }
 
 // DeleteDeploymentFailStatusMocked test mocked function
-func DeleteDeploymentFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) {
+func DeleteDeploymentFailStatusMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) {
 
 	assert := assert.New(t)
 
@@ -512,7 +599,7 @@ func DeleteDeploymentFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploy
 	assert.Nil(err, "CloudSpecificExtensionDeployment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 499, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.DeleteDeployment(cloudSpecificExtensionDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -521,7 +608,10 @@ func DeleteDeploymentFailStatusMocked(t *testing.T, cloudSpecificExtensionDeploy
 }
 
 // DeleteDeploymentFailJSONMocked test mocked function
-func DeleteDeploymentFailJSONMocked(t *testing.T, cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment) *types.CloudSpecificExtensionDeployment {
+func DeleteDeploymentFailJSONMocked(
+	t *testing.T,
+	cloudSpecificExtensionDeploymentIn *types.CloudSpecificExtensionDeployment,
+) *types.CloudSpecificExtensionDeployment {
 
 	assert := assert.New(t)
 
@@ -535,7 +625,7 @@ func DeleteDeploymentFailJSONMocked(t *testing.T, cloudSpecificExtensionDeployme
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/cse/deployments/%s", cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathCseDeployment, cloudSpecificExtensionDeploymentIn.ID)).Return(dIn, 200, nil)
 	cloudSpecificExtensionDeploymentOut, err := ds.DeleteDeployment(cloudSpecificExtensionDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

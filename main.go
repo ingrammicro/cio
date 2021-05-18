@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package main
 
 import (
@@ -70,9 +72,10 @@ var clientCommands = []cli.Command{
 		Subcommands: append(blueprint.SubCommands()),
 	},
 	{
-		Name:        "brownfield",
-		ShortName:   "bf",
-		Usage:       "Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs, volumes and policies from different cloud accounts into the system.",
+		Name:      "brownfield",
+		ShortName: "bf",
+		Usage: "Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs, " +
+			"volumes and policies from different cloud accounts into the system.",
 		Subcommands: append(clientbrownfield.SubCommands()),
 	},
 	{
@@ -82,9 +85,9 @@ var clientCommands = []cli.Command{
 		Subcommands: append(cloudapplications.SubCommands()),
 	},
 	{
-		Name:        "cloud",
-		ShortName:   "clo",
-		Usage:       "Manages cloud related commands for server arrays, servers, generic images, ssh profiles, " +
+		Name:      "cloud",
+		ShortName: "clo",
+		Usage: "Manages cloud related commands for server arrays, servers, generic images, ssh profiles, " +
 			"cloud providers, realms, server plans and infrastructure archives",
 		Subcommands: append(cloud.SubCommands()),
 	},

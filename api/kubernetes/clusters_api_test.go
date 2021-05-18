@@ -1,9 +1,12 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package kubernetes
 
 import (
+	"testing"
+
 	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestNewClusterServiceNil(t *testing.T) {

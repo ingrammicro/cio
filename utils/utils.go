@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package utils
 
 import (
@@ -56,7 +58,8 @@ func CheckStandardStatus(status int, response []byte) error {
 				composedMsg := strings.Join(subMessages, ",")
 				message = fmt.Sprintf("%s#%s:%s", message, key, composedMsg)
 			}
-		} else if responseContent["error"] != nil {
+		}
+		if responseContent["errors"] == nil && responseContent["error"] != nil {
 			message = responseContent["error"].(string)
 		}
 	}

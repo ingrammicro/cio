@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -48,7 +50,7 @@ func ServerPlanList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(serverPlans); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -71,7 +73,7 @@ func ServerPlanShow(c *cli.Context) error {
 	serverPlan.LocationName = locationsMap[serverPlan.LocationID]
 
 	if err = formatter.PrintItem(*serverPlan); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

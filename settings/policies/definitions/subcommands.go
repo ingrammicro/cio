@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package definitions
 
 import (
@@ -38,12 +40,19 @@ func SubCommands() []cli.Command {
 					Usage: "Description of the policy definition",
 				},
 				cli.StringFlag{
-					Name:  "definition",
-					Usage: "The definition used to configure the policy, as a json formatted parameter. \n\ti.e: --definition '{\"parameters\": {\"prefix\": {\"type\": \"string\",\"metadata\": {\"description\": \"prefix data\"}},\"suffix\": {\"type\": \"string\",\"metadata\": {\"description\": \"suffix data\"}}},\"policyRule\": {\"if\": {\"not\": {\"field\": \"name\",\"like\": \"[concat(parameters('prefix'), '*', parameters('suffix'))]\"}},\"then\": {\"effect\": \"audit\"}}}'",
+					Name: "definition",
+					Usage: "The definition used to configure the policy, as a json formatted parameter. \n\t" +
+						"i.e: --definition '{\"parameters\": {\"prefix\": {\"type\": \"string\",\"metadata\": " +
+						"{\"description\": \"prefix data\"}},\"suffix\": {\"type\": \"string\",\"metadata\": " +
+						"{\"description\": \"suffix data\"}}},\"policyRule\": {\"if\": {\"not\": {\"field\": " +
+						"\"name\",\"like\": \"[concat(parameters('prefix'), '*', parameters('suffix'))]\"}},\"then\": " +
+						"{\"effect\": \"audit\"}}}'",
 				},
 				cli.StringFlag{
-					Name:  "definition-from-file",
-					Usage: "The definition used to configure the policy, from file or STDIN, as a json formatted parameter. \n\tFrom file: --definition-from-file def.json \n\tFrom STDIN: --definition-from-file -",
+					Name: "definition-from-file",
+					Usage: "The definition used to configure the policy, from file or STDIN, as a json formatted parameter. \n\t" +
+						"From file: --definition-from-file def.json \n\t" +
+						"From STDIN: --definition-from-file -",
 				},
 			},
 		},

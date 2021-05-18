@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -52,14 +54,14 @@ func SSHProfileList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		sshP, ok := labelable.(*types.SSHProfile)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.SSHProfile, got a %T", labelable))
 		}
 		sshProfiles[i] = sshP
 	}
 
 	if err = formatter.PrintList(sshProfiles); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -77,7 +79,7 @@ func SSHProfileShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	sshProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*sshProfile); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -109,7 +111,7 @@ func SSHProfileCreate(c *cli.Context) error {
 
 	sshProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*sshProfile); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -128,7 +130,7 @@ func SSHProfileUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	sshProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*sshProfile); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

@@ -1,13 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package testdata
 
 import "time"
 
 // DummyStructTestFormatter resolves type for testing
 type DummyStructTestFormatter struct {
-	ID               string                 `json:"id" header:"ID"`
+	ID               string                 `json:"id"                header:"ID"`
 	RemainingSeconds float32                `json:"remaining_seconds" header:"REMAINING SECONDS" show:"minifySeconds"`
-	JSONRaw          map[string]interface{} `json:"json_raw" header:"JSON RAW"`
-	Time             time.Time              `json:"time" header:"TIME"`
+	JSONRaw          map[string]interface{} `json:"json_raw"          header:"JSON RAW"`
+	Time             time.Time              `json:"time"              header:"TIME"`
 }
 
 // GetDummyData loads test data
