@@ -46,9 +46,9 @@ func TestListClusterPlans(t *testing.T) {
 }
 
 func TestListNodePoolPlans(t *testing.T) {
-	clusterPlansIn := testdata.GetNodePoolPlanData()
-	ListNodePoolPlansMocked(t, clusterPlansIn, clusterPlansIn[0].CloudProviderID)
-	ListNodePoolPlansFailErrMocked(t, clusterPlansIn, clusterPlansIn[0].CloudProviderID)
-	ListNodePoolPlansFailStatusMocked(t, clusterPlansIn, clusterPlansIn[0].CloudProviderID)
-	ListNodePoolPlansFailJSONMocked(t, clusterPlansIn, clusterPlansIn[0].CloudProviderID)
+	nodePoolPlansIn := testdata.GetNodePoolPlanData()
+	ListNodePoolPlansMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].CloudProviderID)
+	ListNodePoolPlansFailErrMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].CloudProviderID)
+	ListNodePoolPlansFailStatusMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].CloudProviderID)
+	ListNodePoolPlansFailJSONMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].CloudProviderID)
 }
