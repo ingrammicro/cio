@@ -112,28 +112,6 @@ func CloudProviderClusterPlansList(c *cli.Context) error {
 	return nil
 }
 
-// CloudProviderNodePoolPlansList subcommand function
-func CloudProviderNodePoolPlansList(c *cli.Context) error {
-	debugCmdFuncInfo(c)
-	cloudProvidersSvc, formatter := WireUpCloudProvider(c)
-
-	checkRequiredFlags(c, []string{"cloud-provider-id"}, formatter)
-	nodePoolPlans, err := cloudProvidersSvc.ListNodePoolPlans(c.String("cloud-provider-id"))
-	if err != nil {
-		formatter.PrintFatal("Couldn't receive node pool plans data", err)
-	}
-
-	cloudProvidersMap := LoadCloudProvidersMapping(c)
-	for id, sp := range nodePoolPlans {
-		nodePoolPlans[id].CloudProviderName = cloudProvidersMap[sp.CloudProviderID]
-	}
-
-	if err = formatter.PrintList(nodePoolPlans); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
-	}
-	return nil
-}
-
 // LoadCloudProvidersMapping retrieves Cloud Providers and create a map between ID and Name
 func LoadCloudProvidersMapping(c *cli.Context) map[string]string {
 	debugCmdFuncInfo(c)

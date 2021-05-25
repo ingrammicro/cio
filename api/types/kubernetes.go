@@ -66,9 +66,9 @@ type NodePoolPlan struct {
 	CloudProviderName    string   `header:"CLOUD_PROVIDER_NAME"`
 	RealmID              string   `json:"realm_id,omitempty" header:"REALM_ID"`
 	ServerPlanID         string   `json:"server_plan_id,omitempty" header:"SERVER_PLAN_ID"`
-	AutoscalingCapable   bool     `json:"autoscaling_capable" header:"AUTOSCALING_CAPABLE"`
-	PodsPerNodePresence  bool     `json:"pods_per_node_presence" header:"PODS_PER_NODE_PRESENCE"`
-	FirstNodePoolCapable bool     `json:"first_node_pool_capable" header:"FIRST_NODE_POOL_CAPABLE"`
+	AutoscalingCapable   bool     `json:"autoscaling_capable" header:"AUTOSCALING_CAPABLE" show:"nolist"`
+	PodsPerNodePresence  bool     `json:"pods_per_node_presence" header:"PODS_PER_NODE_PRESENCE" show:"nolist"`
+	FirstNodePoolCapable bool     `json:"first_node_pool_capable" header:"FIRST_NODE_POOL_CAPABLE" show:"nolist"`
 	Deprecated           bool     `json:"deprecated,omitempty" header:"DEPRECATED" show:"nolist,noshow"`
 	ResourceType         string   `json:"resource_type" header:"RESOURCE_TYPE" show:"nolist"`
 }

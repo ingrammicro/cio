@@ -85,7 +85,9 @@ func (cs *ClusterService) CreateCluster(clusterParams *map[string]interface{}) (
 }
 
 // UpdateCluster updates a cluster by its ID
-func (cs *ClusterService) UpdateCluster(clusterID string, clusterParams *map[string]interface{}) (cluster *types.Cluster, err error) {
+func (cs *ClusterService) UpdateCluster(
+	clusterID string, clusterParams *map[string]interface{},
+) (cluster *types.Cluster, err error) {
 	log.Debug("UpdateCluster")
 
 	data, status, err := cs.concertoService.Put(fmt.Sprintf("/kubernetes/clusters/%s", clusterID), clusterParams)
@@ -125,7 +127,9 @@ func (cs *ClusterService) DeleteCluster(clusterID string) (cluster *types.Cluste
 }
 
 // RetryCluster retries a cluster by its ID
-func (cs *ClusterService) RetryCluster(clusterID string, clusterParams *map[string]interface{}) (cluster *types.Cluster, err error) {
+func (cs *ClusterService) RetryCluster(clusterID string, clusterParams *map[string]interface{}) (
+	cluster *types.Cluster, err error,
+) {
 	log.Debug("RetryCluster")
 
 	data, status, err := cs.concertoService.Put(fmt.Sprintf("/kubernetes/clusters/%s/retry", clusterID), clusterParams)

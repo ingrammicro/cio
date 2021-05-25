@@ -45,7 +45,9 @@ func (cps *CloudProviderService) ListCloudProviders() (cloudProviders []*types.C
 }
 
 // ListServerStoragePlans returns the list of storage plans as an array of StoragePlan
-func (cps *CloudProviderService) ListServerStoragePlans(providerID string) (storagePlans []*types.StoragePlan, err error) {
+func (cps *CloudProviderService) ListServerStoragePlans(providerID string) (
+	storagePlans []*types.StoragePlan, err error,
+) {
 	log.Debug("ListServerStoragePlans")
 
 	data, status, err := cps.concertoService.Get(fmt.Sprintf("/cloud/cloud_providers/%s/storage_plans", providerID))
@@ -65,7 +67,9 @@ func (cps *CloudProviderService) ListServerStoragePlans(providerID string) (stor
 }
 
 // ListLoadBalancerPlans returns the list of load balancer plans as an array of LoadBalancerPlan
-func (cps *CloudProviderService) ListLoadBalancerPlans(providerID string) (loadBalancerPlans []*types.LoadBalancerPlan, err error) {
+func (cps *CloudProviderService) ListLoadBalancerPlans(providerID string) (
+	loadBalancerPlans []*types.LoadBalancerPlan, err error,
+) {
 	log.Debug("ListLoadBalancerPlans")
 
 	data, status, err := cps.concertoService.Get(fmt.Sprintf("/cloud/cloud_providers/%s/load_balancer_plans", providerID))
@@ -102,24 +106,4 @@ func (cps *CloudProviderService) ListClusterPlans(providerID string) (clusterPla
 	}
 
 	return clusterPlans, nil
-}
-
-// ListNodePoolPlans returns the list of node pool plans as an array of NodePoolPlan
-func (cps *CloudProviderService) ListNodePoolPlans(providerID string) (nodePoolPlans []*types.NodePoolPlan, err error) {
-	log.Debug("ListNodePoolPlans")
-
-	data, status, err := cps.concertoService.Get(fmt.Sprintf("/cloud/cloud_providers/%s/node_pool_plans", providerID))
-	if err != nil {
-		return nil, err
-	}
-
-	if err = utils.CheckStandardStatus(status, data); err != nil {
-		return nil, err
-	}
-
-	if err = json.Unmarshal(data, &nodePoolPlans); err != nil {
-		return nil, err
-	}
-
-	return nodePoolPlans, nil
 }

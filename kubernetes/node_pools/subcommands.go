@@ -53,7 +53,8 @@ func SubCommands() []cli.Command {
 				},
 				cli.StringFlag{
 					Name:  "cpu-type",
-					Usage: "Type of CPU each node of the node pools will have. Can be nil only if the node pool plan does not have any cpu types",
+					Usage: "Type of CPU each node of the node pools will have. " +
+						"Can be nil only if the node pool plan does not have any cpu types",
 				},
 				cli.IntFlag{
 					Name:  "disk-size",

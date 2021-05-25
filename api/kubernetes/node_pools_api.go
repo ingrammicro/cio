@@ -66,7 +66,9 @@ func (nps *NodePoolService) GetNodePool(nodePoolID string) (nodePool *types.Node
 }
 
 // CreateNodePool creates a node pool
-func (nps *NodePoolService) CreateNodePool(clusterID string, nodePoolParams *map[string]interface{}) (nodePool *types.NodePool, err error) {
+func (nps *NodePoolService) CreateNodePool(
+	clusterID string, nodePoolParams *map[string]interface{},
+) (nodePool *types.NodePool, err error) {
 	log.Debug("CreateNodePool")
 
 	data, status, err := nps.concertoService.Post(fmt.Sprintf("/kubernetes/clusters/%s/node_pools", clusterID), nodePoolParams)
@@ -86,7 +88,9 @@ func (nps *NodePoolService) CreateNodePool(clusterID string, nodePoolParams *map
 }
 
 // UpdateNodePool updates a node pool by its ID
-func (nps *NodePoolService) UpdateNodePool(nodePoolID string, nodePoolParams *map[string]interface{}) (nodePool *types.NodePool, err error) {
+func (nps *NodePoolService) UpdateNodePool(
+	nodePoolID string, nodePoolParams *map[string]interface{},
+) (nodePool *types.NodePool, err error) {
 	log.Debug("UpdateNodePool")
 
 	data, status, err := nps.concertoService.Put(fmt.Sprintf("/kubernetes/node_pools/%s", nodePoolID), nodePoolParams)
@@ -126,7 +130,9 @@ func (nps *NodePoolService) DeleteNodePool(nodePoolID string) (nodePool *types.N
 }
 
 // RetryNodePool retries a node pool by its ID
-func (nps *NodePoolService) RetryNodePool(nodePoolID string, nodePoolParams *map[string]interface{}) (nodePool *types.NodePool, err error) {
+func (nps *NodePoolService) RetryNodePool(
+	nodePoolID string, nodePoolParams *map[string]interface{},
+) (nodePool *types.NodePool, err error) {
 	log.Debug("RetryNodePool")
 
 	data, status, err := nps.concertoService.Put(fmt.Sprintf("/kubernetes/node_pools/%s/retry", nodePoolID), nodePoolParams)

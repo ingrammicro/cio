@@ -84,7 +84,8 @@ var clientCommands = []cli.Command{
 	{
 		Name:        "cloud",
 		ShortName:   "clo",
-		Usage:       "Manages cloud related commands for server arrays, servers, generic images, ssh profiles, cloud providers server plans and infrastructure archives",
+		Usage:       "Manages cloud related commands for server arrays, servers, generic images, ssh profiles, " +
+			"cloud providers, realms, server plans and infrastructure archives",
 		Subcommands: append(cloud.SubCommands()),
 	},
 	{
@@ -253,7 +254,9 @@ func prepareFlags(c *cli.Context) error {
 		c.App.Commands = clientCommands
 
 		// Excluding Server/Agent contextual flags
-		c.App.Flags = excludeFlags(c.App.VisibleFlags(), []string{"concerto-brownfield-token", "concerto-command-polling-token", "concerto-server-id"})
+		c.App.Flags = excludeFlags(c.App.VisibleFlags(), []string{
+			"concerto-brownfield-token", "concerto-command-polling-token", "concerto-server-id",
+		})
 	}
 
 	sort.Sort(cli.CommandsByName(c.App.Commands))
