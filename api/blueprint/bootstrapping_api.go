@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package blueprint
 
 import (
@@ -8,6 +10,10 @@ import (
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathBlueprintConfiguration = "/blueprint/configuration"
+const APIPathBlueprintAppliedConfiguration = "/blueprint/applied_configuration"
+const APIPathBlueprintBootstrapLogs = "/blueprint/bootstrap_logs"
 
 // BootstrappingService manages bootstrapping operations
 type BootstrappingService struct {
@@ -26,11 +32,14 @@ func NewBootstrappingService(concertoService utils.ConcertoService) (*Bootstrapp
 
 }
 
-// GetBootstrappingConfiguration returns the list of policy files as a JSON response with the desired configuration changes
-func (bs *BootstrappingService) GetBootstrappingConfiguration() (bootstrappingConfigurations *types.BootstrappingConfiguration, status int, err error) {
+// GetBootstrappingConfiguration returns the list of policy files as a JSON response with the desired configuration
+// changes
+func (bs *BootstrappingService) GetBootstrappingConfiguration() (
+	bootstrappingConfigurations *types.BootstrappingConfiguration, status int, err error,
+) {
 	log.Debug("GetBootstrappingConfiguration")
 
-	data, status, err := bs.concertoService.Get("/blueprint/configuration")
+	data, status, err := bs.concertoService.Get(APIPathBlueprintConfiguration)
 	if err != nil {
 		return nil, status, err
 	}
@@ -47,10 +56,13 @@ func (bs *BootstrappingService) GetBootstrappingConfiguration() (bootstrappingCo
 }
 
 // ReportBootstrappingAppliedConfiguration informs the platform of applied changes
-func (bs *BootstrappingService) ReportBootstrappingAppliedConfiguration(bootstrappingAppliedConfigurationParams *map[string]interface{}) (err error) {
+func (bs *BootstrappingService) ReportBootstrappingAppliedConfiguration(
+	bootstrappingAppliedConfigurationParams *map[string]interface{},
+) (err error) {
 	log.Debug("ReportBootstrappingAppliedConfiguration")
 
-	data, status, err := bs.concertoService.Put("/blueprint/applied_configuration", bootstrappingAppliedConfigurationParams)
+	data, status, err := bs.concertoService.Put(APIPathBlueprintAppliedConfiguration,
+		bootstrappingAppliedConfigurationParams)
 
 	if err != nil {
 		return err
@@ -64,10 +76,12 @@ func (bs *BootstrappingService) ReportBootstrappingAppliedConfiguration(bootstra
 }
 
 // ReportBootstrappingLog reports a policy files application result
-func (bs *BootstrappingService) ReportBootstrappingLog(bootstrappingContinuousReportParams *map[string]interface{}) (command *types.BootstrappingContinuousReport, status int, err error) {
+func (bs *BootstrappingService) ReportBootstrappingLog(
+	bootstrappingContinuousReportParams *map[string]interface{},
+) (command *types.BootstrappingContinuousReport, status int, err error) {
 	log.Debug("ReportBootstrappingLog")
 
-	data, status, err := bs.concertoService.Post("/blueprint/bootstrap_logs", bootstrappingContinuousReportParams)
+	data, status, err := bs.concertoService.Post(APIPathBlueprintBootstrapLogs, bootstrappingContinuousReportParams)
 
 	if err != nil {
 		return nil, status, err
@@ -81,7 +95,10 @@ func (bs *BootstrappingService) ReportBootstrappingLog(bootstrappingContinuousRe
 }
 
 // DownloadPolicyfile gets a file from given url saving file into given file path
-func (bs *BootstrappingService) DownloadPolicyfile(url string, filePath string) (realFileName string, status int, err error) {
+func (bs *BootstrappingService) DownloadPolicyfile(
+	url string,
+	filePath string,
+) (realFileName string, status int, err error) {
 	log.Debug("DownloadPolicyfile")
 
 	realFileName, status, err = bs.concertoService.GetFile(url, filePath, false)

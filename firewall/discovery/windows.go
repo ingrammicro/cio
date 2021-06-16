@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 // +build windows
 
 package discovery
@@ -68,7 +70,9 @@ func enabledProfiles() ([]string, error) {
 		}
 		if profileState.MatchString(l) {
 			if currentProfile == "" {
-				return nil, fmt.Errorf("could not parse netsh advfirewall show allprofiles command output: found state before rule name")
+				return nil, fmt.Errorf(
+					"could not parse netsh advfirewall show allprofiles command output: found state before rule name",
+				)
 			}
 			if strings.Contains(l, "ON") {
 				profiles = append(profiles, currentProfile)
@@ -76,6 +80,46 @@ func enabledProfiles() ([]string, error) {
 		}
 	}
 	return profiles, nil
+}
+
+func parseFirewallRules(name string, ruleData map[string]string) ([]*FirewallRule, error) {
+	protocol := ruleData["Protocol"]
+	if protocol != "TCP" && protocol != "UDP" {
+		return nil, nil
+	}
+	localPort := ruleData["LocalPort"]
+	if localPort == "" || localPort == "Any" {
+		localPort = "1-65535"
+	}
+
+	var rules []*FirewallRule
+	for _, port := range strings.Split(localPort, ",") {
+		match := portRange.FindStringSubmatch(port)
+		if match == nil {
+			// If rule contains dynamic port (such as RPC), do not consider any part of it
+			//fmt.Printf("Encountered dynamic port rule:\n%s\n", s)
+			return nil, nil
+		}
+		minPort, _ := strconv.Atoi(match[1])
+		maxPort := minPort
+		if match[3] != "" {
+			maxPort, _ = strconv.Atoi(match[3])
+		}
+		cidr := ruleData["RemoteIp"]
+		if cidr == "" || cidr == "Any" {
+			cidr = "0.0.0.0/0"
+		}
+		r := &FirewallRule{
+			Name:     name,
+			Target:   "ACCEPT",
+			Protocol: protocol,
+			Source:   cidr,
+			Dports:   [2]int{minPort, maxPort},
+		}
+		fmt.Printf("DEBUG: Parsed rule: %v\n", *r)
+		rules = append(rules, r)
+	}
+	return rules, nil
 }
 
 func parseRule(s string, profiles []string) ([]*FirewallRule, error) {
@@ -106,46 +150,15 @@ func parseRule(s string, profiles []string) ([]*FirewallRule, error) {
 		}
 	}
 	if !matchingProfile {
-		fmt.Printf("DEBUG: rule not belonging to enabled profile (rule's %q vs enabled %q)\n", profiles, ruleData["Profiles"])
+		fmt.Printf(
+			"DEBUG: rule not belonging to enabled profile (rule's %q vs enabled %q)\n",
+			profiles,
+			ruleData["Profiles"],
+		)
 		return nil, nil
 	}
 	if v := ruleData["Enabled"]; v != "Yes" {
 		return nil, nil
 	}
-	protocol := ruleData["Protocol"]
-	if protocol != "TCP" && protocol != "UDP" {
-		return nil, nil
-	}
-	localPort := ruleData["LocalPort"]
-	if localPort == "" || localPort == "Any" {
-		localPort = "1-65535"
-	}
-	var rules []*FirewallRule
-	for _, port := range strings.Split(localPort, ",") {
-		match := portRange.FindStringSubmatch(port)
-		if match == nil {
-			// If rule contains dynamic port (such as RPC), do not consider any part of it
-			//fmt.Printf("Encountered dynamic port rule:\n%s\n", s)
-			return nil, nil
-		}
-		minPort, _ := strconv.Atoi(match[1])
-		maxPort := minPort
-		if match[3] != "" {
-			maxPort, _ = strconv.Atoi(match[3])
-		}
-		cidr := ruleData["RemoteIp"]
-		if cidr == "" || cidr == "Any" {
-			cidr = "0.0.0.0/0"
-		}
-		r := &FirewallRule{
-			Name:     name,
-			Target:   "ACCEPT",
-			Protocol: protocol,
-			Source:   cidr,
-			Dports:   [2]int{minPort, maxPort},
-		}
-		fmt.Printf("DEBUG: Parsed rule: %v\n", *r)
-		rules = append(rules, r)
-	}
-	return rules, nil
+	return parseFirewallRules(name, ruleData)
 }

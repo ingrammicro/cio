@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 // +build linux darwin
 
 package discovery
@@ -37,25 +39,11 @@ func parseIptablesOutput(output string) ([]*FirewallChain, error) {
 	return chains, nil
 }
 
-var iptablesChainHeaderRegexp = regexp.MustCompile(`\AChain (?P<name>[a-zA-Z0-9-]+) \((policy (?P<policy>[a-zA-Z0-9-]+) )?`)
+var iptablesChainHeaderRegexp = regexp.MustCompile(
+	`\AChain (?P<name>[a-zA-Z0-9-]+) \((policy (?P<policy>[a-zA-Z0-9-]+) )?`)
 
-func parseIptablesChain(c string) (*FirewallChain, error) {
-	lines := strings.Split(c, "\n")
-	if len(lines) == 0 {
-		return nil, fmt.Errorf("chain output has no header")
-	}
-	if len(lines) < 2 {
-		return nil, fmt.Errorf("chain output has no rules header")
-	}
-	header := lines[0]
+func buildIptablesFirewallChain(header string, rules []string) (*FirewallChain, error) {
 	chain := &FirewallChain{}
-	matched, err := regexp.Match(iptablesChainHeaderRegexp.String(), []byte(header))
-	if err != nil {
-		return nil, fmt.Errorf("cannot parse chain header '%s': %v", header, err)
-	}
-	if !matched {
-		return nil, fmt.Errorf("cannot parse chain header '%s'", header)
-	}
 	match := iptablesChainHeaderRegexp.FindStringSubmatch(header)
 	for i, name := range iptablesChainHeaderRegexp.SubexpNames() {
 		switch name {
@@ -63,12 +51,12 @@ func parseIptablesChain(c string) (*FirewallChain, error) {
 			chain.Name = match[i]
 		case "policy":
 			chain.Policy = match[i]
+		default:
 		}
 	}
 	if chain.Name == "" {
 		return nil, fmt.Errorf("found no name for chain in '%s'", header)
 	}
-	rules := lines[2:]
 	for _, r := range rules {
 		if r != "" {
 			rule, err := parseIptablesRule(r)
@@ -84,10 +72,76 @@ func parseIptablesChain(c string) (*FirewallChain, error) {
 	return chain, nil
 }
 
+func parseIptablesChain(c string) (*FirewallChain, error) {
+	lines := strings.Split(c, "\n")
+	if len(lines) == 0 {
+		return nil, fmt.Errorf("chain output has no header")
+	}
+	if len(lines) < 2 {
+		return nil, fmt.Errorf("chain output has no rules header")
+	}
+	header := lines[0]
+	matched, err := regexp.Match(iptablesChainHeaderRegexp.String(), []byte(header))
+	if err != nil {
+		return nil, fmt.Errorf("cannot parse chain header '%s': %v", header, err)
+	}
+	if !matched {
+		return nil, fmt.Errorf("cannot parse chain header '%s'", header)
+	}
+	rules := lines[2:]
+	return buildIptablesFirewallChain(header, rules)
+}
+
 var iptablesRuleFieldSeparator = regexp.MustCompile("[[:blank:]]+")
 var iptablesRuleDPortRegexp = regexp.MustCompile(`(tcp|udp) dpts?:(?P<minPort>\d+)(:(?P<maxPort>\d+))?`)
 var iptablesRuleStateRegexp = regexp.MustCompile(`state [[:alpha:]]+(,[[:alpha:]]+)*`)
 var iptablesRuleStatsInfoRegexp = regexp.MustCompile(`^ ?\d+[A-Z]? \d+[A-Z]? `)
+
+func parseRuleDPorts(r string) ([2]int, error) {
+	match := iptablesRuleDPortRegexp.FindStringSubmatch(r)
+	dports := [2]int{0, 0}
+	for i, name := range iptablesRuleDPortRegexp.SubexpNames() {
+		var err error
+		switch name {
+		case "minPort":
+			dports[0], err = strconv.Atoi(match[i])
+			if err != nil {
+				return dports, fmt.Errorf("rule '%s' has invalid destination %s specification '%s'", r, name, match[i])
+			}
+		case "maxPort":
+			dports[1], _ = strconv.Atoi(match[i])
+			if err != nil {
+				dports[1] = 0
+			}
+		default:
+		}
+	}
+	if dports[1] == 0 {
+		dports[1] = dports[0]
+	}
+	return dports, nil
+}
+
+func parseRule(r, target, protocol, source string) (*FirewallRule, error) {
+	var dports [2]int
+	var err error
+	matchString := iptablesRuleDPortRegexp.FindString(r)
+	if len(matchString) == 0 {
+		dports = [2]int{1, 65535}
+	} else {
+		dports, err = parseRuleDPorts(r)
+		if err != nil {
+			return nil, err
+		}
+	}
+	rule := &FirewallRule{
+		Target:   target,
+		Protocol: protocol,
+		Source:   source,
+		Dports:   dports,
+	}
+	return rule, nil
+}
 
 func parseIptablesRule(r string) (*FirewallRule, error) {
 	r = iptablesRuleFieldSeparator.ReplaceAllLiteralString(r, " ")
@@ -103,37 +157,5 @@ func parseIptablesRule(r string) (*FirewallRule, error) {
 	if fields[3] == "lo" { // incoming interface is localhost
 		return nil, nil
 	}
-	var dports [2]int
-	matchString = iptablesRuleDPortRegexp.FindString(r)
-	if len(matchString) == 0 {
-		dports = [2]int{1, 65535}
-	} else {
-		match := iptablesRuleDPortRegexp.FindStringSubmatch(r)
-		dports = [2]int{0, 0}
-		for i, name := range iptablesRuleDPortRegexp.SubexpNames() {
-			var err error
-			switch name {
-			case "minPort":
-				dports[0], err = strconv.Atoi(match[i])
-				if err != nil {
-					return nil, fmt.Errorf("rule '%s' has invalid destination %s specification '%s'", r, name, match[i])
-				}
-			case "maxPort":
-				dports[1], _ = strconv.Atoi(match[i])
-				if err != nil {
-					dports[1] = 0
-				}
-			}
-		}
-		if dports[1] == 0 {
-			dports[1] = dports[0]
-		}
-	}
-	rule := &FirewallRule{
-		Target:   fields[0],
-		Protocol: fields[1],
-		Source:   fields[5],
-		Dports:   dports,
-	}
-	return rule, nil
+	return parseRule(r, fields[0], fields[1], fields[5])
 }

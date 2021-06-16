@@ -1,12 +1,18 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package settings
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathSettingsCloudAccountPolicyAssignments = "/settings/cloud_accounts/%s/policy_assignments"
+const APIPathPolicyAssignment = "/policy/assignments/%s"
 
 // PolicyAssignmentService manages policy assignment operations
 type PolicyAssignmentService struct {
@@ -25,10 +31,14 @@ func NewPolicyAssignmentService(concertoService utils.ConcertoService) (*PolicyA
 }
 
 // ListAssignments returns the list of policy assignments as an array of PolicyAssignment
-func (pas *PolicyAssignmentService) ListAssignments(cloudAccountID string) (assignments []*types.PolicyAssignment, err error) {
+func (pas *PolicyAssignmentService) ListAssignments(
+	cloudAccountID string,
+) (assignments []*types.PolicyAssignment, err error) {
 	log.Debug("ListAssignments")
 
-	data, status, err := pas.concertoService.Get(fmt.Sprintf("/settings/cloud_accounts/%s/policy_assignments", cloudAccountID))
+	data, status, err := pas.concertoService.Get(
+		fmt.Sprintf(APIPathSettingsCloudAccountPolicyAssignments, cloudAccountID),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +58,7 @@ func (pas *PolicyAssignmentService) ListAssignments(cloudAccountID string) (assi
 func (pas *PolicyAssignmentService) GetAssignment(assignmentID string) (assignment *types.PolicyAssignment, err error) {
 	log.Debug("GetAssignment")
 
-	data, status, err := pas.concertoService.Get(fmt.Sprintf("/policy/assignments/%s", assignmentID))
+	data, status, err := pas.concertoService.Get(fmt.Sprintf(APIPathPolicyAssignment, assignmentID))
 	if err != nil {
 		return nil, err
 	}
@@ -65,10 +75,16 @@ func (pas *PolicyAssignmentService) GetAssignment(assignmentID string) (assignme
 }
 
 // CreateAssignment creates an assignment
-func (pas *PolicyAssignmentService) CreateAssignment(definitionID string, assignmentParams *map[string]interface{}) (assignment *types.PolicyAssignment, err error) {
+func (pas *PolicyAssignmentService) CreateAssignment(
+	definitionID string,
+	assignmentParams *map[string]interface{},
+) (assignment *types.PolicyAssignment, err error) {
 	log.Debug("CreateAssignment")
 
-	data, status, err := pas.concertoService.Post(fmt.Sprintf("/policy/definitions/%s/assignments", definitionID), assignmentParams)
+	data, status, err := pas.concertoService.Post(
+		fmt.Sprintf(APIPathPolicyDefinitionAssignments, definitionID),
+		assignmentParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -85,10 +101,13 @@ func (pas *PolicyAssignmentService) CreateAssignment(definitionID string, assign
 }
 
 // UpdateAssignment updates an assignment by its ID
-func (pas *PolicyAssignmentService) UpdateAssignment(assignmentID string, assignmentParams *map[string]interface{}) (assignment *types.PolicyAssignment, err error) {
+func (pas *PolicyAssignmentService) UpdateAssignment(
+	assignmentID string,
+	assignmentParams *map[string]interface{},
+) (assignment *types.PolicyAssignment, err error) {
 	log.Debug("UpdateAssignment")
 
-	data, status, err := pas.concertoService.Put(fmt.Sprintf("/policy/assignments/%s", assignmentID), assignmentParams)
+	data, status, err := pas.concertoService.Put(fmt.Sprintf(APIPathPolicyAssignment, assignmentID), assignmentParams)
 	if err != nil {
 		return nil, err
 	}
@@ -105,10 +124,12 @@ func (pas *PolicyAssignmentService) UpdateAssignment(assignmentID string, assign
 }
 
 // DeleteAssignment deletes an assignment by its ID
-func (pas *PolicyAssignmentService) DeleteAssignment(assignmentID string) (assignment *types.PolicyAssignment, err error) {
+func (pas *PolicyAssignmentService) DeleteAssignment(
+	assignmentID string,
+) (assignment *types.PolicyAssignment, err error) {
 	log.Debug("DeleteAssignment")
 
-	data, status, err := pas.concertoService.Delete(fmt.Sprintf("/policy/assignments/%s", assignmentID))
+	data, status, err := pas.concertoService.Delete(fmt.Sprintf(APIPathPolicyAssignment, assignmentID))
 	if err != nil {
 		return nil, err
 	}

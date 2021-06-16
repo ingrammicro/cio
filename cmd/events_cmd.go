@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -38,7 +40,7 @@ func EventList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive event data", err)
 	}
 	if err = formatter.PrintList(events); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -53,7 +55,7 @@ func SysEventList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive system event data", err)
 	}
 	if err = formatter.PrintList(events); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

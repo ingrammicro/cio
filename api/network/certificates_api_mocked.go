@@ -1,16 +1,23 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListCertificatesMocked test mocked function
-func ListCertificatesMocked(t *testing.T, loadBalancerID string, certificatesIn []*types.Certificate) []*types.Certificate {
+func ListCertificatesMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificatesIn []*types.Certificate,
+) []*types.Certificate {
 
 	assert := assert.New(t)
 
@@ -25,7 +32,7 @@ func ListCertificatesMocked(t *testing.T, loadBalancerID string, certificatesIn 
 	assert.Nil(err, "Certificates test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/certificates", loadBalancerID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerCertificates, loadBalancerID)).Return(dIn, 200, nil)
 	certificatesOut, err := ds.ListCertificates(loadBalancerID)
 
 	assert.Nil(err, "Error getting certificates")
@@ -35,7 +42,11 @@ func ListCertificatesMocked(t *testing.T, loadBalancerID string, certificatesIn 
 }
 
 // ListCertificatesFailErrMocked test mocked function
-func ListCertificatesFailErrMocked(t *testing.T, loadBalancerID string, certificatesIn []*types.Certificate) []*types.Certificate {
+func ListCertificatesFailErrMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificatesIn []*types.Certificate,
+) []*types.Certificate {
 
 	assert := assert.New(t)
 
@@ -50,7 +61,8 @@ func ListCertificatesFailErrMocked(t *testing.T, loadBalancerID string, certific
 	assert.Nil(err, "Certificates test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/certificates", loadBalancerID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerCertificates, loadBalancerID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	certificatesOut, err := ds.ListCertificates(loadBalancerID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -61,7 +73,11 @@ func ListCertificatesFailErrMocked(t *testing.T, loadBalancerID string, certific
 }
 
 // ListCertificatesFailStatusMocked test mocked function
-func ListCertificatesFailStatusMocked(t *testing.T, loadBalancerID string, certificatesIn []*types.Certificate) []*types.Certificate {
+func ListCertificatesFailStatusMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificatesIn []*types.Certificate,
+) []*types.Certificate {
 
 	assert := assert.New(t)
 
@@ -76,7 +92,7 @@ func ListCertificatesFailStatusMocked(t *testing.T, loadBalancerID string, certi
 	assert.Nil(err, "Certificates test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/certificates", loadBalancerID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerCertificates, loadBalancerID)).Return(dIn, 499, nil)
 	certificatesOut, err := ds.ListCertificates(loadBalancerID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -87,7 +103,11 @@ func ListCertificatesFailStatusMocked(t *testing.T, loadBalancerID string, certi
 }
 
 // ListCertificatesFailJSONMocked test mocked function
-func ListCertificatesFailJSONMocked(t *testing.T, loadBalancerID string, certificatesIn []*types.Certificate) []*types.Certificate {
+func ListCertificatesFailJSONMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificatesIn []*types.Certificate,
+) []*types.Certificate {
 
 	assert := assert.New(t)
 
@@ -101,7 +121,7 @@ func ListCertificatesFailJSONMocked(t *testing.T, loadBalancerID string, certifi
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/certificates", loadBalancerID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerCertificates, loadBalancerID)).Return(dIn, 200, nil)
 	certificatesOut, err := ds.ListCertificates(loadBalancerID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -127,7 +147,8 @@ func GetCertificateMocked(t *testing.T, loadBalancerID string, certificateIn *ty
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID)).
+		Return(dIn, 200, nil)
 	certificateOut, err := ds.GetCertificate(loadBalancerID, certificateIn.ID)
 
 	assert.Nil(err, "Error getting certificate")
@@ -137,7 +158,11 @@ func GetCertificateMocked(t *testing.T, loadBalancerID string, certificateIn *ty
 }
 
 // GetCertificateFailErrMocked test mocked function
-func GetCertificateFailErrMocked(t *testing.T, loadBalancerID string, certificateIn *types.Certificate) *types.Certificate {
+func GetCertificateFailErrMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificateIn *types.Certificate,
+) *types.Certificate {
 
 	assert := assert.New(t)
 
@@ -152,7 +177,8 @@ func GetCertificateFailErrMocked(t *testing.T, loadBalancerID string, certificat
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	certificateOut, err := ds.GetCertificate(loadBalancerID, certificateIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -163,7 +189,11 @@ func GetCertificateFailErrMocked(t *testing.T, loadBalancerID string, certificat
 }
 
 // GetCertificateFailStatusMocked test mocked function
-func GetCertificateFailStatusMocked(t *testing.T, loadBalancerID string, certificateIn *types.Certificate) *types.Certificate {
+func GetCertificateFailStatusMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificateIn *types.Certificate,
+) *types.Certificate {
 
 	assert := assert.New(t)
 
@@ -178,7 +208,8 @@ func GetCertificateFailStatusMocked(t *testing.T, loadBalancerID string, certifi
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID)).
+		Return(dIn, 499, nil)
 	certificateOut, err := ds.GetCertificate(loadBalancerID, certificateIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -189,7 +220,11 @@ func GetCertificateFailStatusMocked(t *testing.T, loadBalancerID string, certifi
 }
 
 // GetCertificateFailJSONMocked test mocked function
-func GetCertificateFailJSONMocked(t *testing.T, loadBalancerID string, certificateIn *types.Certificate) *types.Certificate {
+func GetCertificateFailJSONMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificateIn *types.Certificate,
+) *types.Certificate {
 
 	assert := assert.New(t)
 
@@ -203,7 +238,8 @@ func GetCertificateFailJSONMocked(t *testing.T, loadBalancerID string, certifica
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID)).
+		Return(dIn, 200, nil)
 	certificateOut, err := ds.GetCertificate(loadBalancerID, certificateIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -233,7 +269,7 @@ func CreateCertificateMocked(t *testing.T, loadBalancerID string, certificateIn 
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/certificates", loadBalancerID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerCertificates, loadBalancerID), mapIn).Return(dOut, 200, nil)
 	certificateOut, err := ds.CreateCertificate(loadBalancerID, mapIn)
 
 	assert.Nil(err, "Error creating certificate")
@@ -243,7 +279,11 @@ func CreateCertificateMocked(t *testing.T, loadBalancerID string, certificateIn 
 }
 
 // CreateCertificateFailErrMocked test mocked function
-func CreateCertificateFailErrMocked(t *testing.T, loadBalancerID string, certificateIn *types.Certificate) *types.Certificate {
+func CreateCertificateFailErrMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificateIn *types.Certificate,
+) *types.Certificate {
 
 	assert := assert.New(t)
 
@@ -262,7 +302,8 @@ func CreateCertificateFailErrMocked(t *testing.T, loadBalancerID string, certifi
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/certificates", loadBalancerID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerCertificates, loadBalancerID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	certificateOut, err := ds.CreateCertificate(loadBalancerID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -273,7 +314,11 @@ func CreateCertificateFailErrMocked(t *testing.T, loadBalancerID string, certifi
 }
 
 // CreateCertificateFailStatusMocked test mocked function
-func CreateCertificateFailStatusMocked(t *testing.T, loadBalancerID string, certificateIn *types.Certificate) *types.Certificate {
+func CreateCertificateFailStatusMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificateIn *types.Certificate,
+) *types.Certificate {
 
 	assert := assert.New(t)
 
@@ -292,7 +337,7 @@ func CreateCertificateFailStatusMocked(t *testing.T, loadBalancerID string, cert
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/certificates", loadBalancerID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerCertificates, loadBalancerID), mapIn).Return(dOut, 499, nil)
 	certificateOut, err := ds.CreateCertificate(loadBalancerID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -303,7 +348,11 @@ func CreateCertificateFailStatusMocked(t *testing.T, loadBalancerID string, cert
 }
 
 // CreateCertificateFailJSONMocked test mocked function
-func CreateCertificateFailJSONMocked(t *testing.T, loadBalancerID string, certificateIn *types.Certificate) *types.Certificate {
+func CreateCertificateFailJSONMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificateIn *types.Certificate,
+) *types.Certificate {
 
 	assert := assert.New(t)
 
@@ -321,7 +370,7 @@ func CreateCertificateFailJSONMocked(t *testing.T, loadBalancerID string, certif
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/certificates", loadBalancerID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerCertificates, loadBalancerID), mapIn).Return(dIn, 200, nil)
 	certificateOut, err := ds.CreateCertificate(loadBalancerID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -351,7 +400,8 @@ func UpdateCertificateMocked(t *testing.T, loadBalancerID string, certificateIn 
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID), mapIn).
+		Return(dOut, 200, nil)
 	certificateOut, err := ds.UpdateCertificate(loadBalancerID, certificateIn.ID, mapIn)
 
 	assert.Nil(err, "Error updating certificate")
@@ -361,7 +411,11 @@ func UpdateCertificateMocked(t *testing.T, loadBalancerID string, certificateIn 
 }
 
 // UpdateCertificateFailErrMocked test mocked function
-func UpdateCertificateFailErrMocked(t *testing.T, loadBalancerID string, certificateIn *types.Certificate) *types.Certificate {
+func UpdateCertificateFailErrMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificateIn *types.Certificate,
+) *types.Certificate {
 
 	assert := assert.New(t)
 
@@ -380,7 +434,8 @@ func UpdateCertificateFailErrMocked(t *testing.T, loadBalancerID string, certifi
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	certificateOut, err := ds.UpdateCertificate(loadBalancerID, certificateIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -391,7 +446,11 @@ func UpdateCertificateFailErrMocked(t *testing.T, loadBalancerID string, certifi
 }
 
 // UpdateCertificateFailStatusMocked test mocked function
-func UpdateCertificateFailStatusMocked(t *testing.T, loadBalancerID string, certificateIn *types.Certificate) *types.Certificate {
+func UpdateCertificateFailStatusMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificateIn *types.Certificate,
+) *types.Certificate {
 
 	assert := assert.New(t)
 
@@ -410,7 +469,8 @@ func UpdateCertificateFailStatusMocked(t *testing.T, loadBalancerID string, cert
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID), mapIn).
+		Return(dOut, 499, nil)
 	certificateOut, err := ds.UpdateCertificate(loadBalancerID, certificateIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -421,7 +481,11 @@ func UpdateCertificateFailStatusMocked(t *testing.T, loadBalancerID string, cert
 }
 
 // UpdateCertificateFailJSONMocked test mocked function
-func UpdateCertificateFailJSONMocked(t *testing.T, loadBalancerID string, certificateIn *types.Certificate) *types.Certificate {
+func UpdateCertificateFailJSONMocked(
+	t *testing.T,
+	loadBalancerID string,
+	certificateIn *types.Certificate,
+) *types.Certificate {
 
 	assert := assert.New(t)
 
@@ -439,7 +503,8 @@ func UpdateCertificateFailJSONMocked(t *testing.T, loadBalancerID string, certif
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID), mapIn).
+		Return(dIn, 200, nil)
 	certificateOut, err := ds.UpdateCertificate(loadBalancerID, certificateIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -465,7 +530,8 @@ func DeleteCertificateMocked(t *testing.T, loadBalancerID string, certificateIn 
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID)).
+		Return(dIn, 200, nil)
 	err = ds.DeleteCertificate(loadBalancerID, certificateIn.ID)
 
 	assert.Nil(err, "Error deleting certificate")
@@ -487,7 +553,8 @@ func DeleteCertificateFailErrMocked(t *testing.T, loadBalancerID string, certifi
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DeleteCertificate(loadBalancerID, certificateIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -510,7 +577,8 @@ func DeleteCertificateFailStatusMocked(t *testing.T, loadBalancerID string, cert
 	assert.Nil(err, "Certificate test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateIn.ID)).
+		Return(dIn, 499, nil)
 	err = ds.DeleteCertificate(loadBalancerID, certificateIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")

@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package blueprint
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // TODO exclude from release compile
@@ -27,7 +30,7 @@ func GetAttachmentMocked(t *testing.T, attachmentIn *types.Attachment) *types.At
 	assert.Nil(err, "Attachment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/attachments/%s", attachmentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintAttachment, attachmentIn.ID)).Return(dIn, 200, nil)
 	attachmentOut, err := ds.GetAttachment(attachmentIn.ID)
 	assert.Nil(err, "Error getting attachment")
 	assert.Equal(*attachmentIn, *attachmentOut, "GetAttachment returned different attachments")
@@ -51,7 +54,7 @@ func GetAttachmentFailErrMocked(t *testing.T, attachmentIn *types.Attachment) *t
 	assert.Nil(err, "Attachment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/attachments/%s", attachmentIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintAttachment, attachmentIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	attachmentOut, err := ds.GetAttachment(attachmentIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -77,7 +80,7 @@ func GetAttachmentFailStatusMocked(t *testing.T, attachmentIn *types.Attachment)
 	assert.Nil(err, "Attachment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/attachments/%s", attachmentIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintAttachment, attachmentIn.ID)).Return(dIn, 499, nil)
 	attachmentOut, err := ds.GetAttachment(attachmentIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -102,7 +105,7 @@ func GetAttachmentFailJSONMocked(t *testing.T, attachmentIn *types.Attachment) *
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/attachments/%s", attachmentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintAttachment, attachmentIn.ID)).Return(dIn, 200, nil)
 	attachmentOut, err := ds.GetAttachment(attachmentIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -172,7 +175,7 @@ func DeleteAttachmentMocked(t *testing.T, attachmentIn *types.Attachment) {
 	assert.Nil(err, "Attachment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/blueprint/attachments/%s", attachmentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathBlueprintAttachment, attachmentIn.ID)).Return(dIn, 200, nil)
 	err = ds.DeleteAttachment(attachmentIn.ID)
 	assert.Nil(err, "Error deleting attachment")
 
@@ -194,7 +197,8 @@ func DeleteAttachmentFailErrMocked(t *testing.T, attachmentIn *types.Attachment)
 	assert.Nil(err, "Attachment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/blueprint/attachments/%s", attachmentIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathBlueprintAttachment, attachmentIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DeleteAttachment(attachmentIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -217,7 +221,7 @@ func DeleteAttachmentFailStatusMocked(t *testing.T, attachmentIn *types.Attachme
 	assert.Nil(err, "Attachment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/blueprint/attachments/%s", attachmentIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathBlueprintAttachment, attachmentIn.ID)).Return(dIn, 499, nil)
 	err = ds.DeleteAttachment(attachmentIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")

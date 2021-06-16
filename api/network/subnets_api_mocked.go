@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
@@ -28,7 +30,7 @@ func ListSubnetsMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.Subnet 
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/subnets", subnetsIn[0].VpcID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcSubnets, subnetsIn[0].VpcID)).Return(dIn, 200, nil)
 	subnetsOut, err := ds.ListSubnets(subnetsIn[0].VpcID)
 	assert.Nil(err, "Error getting Subnet list")
 	assert.Equal(subnetsIn, subnetsOut, "ListSubnets returned different Subnets")
@@ -52,7 +54,8 @@ func ListSubnetsFailErrMocked(t *testing.T, subnetsIn []*types.Subnet) []*types.
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/subnets", subnetsIn[0].VpcID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcSubnets, subnetsIn[0].VpcID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	subnetsOut, err := ds.ListSubnets(subnetsIn[0].VpcID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -78,7 +81,7 @@ func ListSubnetsFailStatusMocked(t *testing.T, subnetsIn []*types.Subnet) []*typ
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/subnets", subnetsIn[0].VpcID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcSubnets, subnetsIn[0].VpcID)).Return(dIn, 499, nil)
 	subnetsOut, err := ds.ListSubnets(subnetsIn[0].VpcID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -103,7 +106,7 @@ func ListSubnetsFailJSONMocked(t *testing.T, subnetsIn []*types.Subnet) []*types
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/subnets", subnetsIn[0].VpcID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcSubnets, subnetsIn[0].VpcID)).Return(dIn, 200, nil)
 	subnetsOut, err := ds.ListSubnets(subnetsIn[0].VpcID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -129,7 +132,7 @@ func GetSubnetMocked(t *testing.T, subnetIn *types.Subnet) *types.Subnet {
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s", subnetIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID)).Return(dIn, 200, nil)
 	subnetOut, err := ds.GetSubnet(subnetIn.ID)
 	assert.Nil(err, "Error getting Subnet")
 	assert.Equal(*subnetIn, *subnetOut, "GetSubnet returned different Subnets")
@@ -153,7 +156,7 @@ func GetSubnetFailErrMocked(t *testing.T, subnetIn *types.Subnet) *types.Subnet 
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s", subnetIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	subnetOut, err := ds.GetSubnet(subnetIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -179,7 +182,7 @@ func GetSubnetFailStatusMocked(t *testing.T, subnetIn *types.Subnet) *types.Subn
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s", subnetIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID)).Return(dIn, 499, nil)
 	subnetOut, err := ds.GetSubnet(subnetIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -204,7 +207,7 @@ func GetSubnetFailJSONMocked(t *testing.T, subnetIn *types.Subnet) *types.Subnet
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s", subnetIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID)).Return(dIn, 200, nil)
 	subnetOut, err := ds.GetSubnet(subnetIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -234,7 +237,7 @@ func CreateSubnetMocked(t *testing.T, subnetIn *types.Subnet) *types.Subnet {
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/subnets", subnetIn.VpcID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkVpcSubnets, subnetIn.VpcID), mapIn).Return(dOut, 200, nil)
 	subnetOut, err := ds.CreateSubnet(subnetIn.VpcID, mapIn)
 	assert.Nil(err, "Error creating Subnet list")
 	assert.Equal(subnetIn, subnetOut, "CreateSubnet returned different Subnets")
@@ -262,7 +265,8 @@ func CreateSubnetFailErrMocked(t *testing.T, subnetIn *types.Subnet) *types.Subn
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/subnets", subnetIn.VpcID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathNetworkVpcSubnets, subnetIn.VpcID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	subnetOut, err := ds.CreateSubnet(subnetIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -292,7 +296,7 @@ func CreateSubnetFailStatusMocked(t *testing.T, subnetIn *types.Subnet) *types.S
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/subnets", subnetIn.VpcID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkVpcSubnets, subnetIn.VpcID), mapIn).Return(dOut, 499, nil)
 	subnetOut, err := ds.CreateSubnet(subnetIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -321,7 +325,7 @@ func CreateSubnetFailJSONMocked(t *testing.T, subnetIn *types.Subnet) *types.Sub
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/subnets", subnetIn.VpcID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkVpcSubnets, subnetIn.VpcID), mapIn).Return(dIn, 200, nil)
 	subnetOut, err := ds.CreateSubnet(subnetIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -351,7 +355,7 @@ func UpdateSubnetMocked(t *testing.T, subnetIn *types.Subnet) *types.Subnet {
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/subnets/%s", subnetIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID), mapIn).Return(dOut, 200, nil)
 	subnetOut, err := ds.UpdateSubnet(subnetIn.ID, mapIn)
 	assert.Nil(err, "Error updating Subnet list")
 	assert.Equal(subnetIn, subnetOut, "UpdateSubnet returned different Subnets")
@@ -379,7 +383,7 @@ func UpdateSubnetFailErrMocked(t *testing.T, subnetIn *types.Subnet) *types.Subn
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/subnets/%s", subnetIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	subnetOut, err := ds.UpdateSubnet(subnetIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -409,7 +413,7 @@ func UpdateSubnetFailStatusMocked(t *testing.T, subnetIn *types.Subnet) *types.S
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/subnets/%s", subnetIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID), mapIn).Return(dOut, 499, nil)
 	subnetOut, err := ds.UpdateSubnet(subnetIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -437,7 +441,7 @@ func UpdateSubnetFailJSONMocked(t *testing.T, subnetIn *types.Subnet) *types.Sub
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/subnets/%s", subnetIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID), mapIn).Return(dIn, 200, nil)
 	subnetOut, err := ds.UpdateSubnet(subnetIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -463,7 +467,7 @@ func DeleteSubnetMocked(t *testing.T, subnetIn *types.Subnet) {
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/subnets/%s", subnetIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID)).Return(dIn, 200, nil)
 	err = ds.DeleteSubnet(subnetIn.ID)
 	assert.Nil(err, "Error deleting Subnet")
 }
@@ -484,7 +488,7 @@ func DeleteSubnetFailErrMocked(t *testing.T, subnetIn *types.Subnet) {
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/subnets/%s", subnetIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DeleteSubnet(subnetIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -507,7 +511,7 @@ func DeleteSubnetFailStatusMocked(t *testing.T, subnetIn *types.Subnet) {
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/subnets/%s", subnetIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkSubnet, subnetIn.ID)).Return(dIn, 499, nil)
 	err = ds.DeleteSubnet(subnetIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -530,7 +534,7 @@ func ListSubnetServersMocked(t *testing.T, serversIn []*types.Server) []*types.S
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s/servers", serversIn[0].SubnetID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnetServers, serversIn[0].SubnetID)).Return(dIn, 200, nil)
 	serversOut, err := ds.ListSubnetServers(serversIn[0].SubnetID)
 	assert.Nil(err, "Error getting Subnet servers list")
 	assert.Equal(serversIn, serversOut, "ListSubnetServers returned different Servers")
@@ -554,7 +558,8 @@ func ListSubnetServersFailErrMocked(t *testing.T, serversIn []*types.Server) []*
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s/servers", serversIn[0].SubnetID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnetServers, serversIn[0].SubnetID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	serversOut, err := ds.ListSubnetServers(serversIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -580,7 +585,7 @@ func ListSubnetServersFailStatusMocked(t *testing.T, serversIn []*types.Server) 
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s/servers", serversIn[0].SubnetID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnetServers, serversIn[0].SubnetID)).Return(dIn, 499, nil)
 	serversOut, err := ds.ListSubnetServers(serversIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -605,7 +610,7 @@ func ListSubnetServersFailJSONMocked(t *testing.T, serversIn []*types.Server) []
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s/servers", serversIn[0].SubnetID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnetServers, serversIn[0].SubnetID)).Return(dIn, 200, nil)
 	serversOut, err := ds.ListSubnetServers(serversIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -631,7 +636,7 @@ func ListSubnetServerArraysMocked(t *testing.T, serverArraysIn []*types.ServerAr
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s/server_arrays", serverArraysIn[0].SubnetID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnetServerArrays, serverArraysIn[0].SubnetID)).Return(dIn, 200, nil)
 	serverArraysOut, err := ds.ListSubnetServerArrays(serverArraysIn[0].SubnetID)
 	assert.Nil(err, "Error getting Subnet server array list")
 	assert.Equal(serverArraysIn, serverArraysOut, "ListSubnetServerArrays returned different Server arrays")
@@ -655,7 +660,8 @@ func ListSubnetServerArraysFailErrMocked(t *testing.T, serverArraysIn []*types.S
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s/server_arrays", serverArraysIn[0].SubnetID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnetServerArrays, serverArraysIn[0].SubnetID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	serverArraysOut, err := ds.ListSubnetServerArrays(serverArraysIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -681,7 +687,7 @@ func ListSubnetServerArraysFailStatusMocked(t *testing.T, serverArraysIn []*type
 	assert.Nil(err, "Subnet test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s/server_arrays", serverArraysIn[0].SubnetID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnetServerArrays, serverArraysIn[0].SubnetID)).Return(dIn, 499, nil)
 	serverArraysOut, err := ds.ListSubnetServerArrays(serverArraysIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -706,7 +712,7 @@ func ListSubnetServerArraysFailJSONMocked(t *testing.T, serverArraysIn []*types.
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/subnets/%s/server_arrays", serverArraysIn[0].SubnetID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkSubnetServerArrays, serverArraysIn[0].SubnetID)).Return(dIn, 200, nil)
 	serverArraysOut, err := ds.ListSubnetServerArrays(serverArraysIn[0].SubnetID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

@@ -1,12 +1,17 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package blueprint
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathBlueprintAttachment = "/blueprint/attachments/%s"
 
 // AttachmentService manages attachment operations
 type AttachmentService struct {
@@ -28,7 +33,7 @@ func NewAttachmentService(concertoService utils.ConcertoService) (*AttachmentSer
 func (as *AttachmentService) GetAttachment(attachmentID string) (attachment *types.Attachment, err error) {
 	log.Debug("GetAttachment")
 
-	data, status, err := as.concertoService.Get(fmt.Sprintf("/blueprint/attachments/%s", attachmentID))
+	data, status, err := as.concertoService.Get(fmt.Sprintf(APIPathBlueprintAttachment, attachmentID))
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +50,10 @@ func (as *AttachmentService) GetAttachment(attachmentID string) (attachment *typ
 }
 
 // DownloadAttachment gets an attachment file from given url saving file into given file path
-func (as *AttachmentService) DownloadAttachment(url string, filePath string) (realFileName string, status int, err error) {
+func (as *AttachmentService) DownloadAttachment(
+	url string,
+	filePath string,
+) (realFileName string, status int, err error) {
 	log.Debug("DownloadAttachment")
 
 	realFileName, status, err = as.concertoService.GetFile(url, filePath, false)
@@ -60,7 +68,7 @@ func (as *AttachmentService) DownloadAttachment(url string, filePath string) (re
 func (as *AttachmentService) DeleteAttachment(attachmentID string) (err error) {
 	log.Debug("DeleteAttachment")
 
-	data, status, err := as.concertoService.Delete(fmt.Sprintf("/blueprint/attachments/%s", attachmentID))
+	data, status, err := as.concertoService.Delete(fmt.Sprintf(APIPathBlueprintAttachment, attachmentID))
 	if err != nil {
 		return err
 	}

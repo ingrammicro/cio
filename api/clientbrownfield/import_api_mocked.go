@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package clientbrownfield
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ImportServersMocked test mocked function
@@ -27,7 +30,8 @@ func ImportServersMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloud
 	assert.Nil(err, "ImportServers test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_servers", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportServers, cloudAccountID), mapIn).
+		Return(dOut, 200, nil)
 	cloudAccountOut, err := ds.ImportServers(cloudAccountID, mapIn)
 
 	assert.Nil(err, "Error importing servers for cloud account")
@@ -37,7 +41,11 @@ func ImportServersMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloud
 }
 
 // ImportServersFailErrMocked test mocked function
-func ImportServersFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportServersFailErrMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -54,7 +62,8 @@ func ImportServersFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount
 	assert.Nil(err, "ImportServers test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_servers", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportServers, cloudAccountID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	cloudAccountOut, err := ds.ImportServers(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -65,7 +74,11 @@ func ImportServersFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount
 }
 
 // ImportServersFailStatusMocked test mocked function
-func ImportServersFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportServersFailStatusMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -82,7 +95,8 @@ func ImportServersFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAcco
 	assert.Nil(err, "ImportServers test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_servers", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportServers, cloudAccountID), mapIn).
+		Return(dOut, 499, nil)
 	cloudAccountOut, err := ds.ImportServers(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -93,7 +107,11 @@ func ImportServersFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAcco
 }
 
 // ImportServersFailJSONMocked test mocked function
-func ImportServersFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportServersFailJSONMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -109,7 +127,8 @@ func ImportServersFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccoun
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_servers", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportServers, cloudAccountID), mapIn).
+		Return(dIn, 200, nil)
 	cloudAccountOut, err := ds.ImportServers(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -137,7 +156,7 @@ func ImportVPCsMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAcc
 	assert.Nil(err, "ImportVPCs test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_vpcs", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportVpcs, cloudAccountID), mapIn).Return(dOut, 200, nil)
 	cloudAccountOut, err := ds.ImportVPCs(cloudAccountID, mapIn)
 
 	assert.Nil(err, "Error importing VPCs for cloud account")
@@ -147,7 +166,11 @@ func ImportVPCsMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAcc
 }
 
 // ImportVPCsFailErrMocked test mocked function
-func ImportVPCsFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportVPCsFailErrMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -164,7 +187,8 @@ func ImportVPCsFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, c
 	assert.Nil(err, "ImportVPCs test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_vpcs", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportVpcs, cloudAccountID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	cloudAccountOut, err := ds.ImportVPCs(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -175,7 +199,11 @@ func ImportVPCsFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, c
 }
 
 // ImportVPCsFailStatusMocked test mocked function
-func ImportVPCsFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportVPCsFailStatusMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -192,7 +220,7 @@ func ImportVPCsFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount
 	assert.Nil(err, "ImportVPCs test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_vpcs", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportVpcs, cloudAccountID), mapIn).Return(dOut, 499, nil)
 	cloudAccountOut, err := ds.ImportVPCs(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -203,7 +231,11 @@ func ImportVPCsFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount
 }
 
 // ImportVPCsFailJSONMocked test mocked function
-func ImportVPCsFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportVPCsFailJSONMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -219,7 +251,7 @@ func ImportVPCsFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, 
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_vpcs", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportVpcs, cloudAccountID), mapIn).Return(dIn, 200, nil)
 	cloudAccountOut, err := ds.ImportVPCs(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -230,7 +262,11 @@ func ImportVPCsFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, 
 }
 
 // ImportFloatingIPsMocked test mocked function
-func ImportFloatingIPsMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportFloatingIPsMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -247,7 +283,8 @@ func ImportFloatingIPsMocked(t *testing.T, cloudAccountIn *types.CloudAccount, c
 	assert.Nil(err, "ImportFloatingIPs test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_floating_ips", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportFloatingIPs, cloudAccountID), mapIn).
+		Return(dOut, 200, nil)
 	cloudAccountOut, err := ds.ImportFloatingIPs(cloudAccountID, mapIn)
 
 	assert.Nil(err, "Error importing floating IPs for cloud account")
@@ -257,7 +294,11 @@ func ImportFloatingIPsMocked(t *testing.T, cloudAccountIn *types.CloudAccount, c
 }
 
 // ImportFloatingIPsFailErrMocked test mocked function
-func ImportFloatingIPsFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportFloatingIPsFailErrMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -274,7 +315,8 @@ func ImportFloatingIPsFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAcc
 	assert.Nil(err, "ImportFloatingIPs test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_floating_ips", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportFloatingIPs, cloudAccountID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	cloudAccountOut, err := ds.ImportFloatingIPs(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -285,7 +327,11 @@ func ImportFloatingIPsFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAcc
 }
 
 // ImportFloatingIPsFailStatusMocked test mocked function
-func ImportFloatingIPsFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportFloatingIPsFailStatusMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -302,7 +348,8 @@ func ImportFloatingIPsFailStatusMocked(t *testing.T, cloudAccountIn *types.Cloud
 	assert.Nil(err, "ImportFloatingIPs test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_floating_ips", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportFloatingIPs, cloudAccountID), mapIn).
+		Return(dOut, 499, nil)
 	cloudAccountOut, err := ds.ImportFloatingIPs(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -313,7 +360,11 @@ func ImportFloatingIPsFailStatusMocked(t *testing.T, cloudAccountIn *types.Cloud
 }
 
 // ImportFloatingIPsFailJSONMocked test mocked function
-func ImportFloatingIPsFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportFloatingIPsFailJSONMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -329,7 +380,8 @@ func ImportFloatingIPsFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAc
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_floating_ips", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportFloatingIPs, cloudAccountID), mapIn).
+		Return(dIn, 200, nil)
 	cloudAccountOut, err := ds.ImportFloatingIPs(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -357,7 +409,8 @@ func ImportVolumesMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloud
 	assert.Nil(err, "ImportVolumes test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_volumes", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportVolumes, cloudAccountID), mapIn).
+		Return(dOut, 200, nil)
 	cloudAccountOut, err := ds.ImportVolumes(cloudAccountID, mapIn)
 
 	assert.Nil(err, "Error importing volumes for cloud account")
@@ -367,7 +420,11 @@ func ImportVolumesMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloud
 }
 
 // ImportVolumesFailErrMocked test mocked function
-func ImportVolumesFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportVolumesFailErrMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -384,7 +441,8 @@ func ImportVolumesFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount
 	assert.Nil(err, "ImportVolumes test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_volumes", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportVolumes, cloudAccountID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	cloudAccountOut, err := ds.ImportVolumes(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -395,7 +453,11 @@ func ImportVolumesFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount
 }
 
 // ImportVolumesFailStatusMocked test mocked function
-func ImportVolumesFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportVolumesFailStatusMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -412,7 +474,8 @@ func ImportVolumesFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAcco
 	assert.Nil(err, "ImportVolumes test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_volumes", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportVolumes, cloudAccountID), mapIn).
+		Return(dOut, 499, nil)
 	cloudAccountOut, err := ds.ImportVolumes(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -423,7 +486,11 @@ func ImportVolumesFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAcco
 }
 
 // ImportVolumesFailJSONMocked test mocked function
-func ImportVolumesFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportVolumesFailJSONMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -439,7 +506,8 @@ func ImportVolumesFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccoun
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_volumes", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportVolumes, cloudAccountID), mapIn).
+		Return(dIn, 200, nil)
 	cloudAccountOut, err := ds.ImportVolumes(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -450,7 +518,11 @@ func ImportVolumesFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccoun
 }
 
 // ImportKubernetesClustersMocked test mocked function
-func ImportKubernetesClustersMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportKubernetesClustersMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -467,7 +539,8 @@ func ImportKubernetesClustersMocked(t *testing.T, cloudAccountIn *types.CloudAcc
 	assert.Nil(err, "ImportKubernetesClusters test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_kubernetes_clusters", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportKubernetesClusters, cloudAccountID), mapIn).
+		Return(dOut, 200, nil)
 	cloudAccountOut, err := ds.ImportKubernetesClusters(cloudAccountID, mapIn)
 
 	assert.Nil(err, "Error importing kubernetes clusters for cloud account")
@@ -477,7 +550,11 @@ func ImportKubernetesClustersMocked(t *testing.T, cloudAccountIn *types.CloudAcc
 }
 
 // ImportKubernetesClustersFailErrMocked test mocked function
-func ImportKubernetesClustersFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportKubernetesClustersFailErrMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -494,7 +571,8 @@ func ImportKubernetesClustersFailErrMocked(t *testing.T, cloudAccountIn *types.C
 	assert.Nil(err, "ImportKubernetesClusters test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_kubernetes_clusters", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportKubernetesClusters, cloudAccountID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	cloudAccountOut, err := ds.ImportKubernetesClusters(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -505,7 +583,11 @@ func ImportKubernetesClustersFailErrMocked(t *testing.T, cloudAccountIn *types.C
 }
 
 // ImportKubernetesClustersFailStatusMocked test mocked function
-func ImportKubernetesClustersFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportKubernetesClustersFailStatusMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -522,7 +604,8 @@ func ImportKubernetesClustersFailStatusMocked(t *testing.T, cloudAccountIn *type
 	assert.Nil(err, "ImportKubernetesClusters test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_kubernetes_clusters", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportKubernetesClusters, cloudAccountID), mapIn).
+		Return(dOut, 499, nil)
 	cloudAccountOut, err := ds.ImportKubernetesClusters(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -533,7 +616,11 @@ func ImportKubernetesClustersFailStatusMocked(t *testing.T, cloudAccountIn *type
 }
 
 // ImportKubernetesClustersFailJSONMocked test mocked function
-func ImportKubernetesClustersFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportKubernetesClustersFailJSONMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -549,7 +636,8 @@ func ImportKubernetesClustersFailJSONMocked(t *testing.T, cloudAccountIn *types.
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_kubernetes_clusters", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportKubernetesClusters, cloudAccountID), mapIn).
+		Return(dIn, 200, nil)
 	cloudAccountOut, err := ds.ImportKubernetesClusters(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -577,7 +665,8 @@ func ImportPoliciesMocked(t *testing.T, cloudAccountIn *types.CloudAccount, clou
 	assert.Nil(err, "ImportPolicies test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_policies", cloudAccountID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportPolicies, cloudAccountID), mapIn).
+		Return(dOut, 200, nil)
 	cloudAccountOut, err := ds.ImportPolicies(cloudAccountID, mapIn)
 
 	assert.Nil(err, "Error importing policies for cloud account")
@@ -587,7 +676,11 @@ func ImportPoliciesMocked(t *testing.T, cloudAccountIn *types.CloudAccount, clou
 }
 
 // ImportPoliciesFailErrMocked test mocked function
-func ImportPoliciesFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportPoliciesFailErrMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -604,7 +697,8 @@ func ImportPoliciesFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccoun
 	assert.Nil(err, "ImportPolicies test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_policies", cloudAccountID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportPolicies, cloudAccountID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	cloudAccountOut, err := ds.ImportPolicies(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -615,7 +709,11 @@ func ImportPoliciesFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccoun
 }
 
 // ImportPoliciesFailStatusMocked test mocked function
-func ImportPoliciesFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportPoliciesFailStatusMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -632,7 +730,8 @@ func ImportPoliciesFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAcc
 	assert.Nil(err, "ImportPolicies test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_policies", cloudAccountID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportPolicies, cloudAccountID), mapIn).
+		Return(dOut, 499, nil)
 	cloudAccountOut, err := ds.ImportPolicies(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -643,7 +742,11 @@ func ImportPoliciesFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAcc
 }
 
 // ImportPoliciesFailJSONMocked test mocked function
-func ImportPoliciesFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func ImportPoliciesFailJSONMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -659,7 +762,8 @@ func ImportPoliciesFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccou
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/brownfield/cloud_accounts/%s/import_policies", cloudAccountID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintCloudAccountImportPolicies, cloudAccountID), mapIn).
+		Return(dIn, 200, nil)
 	cloudAccountOut, err := ds.ImportPolicies(cloudAccountID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

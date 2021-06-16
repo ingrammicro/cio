@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package clientbrownfield
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListBrownfieldCloudAccountsMocked test mocked function
@@ -25,7 +28,7 @@ func ListBrownfieldCloudAccountsMocked(t *testing.T, cloudAccountsIn []*types.Cl
 	assert.Nil(err, "CloudAccounts test data corrupted")
 
 	// call service
-	cs.On("Get", "/brownfield/cloud_accounts").Return(dIn, 200, nil)
+	cs.On("Get", APIPathBlueprintCloudAccounts).Return(dIn, 200, nil)
 	cloudAccountsOut, err := ds.ListBrownfieldCloudAccounts()
 	assert.Nil(err, "Error getting brownfield cloud account list")
 	assert.Equal(cloudAccountsIn, cloudAccountsOut, "ListBrownfieldCloudAccounts returned different cloud accounts")
@@ -34,7 +37,10 @@ func ListBrownfieldCloudAccountsMocked(t *testing.T, cloudAccountsIn []*types.Cl
 }
 
 // ListBrownfieldCloudAccountsFailErrMocked test mocked function
-func ListBrownfieldCloudAccountsFailErrMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
+func ListBrownfieldCloudAccountsFailErrMocked(
+	t *testing.T,
+	cloudAccountsIn []*types.CloudAccount,
+) []*types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -49,7 +55,7 @@ func ListBrownfieldCloudAccountsFailErrMocked(t *testing.T, cloudAccountsIn []*t
 	assert.Nil(err, "CloudAccounts test data corrupted")
 
 	// call service
-	cs.On("Get", "/brownfield/cloud_accounts").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathBlueprintCloudAccounts).Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudAccountsOut, err := ds.ListBrownfieldCloudAccounts()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -60,7 +66,10 @@ func ListBrownfieldCloudAccountsFailErrMocked(t *testing.T, cloudAccountsIn []*t
 }
 
 // ListBrownfieldCloudAccountsFailStatusMocked test mocked function
-func ListBrownfieldCloudAccountsFailStatusMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
+func ListBrownfieldCloudAccountsFailStatusMocked(
+	t *testing.T,
+	cloudAccountsIn []*types.CloudAccount,
+) []*types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -75,7 +84,7 @@ func ListBrownfieldCloudAccountsFailStatusMocked(t *testing.T, cloudAccountsIn [
 	assert.Nil(err, "CloudAccounts test data corrupted")
 
 	// call service
-	cs.On("Get", "/brownfield/cloud_accounts").Return(dIn, 499, nil)
+	cs.On("Get", APIPathBlueprintCloudAccounts).Return(dIn, 499, nil)
 	cloudAccountsOut, err := ds.ListBrownfieldCloudAccounts()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -86,7 +95,10 @@ func ListBrownfieldCloudAccountsFailStatusMocked(t *testing.T, cloudAccountsIn [
 }
 
 // ListBrownfieldCloudAccountsFailJSONMocked test mocked function
-func ListBrownfieldCloudAccountsFailJSONMocked(t *testing.T, cloudAccountsIn []*types.CloudAccount) []*types.CloudAccount {
+func ListBrownfieldCloudAccountsFailJSONMocked(
+	t *testing.T,
+	cloudAccountsIn []*types.CloudAccount,
+) []*types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -100,7 +112,7 @@ func ListBrownfieldCloudAccountsFailJSONMocked(t *testing.T, cloudAccountsIn []*
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/brownfield/cloud_accounts").Return(dIn, 200, nil)
+	cs.On("Get", APIPathBlueprintCloudAccounts).Return(dIn, 200, nil)
 	cloudAccountsOut, err := ds.ListBrownfieldCloudAccounts()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -111,7 +123,11 @@ func ListBrownfieldCloudAccountsFailJSONMocked(t *testing.T, cloudAccountsIn []*
 }
 
 // GetBrownfieldCloudAccountMocked test mocked function
-func GetBrownfieldCloudAccountMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func GetBrownfieldCloudAccountMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -126,7 +142,7 @@ func GetBrownfieldCloudAccountMocked(t *testing.T, cloudAccountIn *types.CloudAc
 	assert.Nil(err, "CloudAccount test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/brownfield/cloud_accounts/%s", cloudAccountID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintCloudAccount, cloudAccountID)).Return(dIn, 200, nil)
 	cloudAccountOut, err := ds.GetBrownfieldCloudAccount(cloudAccountID)
 	assert.Nil(err, "Error getting brownfield cloud account")
 	assert.Equal(*cloudAccountIn, *cloudAccountOut, "GetBrownfieldCloudAccount returned different cloud account")
@@ -135,7 +151,11 @@ func GetBrownfieldCloudAccountMocked(t *testing.T, cloudAccountIn *types.CloudAc
 }
 
 // GetBrownfieldCloudAccountFailErrMocked test mocked function
-func GetBrownfieldCloudAccountFailErrMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func GetBrownfieldCloudAccountFailErrMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -150,7 +170,8 @@ func GetBrownfieldCloudAccountFailErrMocked(t *testing.T, cloudAccountIn *types.
 	assert.Nil(err, "CloudAccount test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/brownfield/cloud_accounts/%s", cloudAccountID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintCloudAccount, cloudAccountID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudAccountOut, err := ds.GetBrownfieldCloudAccount(cloudAccountID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -161,7 +182,11 @@ func GetBrownfieldCloudAccountFailErrMocked(t *testing.T, cloudAccountIn *types.
 }
 
 // GetBrownfieldCloudAccountFailStatusMocked test mocked function
-func GetBrownfieldCloudAccountFailStatusMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func GetBrownfieldCloudAccountFailStatusMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -176,7 +201,7 @@ func GetBrownfieldCloudAccountFailStatusMocked(t *testing.T, cloudAccountIn *typ
 	assert.Nil(err, "CloudAccount test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/brownfield/cloud_accounts/%s", cloudAccountID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintCloudAccount, cloudAccountID)).Return(dIn, 499, nil)
 	cloudAccountOut, err := ds.GetBrownfieldCloudAccount(cloudAccountID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -187,7 +212,11 @@ func GetBrownfieldCloudAccountFailStatusMocked(t *testing.T, cloudAccountIn *typ
 }
 
 // GetBrownfieldCloudAccountFailJSONMocked test mocked function
-func GetBrownfieldCloudAccountFailJSONMocked(t *testing.T, cloudAccountIn *types.CloudAccount, cloudAccountID string) *types.CloudAccount {
+func GetBrownfieldCloudAccountFailJSONMocked(
+	t *testing.T,
+	cloudAccountIn *types.CloudAccount,
+	cloudAccountID string,
+) *types.CloudAccount {
 
 	assert := assert.New(t)
 
@@ -201,7 +230,7 @@ func GetBrownfieldCloudAccountFailJSONMocked(t *testing.T, cloudAccountIn *types
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/brownfield/cloud_accounts/%s", cloudAccountID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintCloudAccount, cloudAccountID)).Return(dIn, 200, nil)
 	cloudAccountOut, err := ds.GetBrownfieldCloudAccount(cloudAccountID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

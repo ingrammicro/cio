@@ -1,11 +1,14 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
+	"strings"
+
 	"github.com/ingrammicro/cio/api/network"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	"github.com/urfave/cli"
-	"strings"
 )
 
 // WireUpVPN prepares common resources to send request to Concerto API
@@ -40,7 +43,7 @@ func VPNShow(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive VPN data", err)
 	}
 	if err = formatter.PrintItem(*vpn); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -65,7 +68,7 @@ func VPNCreate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*vpn); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -95,7 +98,7 @@ func VPNPlanList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(vpns); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

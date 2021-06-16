@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // CreateTemporaryArchiveMocked test mocked function
@@ -29,7 +32,7 @@ func CreateTemporaryArchiveMocked(t *testing.T, temporaryArchiveIn *types.Tempor
 	assert.Nil(err, "TemporaryArchive test data corrupted")
 
 	// call service
-	cs.On("Post", "/plugins/tosca/temporary_archives", mapIn).Return(dOut, 200, nil)
+	cs.On("Post", APIPathPluginsToscaTemporaryArchives, mapIn).Return(dOut, 200, nil)
 	temporaryArchiveOut, err := ds.CreateTemporaryArchive(mapIn)
 
 	assert.Nil(err, "Error creating temporary archive")
@@ -39,7 +42,10 @@ func CreateTemporaryArchiveMocked(t *testing.T, temporaryArchiveIn *types.Tempor
 }
 
 // CreateTemporaryArchiveFailErrMocked test mocked function
-func CreateTemporaryArchiveFailErrMocked(t *testing.T, temporaryArchiveIn *types.TemporaryArchive) *types.TemporaryArchive {
+func CreateTemporaryArchiveFailErrMocked(
+	t *testing.T,
+	temporaryArchiveIn *types.TemporaryArchive,
+) *types.TemporaryArchive {
 
 	assert := assert.New(t)
 
@@ -58,7 +64,7 @@ func CreateTemporaryArchiveFailErrMocked(t *testing.T, temporaryArchiveIn *types
 	assert.Nil(err, "TemporaryArchive test data corrupted")
 
 	// call service
-	cs.On("Post", "/plugins/tosca/temporary_archives", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathPluginsToscaTemporaryArchives, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	temporaryArchiveOut, err := ds.CreateTemporaryArchive(mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -69,7 +75,10 @@ func CreateTemporaryArchiveFailErrMocked(t *testing.T, temporaryArchiveIn *types
 }
 
 // CreateTemporaryArchiveFailStatusMocked test mocked function
-func CreateTemporaryArchiveFailStatusMocked(t *testing.T, temporaryArchiveIn *types.TemporaryArchive) *types.TemporaryArchive {
+func CreateTemporaryArchiveFailStatusMocked(
+	t *testing.T,
+	temporaryArchiveIn *types.TemporaryArchive,
+) *types.TemporaryArchive {
 
 	assert := assert.New(t)
 
@@ -88,7 +97,7 @@ func CreateTemporaryArchiveFailStatusMocked(t *testing.T, temporaryArchiveIn *ty
 	assert.Nil(err, "TemporaryArchive test data corrupted")
 
 	// call service
-	cs.On("Post", "/plugins/tosca/temporary_archives", mapIn).Return(dOut, 499, nil)
+	cs.On("Post", APIPathPluginsToscaTemporaryArchives, mapIn).Return(dOut, 499, nil)
 	temporaryArchiveOut, err := ds.CreateTemporaryArchive(mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -99,7 +108,10 @@ func CreateTemporaryArchiveFailStatusMocked(t *testing.T, temporaryArchiveIn *ty
 }
 
 // CreateTemporaryArchiveFailJSONMocked test mocked function
-func CreateTemporaryArchiveFailJSONMocked(t *testing.T, temporaryArchiveIn *types.TemporaryArchive) *types.TemporaryArchive {
+func CreateTemporaryArchiveFailJSONMocked(
+	t *testing.T,
+	temporaryArchiveIn *types.TemporaryArchive,
+) *types.TemporaryArchive {
 
 	assert := assert.New(t)
 
@@ -117,7 +129,7 @@ func CreateTemporaryArchiveFailJSONMocked(t *testing.T, temporaryArchiveIn *type
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", "/plugins/tosca/temporary_archives", mapIn).Return(dIn, 200, nil)
+	cs.On("Post", APIPathPluginsToscaTemporaryArchives, mapIn).Return(dIn, 200, nil)
 	temporaryArchiveOut, err := ds.CreateTemporaryArchive(mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -189,7 +201,11 @@ func UploadTemporaryArchiveFailErrMocked(t *testing.T, temporaryArchiveIn *types
 }
 
 // CreateTemporaryArchiveImportMocked test mocked function
-func CreateTemporaryArchiveImportMocked(t *testing.T, temporaryArchiveID string, temporaryArchiveImportIn *types.TemporaryArchiveImport) *types.TemporaryArchiveImport {
+func CreateTemporaryArchiveImportMocked(
+	t *testing.T,
+	temporaryArchiveID string,
+	temporaryArchiveImportIn *types.TemporaryArchiveImport,
+) *types.TemporaryArchiveImport {
 
 	assert := assert.New(t)
 
@@ -207,17 +223,26 @@ func CreateTemporaryArchiveImportMocked(t *testing.T, temporaryArchiveID string,
 	assert.Nil(err, "TemporaryArchiveImport test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/import", temporaryArchiveID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveImport, temporaryArchiveID), mapIn).
+		Return(dOut, 200, nil)
 	temporaryArchiveImportOut, err := ds.CreateTemporaryArchiveImport(temporaryArchiveID, mapIn)
 
 	assert.Nil(err, "Error creating temporary archive import")
-	assert.Equal(temporaryArchiveImportIn, temporaryArchiveImportOut, "CreateTemporaryArchiveImport returned different temporary archive import")
+	assert.Equal(
+		temporaryArchiveImportIn,
+		temporaryArchiveImportOut,
+		"CreateTemporaryArchiveImport returned different temporary archive import",
+	)
 
 	return temporaryArchiveImportOut
 }
 
 // CreateTemporaryArchiveImportFailErrMocked test mocked function
-func CreateTemporaryArchiveImportFailErrMocked(t *testing.T, temporaryArchiveID string, temporaryArchiveImportIn *types.TemporaryArchiveImport) *types.TemporaryArchiveImport {
+func CreateTemporaryArchiveImportFailErrMocked(
+	t *testing.T,
+	temporaryArchiveID string,
+	temporaryArchiveImportIn *types.TemporaryArchiveImport,
+) *types.TemporaryArchiveImport {
 
 	assert := assert.New(t)
 
@@ -236,7 +261,8 @@ func CreateTemporaryArchiveImportFailErrMocked(t *testing.T, temporaryArchiveID 
 	assert.Nil(err, "TemporaryArchiveImport test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/import", temporaryArchiveID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveImport, temporaryArchiveID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	temporaryArchiveImportOut, err := ds.CreateTemporaryArchiveImport(temporaryArchiveID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -247,7 +273,11 @@ func CreateTemporaryArchiveImportFailErrMocked(t *testing.T, temporaryArchiveID 
 }
 
 // CreateTemporaryArchiveImportFailStatusMocked test mocked function
-func CreateTemporaryArchiveImportFailStatusMocked(t *testing.T, temporaryArchiveID string, temporaryArchiveImportIn *types.TemporaryArchiveImport) *types.TemporaryArchiveImport {
+func CreateTemporaryArchiveImportFailStatusMocked(
+	t *testing.T,
+	temporaryArchiveID string,
+	temporaryArchiveImportIn *types.TemporaryArchiveImport,
+) *types.TemporaryArchiveImport {
 
 	assert := assert.New(t)
 
@@ -266,7 +296,8 @@ func CreateTemporaryArchiveImportFailStatusMocked(t *testing.T, temporaryArchive
 	assert.Nil(err, "TemporaryArchiveImport test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/import", temporaryArchiveID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveImport, temporaryArchiveID), mapIn).
+		Return(dOut, 499, nil)
 	temporaryArchiveImportOut, err := ds.CreateTemporaryArchiveImport(temporaryArchiveID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -277,7 +308,11 @@ func CreateTemporaryArchiveImportFailStatusMocked(t *testing.T, temporaryArchive
 }
 
 // CreateTemporaryArchiveImportFailJSONMocked test mocked function
-func CreateTemporaryArchiveImportFailJSONMocked(t *testing.T, temporaryArchiveID string, temporaryArchiveImportIn *types.TemporaryArchiveImport) *types.TemporaryArchiveImport {
+func CreateTemporaryArchiveImportFailJSONMocked(
+	t *testing.T,
+	temporaryArchiveID string,
+	temporaryArchiveImportIn *types.TemporaryArchiveImport,
+) *types.TemporaryArchiveImport {
 
 	assert := assert.New(t)
 
@@ -295,7 +330,8 @@ func CreateTemporaryArchiveImportFailJSONMocked(t *testing.T, temporaryArchiveID
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/import", temporaryArchiveID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveImport, temporaryArchiveID), mapIn).
+		Return(dIn, 200, nil)
 	temporaryArchiveImportOut, err := ds.CreateTemporaryArchiveImport(temporaryArchiveID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -306,7 +342,10 @@ func CreateTemporaryArchiveImportFailJSONMocked(t *testing.T, temporaryArchiveID
 }
 
 // GetTemporaryArchiveImportMocked test mocked function
-func GetTemporaryArchiveImportMocked(t *testing.T, temporaryArchiveImportIn *types.TemporaryArchiveImport) *types.TemporaryArchiveImport {
+func GetTemporaryArchiveImportMocked(
+	t *testing.T,
+	temporaryArchiveImportIn *types.TemporaryArchiveImport,
+) *types.TemporaryArchiveImport {
 
 	assert := assert.New(t)
 
@@ -321,17 +360,25 @@ func GetTemporaryArchiveImportMocked(t *testing.T, temporaryArchiveImportIn *typ
 	assert.Nil(err, "TemporaryArchiveImport test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/import", temporaryArchiveImportIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveImport, temporaryArchiveImportIn.ID)).
+		Return(dIn, 200, nil)
 	temporaryArchiveImportOut, err := ds.GetTemporaryArchiveImport(temporaryArchiveImportIn.ID)
 
 	assert.Nil(err, "Error getting temporary archive import")
-	assert.Equal(*temporaryArchiveImportIn, *temporaryArchiveImportOut, "GetTemporaryArchiveImport returned different temporary archive import")
+	assert.Equal(
+		*temporaryArchiveImportIn,
+		*temporaryArchiveImportOut,
+		"GetTemporaryArchiveImport returned different temporary archive import",
+	)
 
 	return temporaryArchiveImportOut
 }
 
 // GetTemporaryArchiveImportFailErrMocked test mocked function
-func GetTemporaryArchiveImportFailErrMocked(t *testing.T, temporaryArchiveImportIn *types.TemporaryArchiveImport) *types.TemporaryArchiveImport {
+func GetTemporaryArchiveImportFailErrMocked(
+	t *testing.T,
+	temporaryArchiveImportIn *types.TemporaryArchiveImport,
+) *types.TemporaryArchiveImport {
 
 	assert := assert.New(t)
 
@@ -346,7 +393,8 @@ func GetTemporaryArchiveImportFailErrMocked(t *testing.T, temporaryArchiveImport
 	assert.Nil(err, "TemporaryArchiveImport test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/import", temporaryArchiveImportIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveImport, temporaryArchiveImportIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	temporaryArchiveImportOut, err := ds.GetTemporaryArchiveImport(temporaryArchiveImportIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -357,7 +405,10 @@ func GetTemporaryArchiveImportFailErrMocked(t *testing.T, temporaryArchiveImport
 }
 
 // GetTemporaryArchiveImportFailStatusMocked test mocked function
-func GetTemporaryArchiveImportFailStatusMocked(t *testing.T, temporaryArchiveImportIn *types.TemporaryArchiveImport) *types.TemporaryArchiveImport {
+func GetTemporaryArchiveImportFailStatusMocked(
+	t *testing.T,
+	temporaryArchiveImportIn *types.TemporaryArchiveImport,
+) *types.TemporaryArchiveImport {
 
 	assert := assert.New(t)
 
@@ -372,7 +423,8 @@ func GetTemporaryArchiveImportFailStatusMocked(t *testing.T, temporaryArchiveImp
 	assert.Nil(err, "TemporaryArchiveImport test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/import", temporaryArchiveImportIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveImport, temporaryArchiveImportIn.ID)).
+		Return(dIn, 499, nil)
 	temporaryArchiveImportOut, err := ds.GetTemporaryArchiveImport(temporaryArchiveImportIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -383,7 +435,10 @@ func GetTemporaryArchiveImportFailStatusMocked(t *testing.T, temporaryArchiveImp
 }
 
 // GetTemporaryArchiveImportFailJSONMocked test mocked function
-func GetTemporaryArchiveImportFailJSONMocked(t *testing.T, temporaryArchiveImportIn *types.TemporaryArchiveImport) *types.TemporaryArchiveImport {
+func GetTemporaryArchiveImportFailJSONMocked(
+	t *testing.T,
+	temporaryArchiveImportIn *types.TemporaryArchiveImport,
+) *types.TemporaryArchiveImport {
 
 	assert := assert.New(t)
 
@@ -397,7 +452,8 @@ func GetTemporaryArchiveImportFailJSONMocked(t *testing.T, temporaryArchiveImpor
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/import", temporaryArchiveImportIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveImport, temporaryArchiveImportIn.ID)).
+		Return(dIn, 200, nil)
 	temporaryArchiveImportOut, err := ds.GetTemporaryArchiveImport(temporaryArchiveImportIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -408,7 +464,10 @@ func GetTemporaryArchiveImportFailJSONMocked(t *testing.T, temporaryArchiveImpor
 }
 
 // CreateTemporaryArchiveExportMocked test mocked function
-func CreateTemporaryArchiveExportMocked(t *testing.T, temporaryArchiveExportIn *types.TemporaryArchiveExport) *types.TemporaryArchiveExport {
+func CreateTemporaryArchiveExportMocked(
+	t *testing.T,
+	temporaryArchiveExportIn *types.TemporaryArchiveExport,
+) *types.TemporaryArchiveExport {
 
 	assert := assert.New(t)
 
@@ -427,17 +486,24 @@ func CreateTemporaryArchiveExportMocked(t *testing.T, temporaryArchiveExportIn *
 	assert.Nil(err, "TemporaryArchiveExport test data corrupted")
 
 	// call service
-	cs.On("Post", "/plugins/tosca/temporary_archives/export", mapIn).Return(dOut, 200, nil)
+	cs.On("Post", APIPathPluginsToscaTemporaryArchivesExport, mapIn).Return(dOut, 200, nil)
 	temporaryArchiveExportOut, err := ds.CreateTemporaryArchiveExport(mapIn)
 
 	assert.Nil(err, "Error creating temporary archive export")
-	assert.Equal(temporaryArchiveExportIn, temporaryArchiveExportOut, "CreateTemporaryArchiveExport returned different temporary archive export")
+	assert.Equal(
+		temporaryArchiveExportIn,
+		temporaryArchiveExportOut,
+		"CreateTemporaryArchiveExport returned different temporary archive export",
+	)
 
 	return temporaryArchiveExportOut
 }
 
 // CreateTemporaryArchiveExportFailErrMocked test mocked function
-func CreateTemporaryArchiveExportFailErrMocked(t *testing.T, temporaryArchiveExportIn *types.TemporaryArchiveExport) *types.TemporaryArchiveExport {
+func CreateTemporaryArchiveExportFailErrMocked(
+	t *testing.T,
+	temporaryArchiveExportIn *types.TemporaryArchiveExport,
+) *types.TemporaryArchiveExport {
 
 	assert := assert.New(t)
 
@@ -456,7 +522,7 @@ func CreateTemporaryArchiveExportFailErrMocked(t *testing.T, temporaryArchiveExp
 	assert.Nil(err, "TemporaryArchiveExport test data corrupted")
 
 	// call service
-	cs.On("Post", "/plugins/tosca/temporary_archives/export", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathPluginsToscaTemporaryArchivesExport, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	temporaryArchiveExportOut, err := ds.CreateTemporaryArchiveExport(mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -467,7 +533,10 @@ func CreateTemporaryArchiveExportFailErrMocked(t *testing.T, temporaryArchiveExp
 }
 
 // CreateTemporaryArchiveExportFailStatusMocked test mocked function
-func CreateTemporaryArchiveExportFailStatusMocked(t *testing.T, temporaryArchiveExportIn *types.TemporaryArchiveExport) *types.TemporaryArchiveExport {
+func CreateTemporaryArchiveExportFailStatusMocked(
+	t *testing.T,
+	temporaryArchiveExportIn *types.TemporaryArchiveExport,
+) *types.TemporaryArchiveExport {
 
 	assert := assert.New(t)
 
@@ -486,7 +555,7 @@ func CreateTemporaryArchiveExportFailStatusMocked(t *testing.T, temporaryArchive
 	assert.Nil(err, "TemporaryArchiveExport test data corrupted")
 
 	// call service
-	cs.On("Post", "/plugins/tosca/temporary_archives/export", mapIn).Return(dOut, 499, nil)
+	cs.On("Post", APIPathPluginsToscaTemporaryArchivesExport, mapIn).Return(dOut, 499, nil)
 	temporaryArchiveExportOut, err := ds.CreateTemporaryArchiveExport(mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -497,7 +566,10 @@ func CreateTemporaryArchiveExportFailStatusMocked(t *testing.T, temporaryArchive
 }
 
 // CreateTemporaryArchiveExportFailJSONMocked test mocked function
-func CreateTemporaryArchiveExportFailJSONMocked(t *testing.T, temporaryArchiveExportIn *types.TemporaryArchiveExport) *types.TemporaryArchiveExport {
+func CreateTemporaryArchiveExportFailJSONMocked(
+	t *testing.T,
+	temporaryArchiveExportIn *types.TemporaryArchiveExport,
+) *types.TemporaryArchiveExport {
 
 	assert := assert.New(t)
 
@@ -515,7 +587,7 @@ func CreateTemporaryArchiveExportFailJSONMocked(t *testing.T, temporaryArchiveEx
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", "/plugins/tosca/temporary_archives/export", mapIn).Return(dIn, 200, nil)
+	cs.On("Post", APIPathPluginsToscaTemporaryArchivesExport, mapIn).Return(dIn, 200, nil)
 	temporaryArchiveExportOut, err := ds.CreateTemporaryArchiveExport(mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -526,7 +598,10 @@ func CreateTemporaryArchiveExportFailJSONMocked(t *testing.T, temporaryArchiveEx
 }
 
 // GetTemporaryArchiveExportTaskMocked test mocked function
-func GetTemporaryArchiveExportTaskMocked(t *testing.T, temporaryArchiveExportTaskIn *types.TemporaryArchiveExportTask) *types.TemporaryArchiveExportTask {
+func GetTemporaryArchiveExportTaskMocked(
+	t *testing.T,
+	temporaryArchiveExportTaskIn *types.TemporaryArchiveExportTask,
+) *types.TemporaryArchiveExportTask {
 
 	assert := assert.New(t)
 
@@ -541,17 +616,25 @@ func GetTemporaryArchiveExportTaskMocked(t *testing.T, temporaryArchiveExportTas
 	assert.Nil(err, "TemporaryArchiveExportTask test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/export", temporaryArchiveExportTaskIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveExport, temporaryArchiveExportTaskIn.ID)).
+		Return(dIn, 200, nil)
 	temporaryArchiveExportTaskOut, err := ds.GetTemporaryArchiveExportTask(temporaryArchiveExportTaskIn.ID)
 
 	assert.Nil(err, "Error getting temporary archive export task")
-	assert.Equal(*temporaryArchiveExportTaskIn, *temporaryArchiveExportTaskOut, "GetTemporaryArchiveExportTask returned different temporary archive export task")
+	assert.Equal(
+		*temporaryArchiveExportTaskIn,
+		*temporaryArchiveExportTaskOut,
+		"GetTemporaryArchiveExportTask returned different temporary archive export task",
+	)
 
 	return temporaryArchiveExportTaskOut
 }
 
 // GetTemporaryArchiveExportTaskFailErrMocked test mocked function
-func GetTemporaryArchiveExportTaskFailErrMocked(t *testing.T, temporaryArchiveExportTaskIn *types.TemporaryArchiveExportTask) *types.TemporaryArchiveExportTask {
+func GetTemporaryArchiveExportTaskFailErrMocked(
+	t *testing.T,
+	temporaryArchiveExportTaskIn *types.TemporaryArchiveExportTask,
+) *types.TemporaryArchiveExportTask {
 
 	assert := assert.New(t)
 
@@ -566,7 +649,8 @@ func GetTemporaryArchiveExportTaskFailErrMocked(t *testing.T, temporaryArchiveEx
 	assert.Nil(err, "TemporaryArchiveExportTask test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/export", temporaryArchiveExportTaskIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveExport, temporaryArchiveExportTaskIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	temporaryArchiveExportTaskOut, err := ds.GetTemporaryArchiveExportTask(temporaryArchiveExportTaskIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -577,7 +661,10 @@ func GetTemporaryArchiveExportTaskFailErrMocked(t *testing.T, temporaryArchiveEx
 }
 
 // GetTemporaryArchiveExportTaskFailStatusMocked test mocked function
-func GetTemporaryArchiveExportTaskFailStatusMocked(t *testing.T, temporaryArchiveExportTaskIn *types.TemporaryArchiveExportTask) *types.TemporaryArchiveExportTask {
+func GetTemporaryArchiveExportTaskFailStatusMocked(
+	t *testing.T,
+	temporaryArchiveExportTaskIn *types.TemporaryArchiveExportTask,
+) *types.TemporaryArchiveExportTask {
 
 	assert := assert.New(t)
 
@@ -592,7 +679,8 @@ func GetTemporaryArchiveExportTaskFailStatusMocked(t *testing.T, temporaryArchiv
 	assert.Nil(err, "TemporaryArchiveExportTask test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/export", temporaryArchiveExportTaskIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveExport, temporaryArchiveExportTaskIn.ID)).
+		Return(dIn, 499, nil)
 	temporaryArchiveExportTaskOut, err := ds.GetTemporaryArchiveExportTask(temporaryArchiveExportTaskIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -603,7 +691,10 @@ func GetTemporaryArchiveExportTaskFailStatusMocked(t *testing.T, temporaryArchiv
 }
 
 // GetTemporaryArchiveExportTaskFailJSONMocked test mocked function
-func GetTemporaryArchiveExportTaskFailJSONMocked(t *testing.T, temporaryArchiveExportTaskIn *types.TemporaryArchiveExportTask) *types.TemporaryArchiveExportTask {
+func GetTemporaryArchiveExportTaskFailJSONMocked(
+	t *testing.T,
+	temporaryArchiveExportTaskIn *types.TemporaryArchiveExportTask,
+) *types.TemporaryArchiveExportTask {
 
 	assert := assert.New(t)
 
@@ -617,7 +708,8 @@ func GetTemporaryArchiveExportTaskFailJSONMocked(t *testing.T, temporaryArchiveE
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/temporary_archives/%s/export", temporaryArchiveExportTaskIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaTemporaryArchiveExport, temporaryArchiveExportTaskIn.ID)).
+		Return(dIn, 200, nil)
 	temporaryArchiveExportTaskOut, err := ds.GetTemporaryArchiveExportTask(temporaryArchiveExportTaskIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

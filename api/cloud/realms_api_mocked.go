@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListRealmsMocked test mocked function
@@ -25,7 +28,7 @@ func ListRealmsMocked(t *testing.T, realmsIn []*types.Realm, cloudProviderID str
 	assert.Nil(err, "Realms test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/realms", cloudProviderID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudProviderRealms, cloudProviderID)).Return(dIn, 200, nil)
 	realmsOut, err := ds.ListRealms(cloudProviderID)
 
 	assert.Nil(err, "Error getting realms")
@@ -50,7 +53,8 @@ func ListRealmsFailErrMocked(t *testing.T, realmsIn []*types.Realm, cloudProvide
 	assert.Nil(err, "Realms test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/realms", cloudProviderID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCloudProviderRealms, cloudProviderID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	realmsOut, err := ds.ListRealms(cloudProviderID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -76,7 +80,7 @@ func ListRealmsFailStatusMocked(t *testing.T, realmsIn []*types.Realm, cloudProv
 	assert.Nil(err, "Realms test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/realms", cloudProviderID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudProviderRealms, cloudProviderID)).Return(dIn, 499, nil)
 	realmsOut, err := ds.ListRealms(cloudProviderID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -101,7 +105,7 @@ func ListRealmsFailJSONMocked(t *testing.T, realmsIn []*types.Realm, cloudProvid
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/cloud_providers/%s/realms", cloudProviderID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudProviderRealms, cloudProviderID)).Return(dIn, 200, nil)
 	realmsOut, err := ds.ListRealms(cloudProviderID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -127,7 +131,7 @@ func GetRealmMocked(t *testing.T, realmIn *types.Realm) *types.Realm {
 	assert.Nil(err, "Realm test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/realms/%s", realmIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealm, realmIn.ID)).Return(dIn, 200, nil)
 	realmOut, err := ds.GetRealm(realmIn.ID)
 
 	assert.Nil(err, "Error getting realm")
@@ -152,7 +156,7 @@ func GetRealmFailErrMocked(t *testing.T, realmIn *types.Realm) *types.Realm {
 	assert.Nil(err, "Realm test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/realms/%s", realmIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealm, realmIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	realmOut, err := ds.GetRealm(realmIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -178,7 +182,7 @@ func GetRealmFailStatusMocked(t *testing.T, realmIn *types.Realm) *types.Realm {
 	assert.Nil(err, "Realm test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/realms/%s", realmIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealm, realmIn.ID)).Return(dIn, 499, nil)
 	realmOut, err := ds.GetRealm(realmIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -203,7 +207,7 @@ func GetRealmFailJSONMocked(t *testing.T, realmIn *types.Realm) *types.Realm {
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/realms/%s", realmIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealm, realmIn.ID)).Return(dIn, 200, nil)
 	realmOut, err := ds.GetRealm(realmIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -231,7 +235,7 @@ func ListRealmNodePoolPlansMocked(
 	assert.Nil(err, "NodePoolPlans test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/realms/%s/node_pool_plans", cloudProviderID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, cloudProviderID)).Return(dIn, 200, nil)
 	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(cloudProviderID)
 
 	assert.Nil(err, "Error getting node pool plan list")
@@ -258,7 +262,8 @@ func ListRealmNodePoolPlansFailErrMocked(
 	assert.Nil(err, "NodePoolPlans test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/realms/%s/node_pool_plans", cloudProviderID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, cloudProviderID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(cloudProviderID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -286,7 +291,7 @@ func ListRealmNodePoolPlansFailStatusMocked(
 	assert.Nil(err, "NodePoolPlans test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/realms/%s/node_pool_plans", cloudProviderID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, cloudProviderID)).Return(dIn, 499, nil)
 	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(cloudProviderID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -313,7 +318,7 @@ func ListRealmNodePoolPlansFailJSONMocked(
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/realms/%s/node_pool_plans", cloudProviderID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, cloudProviderID)).Return(dIn, 200, nil)
 	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(cloudProviderID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

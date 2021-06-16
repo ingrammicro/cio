@@ -1,16 +1,22 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package blueprint
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // GetBootstrappingConfigurationMocked test mocked function
-func GetBootstrappingConfigurationMocked(t *testing.T, bcConfIn *types.BootstrappingConfiguration) *types.BootstrappingConfiguration {
+func GetBootstrappingConfigurationMocked(
+	t *testing.T,
+	bcConfIn *types.BootstrappingConfiguration,
+) *types.BootstrappingConfiguration {
 
 	assert := assert.New(t)
 
@@ -25,7 +31,7 @@ func GetBootstrappingConfigurationMocked(t *testing.T, bcConfIn *types.Bootstrap
 	assert.Nil(err, "Bootstrapping test data corrupted")
 
 	// call service
-	cs.On("Get", "/blueprint/configuration").Return(dIn, 200, nil)
+	cs.On("Get", APIPathBlueprintConfiguration).Return(dIn, 200, nil)
 	bcConfOut, status, err := ds.GetBootstrappingConfiguration()
 	assert.Nil(err, "Error getting bootstrapping configuration")
 	assert.Equal(status, 200, "GetBootstrappingConfiguration returned invalid response")
@@ -34,7 +40,10 @@ func GetBootstrappingConfigurationMocked(t *testing.T, bcConfIn *types.Bootstrap
 }
 
 // GetBootstrappingConfigurationFailErrMocked test mocked function
-func GetBootstrappingConfigurationFailErrMocked(t *testing.T, bcConfIn *types.BootstrappingConfiguration) *types.BootstrappingConfiguration {
+func GetBootstrappingConfigurationFailErrMocked(
+	t *testing.T,
+	bcConfIn *types.BootstrappingConfiguration,
+) *types.BootstrappingConfiguration {
 
 	assert := assert.New(t)
 
@@ -49,7 +58,7 @@ func GetBootstrappingConfigurationFailErrMocked(t *testing.T, bcConfIn *types.Bo
 	assert.Nil(err, "Bootstrapping test data corrupted")
 
 	// call service
-	cs.On("Get", "/blueprint/configuration").Return(dIn, 404, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathBlueprintConfiguration).Return(dIn, 404, fmt.Errorf("mocked error"))
 	bcConfOut, _, err := ds.GetBootstrappingConfiguration()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -60,7 +69,10 @@ func GetBootstrappingConfigurationFailErrMocked(t *testing.T, bcConfIn *types.Bo
 }
 
 // GetBootstrappingConfigurationFailStatusMocked test mocked function
-func GetBootstrappingConfigurationFailStatusMocked(t *testing.T, bcConfIn *types.BootstrappingConfiguration) *types.BootstrappingConfiguration {
+func GetBootstrappingConfigurationFailStatusMocked(
+	t *testing.T,
+	bcConfIn *types.BootstrappingConfiguration,
+) *types.BootstrappingConfiguration {
 
 	assert := assert.New(t)
 
@@ -75,7 +87,7 @@ func GetBootstrappingConfigurationFailStatusMocked(t *testing.T, bcConfIn *types
 	assert.Nil(err, "Bootstrapping test data corrupted")
 
 	// call service
-	cs.On("Get", "/blueprint/configuration").Return(dIn, 499, nil)
+	cs.On("Get", APIPathBlueprintConfiguration).Return(dIn, 499, nil)
 	bcConfOut, status, err := ds.GetBootstrappingConfiguration()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -87,7 +99,10 @@ func GetBootstrappingConfigurationFailStatusMocked(t *testing.T, bcConfIn *types
 }
 
 // GetBootstrappingConfigurationFailJSONMocked test mocked function
-func GetBootstrappingConfigurationFailJSONMocked(t *testing.T, bcConfIn *types.BootstrappingConfiguration) *types.BootstrappingConfiguration {
+func GetBootstrappingConfigurationFailJSONMocked(
+	t *testing.T,
+	bcConfIn *types.BootstrappingConfiguration,
+) *types.BootstrappingConfiguration {
 
 	assert := assert.New(t)
 
@@ -101,7 +116,7 @@ func GetBootstrappingConfigurationFailJSONMocked(t *testing.T, bcConfIn *types.B
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/blueprint/configuration").Return(dIn, 200, nil)
+	cs.On("Get", APIPathBlueprintConfiguration).Return(dIn, 200, nil)
 	bcConfOut, _, err := ds.GetBootstrappingConfiguration()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -127,7 +142,7 @@ func ReportBootstrappingAppliedConfigurationMocked(t *testing.T, commandIn *type
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Put", fmt.Sprintf("/blueprint/applied_configuration"), &payload).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintAppliedConfiguration), &payload).Return(dOut, 200, nil)
 	err = ds.ReportBootstrappingAppliedConfiguration(&payload)
 	assert.Nil(err, "Error getting bootstrapping command")
 }
@@ -151,14 +166,18 @@ func ReportBootstrappingAppliedConfigurationFailErrMocked(t *testing.T, commandI
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Put", fmt.Sprintf("/blueprint/applied_configuration"), &payload).Return(dIn, 499, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintAppliedConfiguration), &payload).
+		Return(dIn, 499, fmt.Errorf("mocked error"))
 	err = ds.ReportBootstrappingAppliedConfiguration(&payload)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Equal(err.Error(), "mocked error", "Error should be 'mocked error'")
 }
 
 // ReportBootstrappingAppliedConfigurationFailStatusMocked test mocked function
-func ReportBootstrappingAppliedConfigurationFailStatusMocked(t *testing.T, commandIn *types.BootstrappingConfiguration) {
+func ReportBootstrappingAppliedConfigurationFailStatusMocked(
+	t *testing.T,
+	commandIn *types.BootstrappingConfiguration,
+) {
 
 	assert := assert.New(t)
 
@@ -176,7 +195,8 @@ func ReportBootstrappingAppliedConfigurationFailStatusMocked(t *testing.T, comma
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Put", fmt.Sprintf("/blueprint/applied_configuration"), &payload).Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintAppliedConfiguration), &payload).
+		Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
 	err = ds.ReportBootstrappingAppliedConfiguration(&payload)
 	assert.NotNil(err, "We are expecting a status code error")
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
@@ -198,13 +218,16 @@ func ReportBootstrappingAppliedConfigurationFailJSONMocked(t *testing.T, command
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Put", fmt.Sprintf("/blueprint/applied_configuration"), &payload).Return(dIn, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathBlueprintAppliedConfiguration), &payload).Return(dIn, 499, nil)
 	err = ds.ReportBootstrappingAppliedConfiguration(&payload)
 	assert.Contains(err.Error(), "499", "Error should contain http code 499")
 }
 
 // ReportBootstrappingLogMocked test mocked function
-func ReportBootstrappingLogMocked(t *testing.T, commandIn *types.BootstrappingContinuousReport) *types.BootstrappingContinuousReport {
+func ReportBootstrappingLogMocked(
+	t *testing.T,
+	commandIn *types.BootstrappingContinuousReport,
+) *types.BootstrappingContinuousReport {
 
 	assert := assert.New(t)
 
@@ -220,7 +243,7 @@ func ReportBootstrappingLogMocked(t *testing.T, commandIn *types.BootstrappingCo
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", fmt.Sprintf("/blueprint/bootstrap_logs"), &payload).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathBlueprintBootstrapLogs), &payload).Return(dOut, 200, nil)
 	commandOut, status, err := ds.ReportBootstrappingLog(&payload)
 
 	assert.Nil(err, "Error posting report command")
@@ -231,7 +254,10 @@ func ReportBootstrappingLogMocked(t *testing.T, commandIn *types.BootstrappingCo
 }
 
 // ReportBootstrappingLogFailErrMocked test mocked function
-func ReportBootstrappingLogFailErrMocked(t *testing.T, commandIn *types.BootstrappingContinuousReport) *types.BootstrappingContinuousReport {
+func ReportBootstrappingLogFailErrMocked(
+	t *testing.T,
+	commandIn *types.BootstrappingContinuousReport,
+) *types.BootstrappingContinuousReport {
 
 	assert := assert.New(t)
 
@@ -249,7 +275,7 @@ func ReportBootstrappingLogFailErrMocked(t *testing.T, commandIn *types.Bootstra
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", fmt.Sprintf("/blueprint/bootstrap_logs"), &payload).Return(dIn, 499, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathBlueprintBootstrapLogs), &payload).Return(dIn, 499, fmt.Errorf("mocked error"))
 	commandOut, _, err := ds.ReportBootstrappingLog(&payload)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -260,7 +286,10 @@ func ReportBootstrappingLogFailErrMocked(t *testing.T, commandIn *types.Bootstra
 }
 
 // ReportBootstrappingLogFailStatusMocked test mocked function
-func ReportBootstrappingLogFailStatusMocked(t *testing.T, commandIn *types.BootstrappingContinuousReport) *types.BootstrappingContinuousReport {
+func ReportBootstrappingLogFailStatusMocked(
+	t *testing.T,
+	commandIn *types.BootstrappingContinuousReport,
+) *types.BootstrappingContinuousReport {
 
 	assert := assert.New(t)
 
@@ -278,7 +307,8 @@ func ReportBootstrappingLogFailStatusMocked(t *testing.T, commandIn *types.Boots
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", fmt.Sprintf("/blueprint/bootstrap_logs"), &payload).Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathBlueprintBootstrapLogs), &payload).
+		Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
 	commandOut, status, err := ds.ReportBootstrappingLog(&payload)
 
 	assert.Equal(status, 499, "ReportBootstrappingLog returned an unexpected status code")
@@ -290,7 +320,10 @@ func ReportBootstrappingLogFailStatusMocked(t *testing.T, commandIn *types.Boots
 }
 
 // ReportBootstrappingLogFailJSONMocked test mocked function
-func ReportBootstrappingLogFailJSONMocked(t *testing.T, commandIn *types.BootstrappingContinuousReport) *types.BootstrappingContinuousReport {
+func ReportBootstrappingLogFailJSONMocked(
+	t *testing.T,
+	commandIn *types.BootstrappingContinuousReport,
+) *types.BootstrappingContinuousReport {
 
 	assert := assert.New(t)
 
@@ -305,7 +338,7 @@ func ReportBootstrappingLogFailJSONMocked(t *testing.T, commandIn *types.Bootstr
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", fmt.Sprintf("/blueprint/bootstrap_logs"), &payload).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathBlueprintBootstrapLogs), &payload).Return(dIn, 200, nil)
 	commandOut, _, err := ds.ReportBootstrappingLog(&payload)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

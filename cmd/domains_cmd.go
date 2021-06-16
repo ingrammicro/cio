@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/network"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -52,14 +55,16 @@ func DomainList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		s, ok := labelable.(*types.Domain)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
-				fmt.Errorf("expected labelable to be a *types.Domain, got a %T", labelable))
+			formatter.PrintFatal(
+				LabelFilteringUnexpected,
+				fmt.Errorf("expected labelable to be a *types.Domain, got a %T", labelable),
+			)
 		}
 		domains[i] = s
 	}
 
 	if err = formatter.PrintList(domains); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -78,7 +83,7 @@ func DomainShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	domain.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*domain); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -106,7 +111,7 @@ func DomainCreate(c *cli.Context) error {
 
 	domain.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*domain); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -125,7 +130,7 @@ func DomainDelete(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	domain.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*domain); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -145,7 +150,7 @@ func DomainRetry(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	domain.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*domain); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -161,7 +166,7 @@ func DomainListRecords(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive dns records data", err)
 	}
 	if err = formatter.PrintList(records); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -177,7 +182,7 @@ func DomainShowRecord(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive dns record data", err)
 	}
 	if err = formatter.PrintItem(*record); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -194,53 +199,38 @@ func DomainCreateRecord(c *cli.Context) error {
 		"type": recordType,
 	}
 
-	if c.IsSet("content") {
-		recordIn["content"] = c.String("content")
-	}
-	if c.IsSet("ttl") {
-		recordIn["ttl"] = c.Int("ttl")
-	}
+	setParamString(c, "content", "content", recordIn)
+	setParamInt(c, "ttl", "ttl", recordIn)
 
 	// If provided, only include in adequate context
 	switch recordType {
 	case "a":
 		if c.IsSet("content") &&
 			(c.IsSet("server-id") || c.IsSet("floating-ip-id")) {
-			return fmt.Errorf("invalid parameters detected. Please provide only one: 'content', 'server-id' or 'floating-ip-id'")
+			return fmt.Errorf(
+				"invalid parameters detected. Please provide only one: 'content', 'server-id' or 'floating-ip-id'",
+			)
 		}
 		// one and only one of the fields must be provided.
 		if c.IsSet("server-id") && c.IsSet("floating-ip-id") {
 			return fmt.Errorf("invalid parameters detected. Please provide only one: 'server-id' or 'floating-ip-id'")
 		}
-		if c.IsSet("server-id") {
-			recordIn["instance_id"] = c.String("server-id")
-		}
-		if c.IsSet("floating-ip-id") {
-			recordIn["floating_ip_id"] = c.String("floating-ip-id")
-		}
+		setParamString(c, "instance_id", "server-id", recordIn)
+		setParamString(c, "floating_ip_id", "floating-ip-id", recordIn)
 	case "cname":
 		if c.IsSet("content") && c.IsSet("load-balancer-id") {
 			return fmt.Errorf("invalid parameters detected. Please provide only one: 'content' or 'load-balancer-id'")
 		}
-		if c.IsSet("load-balancer-id") {
-			recordIn["load_balancer_id"] = c.String("load-balancer-id")
-		}
+		setParamString(c, "load_balancer_id", "load-balancer-id", recordIn)
 	case "mx":
-		if c.IsSet("priority") {
-			recordIn["priority"] = c.Int("priority")
-		}
+		setParamInt(c, "priority", "priority", recordIn)
 	case "srv":
-		if c.IsSet("priority") {
-			recordIn["priority"] = c.Int("priority")
-		}
-		if c.IsSet("weight") {
-			recordIn["weight"] = c.Int("weight")
-		}
-		if c.IsSet("port") {
-			recordIn["port"] = c.Int("port")
-		}
+		setParamInt(c, "priority", "priority", recordIn)
+		setParamInt(c, "weight", "weight", recordIn)
+		setParamInt(c, "port", "port", recordIn)
 		//case "aaaa":
 		//case "txt":
+	default:
 	}
 
 	record, err := svc.CreateRecord(c.String("domain-id"), &recordIn)
@@ -249,7 +239,7 @@ func DomainCreateRecord(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*record); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -286,7 +276,7 @@ func DomainUpdateRecord(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*record); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -304,7 +294,7 @@ func DomainDeleteRecord(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*record); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -322,7 +312,7 @@ func DomainRetryRecord(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*record); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

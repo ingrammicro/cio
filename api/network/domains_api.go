@@ -1,12 +1,22 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathNetworkDnsDomains = "/network/dns/domains"
+const APIPathNetworkDnsDomain = "/network/dns/domains/%s"
+const APIPathNetworkDnsDomainRetry = "/network/dns/domains/%s/retry"
+const APIPathNetworkDnsDomainRecords = "/network/dns/domains/%s/records"
+const APIPathNetworkDnsRecord = "/network/dns/records/%s"
+const APIPathNetworkDnsRecordRetry = "/network/dns/records/%s/retry"
 
 // DomainService manages DNS domain and record operations
 type DomainService struct {
@@ -28,7 +38,7 @@ func NewDomainService(concertoService utils.ConcertoService) (*DomainService, er
 func (ds *DomainService) ListDomains() (domains []*types.Domain, err error) {
 	log.Debug("ListDomains")
 
-	data, status, err := ds.concertoService.Get("/network/dns/domains")
+	data, status, err := ds.concertoService.Get(APIPathNetworkDnsDomains)
 
 	if err != nil {
 		return nil, err
@@ -49,7 +59,7 @@ func (ds *DomainService) ListDomains() (domains []*types.Domain, err error) {
 func (ds *DomainService) GetDomain(domainID string) (domain *types.Domain, err error) {
 	log.Debug("GetDomain")
 
-	data, status, err := ds.concertoService.Get(fmt.Sprintf("/network/dns/domains/%s", domainID))
+	data, status, err := ds.concertoService.Get(fmt.Sprintf(APIPathNetworkDnsDomain, domainID))
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +79,7 @@ func (ds *DomainService) GetDomain(domainID string) (domain *types.Domain, err e
 func (ds *DomainService) CreateDomain(domainParams *map[string]interface{}) (domain *types.Domain, err error) {
 	log.Debug("CreateDomain")
 
-	data, status, err := ds.concertoService.Post("/network/dns/domains", domainParams)
+	data, status, err := ds.concertoService.Post(APIPathNetworkDnsDomains, domainParams)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +99,7 @@ func (ds *DomainService) CreateDomain(domainParams *map[string]interface{}) (dom
 func (ds *DomainService) DeleteDomain(domainID string) (domain *types.Domain, err error) {
 	log.Debug("DeleteDomain")
 
-	data, status, err := ds.concertoService.Delete(fmt.Sprintf("/network/dns/domains/%s", domainID))
+	data, status, err := ds.concertoService.Delete(fmt.Sprintf(APIPathNetworkDnsDomain, domainID))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +120,7 @@ func (ds *DomainService) RetryDomain(domainID string) (domain *types.Domain, err
 	log.Debug("RetryDomain")
 
 	domainParams := new(map[string]interface{})
-	data, status, err := ds.concertoService.Put(fmt.Sprintf("/network/dns/domains/%s/retry", domainID), domainParams)
+	data, status, err := ds.concertoService.Put(fmt.Sprintf(APIPathNetworkDnsDomainRetry, domainID), domainParams)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +140,7 @@ func (ds *DomainService) RetryDomain(domainID string) (domain *types.Domain, err
 func (ds *DomainService) ListRecords(domainID string) (records []*types.Record, err error) {
 	log.Debug("ListRecords")
 
-	data, status, err := ds.concertoService.Get(fmt.Sprintf("/network/dns/domains/%s/records", domainID))
+	data, status, err := ds.concertoService.Get(fmt.Sprintf(APIPathNetworkDnsDomainRecords, domainID))
 
 	if err != nil {
 		return nil, err
@@ -151,7 +161,7 @@ func (ds *DomainService) ListRecords(domainID string) (records []*types.Record, 
 func (ds *DomainService) GetRecord(recordID string) (record *types.Record, err error) {
 	log.Debug("GetRecord")
 
-	data, status, err := ds.concertoService.Get(fmt.Sprintf("/network/dns/records/%s", recordID))
+	data, status, err := ds.concertoService.Get(fmt.Sprintf(APIPathNetworkDnsRecord, recordID))
 	if err != nil {
 		return nil, err
 	}
@@ -168,10 +178,13 @@ func (ds *DomainService) GetRecord(recordID string) (record *types.Record, err e
 }
 
 // CreateRecord creates a record in a domain
-func (ds *DomainService) CreateRecord(domainID string, recordParams *map[string]interface{}) (record *types.Record, err error) {
+func (ds *DomainService) CreateRecord(
+	domainID string,
+	recordParams *map[string]interface{},
+) (record *types.Record, err error) {
 	log.Debug("CreateRecord")
 
-	data, status, err := ds.concertoService.Post(fmt.Sprintf("/network/dns/domains/%s/records", domainID), recordParams)
+	data, status, err := ds.concertoService.Post(fmt.Sprintf(APIPathNetworkDnsDomainRecords, domainID), recordParams)
 	if err != nil {
 		return nil, err
 	}
@@ -188,10 +201,13 @@ func (ds *DomainService) CreateRecord(domainID string, recordParams *map[string]
 }
 
 // UpdateRecord updates a record by its ID
-func (ds *DomainService) UpdateRecord(recordID string, recordParams *map[string]interface{}) (record *types.Record, err error) {
+func (ds *DomainService) UpdateRecord(
+	recordID string,
+	recordParams *map[string]interface{},
+) (record *types.Record, err error) {
 	log.Debug("UpdateRecord")
 
-	data, status, err := ds.concertoService.Put(fmt.Sprintf("/network/dns/records/%s", recordID), recordParams)
+	data, status, err := ds.concertoService.Put(fmt.Sprintf(APIPathNetworkDnsRecord, recordID), recordParams)
 	if err != nil {
 		return nil, err
 	}
@@ -211,7 +227,7 @@ func (ds *DomainService) UpdateRecord(recordID string, recordParams *map[string]
 func (ds *DomainService) DeleteRecord(recordID string) (record *types.Record, err error) {
 	log.Debug("DeleteRecord")
 
-	data, status, err := ds.concertoService.Delete(fmt.Sprintf("/network/dns/records/%s", recordID))
+	data, status, err := ds.concertoService.Delete(fmt.Sprintf(APIPathNetworkDnsRecord, recordID))
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +248,7 @@ func (ds *DomainService) RetryRecord(recordID string) (record *types.Record, err
 	log.Debug("RetryRecord")
 
 	recordParams := new(map[string]interface{})
-	data, status, err := ds.concertoService.Put(fmt.Sprintf("/network/dns/records/%s/retry", recordID), recordParams)
+	data, status, err := ds.concertoService.Put(fmt.Sprintf(APIPathNetworkDnsRecordRetry, recordID), recordParams)
 	if err != nil {
 		return nil, err
 	}

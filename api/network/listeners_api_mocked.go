@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListListenersMocked test mocked function
@@ -25,7 +28,7 @@ func ListListenersMocked(t *testing.T, loadBalancerID string, listenersIn []*typ
 	assert.Nil(err, "Listeners test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/listeners", loadBalancerID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerListeners, loadBalancerID)).Return(dIn, 200, nil)
 	listenersOut, err := ds.ListListeners(loadBalancerID)
 
 	assert.Nil(err, "Error getting listeners")
@@ -50,7 +53,8 @@ func ListListenersFailErrMocked(t *testing.T, loadBalancerID string, listenersIn
 	assert.Nil(err, "Listeners test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/listeners", loadBalancerID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerListeners, loadBalancerID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	listenersOut, err := ds.ListListeners(loadBalancerID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -61,7 +65,11 @@ func ListListenersFailErrMocked(t *testing.T, loadBalancerID string, listenersIn
 }
 
 // ListListenersFailStatusMocked test mocked function
-func ListListenersFailStatusMocked(t *testing.T, loadBalancerID string, listenersIn []*types.Listener) []*types.Listener {
+func ListListenersFailStatusMocked(
+	t *testing.T,
+	loadBalancerID string,
+	listenersIn []*types.Listener,
+) []*types.Listener {
 
 	assert := assert.New(t)
 
@@ -76,7 +84,7 @@ func ListListenersFailStatusMocked(t *testing.T, loadBalancerID string, listener
 	assert.Nil(err, "Listeners test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/listeners", loadBalancerID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerListeners, loadBalancerID)).Return(dIn, 499, nil)
 	listenersOut, err := ds.ListListeners(loadBalancerID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -101,7 +109,7 @@ func ListListenersFailJSONMocked(t *testing.T, loadBalancerID string, listenersI
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/listeners", loadBalancerID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerListeners, loadBalancerID)).Return(dIn, 200, nil)
 	listenersOut, err := ds.ListListeners(loadBalancerID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -127,7 +135,7 @@ func GetListenerMocked(t *testing.T, listenerIn *types.Listener) *types.Listener
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/listeners/%s", listenerIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID)).Return(dIn, 200, nil)
 	listenerOut, err := ds.GetListener(listenerIn.ID)
 
 	assert.Nil(err, "Error getting listener")
@@ -152,7 +160,7 @@ func GetListenerFailErrMocked(t *testing.T, listenerIn *types.Listener) *types.L
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/listeners/%s", listenerIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	listenerOut, err := ds.GetListener(listenerIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -178,7 +186,7 @@ func GetListenerFailStatusMocked(t *testing.T, listenerIn *types.Listener) *type
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/listeners/%s", listenerIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID)).Return(dIn, 499, nil)
 	listenerOut, err := ds.GetListener(listenerIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -203,7 +211,7 @@ func GetListenerFailJSONMocked(t *testing.T, listenerIn *types.Listener) *types.
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/listeners/%s", listenerIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID)).Return(dIn, 200, nil)
 	listenerOut, err := ds.GetListener(listenerIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -233,7 +241,7 @@ func CreateListenerMocked(t *testing.T, loadBalancerID string, listenerIn *types
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/listeners", loadBalancerID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerListeners, loadBalancerID), mapIn).Return(dOut, 200, nil)
 	listenerOut, err := ds.CreateListener(loadBalancerID, mapIn)
 
 	assert.Nil(err, "Error creating listener")
@@ -262,7 +270,8 @@ func CreateListenerFailErrMocked(t *testing.T, loadBalancerID string, listenerIn
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/listeners", loadBalancerID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerListeners, loadBalancerID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	listenerOut, err := ds.CreateListener(loadBalancerID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -292,7 +301,7 @@ func CreateListenerFailStatusMocked(t *testing.T, loadBalancerID string, listene
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/listeners", loadBalancerID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerListeners, loadBalancerID), mapIn).Return(dOut, 499, nil)
 	listenerOut, err := ds.CreateListener(loadBalancerID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -321,7 +330,7 @@ func CreateListenerFailJSONMocked(t *testing.T, loadBalancerID string, listenerI
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/listeners", loadBalancerID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerListeners, loadBalancerID), mapIn).Return(dIn, 200, nil)
 	listenerOut, err := ds.CreateListener(loadBalancerID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -351,7 +360,7 @@ func UpdateListenerMocked(t *testing.T, listenerIn *types.Listener) *types.Liste
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s", listenerIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID), mapIn).Return(dOut, 200, nil)
 	listenerOut, err := ds.UpdateListener(listenerIn.ID, mapIn)
 
 	assert.Nil(err, "Error updating listener")
@@ -380,7 +389,8 @@ func UpdateListenerFailErrMocked(t *testing.T, listenerIn *types.Listener) *type
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s", listenerIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	listenerOut, err := ds.UpdateListener(listenerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -410,7 +420,7 @@ func UpdateListenerFailStatusMocked(t *testing.T, listenerIn *types.Listener) *t
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s", listenerIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID), mapIn).Return(dOut, 499, nil)
 	listenerOut, err := ds.UpdateListener(listenerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -439,7 +449,7 @@ func UpdateListenerFailJSONMocked(t *testing.T, listenerIn *types.Listener) *typ
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s", listenerIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID), mapIn).Return(dIn, 200, nil)
 	listenerOut, err := ds.UpdateListener(listenerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -465,7 +475,7 @@ func DeleteListenerMocked(t *testing.T, listenerIn *types.Listener) {
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/listeners/%s", listenerIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID)).Return(dIn, 200, nil)
 	listenerOut, err := ds.DeleteListener(listenerIn.ID)
 
 	assert.Nil(err, "Error deleting listener")
@@ -489,7 +499,7 @@ func DeleteListenerFailErrMocked(t *testing.T, listenerIn *types.Listener) {
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/listeners/%s", listenerIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	listenerOut, err := ds.DeleteListener(listenerIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -513,7 +523,7 @@ func DeleteListenerFailStatusMocked(t *testing.T, listenerIn *types.Listener) {
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/listeners/%s", listenerIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID)).Return(dIn, 499, nil)
 	listenerOut, err := ds.DeleteListener(listenerIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -536,7 +546,7 @@ func DeleteListenerFailJSONMocked(t *testing.T, listenerIn *types.Listener) {
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/listeners/%s", listenerIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkListener, listenerIn.ID)).Return(dIn, 200, nil)
 	listenerOut, err := ds.DeleteListener(listenerIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -564,7 +574,7 @@ func RetryListenerMocked(t *testing.T, listenerIn *types.Listener) *types.Listen
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s/retry", listenerIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListenerRetry, listenerIn.ID), mapIn).Return(dOut, 200, nil)
 	listenerOut, err := ds.RetryListener(listenerIn.ID, mapIn)
 
 	assert.Nil(err, "Error retrying listener")
@@ -593,7 +603,8 @@ func RetryListenerFailErrMocked(t *testing.T, listenerIn *types.Listener) *types
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s/retry", listenerIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListenerRetry, listenerIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	listenerOut, err := ds.RetryListener(listenerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -623,7 +634,7 @@ func RetryListenerFailStatusMocked(t *testing.T, listenerIn *types.Listener) *ty
 	assert.Nil(err, "Listener test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s/retry", listenerIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListenerRetry, listenerIn.ID), mapIn).Return(dOut, 499, nil)
 	listenerOut, err := ds.RetryListener(listenerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -652,7 +663,7 @@ func RetryListenerFailJSONMocked(t *testing.T, listenerIn *types.Listener) *type
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s/retry", listenerIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListenerRetry, listenerIn.ID), mapIn).Return(dIn, 200, nil)
 	listenerOut, err := ds.RetryListener(listenerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -678,7 +689,7 @@ func ListRulesMocked(t *testing.T, listenerID string, rulesIn []*types.ListenerR
 	assert.Nil(err, "Rules test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/listeners/%s/rules", listenerID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkListenerRules, listenerID)).Return(dIn, 200, nil)
 	rulesOut, err := ds.ListRules(listenerID)
 
 	assert.Nil(err, "Error getting rules")
@@ -703,7 +714,7 @@ func ListRulesFailErrMocked(t *testing.T, listenerID string, rulesIn []*types.Li
 	assert.Nil(err, "Rules test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/listeners/%s/rules", listenerID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkListenerRules, listenerID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	rulesOut, err := ds.ListRules(listenerID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -729,7 +740,7 @@ func ListRulesFailStatusMocked(t *testing.T, listenerID string, rulesIn []*types
 	assert.Nil(err, "Rules test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/listeners/%s/rules", listenerID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkListenerRules, listenerID)).Return(dIn, 499, nil)
 	rulesOut, err := ds.ListRules(listenerID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -754,7 +765,7 @@ func ListRulesFailJSONMocked(t *testing.T, listenerID string, rulesIn []*types.L
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/listeners/%s/rules", listenerID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkListenerRules, listenerID)).Return(dIn, 200, nil)
 	rulesOut, err := ds.ListRules(listenerID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -784,7 +795,7 @@ func CreateRuleMocked(t *testing.T, listenerID string, ruleIn *types.ListenerRul
 	assert.Nil(err, "Rule test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/listeners/%s/rules", listenerID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkListenerRules, listenerID), mapIn).Return(dOut, 200, nil)
 	ruleOut, err := ds.CreateRule(listenerID, mapIn)
 
 	assert.Nil(err, "Error creating rule")
@@ -813,7 +824,8 @@ func CreateRuleFailErrMocked(t *testing.T, listenerID string, ruleIn *types.List
 	assert.Nil(err, "Rule test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/listeners/%s/rules", listenerID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathNetworkListenerRules, listenerID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	ruleOut, err := ds.CreateRule(listenerID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -843,7 +855,7 @@ func CreateRuleFailStatusMocked(t *testing.T, listenerID string, ruleIn *types.L
 	assert.Nil(err, "Rule test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/listeners/%s/rules", listenerID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkListenerRules, listenerID), mapIn).Return(dOut, 499, nil)
 	ruleOut, err := ds.CreateRule(listenerID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -872,7 +884,7 @@ func CreateRuleFailJSONMocked(t *testing.T, listenerID string, ruleIn *types.Lis
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/listeners/%s/rules", listenerID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkListenerRules, listenerID), mapIn).Return(dIn, 200, nil)
 	ruleOut, err := ds.CreateRule(listenerID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -902,7 +914,7 @@ func UpdateRuleMocked(t *testing.T, listenerID string, ruleIn *types.ListenerRul
 	assert.Nil(err, "Rule test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s/rules/%s", listenerID, ruleIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListenerRule, listenerID, ruleIn.ID), mapIn).Return(dOut, 200, nil)
 	ruleOut, err := ds.UpdateRule(listenerID, ruleIn.ID, mapIn)
 
 	assert.Nil(err, "Error updating rule")
@@ -931,7 +943,8 @@ func UpdateRuleFailErrMocked(t *testing.T, listenerID string, ruleIn *types.List
 	assert.Nil(err, "Rule test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s/rules/%s", listenerID, ruleIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListenerRule, listenerID, ruleIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	ruleOut, err := ds.UpdateRule(listenerID, ruleIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -961,7 +974,7 @@ func UpdateRuleFailStatusMocked(t *testing.T, listenerID string, ruleIn *types.L
 	assert.Nil(err, "Rule test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s/rules/%s", listenerID, ruleIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListenerRule, listenerID, ruleIn.ID), mapIn).Return(dOut, 499, nil)
 	ruleOut, err := ds.UpdateRule(listenerID, ruleIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -990,7 +1003,7 @@ func UpdateRuleFailJSONMocked(t *testing.T, listenerID string, ruleIn *types.Lis
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/listeners/%s/rules/%s", listenerID, ruleIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkListenerRule, listenerID, ruleIn.ID), mapIn).Return(dIn, 200, nil)
 	ruleOut, err := ds.UpdateRule(listenerID, ruleIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -1016,7 +1029,7 @@ func DeleteRuleMocked(t *testing.T, listenerID string, ruleIn *types.ListenerRul
 	assert.Nil(err, "Rule test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/listeners/%s/rules/%s", listenerID, ruleIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkListenerRule, listenerID, ruleIn.ID)).Return(dIn, 200, nil)
 	err = ds.DeleteRule(listenerID, ruleIn.ID)
 
 	assert.Nil(err, "Error deleting rule")
@@ -1038,7 +1051,8 @@ func DeleteRuleFailErrMocked(t *testing.T, listenerID string, ruleIn *types.List
 	assert.Nil(err, "Rule test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/listeners/%s/rules/%s", listenerID, ruleIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkListenerRule, listenerID, ruleIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DeleteRule(listenerID, ruleIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -1061,7 +1075,7 @@ func DeleteRuleFailStatusMocked(t *testing.T, listenerID string, ruleIn *types.L
 	assert.Nil(err, "Rule test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/listeners/%s/rules/%s", listenerID, ruleIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkListenerRule, listenerID, ruleIn.ID)).Return(dIn, 499, nil)
 	err = ds.DeleteRule(listenerID, ruleIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")

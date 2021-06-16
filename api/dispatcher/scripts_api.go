@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package dispatcher
 
 import (
@@ -8,6 +10,10 @@ import (
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathBlueprintScriptCharacterizationsByType = "/blueprint/script_characterizations?type=%s"
+const APIPathBlueprintScriptCharacterization = "/blueprint/script_characterizations/%s"
+const APIPathBlueprintScriptConclusions = "/blueprint/script_conclusions"
 
 // DispatcherService manages dispatcher operations
 type DispatcherService struct {
@@ -26,10 +32,12 @@ func NewDispatcherService(concertoService utils.ConcertoService) (*DispatcherSer
 }
 
 // GetDispatcherScriptCharacterizationsByType returns script characterizations list for a given phase
-func (ds *DispatcherService) GetDispatcherScriptCharacterizationsByType(phase string) (scriptCharacterizations []*types.ScriptCharacterization, err error) {
+func (ds *DispatcherService) GetDispatcherScriptCharacterizationsByType(
+	phase string,
+) (scriptCharacterizations []*types.ScriptCharacterization, err error) {
 	log.Debug("GetDispatcherScriptCharacterizationsByType")
 
-	data, status, err := ds.concertoService.Get(fmt.Sprintf("/blueprint/script_characterizations?type=%s", phase))
+	data, status, err := ds.concertoService.Get(fmt.Sprintf(APIPathBlueprintScriptCharacterizationsByType, phase))
 	if err != nil {
 		return nil, err
 	}
@@ -46,10 +54,14 @@ func (ds *DispatcherService) GetDispatcherScriptCharacterizationsByType(phase st
 }
 
 // GetDispatcherScriptCharacterizationByUUID returns script characterizations list for a given UUID
-func (ds *DispatcherService) GetDispatcherScriptCharacterizationByUUID(scriptCharacterizationUUID string) (*types.ScriptCharacterization, error) {
+func (ds *DispatcherService) GetDispatcherScriptCharacterizationByUUID(
+	scriptCharacterizationUUID string,
+) (*types.ScriptCharacterization, error) {
 	log.Debug("GetDispatcherScriptCharacterizationByUUID")
 
-	data, status, err := ds.concertoService.Get(fmt.Sprintf("/blueprint/script_characterizations/%s", scriptCharacterizationUUID))
+	data, status, err := ds.concertoService.Get(
+		fmt.Sprintf(APIPathBlueprintScriptCharacterization, scriptCharacterizationUUID),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +78,12 @@ func (ds *DispatcherService) GetDispatcherScriptCharacterizationByUUID(scriptCha
 }
 
 // ReportScriptConclusions reports a result
-func (ds *DispatcherService) ReportScriptConclusions(scriptConclusions *map[string]interface{}) (command *types.ScriptConclusion, status int, err error) {
+func (ds *DispatcherService) ReportScriptConclusions(
+	scriptConclusions *map[string]interface{},
+) (command *types.ScriptConclusion, status int, err error) {
 	log.Debug("ReportScriptConclusions")
 
-	data, status, err := ds.concertoService.Post("/blueprint/script_conclusions", scriptConclusions)
+	data, status, err := ds.concertoService.Post(APIPathBlueprintScriptConclusions, scriptConclusions)
 	if err != nil {
 		return nil, status, err
 	}
@@ -86,7 +100,10 @@ func (ds *DispatcherService) ReportScriptConclusions(scriptConclusions *map[stri
 }
 
 // DownloadAttachment gets a file from given url saving file into given file path
-func (ds *DispatcherService) DownloadAttachment(url string, filePath string) (realFileName string, status int, err error) {
+func (ds *DispatcherService) DownloadAttachment(
+	url string,
+	filePath string,
+) (realFileName string, status int, err error) {
 	log.Debug("DownloadAttachment")
 
 	realFileName, status, err = ds.concertoService.GetFile(url, filePath, true)

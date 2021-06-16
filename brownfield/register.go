@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package brownfield
 
 import (
@@ -14,7 +16,8 @@ import (
 	"github.com/urfave/cli"
 )
 
-var configFileTemplate = template.Must(template.New("configFile").Parse(`<concerto version="1.0" server="{{.APIEndpoint}}" log_file="{{.LogFile}}" log_level="{{.LogLevel}}">
+var configFileTemplate = template.Must(template.New("configFile").Parse(
+	`<concerto version="1.0" server="{{.APIEndpoint}}" log_file="{{.LogFile}}" log_level="{{.LogLevel}}">
 <ssl cert="{{.CertPath}}" key="{{.KeyPath}}" server_ca="{{.CaCertPath}}" />
 </concerto>
 `))
@@ -107,8 +110,10 @@ func configureServerKeys(config *utils.Config, rootCACert, cert, key string) err
 		CertPath    string
 		KeyPath     string
 		CaCertPath  string
-	}{config.APIEndpoint, config.LogFile, config.LogLevel,
-		config.Certificate.Cert, config.Certificate.Key, config.Certificate.Ca}
+	}{
+		config.APIEndpoint, config.LogFile, config.LogLevel,
+		config.Certificate.Cert, config.Certificate.Key, config.Certificate.Ca,
+	}
 	if configFileData.LogLevel == "" {
 		configFileData.LogLevel = "info"
 	}

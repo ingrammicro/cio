@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package bootstrapping
 
 import (
@@ -188,18 +190,30 @@ func runBootstrapPeriodically(ctx context.Context, c *cli.Context, formatter for
 		var updated bool
 		blueprintConfig, updated, err = getBlueprintConfig(ctx, bootstrappingSvc, blueprintConfig, formatter)
 		if err == nil {
-			if updated || lastPolicyfileApplicationErr != nil || noPolicyfileApplicationIterations >= applyAfterIterations {
+			if updated || lastPolicyfileApplicationErr != nil ||
+				noPolicyfileApplicationIterations >= applyAfterIterations {
 				noPolicyfileApplicationIterations = -1
-				lastPolicyfileApplicationErr = applyPolicyfiles(ctx, bootstrappingSvc, blueprintConfig, formatter, thresholdLines)
+				lastPolicyfileApplicationErr = applyPolicyfiles(
+					ctx,
+					bootstrappingSvc,
+					blueprintConfig,
+					formatter,
+					thresholdLines,
+				)
 				var configUpdated bool
 				config, configUpdated, err = utils.ReloadConcertoConfig(c)
 				if err == nil && configUpdated {
 					if config.BootstrapConfig.RunOnce {
 						if lastPolicyfileApplicationErr != nil {
-							log.Info("Change to run-once mode detected after a failed policyfile application: starting run-once mode (with 3 retries)...")
+							log.Info(
+								"Change to run-once mode detected after a failed policyfile application: " +
+									"starting run-once mode (with 3 retries)...",
+							)
 							return runBootstrapOnce(ctx, c, config, formatter)
 						}
-						log.Info("Change to run-once mode detected after a successful policyfile application: exiting...")
+						log.Info(
+							"Change to run-once mode detected after a successful policyfile application: exiting...",
+						)
 						return nil
 					}
 					applyAfterIterations, thresholdLines, interval, splay = getBootstrappingConfigOrDefaults(c, config)
@@ -208,7 +222,8 @@ func runBootstrapPeriodically(ctx context.Context, c *cli.Context, formatter for
 		}
 		noPolicyfileApplicationIterations++
 
-		// Sleep for a configured amount of time plus a random amount of time (10 minutes plus 0 to 5 minutes, for instance)
+		// Sleep for a configured amount of time plus a random amount of time (10 minutes plus 0 to 5 minutes, for
+		// instance)
 		ticker := time.NewTicker(time.Duration(interval+r.Intn(int(splay))) * time.Second)
 
 		select {
@@ -237,7 +252,8 @@ func runBootstrapOnce(ctx context.Context, c *cli.Context, config *utils.Config,
 	}
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; err != nil && i < 3; i++ {
-		// Sleep for a configured amount of time plus a random amount of time (10 minutes plus 0 to 5 minutes, for instance)
+		// Sleep for a configured amount of time plus a random amount of time (10 minutes plus 0 to 5 minutes, for
+		// instance)
 		ticker := time.NewTicker(time.Duration(interval+r.Intn(int(splay))) * time.Second)
 		select {
 		case <-ticker.C:
@@ -256,35 +272,44 @@ func runBootstrapOnce(ctx context.Context, c *cli.Context, config *utils.Config,
 	return err
 }
 
-func getBootstrappingConfigOrDefaults(c *cli.Context, config *utils.Config) (applyAfterIterations, thresholdLines, interval, splay int) {
+func getBootstrappingConfigOrDefaults(
+	c *cli.Context,
+	config *utils.Config,
+) (applyAfterIterations, thresholdLines, interval, splay int) {
 	if c == nil {
 		return defaultApplyAfterIterations, defaultThresholdLines, defaultIntervalSeconds, defaultSplaySeconds
 	}
 	interval = config.BootstrapConfig.IntervalSeconds
-	if !(interval > 0) {
+	if interval <= 0 {
 		interval = defaultIntervalSeconds
 	}
 
 	splay = config.BootstrapConfig.SplaySeconds
-	if !(splay > 0) {
+	if splay <= 0 {
 		splay = defaultSplaySeconds
 	}
 
 	applyAfterIterations = config.BootstrapConfig.ApplyAfterIterations
-	if !(applyAfterIterations > 0) {
+	if applyAfterIterations <= 0 {
 		applyAfterIterations = defaultApplyAfterIterations
 	}
 
 	thresholdLines = c.Int("lines")
-	if !(thresholdLines > 0) {
+	if thresholdLines <= 0 {
 		thresholdLines = defaultThresholdLines
 	}
 	return
 }
 
-func getBlueprintConfig(ctx context.Context, bootstrappingSvc *blueprint.BootstrappingService, previousBlueprintConfig *types.BootstrappingConfiguration, formatter format.Formatter) (*types.BootstrappingConfiguration, bool, error) {
+func getBlueprintConfig(
+	ctx context.Context,
+	bootstrappingSvc *blueprint.BootstrappingService,
+	previousBlueprintConfig *types.BootstrappingConfiguration,
+	formatter format.Formatter,
+) (*types.BootstrappingConfiguration, bool, error) {
 	log.Debug("getBlueprintConfig")
-	// Inquire about desired configuration changes to be applied by querying the `GET /blueprint/configuration` endpoint. This will provide a JSON response with the desired configuration changes
+	// Inquire about desired configuration changes to be applied by querying the `GET /blueprint/configuration`
+	// endpoint. This will provide a JSON response with the desired configuration changes
 	blueprintConfig, status, err := bootstrappingSvc.GetBootstrappingConfiguration()
 	if err == nil && status != 200 {
 		err = fmt.Errorf("received non-ok %d response", status)
@@ -311,7 +336,13 @@ func getBlueprintConfig(ctx context.Context, bootstrappingSvc *blueprint.Bootstr
 }
 
 // Subsidiary routine for commands processing
-func applyPolicyfiles(ctx context.Context, bootstrappingSvc *blueprint.BootstrappingService, blueprintConfig *types.BootstrappingConfiguration, formatter format.Formatter, thresholdLines int) error {
+func applyPolicyfiles(
+	ctx context.Context,
+	bootstrappingSvc *blueprint.BootstrappingService,
+	blueprintConfig *types.BootstrappingConfiguration,
+	formatter format.Formatter,
+	thresholdLines int,
+) error {
 	log.Debug("applyPolicyfiles")
 	err := generateWorkspaceDir()
 	if err != nil {
@@ -331,7 +362,8 @@ func applyPolicyfiles(ctx context.Context, bootstrappingSvc *blueprint.Bootstrap
 		formatter.PrintError("couldn't initialize prototype", err)
 		return err
 	}
-	// For every policyfile, ensure its tarball (downloadable through their download_url) has been downloaded to the server ...
+	// For every policyfile, ensure its tarball (downloadable through their download_url) has been downloaded to the
+	// server ...
 	err = downloadPolicyfiles(ctx, bootstrappingSvc, bsProcess)
 	if err != nil {
 		formatter.PrintError("couldn't download policy files", err)
@@ -354,7 +386,8 @@ func applyPolicyfiles(ctx context.Context, bootstrappingSvc *blueprint.Bootstrap
 	// Finishing time
 	bsProcess.finishedAt = time.Now().UTC()
 
-	// Inform the platform of applied changes via a `PUT /blueprint/applied_configuration` request with a JSON payload similar to
+	// Inform the platform of applied changes via a `PUT /blueprint/applied_configuration` request with a JSON payload
+	// similar to
 	log.Debug("reporting applied policy files")
 	reportErr := reportAppliedConfiguration(bootstrappingSvc, bsProcess)
 	if reportErr != nil {
@@ -379,8 +412,13 @@ func initializePrototype(bsConfiguration *types.BootstrappingConfiguration, bsPr
 	return nil
 }
 
-// downloadPolicyfiles For every policy file, ensure its tarball (downloadable through their download_url) has been downloaded to the server ...
-func downloadPolicyfiles(ctx context.Context, bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) error {
+// downloadPolicyfiles For every policy file, ensure its tarball (downloadable through their download_url) has been
+// downloaded to the server ...
+func downloadPolicyfiles(
+	ctx context.Context,
+	bootstrappingSvc *blueprint.BootstrappingService,
+	bsProcess *bootstrappingProcess,
+) error {
 	log.Debug("downloadPolicyfiles")
 
 	for _, bsPolicyfile := range bsProcess.policyfiles {
@@ -413,8 +451,14 @@ func cleanObsoletePolicyfiles(bsProcess *bootstrappingProcess) error {
 	// builds an array of currently processable files at this looping time
 	currentlyProcessableFiles := []string{bsProcess.attributes.FileName()} // saved attributes file name
 	for _, bsPolicyFile := range bsProcess.policyfiles {
-		currentlyProcessableFiles = append(currentlyProcessableFiles, bsPolicyFile.FileName()) // Downloaded tgz file names
-		currentlyProcessableFiles = append(currentlyProcessableFiles, bsPolicyFile.Name())     // Uncompressed folder names
+		currentlyProcessableFiles = append(
+			currentlyProcessableFiles,
+			bsPolicyFile.FileName(),
+		) // Downloaded tgz file names
+		currentlyProcessableFiles = append(
+			currentlyProcessableFiles,
+			bsPolicyFile.Name(),
+		) // Uncompressed folder names
 	}
 
 	// removes from deletableFiles array the policy files currently applied
@@ -443,67 +487,93 @@ func saveAttributes(bsProcess *bootstrappingProcess) error {
 	return nil
 }
 
+func preparePolicyfileCommand(bsProcess *bootstrappingProcess, bsPolicyfile policyfile) (
+	string, string, string, error,
+) {
+	log.Debug("preparePolicyfileCommand")
+	command := fmt.Sprintf("chef-client -z -j %s", bsProcess.attributes.FilePath(bsProcess.directoryPath))
+	policyfileDir := bsPolicyfile.Path(bsProcess.directoryPath)
+	var renamedPolicyfileDir string
+	if runtime.GOOS == "windows" {
+		renamedPolicyfileDir = policyfileDir
+		policyfileDir = filepath.Join(bsProcess.directoryPath, "active")
+		err := os.Rename(renamedPolicyfileDir, policyfileDir)
+		if err != nil {
+			return "", "", "", fmt.Errorf("could not rename %s as %s: %v", renamedPolicyfileDir, policyfileDir, err)
+		}
+		command = fmt.Sprintf(
+			"SET \"PATH=%%PATH%%;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\"\n%s",
+			command,
+		)
+	}
+	command = fmt.Sprintf("cd %s\n%s", policyfileDir, command)
+	return command, renamedPolicyfileDir, policyfileDir, nil
+}
+
+func runCommand(fn func(chunk string) error, command string, thresholdLines int) error {
+	log.Debug("runCommand")
+	exitCode, err := utils.RunContinuousCmd(fn, command, -1, thresholdLines)
+	if err == nil && exitCode != 0 {
+		err = fmt.Errorf("policyfile application exited with %d code", exitCode)
+	}
+	if err != nil {
+		return err
+	}
+	log.Info("completed: ", exitCode)
+	return nil
+}
+
+func getFunctionForChunksBootstrappingLog(bootstrappingSvc *blueprint.BootstrappingService) func(chunk string) error {
+	fn := func(chunk string) error {
+		log.Debug("sendChunks")
+		err := utils.Retry(retriesNumber, time.Second, func() error {
+			log.Debug("Sending: ", chunk)
+
+			commandIn := map[string]interface{}{
+				"stdout": chunk,
+			}
+
+			_, statusCode, err := bootstrappingSvc.ReportBootstrappingLog(&commandIn)
+			switch {
+			// 0<100 error cases??
+			case statusCode == 0:
+				return fmt.Errorf("communication error %v %v", statusCode, err)
+			case statusCode >= 500:
+				return fmt.Errorf("server error %v %v", statusCode, err)
+			case statusCode >= 400:
+				return fmt.Errorf("client error %v %v", statusCode, err)
+			default:
+				return nil
+			}
+		})
+
+		if err != nil {
+			return fmt.Errorf("cannot send the chunk data, %v", err)
+		}
+		return nil
+	}
+	return fn
+}
+
 // processPolicyfiles applies for each policy the required chef commands, reporting in bunches of N lines
 func processPolicyfiles(bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) error {
 	log.Debug("processPolicyfiles")
-
 	for _, bsPolicyfile := range bsProcess.policyfiles {
-		command := fmt.Sprintf("chef-client -z -j %s", bsProcess.attributes.FilePath(bsProcess.directoryPath))
-		policyfileDir := bsPolicyfile.Path(bsProcess.directoryPath)
-		var renamedPolicyfileDir string
-		if runtime.GOOS == "windows" {
-			renamedPolicyfileDir = policyfileDir
-			policyfileDir = filepath.Join(bsProcess.directoryPath, "active")
-			err := os.Rename(renamedPolicyfileDir, policyfileDir)
-			if err != nil {
-				return fmt.Errorf("could not rename %s as %s: %v", renamedPolicyfileDir, policyfileDir, err)
-			}
-			command = fmt.Sprintf("SET \"PATH=%%PATH%%;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\"\n%s", command)
-		}
-		command = fmt.Sprintf("cd %s\n%s", policyfileDir, command)
-
-		log.Debug(command)
-
-		// Custom method for chunks processing
-		fn := func(chunk string) error {
-			log.Debug("sendChunks")
-			err := utils.Retry(retriesNumber, time.Second, func() error {
-				log.Debug("Sending: ", chunk)
-
-				commandIn := map[string]interface{}{
-					"stdout": chunk,
-				}
-
-				_, statusCode, err := bootstrappingSvc.ReportBootstrappingLog(&commandIn)
-				switch {
-				// 0<100 error cases??
-				case statusCode == 0:
-					return fmt.Errorf("communication error %v %v", statusCode, err)
-				case statusCode >= 500:
-					return fmt.Errorf("server error %v %v", statusCode, err)
-				case statusCode >= 400:
-					return fmt.Errorf("client error %v %v", statusCode, err)
-				default:
-					return nil
-				}
-			})
-
-			if err != nil {
-				return fmt.Errorf("cannot send the chunk data, %v", err)
-			}
-			return nil
-		}
-
-		exitCode, err := utils.RunContinuousCmd(fn, command, -1, bsProcess.thresholdLines)
-		if err == nil && exitCode != 0 {
-			err = fmt.Errorf("policyfile application exited with %d code", exitCode)
-		}
+		command, renamedPolicyfileDir, policyfileDir, err := preparePolicyfileCommand(bsProcess, bsPolicyfile)
 		if err != nil {
 			return err
 		}
+		log.Debug(command)
 
-		log.Info("completed: ", exitCode)
+		// Custom method for chunks processing
+		fn := getFunctionForChunksBootstrappingLog(bootstrappingSvc)
+
+		if err = runCommand(fn, command, bsProcess.thresholdLines); err != nil {
+			return err
+		}
+
 		bsProcess.appliedPolicyfileRevisionIDs[bsPolicyfile.ID] = bsPolicyfile.RevisionID
+
 		if renamedPolicyfileDir != "" {
 			err = os.Rename(policyfileDir, renamedPolicyfileDir)
 			if err != nil {
@@ -515,7 +585,10 @@ func processPolicyfiles(bootstrappingSvc *blueprint.BootstrappingService, bsProc
 }
 
 // reportAppliedConfiguration Inform the platform of applied changes
-func reportAppliedConfiguration(bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) error {
+func reportAppliedConfiguration(
+	bootstrappingSvc *blueprint.BootstrappingService,
+	bsProcess *bootstrappingProcess,
+) error {
 	log.Debug("reportAppliedConfiguration")
 
 	payload := map[string]interface{}{

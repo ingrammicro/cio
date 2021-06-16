@@ -1,13 +1,16 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/ingrammicro/cio/api/kubernetes"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	"github.com/urfave/cli"
-	"strings"
 )
 
 // WireUpCluster prepares common resources to send request to Concerto API
@@ -53,13 +56,13 @@ func ClusterList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.Cluster)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.Cluster, got a %T", labelable))
 		}
 		clusters[i] = v
 	}
 	if err = formatter.PrintList(clusters); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -77,7 +80,7 @@ func ClusterShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	cluster.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cluster); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -127,7 +130,7 @@ func ClusterCreate(c *cli.Context) error {
 
 	cluster.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cluster); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -158,7 +161,7 @@ func ClusterUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	cluster.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cluster); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -177,7 +180,7 @@ func ClusterDelete(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	cluster.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cluster); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -196,7 +199,7 @@ func ClusterRetry(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	cluster.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cluster); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -229,7 +232,7 @@ func ClusterPlanShow(c *cli.Context) error {
 	clusterPlan.CloudProviderName = cloudProvidersMap[clusterPlan.CloudProviderID]
 
 	if err = formatter.PrintItem(*clusterPlan); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

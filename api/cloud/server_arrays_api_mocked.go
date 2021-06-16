@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
@@ -28,7 +30,7 @@ func ListServerArraysMocked(t *testing.T, serverArraysIn []*types.ServerArray) [
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/server_arrays").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCloudServerArrays).Return(dIn, 200, nil)
 	serverArraysOut, err := ds.ListServerArrays()
 	assert.Nil(err, "Error getting server array list")
 	assert.Equal(serverArraysIn, serverArraysOut, "ListServerArrays returned different server arrays")
@@ -52,7 +54,7 @@ func ListServerArraysFailErrMocked(t *testing.T, serverArraysIn []*types.ServerA
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/server_arrays").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathCloudServerArrays).Return(dIn, 200, fmt.Errorf("mocked error"))
 	serverArraysOut, err := ds.ListServerArrays()
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serverArraysOut, "Expecting nil output")
@@ -77,7 +79,7 @@ func ListServerArraysFailStatusMocked(t *testing.T, serverArraysIn []*types.Serv
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/server_arrays").Return(dIn, 499, nil)
+	cs.On("Get", APIPathCloudServerArrays).Return(dIn, 499, nil)
 	serverArraysOut, err := ds.ListServerArrays()
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serverArraysOut, "Expecting nil output")
@@ -101,7 +103,7 @@ func ListServerArraysFailJSONMocked(t *testing.T, serverArraysIn []*types.Server
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/cloud/server_arrays").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCloudServerArrays).Return(dIn, 200, nil)
 	serverArraysOut, err := ds.ListServerArrays()
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serverArraysOut, "Expecting nil output")
@@ -126,7 +128,7 @@ func GetServerArrayMocked(t *testing.T, serverArrayIn *types.ServerArray) *types
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID)).Return(dIn, 200, nil)
 	serverArrayOut, err := ds.GetServerArray(serverArrayIn.ID)
 	assert.Nil(err, "Error getting server array")
 	assert.Equal(*serverArrayIn, *serverArrayOut, "GetServerArray returned different server arrays")
@@ -150,7 +152,7 @@ func GetServerArrayFailErrMocked(t *testing.T, serverArrayIn *types.ServerArray)
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	serverArrayOut, err := ds.GetServerArray(serverArrayIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -176,7 +178,7 @@ func GetServerArrayFailStatusMocked(t *testing.T, serverArrayIn *types.ServerArr
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID)).Return(dIn, 499, nil)
 	serverArrayOut, err := ds.GetServerArray(serverArrayIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -201,7 +203,7 @@ func GetServerArrayFailJSONMocked(t *testing.T, serverArrayIn *types.ServerArray
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID)).Return(dIn, 200, nil)
 	serverArrayOut, err := ds.GetServerArray(serverArrayIn.ID)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serverArrayOut, "Expecting nil output")
@@ -230,7 +232,7 @@ func CreateServerArrayMocked(t *testing.T, serverArrayIn *types.ServerArray) *ty
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Post", "/cloud/server_arrays/", mapIn).Return(dOut, 200, nil)
+	cs.On("Post", APIPathCloudServerArrays, mapIn).Return(dOut, 200, nil)
 	serverArrayOut, err := ds.CreateServerArray(mapIn)
 	assert.Nil(err, "Error creating server array")
 	assert.Equal(serverArrayIn, serverArrayOut, "CreateServerArray returned different server arrays")
@@ -258,7 +260,7 @@ func CreateServerArrayFailErrMocked(t *testing.T, serverArrayIn *types.ServerArr
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Post", "/cloud/server_arrays/", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathCloudServerArrays, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverArrayOut, err := ds.CreateServerArray(mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -288,7 +290,7 @@ func CreateServerArrayFailStatusMocked(t *testing.T, serverArrayIn *types.Server
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Post", "/cloud/server_arrays/", mapIn).Return(dOut, 499, nil)
+	cs.On("Post", APIPathCloudServerArrays, mapIn).Return(dOut, 499, nil)
 	serverArrayOut, err := ds.CreateServerArray(mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -317,7 +319,7 @@ func CreateServerArrayFailJSONMocked(t *testing.T, serverArrayIn *types.ServerAr
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", "/cloud/server_arrays/", mapIn).Return(dIn, 200, nil)
+	cs.On("Post", APIPathCloudServerArrays, mapIn).Return(dIn, 200, nil)
 	serverArrayOut, err := ds.CreateServerArray(mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -347,7 +349,7 @@ func UpdateServerArrayMocked(t *testing.T, serverArrayIn *types.ServerArray) *ty
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID), mapIn).Return(dOut, 200, nil)
 	serverArrayOut, err := ds.UpdateServerArray(serverArrayIn.ID, mapIn)
 	assert.Nil(err, "Error updating server array")
 	assert.Equal(serverArrayIn, serverArrayOut, "UpdateServerArray returned different server arrays")
@@ -375,7 +377,8 @@ func UpdateServerArrayFailErrMocked(t *testing.T, serverArrayIn *types.ServerArr
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverArrayOut, err := ds.UpdateServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -405,7 +408,7 @@ func UpdateServerArrayFailStatusMocked(t *testing.T, serverArrayIn *types.Server
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID), mapIn).Return(dOut, 499, nil)
 	serverArrayOut, err := ds.UpdateServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -434,7 +437,7 @@ func UpdateServerArrayFailJSONMocked(t *testing.T, serverArrayIn *types.ServerAr
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID), mapIn).Return(dIn, 200, nil)
 	serverArrayOut, err := ds.UpdateServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -464,7 +467,7 @@ func BootServerArrayMocked(t *testing.T, serverArrayIn *types.ServerArray) *type
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/boot", serverArrayIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayBoot, serverArrayIn.ID), mapIn).Return(dOut, 200, nil)
 	serverArrayOut, err := ds.BootServerArray(serverArrayIn.ID, mapIn)
 	assert.Nil(err, "Error booting server array")
 	assert.Equal(serverArrayIn, serverArrayOut, "BootServerArray returned different server arrays")
@@ -492,7 +495,8 @@ func BootServerArrayFailErrMocked(t *testing.T, serverArrayIn *types.ServerArray
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/boot", serverArrayIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayBoot, serverArrayIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverArrayOut, err := ds.BootServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -522,7 +526,7 @@ func BootServerArrayFailStatusMocked(t *testing.T, serverArrayIn *types.ServerAr
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/boot", serverArrayIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayBoot, serverArrayIn.ID), mapIn).Return(dOut, 499, nil)
 	serverArrayOut, err := ds.BootServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -551,7 +555,7 @@ func BootServerArrayFailJSONMocked(t *testing.T, serverArrayIn *types.ServerArra
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/boot", serverArrayIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayBoot, serverArrayIn.ID), mapIn).Return(dIn, 200, nil)
 	serverArrayOut, err := ds.BootServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -581,7 +585,7 @@ func ShutdownServerArrayMocked(t *testing.T, serverArrayIn *types.ServerArray) *
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/shutdown", serverArrayIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayShutdown, serverArrayIn.ID), mapIn).Return(dOut, 200, nil)
 	serverArrayOut, err := ds.ShutdownServerArray(serverArrayIn.ID, mapIn)
 	assert.Nil(err, "Error shutting down server array")
 	assert.Equal(serverArrayIn, serverArrayOut, "ShutdownServerArray returned different server arrays")
@@ -609,7 +613,8 @@ func ShutdownServerArrayFailErrMocked(t *testing.T, serverArrayIn *types.ServerA
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/shutdown", serverArrayIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayShutdown, serverArrayIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverArrayOut, err := ds.ShutdownServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -639,7 +644,7 @@ func ShutdownServerArrayFailStatusMocked(t *testing.T, serverArrayIn *types.Serv
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/shutdown", serverArrayIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayShutdown, serverArrayIn.ID), mapIn).Return(dOut, 499, nil)
 	serverArrayOut, err := ds.ShutdownServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -668,7 +673,7 @@ func ShutdownServerArrayFailJSONMocked(t *testing.T, serverArrayIn *types.Server
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/shutdown", serverArrayIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayShutdown, serverArrayIn.ID), mapIn).Return(dIn, 200, nil)
 	serverArrayOut, err := ds.ShutdownServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -698,7 +703,7 @@ func EmptyServerArrayMocked(t *testing.T, serverArrayIn *types.ServerArray) *typ
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/empty", serverArrayIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayEmpty, serverArrayIn.ID), mapIn).Return(dOut, 200, nil)
 	serverArrayOut, err := ds.EmptyServerArray(serverArrayIn.ID, mapIn)
 	assert.Nil(err, "Error emptying server array")
 	assert.Equal(serverArrayIn, serverArrayOut, "EmptyServerArray returned different server arrays")
@@ -726,7 +731,8 @@ func EmptyServerArrayFailErrMocked(t *testing.T, serverArrayIn *types.ServerArra
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/empty", serverArrayIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayEmpty, serverArrayIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverArrayOut, err := ds.EmptyServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -756,7 +762,7 @@ func EmptyServerArrayFailStatusMocked(t *testing.T, serverArrayIn *types.ServerA
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/empty", serverArrayIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayEmpty, serverArrayIn.ID), mapIn).Return(dOut, 499, nil)
 	serverArrayOut, err := ds.EmptyServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -785,7 +791,7 @@ func EmptyServerArrayFailJSONMocked(t *testing.T, serverArrayIn *types.ServerArr
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/server_arrays/%s/empty", serverArrayIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerArrayEmpty, serverArrayIn.ID), mapIn).Return(dIn, 200, nil)
 	serverArrayOut, err := ds.EmptyServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -815,7 +821,7 @@ func EnlargeServerArrayMocked(t *testing.T, serverArrayIn *types.ServerArray) *t
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathCloudServerArrayServers, serverArrayIn.ID), mapIn).Return(dOut, 200, nil)
 	serverArrayOut, err := ds.EnlargeServerArray(serverArrayIn.ID, mapIn)
 	assert.Nil(err, "Error enlarging server array")
 	assert.Equal(serverArrayIn, serverArrayOut, "EnlargeServerArray returned different server arrays")
@@ -843,7 +849,8 @@ func EnlargeServerArrayFailErrMocked(t *testing.T, serverArrayIn *types.ServerAr
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathCloudServerArrayServers, serverArrayIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverArrayOut, err := ds.EnlargeServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -873,7 +880,7 @@ func EnlargeServerArrayFailStatusMocked(t *testing.T, serverArrayIn *types.Serve
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathCloudServerArrayServers, serverArrayIn.ID), mapIn).Return(dOut, 499, nil)
 	serverArrayOut, err := ds.EnlargeServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -902,7 +909,7 @@ func EnlargeServerArrayFailJSONMocked(t *testing.T, serverArrayIn *types.ServerA
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathCloudServerArrayServers, serverArrayIn.ID), mapIn).Return(dIn, 200, nil)
 	serverArrayOut, err := ds.EnlargeServerArray(serverArrayIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -928,7 +935,7 @@ func ListServerArrayServersMocked(t *testing.T, serversIn []*types.Server, serve
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerArrayServers, serverArrayID)).Return(dIn, 200, nil)
 	serversOut, err := ds.ListServerArrayServers(serverArrayID)
 	assert.Nil(err, "Error getting server list")
 	assert.Equal(serversIn, serversOut, "ListServerArrayServers returned different servers")
@@ -937,7 +944,11 @@ func ListServerArrayServersMocked(t *testing.T, serversIn []*types.Server, serve
 }
 
 // ListServerArrayServersFailErrMocked test mocked function
-func ListServerArrayServersFailErrMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
+func ListServerArrayServersFailErrMocked(
+	t *testing.T,
+	serversIn []*types.Server,
+	serverArrayID string,
+) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -952,7 +963,8 @@ func ListServerArrayServersFailErrMocked(t *testing.T, serversIn []*types.Server
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerArrayServers, serverArrayID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	serversOut, err := ds.ListServerArrayServers(serverArrayID)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serversOut, "Expecting nil output")
@@ -962,7 +974,11 @@ func ListServerArrayServersFailErrMocked(t *testing.T, serversIn []*types.Server
 }
 
 // ListServerArrayServersFailStatusMocked test mocked function
-func ListServerArrayServersFailStatusMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
+func ListServerArrayServersFailStatusMocked(
+	t *testing.T,
+	serversIn []*types.Server,
+	serverArrayID string,
+) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -977,7 +993,7 @@ func ListServerArrayServersFailStatusMocked(t *testing.T, serversIn []*types.Ser
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerArrayServers, serverArrayID)).Return(dIn, 499, nil)
 	serversOut, err := ds.ListServerArrayServers(serverArrayID)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serversOut, "Expecting nil output")
@@ -987,7 +1003,11 @@ func ListServerArrayServersFailStatusMocked(t *testing.T, serversIn []*types.Ser
 }
 
 // ListServerArrayServersFailJSONMocked test mocked function
-func ListServerArrayServersFailJSONMocked(t *testing.T, serversIn []*types.Server, serverArrayID string) []*types.Server {
+func ListServerArrayServersFailJSONMocked(
+	t *testing.T,
+	serversIn []*types.Server,
+	serverArrayID string,
+) []*types.Server {
 
 	assert := assert.New(t)
 
@@ -1001,7 +1021,7 @@ func ListServerArrayServersFailJSONMocked(t *testing.T, serversIn []*types.Serve
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/server_arrays/%s/servers", serverArrayID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerArrayServers, serverArrayID)).Return(dIn, 200, nil)
 	serversOut, err := ds.ListServerArrayServers(serverArrayID)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serversOut, "Expecting nil output")
@@ -1026,7 +1046,7 @@ func DeleteServerArrayMocked(t *testing.T, serverArrayIn *types.ServerArray) {
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID)).Return(dIn, 200, nil)
 	err = ds.DeleteServerArray(serverArrayIn.ID)
 	assert.Nil(err, "Error deleting server array")
 }
@@ -1047,7 +1067,8 @@ func DeleteServerArrayFailErrMocked(t *testing.T, serverArrayIn *types.ServerArr
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DeleteServerArray(serverArrayIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -1070,7 +1091,7 @@ func DeleteServerArrayFailStatusMocked(t *testing.T, serverArrayIn *types.Server
 	assert.Nil(err, "Server array test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/cloud/server_arrays/%s", serverArrayIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathCloudServerArray, serverArrayIn.ID)).Return(dIn, 499, nil)
 	err = ds.DeleteServerArray(serverArrayIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")

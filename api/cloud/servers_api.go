@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
@@ -8,6 +10,18 @@ import (
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathCloudServers = "/cloud/servers"
+const APIPathCloudServer = "/cloud/servers/%s"
+const APIPathCloudServerBoot = "/cloud/servers/%s/boot"
+const APIPathCloudServerReboot = "/cloud/servers/%s/reboot"
+const APIPathCloudServerShutdown = "/cloud/servers/%s/shutdown"
+const APIPathCloudServerOverride = "/cloud/servers/%s/override"
+const APIPathCloudServerFloatingIPs = "/cloud/servers/%s/floating_ips"
+const APIPathCloudServerVolumes = "/cloud/servers/%s/volumes"
+const APIPathCloudServerEvents = "/cloud/servers/%s/events"
+const APIPathCloudServerOperationalScripts = "/cloud/servers/%s/operational_scripts"
+const APIPathCloudServerOperationalScriptExecute = "/cloud/servers/%s/operational_scripts/%s/execute"
 
 // ServerService manages server operations
 type ServerService struct {
@@ -29,7 +43,7 @@ func NewServerService(concertoService utils.ConcertoService) (*ServerService, er
 func (ss *ServerService) ListServers() (servers []*types.Server, err error) {
 	log.Debug("ListServers")
 
-	data, status, err := ss.concertoService.Get("/cloud/servers")
+	data, status, err := ss.concertoService.Get(APIPathCloudServers)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +63,7 @@ func (ss *ServerService) ListServers() (servers []*types.Server, err error) {
 func (ss *ServerService) GetServer(serverID string) (server *types.Server, err error) {
 	log.Debug("GetServer")
 
-	data, status, err := ss.concertoService.Get(fmt.Sprintf("/cloud/servers/%s", serverID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf(APIPathCloudServer, serverID))
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +83,7 @@ func (ss *ServerService) GetServer(serverID string) (server *types.Server, err e
 func (ss *ServerService) CreateServer(serverParams *map[string]interface{}) (server *types.Server, err error) {
 	log.Debug("CreateServer")
 
-	data, status, err := ss.concertoService.Post("/cloud/servers/", serverParams)
+	data, status, err := ss.concertoService.Post(APIPathCloudServers, serverParams)
 
 	if err != nil {
 		return nil, err
@@ -87,10 +101,13 @@ func (ss *ServerService) CreateServer(serverParams *map[string]interface{}) (ser
 }
 
 // UpdateServer updates a server by its ID
-func (ss *ServerService) UpdateServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
+func (ss *ServerService) UpdateServer(
+	serverID string,
+	serverParams *map[string]interface{},
+) (server *types.Server, err error) {
 	log.Debug("UpdateServer")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s", serverID), serverParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf(APIPathCloudServer, serverID), serverParams)
 
 	if err != nil {
 		return nil, err
@@ -108,10 +125,13 @@ func (ss *ServerService) UpdateServer(serverID string, serverParams *map[string]
 }
 
 // BootServer boots a server by its ID
-func (ss *ServerService) BootServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
+func (ss *ServerService) BootServer(
+	serverID string,
+	serverParams *map[string]interface{},
+) (server *types.Server, err error) {
 	log.Debug("BootServer")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/boot", serverID), serverParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf(APIPathCloudServerBoot, serverID), serverParams)
 
 	if err != nil {
 		return nil, err
@@ -129,10 +149,13 @@ func (ss *ServerService) BootServer(serverID string, serverParams *map[string]in
 }
 
 // RebootServer reboots a server by its ID
-func (ss *ServerService) RebootServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
+func (ss *ServerService) RebootServer(
+	serverID string,
+	serverParams *map[string]interface{},
+) (server *types.Server, err error) {
 	log.Debug("RebootServer")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/reboot", serverID), serverParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf(APIPathCloudServerReboot, serverID), serverParams)
 
 	if err != nil {
 		return nil, err
@@ -150,10 +173,13 @@ func (ss *ServerService) RebootServer(serverID string, serverParams *map[string]
 }
 
 // ShutdownServer shuts down a server by its ID
-func (ss *ServerService) ShutdownServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
+func (ss *ServerService) ShutdownServer(
+	serverID string,
+	serverParams *map[string]interface{},
+) (server *types.Server, err error) {
 	log.Debug("ShutdownServer")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/shutdown", serverID), serverParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf(APIPathCloudServerShutdown, serverID), serverParams)
 
 	if err != nil {
 		return nil, err
@@ -171,10 +197,13 @@ func (ss *ServerService) ShutdownServer(serverID string, serverParams *map[strin
 }
 
 // OverrideServer overrides a server by its ID
-func (ss *ServerService) OverrideServer(serverID string, serverParams *map[string]interface{}) (server *types.Server, err error) {
+func (ss *ServerService) OverrideServer(
+	serverID string,
+	serverParams *map[string]interface{},
+) (server *types.Server, err error) {
 	log.Debug("OverrideServer")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/override", serverID), serverParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf(APIPathCloudServerOverride, serverID), serverParams)
 
 	if err != nil {
 		return nil, err
@@ -195,7 +224,7 @@ func (ss *ServerService) OverrideServer(serverID string, serverParams *map[strin
 func (ss *ServerService) DeleteServer(serverID string) (err error) {
 	log.Debug("DeleteServer")
 
-	data, status, err := ss.concertoService.Delete(fmt.Sprintf("/cloud/servers/%s", serverID))
+	data, status, err := ss.concertoService.Delete(fmt.Sprintf(APIPathCloudServer, serverID))
 	if err != nil {
 		return err
 	}
@@ -211,7 +240,7 @@ func (ss *ServerService) DeleteServer(serverID string) (err error) {
 func (ss *ServerService) ListServerFloatingIPs(serverID string) (floatingIPs []*types.FloatingIP, err error) {
 	log.Debug("ListServerFloatingIPs")
 
-	data, status, err := ss.concertoService.Get(fmt.Sprintf("/cloud/servers/%s/floating_ips", serverID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf(APIPathCloudServerFloatingIPs, serverID))
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +260,7 @@ func (ss *ServerService) ListServerFloatingIPs(serverID string) (floatingIPs []*
 func (ss *ServerService) ListServerVolumes(serverID string) (volumes []*types.Volume, err error) {
 	log.Debug("ListServerVolumes")
 
-	data, status, err := ss.concertoService.Get(fmt.Sprintf("/cloud/servers/%s/volumes", serverID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf(APIPathCloudServerVolumes, serverID))
 	if err != nil {
 		return nil, err
 	}
@@ -253,7 +282,7 @@ func (ss *ServerService) ListServerVolumes(serverID string) (volumes []*types.Vo
 func (ss *ServerService) ListEvents(serverID string) (events []*types.Event, err error) {
 	log.Debug("ListEvents")
 
-	data, status, err := ss.concertoService.Get(fmt.Sprintf("/cloud/servers/%s/events", serverID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf(APIPathCloudServerEvents, serverID))
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +304,7 @@ func (ss *ServerService) ListEvents(serverID string) (events []*types.Event, err
 func (ss *ServerService) ListOperationalScripts(serverID string) (scripts []*types.ScriptChar, err error) {
 	log.Debug("ListOperationalScripts")
 
-	data, status, err := ss.concertoService.Get(fmt.Sprintf("/cloud/servers/%s/operational_scripts", serverID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf(APIPathCloudServerOperationalScripts, serverID))
 	if err != nil {
 		return nil, err
 	}
@@ -292,10 +321,17 @@ func (ss *ServerService) ListOperationalScripts(serverID string) (scripts []*typ
 }
 
 // ExecuteOperationalScript executes an operational script by its server ID and the script id
-func (ss *ServerService) ExecuteOperationalScript(serverID string, scriptID string, serverParams *map[string]interface{}) (script *types.Event, err error) {
+func (ss *ServerService) ExecuteOperationalScript(
+	serverID string,
+	scriptID string,
+	serverParams *map[string]interface{},
+) (script *types.Event, err error) {
 	log.Debug("ExecuteOperationalScript")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/cloud/servers/%s/operational_scripts/%s/execute", serverID, scriptID), serverParams)
+	data, status, err := ss.concertoService.Put(
+		fmt.Sprintf(APIPathCloudServerOperationalScriptExecute, serverID, scriptID),
+		serverParams,
+	)
 
 	if err != nil {
 		return nil, err

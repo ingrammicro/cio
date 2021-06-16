@@ -1,13 +1,16 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package utils
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/urfave/cli"
 	"io"
 	"os"
 	"reflect"
+
+	"github.com/urfave/cli"
 )
 
 // FlagConvertParams converts cli parameters in API callable params
@@ -21,24 +24,23 @@ func FlagConvertParams(c *cli.Context) *map[string]interface{} {
 	return &v
 }
 
+func isJSON(jsonFlags []string, flag string) bool {
+	if jsonFlags != nil {
+		for _, js := range jsonFlags {
+			if js == flag {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // FlagConvertParamsJSON converts cli parameters in API callable params, and encodes JSON parameters
 func FlagConvertParamsJSON(c *cli.Context, jsonFlags []string) (*map[string]interface{}, error) {
 	v := make(map[string]interface{})
 	for _, flag := range c.FlagNames() {
 		if c.IsSet(flag) {
-
-			// check if field is json
-			isJSON := false
-			if jsonFlags != nil {
-				for _, js := range jsonFlags {
-					if js == flag {
-						isJSON = true
-						break
-					}
-				}
-			}
-
-			if isJSON {
+			if isJSON(jsonFlags, flag) {
 				// parse json before assigning to map
 				var p interface{}
 				err := json.Unmarshal([]byte(c.String(flag)), &p)
@@ -66,7 +68,8 @@ func ItemConvertParams(item interface{}) (*map[string]interface{}, error) {
 		// if value, ok :=  it.Field(i).Interface().(string); ok {
 		// 	v[it.Type().Field(i).Name] = value
 		// } else {
-		// 	return nil, fmt.Errorf("Interface couldn't be converted to map of strings. Field: %s", it.Type().Field(i).Name)
+		// 	return nil, fmt.Errorf("Interface couldn't be converted to map of strings. Field: %s",
+		// it.Type().Field(i).Name)
 		// }
 	}
 	return &v, nil
@@ -93,7 +96,8 @@ func ConvertFlagParamsJsonFromFileOrStdin(c *cli.Context, dataIn string) (map[st
 	return content, nil
 }
 
-// ConvertFlagParamsJsonStringFromFileOrStdin returns the json string representation of parameters taken from the input file or STDIN
+// ConvertFlagParamsJsonStringFromFileOrStdin returns the json string representation of parameters taken from the input
+// file or STDIN
 func ConvertFlagParamsJsonStringFromFileOrStdin(c *cli.Context, dataIn string) (string, error) {
 	var reader io.Reader
 

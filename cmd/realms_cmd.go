@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -40,7 +42,7 @@ func RealmList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(realms); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -57,7 +59,7 @@ func RealmShow(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*realm); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -79,7 +81,7 @@ func RealmNodePoolPlansList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(realms); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

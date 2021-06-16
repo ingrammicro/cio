@@ -1,13 +1,16 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
+	"time"
+
 	"github.com/ingrammicro/cio/api/clientbrownfield"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	"time"
 )
 
 // WireUpImport prepares common resources to send request to Concerto API
@@ -31,7 +34,11 @@ func WireUpImport(c *cli.Context) (ds *clientbrownfield.ImportService, f format.
 	return ds, f
 }
 
-func checkCloudAccountImportingState(c *cli.Context, cloudAccount *types.CloudAccount, state string) *types.CloudAccount {
+func checkCloudAccountImportingState(
+	c *cli.Context,
+	cloudAccount *types.CloudAccount,
+	state string,
+) *types.CloudAccount {
 	debugCmdFuncInfo(c)
 	cloudAccountSvc, formatter := WireUpBrownfieldCloudAccount(c)
 
@@ -72,7 +79,7 @@ func ImportServers(c *cli.Context) error {
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -95,7 +102,7 @@ func ImportVPCs(c *cli.Context) error {
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -118,7 +125,7 @@ func ImportFloatingIPs(c *cli.Context) error {
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -141,7 +148,7 @@ func ImportVolumes(c *cli.Context) error {
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -164,7 +171,7 @@ func ImportKubernetesClusters(c *cli.Context) error {
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -187,7 +194,7 @@ func ImportPolicies(c *cli.Context) error {
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

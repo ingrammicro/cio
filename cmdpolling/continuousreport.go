@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmdpolling
 
 import (
@@ -34,7 +36,7 @@ func cmdContinuousReportRun(c *cli.Context) error {
 
 	// cli command threshold flag
 	thresholdTime := c.Int("time")
-	if !(thresholdTime > 0) {
+	if thresholdTime <= 0 {
 		thresholdTime = DefaultThresholdTime
 	}
 	log.Debug("Time threshold:", thresholdTime)

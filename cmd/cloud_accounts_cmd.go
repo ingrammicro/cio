@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -45,7 +47,7 @@ func CloudAccountList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(cloudAccounts); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 
 	return nil
@@ -67,7 +69,7 @@ func CloudAccountShow(c *cli.Context) error {
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

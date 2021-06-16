@@ -1,11 +1,14 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 // +build linux
 
 package firewall
 
 import (
 	"fmt"
-	"github.com/ingrammicro/cio/api/types"
 	"os"
+
+	"github.com/ingrammicro/cio/api/types"
 
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
@@ -32,7 +35,15 @@ func Apply(policy types.Policy) error {
 	}
 
 	for _, rule := range policy.Rules {
-		utils.RunCmd(fmt.Sprintf("/sbin/iptables -w -A CONCERTO -s %s -p %s --dport %d:%d -j ACCEPT", rule.Cidr, rule.Protocol, rule.MinPort, rule.MaxPort))
+		utils.RunCmd(
+			fmt.Sprintf(
+				"/sbin/iptables -w -A CONCERTO -s %s -p %s --dport %d:%d -j ACCEPT",
+				rule.Cidr,
+				rule.Protocol,
+				rule.MinPort,
+				rule.MaxPort,
+			),
+		)
 	}
 
 	_, exitCode, _, _ = utils.RunCmd("/sbin/iptables -w -C INPUT -j CONCERTO")

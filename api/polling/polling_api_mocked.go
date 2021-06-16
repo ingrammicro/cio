@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package polling
 
 import (
@@ -27,7 +29,7 @@ func PingMocked(t *testing.T, pingIn *types.PollingPing) *types.PollingPing {
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", "/command_polling/pings", &payload).Return(dOut, 201, nil)
+	cs.On("Post", APIPathCommandPollingPings, &payload).Return(dOut, 201, nil)
 	pingOut, status, err := ds.Ping()
 	assert.Nil(err, "Error getting ping")
 	assert.Equal(status, 201, "Ping returned invalid response")
@@ -57,7 +59,7 @@ func PingFailErrMocked(t *testing.T, pingIn *types.PollingPing) *types.PollingPi
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", "/command_polling/pings", &payload).Return(dIn, 404, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathCommandPollingPings, &payload).Return(dIn, 404, fmt.Errorf("mocked error"))
 	pingOut, _, err := ds.Ping()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -86,7 +88,7 @@ func PingFailStatusMocked(t *testing.T, pingIn *types.PollingPing) *types.Pollin
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", "/command_polling/pings", &payload).Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
+	cs.On("Post", APIPathCommandPollingPings, &payload).Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
 	pingOut, status, err := ds.Ping()
 
 	assert.Equal(status, 499, "Ping returned an unexpected status code")
@@ -113,7 +115,7 @@ func PingFailJSONMocked(t *testing.T, pingIn *types.PollingPing) *types.PollingP
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", "/command_polling/pings", &payload).Return(dIn, 201, nil)
+	cs.On("Post", APIPathCommandPollingPings, &payload).Return(dIn, 201, nil)
 	pingOut, _, err := ds.Ping()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -139,7 +141,7 @@ func GetNextCommandMocked(t *testing.T, commandIn *types.PollingCommand) *types.
 	assert.Nil(err, "GetNextCommand test data corrupted")
 
 	// call service
-	cs.On("Get", "/command_polling/command").Return(dOut, 200, nil)
+	cs.On("Get", APIPathCommandPollingNextCommand).Return(dOut, 200, nil)
 	commandOut, status, err := ds.GetNextCommand()
 	assert.Nil(err, "Error getting polling command")
 	assert.Equal(status, 200, "GetNextCommand returned invalid response")
@@ -166,7 +168,7 @@ func GetNextCommandFailErrMocked(t *testing.T, commandIn *types.PollingCommand) 
 	dIn = nil
 
 	// call service
-	cs.On("Get", "/command_polling/command").Return(dIn, 404, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathCommandPollingNextCommand).Return(dIn, 404, fmt.Errorf("mocked error"))
 	commandOut, _, err := ds.GetNextCommand()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -194,7 +196,7 @@ func GetNextCommandFailStatusMocked(t *testing.T, commandIn *types.PollingComman
 	dIn = nil
 
 	// call service
-	cs.On("Get", "/command_polling/command").Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
+	cs.On("Get", APIPathCommandPollingNextCommand).Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
 	commandOut, status, err := ds.GetNextCommand()
 
 	assert.Equal(status, 499, "GetNextCommand returned an unexpected status code")
@@ -220,7 +222,7 @@ func GetNextCommandFailJSONMocked(t *testing.T, commandIn *types.PollingCommand)
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/command_polling/command").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCommandPollingNextCommand).Return(dIn, 200, nil)
 	commandOut, _, err := ds.GetNextCommand()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -247,7 +249,7 @@ func UpdateCommandMocked(t *testing.T, commandIn *types.PollingCommand) *types.P
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Put", fmt.Sprintf("/command_polling/commands/%s", commandIn.ID), &payload).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCommandPollingCommand, commandIn.ID), &payload).Return(dOut, 200, nil)
 	commandOut, status, err := ds.UpdateCommand(commandIn.ID, &payload)
 	assert.Nil(err, "Error getting polling command")
 	assert.Equal(status, 200, "UpdateCommand returned invalid response")
@@ -275,7 +277,8 @@ func UpdateCommandFailErrMocked(t *testing.T, commandIn *types.PollingCommand) *
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Put", fmt.Sprintf("/command_polling/commands/%s", commandIn.ID), &payload).Return(dIn, 400, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCommandPollingCommand, commandIn.ID), &payload).
+		Return(dIn, 400, fmt.Errorf("mocked error"))
 	commandOut, _, err := ds.UpdateCommand(commandIn.ID, &payload)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -304,7 +307,8 @@ func UpdateCommandFailStatusMocked(t *testing.T, commandIn *types.PollingCommand
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Put", fmt.Sprintf("/command_polling/commands/%s", commandIn.ID), &payload).Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCommandPollingCommand, commandIn.ID), &payload).
+		Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
 	commandOut, status, err := ds.UpdateCommand(commandIn.ID, &payload)
 
 	assert.Equal(status, 499, "UpdateCommand returned an unexpected status code")
@@ -331,7 +335,7 @@ func UpdateCommandFailJSONMocked(t *testing.T, commandIn *types.PollingCommand) 
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Put", fmt.Sprintf("/command_polling/commands/%s", commandIn.ID), &payload).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCommandPollingCommand, commandIn.ID), &payload).Return(dIn, 200, nil)
 	commandOut, _, err := ds.UpdateCommand(commandIn.ID, &payload)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -358,7 +362,7 @@ func ReportBootstrapLogMocked(t *testing.T, commandIn *types.PollingContinuousRe
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", fmt.Sprintf("/command_polling/bootstrap_logs"), &payload).Return(dOut, 201, nil)
+	cs.On("Post", fmt.Sprintf(APIPathCommandPollingBootstrapLogs), &payload).Return(dOut, 201, nil)
 	commandOut, status, err := ds.ReportBootstrapLog(&payload)
 
 	assert.Nil(err, "Error posting report command")
@@ -369,7 +373,10 @@ func ReportBootstrapLogMocked(t *testing.T, commandIn *types.PollingContinuousRe
 }
 
 // ReportBootstrapLogFailErrMocked test mocked function
-func ReportBootstrapLogFailErrMocked(t *testing.T, commandIn *types.PollingContinuousReport) *types.PollingContinuousReport {
+func ReportBootstrapLogFailErrMocked(
+	t *testing.T,
+	commandIn *types.PollingContinuousReport,
+) *types.PollingContinuousReport {
 
 	assert := assert.New(t)
 
@@ -387,7 +394,8 @@ func ReportBootstrapLogFailErrMocked(t *testing.T, commandIn *types.PollingConti
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", fmt.Sprintf("/command_polling/bootstrap_logs"), &payload).Return(dIn, 400, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathCommandPollingBootstrapLogs), &payload).
+		Return(dIn, 400, fmt.Errorf("mocked error"))
 	commandOut, _, err := ds.ReportBootstrapLog(&payload)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -398,7 +406,10 @@ func ReportBootstrapLogFailErrMocked(t *testing.T, commandIn *types.PollingConti
 }
 
 // ReportBootstrapLogFailStatusMocked test mocked function
-func ReportBootstrapLogFailStatusMocked(t *testing.T, commandIn *types.PollingContinuousReport) *types.PollingContinuousReport {
+func ReportBootstrapLogFailStatusMocked(
+	t *testing.T,
+	commandIn *types.PollingContinuousReport,
+) *types.PollingContinuousReport {
 
 	assert := assert.New(t)
 
@@ -416,7 +427,8 @@ func ReportBootstrapLogFailStatusMocked(t *testing.T, commandIn *types.PollingCo
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", fmt.Sprintf("/command_polling/bootstrap_logs"), &payload).Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathCommandPollingBootstrapLogs), &payload).
+		Return(dIn, 499, fmt.Errorf("error 499 Mocked error"))
 	commandOut, status, err := ds.ReportBootstrapLog(&payload)
 
 	assert.Equal(status, 499, "ReportBootstrapLog returned an unexpected status code")
@@ -428,7 +440,10 @@ func ReportBootstrapLogFailStatusMocked(t *testing.T, commandIn *types.PollingCo
 }
 
 // ReportBootstrapLogFailJSONMocked test mocked function
-func ReportBootstrapLogFailJSONMocked(t *testing.T, commandIn *types.PollingContinuousReport) *types.PollingContinuousReport {
+func ReportBootstrapLogFailJSONMocked(
+	t *testing.T,
+	commandIn *types.PollingContinuousReport,
+) *types.PollingContinuousReport {
 
 	assert := assert.New(t)
 
@@ -443,7 +458,7 @@ func ReportBootstrapLogFailJSONMocked(t *testing.T, commandIn *types.PollingCont
 
 	// call service
 	payload := make(map[string]interface{})
-	cs.On("Post", fmt.Sprintf("/command_polling/bootstrap_logs"), &payload).Return(dIn, 201, nil)
+	cs.On("Post", fmt.Sprintf(APIPathCommandPollingBootstrapLogs), &payload).Return(dIn, 201, nil)
 	commandOut, _, err := ds.ReportBootstrapLog(&payload)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

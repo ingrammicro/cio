@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -35,7 +37,11 @@ func WizServerPlanList(c *cli.Context) error {
 
 	checkRequiredFlags(c, []string{"app-id", "location-id", "cloud-provider-id"}, formatter)
 
-	serverPlans, err := serverPlanSvc.ListWizardServerPlans(c.String("app-id"), c.String("location-id"), c.String("cloud-provider-id"))
+	serverPlans, err := serverPlanSvc.ListWizardServerPlans(
+		c.String("app-id"),
+		c.String("location-id"),
+		c.String("cloud-provider-id"),
+	)
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive serverPlan data", err)
 	}
@@ -49,7 +55,7 @@ func WizServerPlanList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(serverPlans); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
@@ -28,7 +30,7 @@ func GetVPNMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.ID)).Return(dIn, 200, nil)
 	vpnOut, err := ds.GetVPN(vpnIn.ID)
 	assert.Nil(err, "Error getting VPN")
 	assert.Equal(*vpnIn, *vpnOut, "GetVPN returned different VPNs")
@@ -52,7 +54,7 @@ func GetVPNFailErrMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	vpnOut, err := ds.GetVPN(vpnIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -78,7 +80,7 @@ func GetVPNFailStatusMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.ID)).Return(dIn, 499, nil)
 	vpnOut, err := ds.GetVPN(vpnIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -103,7 +105,7 @@ func GetVPNFailJSONMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.ID)).Return(dIn, 200, nil)
 	vpnOut, err := ds.GetVPN(vpnIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -133,7 +135,7 @@ func CreateVPNMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.VpcID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.VpcID), mapIn).Return(dOut, 200, nil)
 	vpnOut, err := ds.CreateVPN(vpnIn.VpcID, mapIn)
 	assert.Nil(err, "Error creating VPN list")
 	assert.Equal(vpnIn, vpnOut, "CreateVPN returned different VPNs")
@@ -161,7 +163,7 @@ func CreateVPNFailErrMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.VpcID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.VpcID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	vpnOut, err := ds.CreateVPN(vpnIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -191,7 +193,7 @@ func CreateVPNFailStatusMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.VpcID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.VpcID), mapIn).Return(dOut, 499, nil)
 	vpnOut, err := ds.CreateVPN(vpnIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -220,7 +222,7 @@ func CreateVPNFailJSONMocked(t *testing.T, vpnIn *types.Vpn) *types.Vpn {
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.VpcID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.VpcID), mapIn).Return(dIn, 200, nil)
 	vpnOut, err := ds.CreateVPN(vpnIn.VpcID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -246,7 +248,7 @@ func DeleteVPNMocked(t *testing.T, vpnIn *types.Vpn) {
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.ID)).Return(dIn, 200, nil)
 	err = ds.DeleteVPN(vpnIn.ID)
 	assert.Nil(err, "Error deleting VPN")
 }
@@ -267,7 +269,7 @@ func DeleteVPNFailErrMocked(t *testing.T, vpnIn *types.Vpn) {
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DeleteVPN(vpnIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -290,7 +292,7 @@ func DeleteVPNFailStatusMocked(t *testing.T, vpnIn *types.Vpn) {
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/vpcs/%s/vpn", vpnIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkVpcVpn, vpnIn.ID)).Return(dIn, 499, nil)
 	err = ds.DeleteVPN(vpnIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -313,7 +315,7 @@ func ListVPNPlansMocked(t *testing.T, vpnPlansIn []*types.VpnPlan, vpcID string)
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/vpn_plans", vpcID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcVpnPlans, vpcID)).Return(dIn, 200, nil)
 	vpnPlansOut, err := ds.ListVPNPlans(vpcID)
 	assert.Nil(err, "Error getting VPN plans list")
 	assert.Equal(vpnPlansIn, vpnPlansOut, "ListVPNPlans returned different VPN plans")
@@ -337,7 +339,7 @@ func ListVPNPlansFailErrMocked(t *testing.T, vpnPlansIn []*types.VpnPlan, vpcID 
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/vpn_plans", vpcID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcVpnPlans, vpcID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	vpnPlansOut, err := ds.ListVPNPlans(vpcID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -363,7 +365,7 @@ func ListVPNPlansFailStatusMocked(t *testing.T, vpnPlansIn []*types.VpnPlan, vpc
 	assert.Nil(err, "VPN test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/vpn_plans", vpcID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcVpnPlans, vpcID)).Return(dIn, 499, nil)
 	vpnPlansOut, err := ds.ListVPNPlans(vpcID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -388,7 +390,7 @@ func ListVPNPlansFailJSONMocked(t *testing.T, vpnPlansIn []*types.VpnPlan, vpcID
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/vpcs/%s/vpn_plans", vpcID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkVpcVpnPlans, vpcID)).Return(dIn, 200, nil)
 	vpnPlansOut, err := ds.ListVPNPlans(vpcID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

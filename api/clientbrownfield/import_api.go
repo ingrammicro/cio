@@ -1,12 +1,22 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package clientbrownfield
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathBlueprintCloudAccountImportServers = "/brownfield/cloud_accounts/%s/import_servers"
+const APIPathBlueprintCloudAccountImportVpcs = "/brownfield/cloud_accounts/%s/import_vpcs"
+const APIPathBlueprintCloudAccountImportFloatingIPs = "/brownfield/cloud_accounts/%s/import_floating_ips"
+const APIPathBlueprintCloudAccountImportVolumes = "/brownfield/cloud_accounts/%s/import_volumes"
+const APIPathBlueprintCloudAccountImportKubernetesClusters = "/brownfield/cloud_accounts/%s/import_kubernetes_clusters"
+const APIPathBlueprintCloudAccountImportPolicies = "/brownfield/cloud_accounts/%s/import_policies"
 
 // ImportService manages brownfield import operations
 type ImportService struct {
@@ -25,10 +35,16 @@ func NewImportService(concertoService utils.ConcertoService) (*ImportService, er
 }
 
 // ImportServers imports brownfield servers
-func (is *ImportService) ImportServers(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+func (is *ImportService) ImportServers(
+	cloudAccountID string,
+	params *map[string]interface{},
+) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("ImportServers")
 
-	data, status, err := is.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_servers", cloudAccountID), params)
+	data, status, err := is.concertoService.Put(
+		fmt.Sprintf(APIPathBlueprintCloudAccountImportServers, cloudAccountID),
+		params,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +61,16 @@ func (is *ImportService) ImportServers(cloudAccountID string, params *map[string
 }
 
 // ImportVPCs imports brownfield vpcs
-func (is *ImportService) ImportVPCs(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+func (is *ImportService) ImportVPCs(
+	cloudAccountID string,
+	params *map[string]interface{},
+) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("ImportVPCs")
 
-	data, status, err := is.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_vpcs", cloudAccountID), params)
+	data, status, err := is.concertoService.Put(
+		fmt.Sprintf(APIPathBlueprintCloudAccountImportVpcs, cloudAccountID),
+		params,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -65,10 +87,16 @@ func (is *ImportService) ImportVPCs(cloudAccountID string, params *map[string]in
 }
 
 // ImportFloatingIPs imports brownfield floating ips
-func (is *ImportService) ImportFloatingIPs(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+func (is *ImportService) ImportFloatingIPs(
+	cloudAccountID string,
+	params *map[string]interface{},
+) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("ImportFloatingIPs")
 
-	data, status, err := is.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_floating_ips", cloudAccountID), params)
+	data, status, err := is.concertoService.Put(
+		fmt.Sprintf(APIPathBlueprintCloudAccountImportFloatingIPs, cloudAccountID),
+		params,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -85,10 +113,16 @@ func (is *ImportService) ImportFloatingIPs(cloudAccountID string, params *map[st
 }
 
 // ImportVolumes imports brownfield volumes
-func (is *ImportService) ImportVolumes(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+func (is *ImportService) ImportVolumes(
+	cloudAccountID string,
+	params *map[string]interface{},
+) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("ImportVolumes")
 
-	data, status, err := is.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_volumes", cloudAccountID), params)
+	data, status, err := is.concertoService.Put(
+		fmt.Sprintf(APIPathBlueprintCloudAccountImportVolumes, cloudAccountID),
+		params,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -105,10 +139,16 @@ func (is *ImportService) ImportVolumes(cloudAccountID string, params *map[string
 }
 
 // ImportKubernetesClusters imports brownfield kubernetes clusters
-func (is *ImportService) ImportKubernetesClusters(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+func (is *ImportService) ImportKubernetesClusters(
+	cloudAccountID string,
+	params *map[string]interface{},
+) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("ImportKubernetesClusters")
 
-	data, status, err := is.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_kubernetes_clusters", cloudAccountID), params)
+	data, status, err := is.concertoService.Put(
+		fmt.Sprintf(APIPathBlueprintCloudAccountImportKubernetesClusters, cloudAccountID),
+		params,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -125,10 +165,16 @@ func (is *ImportService) ImportKubernetesClusters(cloudAccountID string, params 
 }
 
 // ImportPolicies imports brownfield policies
-func (is *ImportService) ImportPolicies(cloudAccountID string, params *map[string]interface{}) (cloudAccount *types.CloudAccount, err error) {
+func (is *ImportService) ImportPolicies(
+	cloudAccountID string,
+	params *map[string]interface{},
+) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("ImportPolicies")
 
-	data, status, err := is.concertoService.Put(fmt.Sprintf("/brownfield/cloud_accounts/%s/import_policies", cloudAccountID), params)
+	data, status, err := is.concertoService.Put(
+		fmt.Sprintf(APIPathBlueprintCloudAccountImportPolicies, cloudAccountID),
+		params,
+	)
 	if err != nil {
 		return nil, err
 	}

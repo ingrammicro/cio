@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package templates
 
 import (
@@ -44,20 +46,31 @@ func SubCommands() []cli.Command {
 					Usage: "Identifier of the OS image that the template builds on",
 				},
 				cli.StringFlag{
-					Name:  "run-list",
-					Usage: "A list of comma separated cookbook recipes that is run on the servers at start-up, i.e: --run-list imco::client,1password,joomla",
+					Name: "run-list",
+					Usage: "A list of comma separated cookbook recipes that is run on the servers at start-up, " +
+						"i.e: --run-list imco::client,1password,joomla",
 				},
 				cli.StringFlag{
-					Name:  "cookbook-versions",
-					Usage: "The cookbook versions used to configure the service recipes in the run-list, i.e: --cookbook-versions \"imco:3.0.3,1password~>1.3.0,joomla:0.11.0\" \n\tCookbook version format: [NAME<OPERATOR>VERSION] \n\tSupported Operators:\n\t\tChef supermarket cookbook '~>','=','>=','>','<','<='\n\t\tUploaded cookbook ':'",
+					Name: "cookbook-versions",
+					Usage: "The cookbook versions used to configure the service recipes in the run-list, " +
+						"i.e: --cookbook-versions \"imco:3.0.3,1password~>1.3.0,joomla:0.11.0\" \n\t" +
+						"Cookbook version format: [NAME<OPERATOR>VERSION] \n\t" +
+						"Supported Operators:\n\t\t" +
+						"Chef supermarket cookbook '~>','=','>=','>','<','<='\n\t\t" +
+						"Uploaded cookbook ':'",
 				},
 				cli.StringFlag{
-					Name:  "configuration-attributes",
-					Usage: "The attributes used to configure the service recipes in the run-list, as a json formatted parameter. i.e: --configuration-attributes '{\"joomla\":{\"db\":{\"password\":\"my_pass\"},\"port\":\"8080\"}}'",
+					Name: "configuration-attributes",
+					Usage: "The attributes used to configure the service recipes in the run-list, as a json formatted " +
+						"parameter. " +
+						"i.e: --configuration-attributes '{\"joomla\":{\"db\":{\"password\":\"my_pass\"},\"port\":\"8080\"}}'",
 				},
 				cli.StringFlag{
-					Name:  "configuration-attributes-from-file",
-					Usage: "The attributes used to configure the service recipes in the run-list, from file or STDIN, as a json formatted parameter. \n\tFrom file: --configuration-attributes-from-file attrs.json \n\tFrom STDIN: --configuration-attributes-from-file -",
+					Name: "configuration-attributes-from-file",
+					Usage: "The attributes used to configure the service recipes in the run-list, from file or STDIN, " +
+						"as a json formatted parameter. \n\t" +
+						"From file: --configuration-attributes-from-file attrs.json \n\t" +
+						"From STDIN: --configuration-attributes-from-file -",
 				},
 				cli.StringFlag{
 					Name:  "labels",
@@ -79,20 +92,31 @@ func SubCommands() []cli.Command {
 					Usage: "Name of the template",
 				},
 				cli.StringFlag{
-					Name:  "run-list",
-					Usage: "A list of comma separated cookbook recipes that is run on the servers at start-up, i.e: --run-list imco::client,1password,joomla",
+					Name: "run-list",
+					Usage: "A list of comma separated cookbook recipes that is run on the servers at start-up, " +
+						"i.e: --run-list imco::client,1password,joomla",
 				},
 				cli.StringFlag{
-					Name:  "cookbook-versions",
-					Usage: "The cookbook versions used to configure the service recipes in the run-list, i.e: --cookbook-versions \"imco:3.0.3,1password~>1.3.0,joomla:0.11.0\" \n\tCookbook version format: [NAME<OPERATOR>VERSION] \n\tSupported Operators:\n\t\tChef supermarket cookbook '~>','=','>=','>','<','<='\n\t\tUploaded cookbook ':'",
+					Name: "cookbook-versions",
+					Usage: "The cookbook versions used to configure the service recipes in the run-list, " +
+						"i.e: --cookbook-versions \"imco:3.0.3,1password~>1.3.0,joomla:0.11.0\" \n\t" +
+						"Cookbook version format: [NAME<OPERATOR>VERSION] \n\t" +
+						"Supported Operators:\n\t\t" +
+						"Chef supermarket cookbook '~>','=','>=','>','<','<='\n\t\t" +
+						"Uploaded cookbook ':'",
 				},
 				cli.StringFlag{
-					Name:  "configuration-attributes",
-					Usage: "The attributes used to configure the service recipes in the run-list, as a json formatted parameter. i.e: --configuration-attributes '{\"joomla\":{\"db\":{\"password\":\"my_pass\"},\"port\":\"8080\"}}'",
+					Name: "configuration-attributes",
+					Usage: "The attributes used to configure the service recipes in the run-list, as a json formatted " +
+						"parameter. " +
+						"i.e: --configuration-attributes '{\"joomla\":{\"db\":{\"password\":\"my_pass\"},\"port\":\"8080\"}}'",
 				},
 				cli.StringFlag{
-					Name:  "configuration-attributes-from-file",
-					Usage: "The attributes used to configure the service recipes in the run-list, from file or STDIN, as a json formatted parameter. \n\tFrom file: --configuration-attributes-from-file attrs.json \n\tFrom STDIN: --configuration-attributes-from-file -",
+					Name: "configuration-attributes-from-file",
+					Usage: "The attributes used to configure the service recipes in the run-list, from file or STDIN, " +
+						"as a json formatted parameter. \n\t" +
+						"From file: --configuration-attributes-from-file attrs.json \n\t" +
+						"From STDIN: --configuration-attributes-from-file -",
 				},
 			},
 		},
@@ -150,7 +174,8 @@ func SubCommands() []cli.Command {
 		},
 		{
 			Name:   "create-template-script",
-			Usage:  "Creates a new script characterisation for a template and appends it to the list of script characterisations of the same type.",
+			Usage:  "Creates a new script characterisation for a template and appends it to the list of script " +
+				"characterisations of the same type.",
 			Action: cmd.TemplateScriptCreate,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -167,11 +192,15 @@ func SubCommands() []cli.Command {
 				},
 				cli.StringFlag{
 					Name:  "parameter-values",
-					Usage: "A map that assigns a value to each script parameter, as a json formatted parameter; i.e: '{\"param1\":\"val1\",\"param2\":\"val2\"}'",
+					Usage: "A map that assigns a value to each script parameter, as a json formatted parameter; " +
+						"i.e: '{\"param1\":\"val1\",\"param2\":\"val2\"}'",
 				},
 				cli.StringFlag{
 					Name:  "parameter-values-from-file",
-					Usage: "A map that assigns a value to each script parameter, from file or STDIN, as a json formatted parameter. \n\tFrom file: --parameter-values-from-file params.json \n\tFrom STDIN: --parameter-values-from-file -",
+					Usage: "A map that assigns a value to each script parameter, from file or STDIN, as a json formatted " +
+						"parameter. \n\t" +
+						"From file: --parameter-values-from-file params.json \n\t" +
+						"From STDIN: --parameter-values-from-file -",
 				},
 			},
 		},
@@ -190,17 +219,22 @@ func SubCommands() []cli.Command {
 				},
 				cli.StringFlag{
 					Name:  "parameter-values",
-					Usage: "A map that assigns a value to each script parameter, as a json formatted parameter; i.e: '{\"param1\":\"val1\",\"param2\":\"val2\"}'",
+					Usage: "A map that assigns a value to each script parameter, as a json formatted parameter; " +
+						"i.e: '{\"param1\":\"val1\",\"param2\":\"val2\"}'",
 				},
 				cli.StringFlag{
 					Name:  "parameter-values-from-file",
-					Usage: "A map that assigns a value to each script parameter, from file or STDIN, as a json formatted parameter. \n\tFrom file: --parameter-values-from-file params.json \n\tFrom STDIN: --parameter-values-from-file -",
+					Usage: "A map that assigns a value to each script parameter, from file or STDIN, as a json formatted " +
+						"parameter. \n\t" +
+						"From file: --parameter-values-from-file params.json \n\t" +
+						"From STDIN: --parameter-values-from-file -",
 				},
 			},
 		},
 		{
 			Name:   "reorder-template-scripts",
-			Usage:  "Reorders the scripts of the template and type specified according to the provided order, changing their execution order as corresponds.",
+			Usage:  "Reorders the scripts of the template and type specified according to the provided order, changing " +
+				"their execution order as corresponds.",
 			Action: cmd.TemplateScriptReorder,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -213,7 +247,8 @@ func SubCommands() []cli.Command {
 				},
 				cli.StringFlag{
 					Name:  "script-ids",
-					Usage: "A list of comma separated scripts ids that must contain all the ids of scripts of the given template and type in the desired execution order",
+					Usage: "A list of comma separated scripts ids that must contain all the ids of scripts of the given " +
+						"template and type in the desired execution order",
 				},
 			},
 		},

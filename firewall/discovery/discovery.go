@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package discovery
 
 import (
@@ -24,7 +26,32 @@ func (fc *FirewallChain) String() string {
 }
 
 func (fr *FirewallRule) String() string {
-	return fmt.Sprintf("{target='%s' protocol='%s' source='%s' minPort=%d maxPort=%d}", fr.Target, fr.Protocol, fr.Source, fr.Dports[0], fr.Dports[1])
+	return fmt.Sprintf(
+		"{target='%s' protocol='%s' source='%s' minPort=%d maxPort=%d}", fr.Target, fr.Protocol, fr.Source,
+		fr.Dports[0], fr.Dports[1],
+	)
+}
+
+func processRuleTarget(affectingRule *FirewallRule, rule *FirewallRule, chains []*FirewallChain) []*FirewallRule {
+	var resultRules []*FirewallRule
+	r, err := intersectFirewallRules(affectingRule, rule)
+	if err != nil {
+		fmt.Printf("Warning: merging rules: %v", err)
+	}
+	if r != nil {
+		if rule.Target == "ACCEPT" {
+			resultRules = append(resultRules, r)
+		}
+		if rule.Target != "ACCEPT" && rule.Target != "DROP" {
+			flattenedChain, err := FlattenChain(rule.Target, chains, r)
+			if err != nil {
+				fmt.Printf("Warning: flattening chain: %v", err)
+			} else {
+				resultRules = append(resultRules, flattenedChain.Rules...)
+			}
+		}
+	}
+	return resultRules
 }
 
 func FlattenChain(chainName string, chains []*FirewallChain, affectingRule *FirewallRule) (*FirewallChain, error) {
@@ -65,29 +92,13 @@ func FlattenChain(chainName string, chains []*FirewallChain, affectingRule *Fire
 	}
 	if c.Policy == "DROP" || c.Policy == "" {
 		for _, rule := range c.Rules {
-			if rule.Target == "ACCEPT" {
-				r, err := intersectFirewallRules(affectingRule, rule)
-				if err != nil {
-					fmt.Printf("Warning: merging rules: %v", err)
-				} else {
-					if r != nil {
-						result.Rules = append(result.Rules, r)
-					}
-				}
-			} else if rule.Target != "DROP" {
-				r, err := intersectFirewallRules(affectingRule, rule)
-				if err != nil {
-					fmt.Printf("Warning: merging rules: %v", err)
-				} else {
-					if r != nil {
-						flattenedChain, err := FlattenChain(rule.Target, chains, r)
-						if err != nil {
-							fmt.Printf("Warning: flattening chain: %v", err)
-						} else {
-							result.Rules = append(result.Rules, flattenedChain.Rules...)
-						}
-					}
-				}
+			switch rule.Target {
+			case "ACCEPT":
+				result.Rules = processRuleTarget(affectingRule, rule, chains)
+			case "DROP":
+				fmt.Printf("Skipped rule target: %v", rule.Target)
+			default:
+				result.Rules = processRuleTarget(affectingRule, rule, chains)
 			}
 		}
 		return result, nil

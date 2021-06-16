@@ -1,9 +1,12 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package settings
 
 import (
+	"testing"
+
 	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestNewPolicyDefinitionServiceNil(t *testing.T) {

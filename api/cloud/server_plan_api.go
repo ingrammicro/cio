@@ -1,12 +1,18 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathCloudProviderServerPlans = "/cloud/cloud_providers/%s/server_plans"
+const APIPathCloudServerPlans = "/cloud/server_plans/%s"
 
 // ServerPlanService manages server plan operations
 type ServerPlanService struct {
@@ -28,7 +34,7 @@ func NewServerPlanService(concertoService utils.ConcertoService) (*ServerPlanSer
 func (sps *ServerPlanService) ListServerPlans(providerID string) (serverPlans []*types.ServerPlan, err error) {
 	log.Debug("ListServerPlans")
 
-	data, status, err := sps.concertoService.Get(fmt.Sprintf("/cloud/cloud_providers/%s/server_plans", providerID))
+	data, status, err := sps.concertoService.Get(fmt.Sprintf(APIPathCloudProviderServerPlans, providerID))
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +54,7 @@ func (sps *ServerPlanService) ListServerPlans(providerID string) (serverPlans []
 func (sps *ServerPlanService) GetServerPlan(planID string) (serverPlan *types.ServerPlan, err error) {
 	log.Debug("GetServerPlan")
 
-	data, status, err := sps.concertoService.Get(fmt.Sprintf("/cloud/server_plans/%s", planID))
+	data, status, err := sps.concertoService.Get(fmt.Sprintf(APIPathCloudServerPlans, planID))
 	if err != nil {
 		return nil, err
 	}

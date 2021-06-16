@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
@@ -28,7 +30,7 @@ func ListFloatingIPsMocked(t *testing.T, floatingIPIn []*types.FloatingIP) []*ty
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Get", "/network/floating_ips").Return(dIn, 200, nil)
+	cs.On("Get", APIPathNetworkFloatingIPs).Return(dIn, 200, nil)
 	floatingIPOut, err := ds.ListFloatingIPs("")
 	assert.Nil(err, "Error getting floating IP list")
 	assert.Equal(floatingIPIn, floatingIPOut, "ListFloatingIPs returned different floating IPs")
@@ -51,7 +53,7 @@ func ListFloatingIPsMockedFilteredByServer(t *testing.T, floatingIPIn []*types.F
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/floating_ips", floatingIPIn[0].AttachedServerID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerFloatingIPs, floatingIPIn[0].AttachedServerID)).Return(dIn, 200, nil)
 	floatingIPOut, err := ds.ListFloatingIPs(floatingIPIn[0].AttachedServerID)
 	assert.Nil(err, "Error getting floating IP list filtered by server")
 	assert.Equal(floatingIPIn, floatingIPOut, "ListFloatingIPs returned different floating IPs")
@@ -75,7 +77,7 @@ func ListFloatingIPsFailErrMocked(t *testing.T, floatingIPIn []*types.FloatingIP
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Get", "/network/floating_ips").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathNetworkFloatingIPs).Return(dIn, 200, fmt.Errorf("mocked error"))
 	floatingIPOut, err := ds.ListFloatingIPs("")
 
 	assert.NotNil(err, "We are expecting an error")
@@ -101,7 +103,7 @@ func ListFloatingIPsFailStatusMocked(t *testing.T, floatingIPIn []*types.Floatin
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Get", "/network/floating_ips").Return(dIn, 499, nil)
+	cs.On("Get", APIPathNetworkFloatingIPs).Return(dIn, 499, nil)
 	floatingIPOut, err := ds.ListFloatingIPs("")
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -126,7 +128,7 @@ func ListFloatingIPsFailJSONMocked(t *testing.T, floatingIPIn []*types.FloatingI
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/network/floating_ips").Return(dIn, 200, nil)
+	cs.On("Get", APIPathNetworkFloatingIPs).Return(dIn, 200, nil)
 	floatingIPOut, err := ds.ListFloatingIPs("")
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -152,7 +154,7 @@ func GetFloatingIPMocked(t *testing.T, floatingIPIn *types.FloatingIP) *types.Fl
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID)).Return(dIn, 200, nil)
 	floatingIPOut, err := ds.GetFloatingIP(floatingIPIn.ID)
 	assert.Nil(err, "Error getting floating IP")
 	assert.Equal(*floatingIPIn, *floatingIPOut, "GetFloatingIP returned different floating IPs")
@@ -176,7 +178,7 @@ func GetFloatingIPFailErrMocked(t *testing.T, floatingIPIn *types.FloatingIP) *t
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	floatingIPOut, err := ds.GetFloatingIP(floatingIPIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -202,7 +204,7 @@ func GetFloatingIPFailStatusMocked(t *testing.T, floatingIPIn *types.FloatingIP)
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID)).Return(dIn, 499, nil)
 	floatingIPOut, err := ds.GetFloatingIP(floatingIPIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -227,7 +229,7 @@ func GetFloatingIPFailJSONMocked(t *testing.T, floatingIPIn *types.FloatingIP) *
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID)).Return(dIn, 200, nil)
 	floatingIPOut, err := ds.GetFloatingIP(floatingIPIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -257,7 +259,7 @@ func CreateFloatingIPMocked(t *testing.T, floatingIPIn *types.FloatingIP) *types
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Post", "/network/floating_ips/", mapIn).Return(dOut, 200, nil)
+	cs.On("Post", APIPathNetworkFloatingIPs, mapIn).Return(dOut, 200, nil)
 	floatingIPOut, err := ds.CreateFloatingIP(mapIn)
 	assert.Nil(err, "Error creating floating IP list")
 	assert.Equal(floatingIPIn, floatingIPOut, "CreateFloatingIP returned different floating IPs")
@@ -285,7 +287,7 @@ func CreateFloatingIPFailErrMocked(t *testing.T, floatingIPIn *types.FloatingIP)
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Post", "/network/floating_ips/", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathNetworkFloatingIPs, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	floatingIPOut, err := ds.CreateFloatingIP(mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -315,7 +317,7 @@ func CreateFloatingIPFailStatusMocked(t *testing.T, floatingIPIn *types.Floating
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Post", "/network/floating_ips/", mapIn).Return(dOut, 499, nil)
+	cs.On("Post", APIPathNetworkFloatingIPs, mapIn).Return(dOut, 499, nil)
 	floatingIPOut, err := ds.CreateFloatingIP(mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -344,7 +346,7 @@ func CreateFloatingIPFailJSONMocked(t *testing.T, floatingIPIn *types.FloatingIP
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", "/network/floating_ips/", mapIn).Return(dIn, 200, nil)
+	cs.On("Post", APIPathNetworkFloatingIPs, mapIn).Return(dIn, 200, nil)
 	floatingIPOut, err := ds.CreateFloatingIP(mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -374,7 +376,7 @@ func UpdateFloatingIPMocked(t *testing.T, floatingIPIn *types.FloatingIP) *types
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID), mapIn).Return(dOut, 200, nil)
 	floatingIPOut, err := ds.UpdateFloatingIP(floatingIPIn.ID, mapIn)
 	assert.Nil(err, "Error updating floating IP list")
 	assert.Equal(floatingIPIn, floatingIPOut, "UpdateFloatingIP returned different floating IPs")
@@ -402,7 +404,8 @@ func UpdateFloatingIPFailErrMocked(t *testing.T, floatingIPIn *types.FloatingIP)
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	floatingIPOut, err := ds.UpdateFloatingIP(floatingIPIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -432,7 +435,7 @@ func UpdateFloatingIPFailStatusMocked(t *testing.T, floatingIPIn *types.Floating
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID), mapIn).Return(dOut, 499, nil)
 	floatingIPOut, err := ds.UpdateFloatingIP(floatingIPIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -460,7 +463,7 @@ func UpdateFloatingIPFailJSONMocked(t *testing.T, floatingIPIn *types.FloatingIP
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID), mapIn).Return(dIn, 200, nil)
 	floatingIPOut, err := ds.UpdateFloatingIP(floatingIPIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -490,7 +493,8 @@ func AttachFloatingIPMocked(t *testing.T, floatingIPIn *types.FloatingIP) *types
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/floating_ips/%s/attached_server", floatingIPIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkFloatingIPAttachedServer, floatingIPIn.ID), mapIn).
+		Return(dOut, 200, nil)
 	serverOut, err := ds.AttachFloatingIP(floatingIPIn.ID, mapIn)
 	assert.Nil(err, "Error attaching floating IP")
 	assert.Equal(floatingIPIn.AttachedServerID, serverOut.ID, "AttachFloatingIP returned invalid values")
@@ -518,7 +522,8 @@ func AttachFloatingIPFailErrMocked(t *testing.T, floatingIPIn *types.FloatingIP)
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/floating_ips/%s/attached_server", floatingIPIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathNetworkFloatingIPAttachedServer, floatingIPIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverOut, err := ds.AttachFloatingIP(floatingIPIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -548,7 +553,8 @@ func AttachFloatingIPFailStatusMocked(t *testing.T, floatingIPIn *types.Floating
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/floating_ips/%s/attached_server", floatingIPIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkFloatingIPAttachedServer, floatingIPIn.ID), mapIn).
+		Return(dOut, 499, nil)
 	serverOut, err := ds.AttachFloatingIP(floatingIPIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -576,7 +582,7 @@ func AttachFloatingIPFailJSONMocked(t *testing.T, floatingIPIn *types.FloatingIP
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/floating_ips/%s/attached_server", floatingIPIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkFloatingIPAttachedServer, floatingIPIn.ID), mapIn).Return(dIn, 200, nil)
 	serverOut, err := ds.AttachFloatingIP(floatingIPIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -602,7 +608,7 @@ func DetachFloatingIPMocked(t *testing.T, floatingIPIn *types.FloatingIP) {
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/floating_ips/%s/attached_server", floatingIPIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkFloatingIPAttachedServer, floatingIPIn.ID)).Return(dIn, 200, nil)
 	err = ds.DetachFloatingIP(floatingIPIn.ID)
 	assert.Nil(err, "Error detaching floating IP")
 }
@@ -623,7 +629,8 @@ func DetachFloatingIPFailErrMocked(t *testing.T, floatingIPIn *types.FloatingIP)
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/floating_ips/%s/attached_server", floatingIPIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkFloatingIPAttachedServer, floatingIPIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DetachFloatingIP(floatingIPIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -646,7 +653,7 @@ func DetachFloatingIPFailStatusMocked(t *testing.T, floatingIPIn *types.Floating
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/floating_ips/%s/attached_server", floatingIPIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkFloatingIPAttachedServer, floatingIPIn.ID)).Return(dIn, 499, nil)
 	err = ds.DetachFloatingIP(floatingIPIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -669,7 +676,7 @@ func DeleteFloatingIPMocked(t *testing.T, floatingIPIn *types.FloatingIP) {
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID)).Return(dIn, 200, nil)
 	err = ds.DeleteFloatingIP(floatingIPIn.ID)
 	assert.Nil(err, "Error deleting floating IP")
 }
@@ -690,7 +697,8 @@ func DeleteFloatingIPFailErrMocked(t *testing.T, floatingIPIn *types.FloatingIP)
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DeleteFloatingIP(floatingIPIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -713,7 +721,7 @@ func DeleteFloatingIPFailStatusMocked(t *testing.T, floatingIPIn *types.Floating
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/floating_ips/%s", floatingIPIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkFloatingIP, floatingIPIn.ID)).Return(dIn, 499, nil)
 	err = ds.DeleteFloatingIP(floatingIPIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -736,7 +744,7 @@ func DiscardFloatingIPMocked(t *testing.T, floatingIPIn *types.FloatingIP) {
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/floating_ips/%s/discard", floatingIPIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkFloatingIPDiscard, floatingIPIn.ID)).Return(dIn, 200, nil)
 	err = ds.DiscardFloatingIP(floatingIPIn.ID)
 	assert.Nil(err, "Error discarding floating IP")
 }
@@ -757,7 +765,8 @@ func DiscardFloatingIPFailErrMocked(t *testing.T, floatingIPIn *types.FloatingIP
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/floating_ips/%s/discard", floatingIPIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkFloatingIPDiscard, floatingIPIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DiscardFloatingIP(floatingIPIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -780,7 +789,7 @@ func DiscardFloatingIPFailStatusMocked(t *testing.T, floatingIPIn *types.Floatin
 	assert.Nil(err, "FloatingIP test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/floating_ips/%s/discard", floatingIPIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkFloatingIPDiscard, floatingIPIn.ID)).Return(dIn, 499, nil)
 	err = ds.DiscardFloatingIP(floatingIPIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")

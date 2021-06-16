@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package audit
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // TODO exclude from release compile
@@ -27,7 +30,7 @@ func ListEventsMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 	assert.Nil(err, "Event test data corrupted")
 
 	// call service
-	cs.On("Get", "/audit/events").Return(dIn, 200, nil)
+	cs.On("Get", APIPathAuditEvents).Return(dIn, 200, nil)
 	eventsOut, err := ds.ListEvents()
 	assert.Nil(err, "Error getting event list")
 	assert.Equal(eventsIn, eventsOut, "ListEvents returned different events")
@@ -51,7 +54,7 @@ func ListEventsFailErrMocked(t *testing.T, eventsIn []*types.Event) []*types.Eve
 	assert.Nil(err, "Event test data corrupted")
 
 	// call service
-	cs.On("Get", "/audit/events").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathAuditEvents).Return(dIn, 200, fmt.Errorf("mocked error"))
 	eventsOut, err := ds.ListEvents()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -77,7 +80,7 @@ func ListEventsFailStatusMocked(t *testing.T, eventsIn []*types.Event) []*types.
 	assert.Nil(err, "Event test data corrupted")
 
 	// call service
-	cs.On("Get", "/audit/events").Return(dIn, 499, nil)
+	cs.On("Get", APIPathAuditEvents).Return(dIn, 499, nil)
 	eventsOut, err := ds.ListEvents()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -102,7 +105,7 @@ func ListEventsFailJSONMocked(t *testing.T, eventsIn []*types.Event) []*types.Ev
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/audit/events").Return(dIn, 200, nil)
+	cs.On("Get", APIPathAuditEvents).Return(dIn, 200, nil)
 	eventsOut, err := ds.ListEvents()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -128,7 +131,7 @@ func ListSysEventsMocked(t *testing.T, eventsIn []*types.Event) []*types.Event {
 	assert.Nil(err, "Event test data corrupted")
 
 	// call service
-	cs.On("Get", "/audit/system_events").Return(dIn, 200, nil)
+	cs.On("Get", APIPathAuditSystemEvents).Return(dIn, 200, nil)
 	eventsOut, err := ds.ListSysEvents()
 	assert.Nil(err, "Error getting event list")
 	assert.Equal(eventsIn, eventsOut, "ListSysEvents returned different events")
@@ -152,7 +155,7 @@ func ListSysEventsFailErrMocked(t *testing.T, eventsIn []*types.Event) []*types.
 	assert.Nil(err, "Event test data corrupted")
 
 	// call service
-	cs.On("Get", "/audit/system_events").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathAuditSystemEvents).Return(dIn, 200, fmt.Errorf("mocked error"))
 	eventsOut, err := ds.ListSysEvents()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -178,7 +181,7 @@ func ListSysEventsFailStatusMocked(t *testing.T, eventsIn []*types.Event) []*typ
 	assert.Nil(err, "Event test data corrupted")
 
 	// call service
-	cs.On("Get", "/audit/system_events").Return(dIn, 499, nil)
+	cs.On("Get", APIPathAuditSystemEvents).Return(dIn, 499, nil)
 	eventsOut, err := ds.ListSysEvents()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -203,7 +206,7 @@ func ListSysEventsFailJSONMocked(t *testing.T, eventsIn []*types.Event) []*types
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/audit/system_events").Return(dIn, 200, nil)
+	cs.On("Get", APIPathAuditSystemEvents).Return(dIn, 200, nil)
 	eventsOut, err := ds.ListSysEvents()
 
 	assert.NotNil(err, "We are expecting a marshalling error")

@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -55,14 +57,14 @@ func ScriptsList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		s, ok := labelable.(*types.Script)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.Script, got a %T", labelable))
 		}
 		scripts[i] = s
 	}
 
 	if err = formatter.PrintList(scripts); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -81,7 +83,7 @@ func ScriptShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	script.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*script); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -114,7 +116,7 @@ func ScriptCreate(c *cli.Context) error {
 
 	script.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*script); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -147,7 +149,7 @@ func ScriptUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	script.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*script); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -203,7 +205,7 @@ func ScriptAttachmentAdd(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*attachment); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -228,7 +230,7 @@ func ScriptAttachmentList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(attachments); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

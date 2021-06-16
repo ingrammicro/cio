@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListLoadBalancersMocked test mocked function
@@ -25,7 +28,7 @@ func ListLoadBalancersMocked(t *testing.T, loadBalancersIn []*types.LoadBalancer
 	assert.Nil(err, "LoadBalancers test data corrupted")
 
 	// call service
-	cs.On("Get", "/network/load_balancers").Return(dIn, 200, nil)
+	cs.On("Get", APIPathNetworkLoadBalancers).Return(dIn, 200, nil)
 	loadBalancersOut, err := ds.ListLoadBalancers()
 
 	assert.Nil(err, "Error getting load balancers")
@@ -50,7 +53,7 @@ func ListLoadBalancersFailErrMocked(t *testing.T, loadBalancersIn []*types.LoadB
 	assert.Nil(err, "LoadBalancers test data corrupted")
 
 	// call service
-	cs.On("Get", "/network/load_balancers").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathNetworkLoadBalancers).Return(dIn, 200, fmt.Errorf("mocked error"))
 	loadBalancersOut, err := ds.ListLoadBalancers()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -76,7 +79,7 @@ func ListLoadBalancersFailStatusMocked(t *testing.T, loadBalancersIn []*types.Lo
 	assert.Nil(err, "LoadBalancers test data corrupted")
 
 	// call service
-	cs.On("Get", "/network/load_balancers").Return(dIn, 499, nil)
+	cs.On("Get", APIPathNetworkLoadBalancers).Return(dIn, 499, nil)
 	loadBalancersOut, err := ds.ListLoadBalancers()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -101,7 +104,7 @@ func ListLoadBalancersFailJSONMocked(t *testing.T, loadBalancersIn []*types.Load
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/network/load_balancers").Return(dIn, 200, nil)
+	cs.On("Get", APIPathNetworkLoadBalancers).Return(dIn, 200, nil)
 	loadBalancersOut, err := ds.ListLoadBalancers()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -127,7 +130,7 @@ func GetLoadBalancerMocked(t *testing.T, loadBalancerIn *types.LoadBalancer) *ty
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID)).Return(dIn, 200, nil)
 	loadBalancerOut, err := ds.GetLoadBalancer(loadBalancerIn.ID)
 
 	assert.Nil(err, "Error getting load balancer")
@@ -152,7 +155,8 @@ func GetLoadBalancerFailErrMocked(t *testing.T, loadBalancerIn *types.LoadBalanc
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	loadBalancerOut, err := ds.GetLoadBalancer(loadBalancerIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -178,7 +182,7 @@ func GetLoadBalancerFailStatusMocked(t *testing.T, loadBalancerIn *types.LoadBal
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID)).Return(dIn, 499, nil)
 	loadBalancerOut, err := ds.GetLoadBalancer(loadBalancerIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -203,7 +207,7 @@ func GetLoadBalancerFailJSONMocked(t *testing.T, loadBalancerIn *types.LoadBalan
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID)).Return(dIn, 200, nil)
 	loadBalancerOut, err := ds.GetLoadBalancer(loadBalancerIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -233,7 +237,7 @@ func CreateLoadBalancerMocked(t *testing.T, loadBalancerIn *types.LoadBalancer) 
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Post", "/network/load_balancers", mapIn).Return(dOut, 200, nil)
+	cs.On("Post", APIPathNetworkLoadBalancers, mapIn).Return(dOut, 200, nil)
 	loadBalancerOut, err := ds.CreateLoadBalancer(mapIn)
 
 	assert.Nil(err, "Error creating load balancer")
@@ -262,7 +266,7 @@ func CreateLoadBalancerFailErrMocked(t *testing.T, loadBalancerIn *types.LoadBal
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Post", "/network/load_balancers", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathNetworkLoadBalancers, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	loadBalancerOut, err := ds.CreateLoadBalancer(mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -292,7 +296,7 @@ func CreateLoadBalancerFailStatusMocked(t *testing.T, loadBalancerIn *types.Load
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Post", "/network/load_balancers", mapIn).Return(dOut, 499, nil)
+	cs.On("Post", APIPathNetworkLoadBalancers, mapIn).Return(dOut, 499, nil)
 	loadBalancerOut, err := ds.CreateLoadBalancer(mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -321,7 +325,7 @@ func CreateLoadBalancerFailJSONMocked(t *testing.T, loadBalancerIn *types.LoadBa
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", "/network/load_balancers", mapIn).Return(dIn, 200, nil)
+	cs.On("Post", APIPathNetworkLoadBalancers, mapIn).Return(dIn, 200, nil)
 	loadBalancerOut, err := ds.CreateLoadBalancer(mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -351,7 +355,7 @@ func UpdateLoadBalancerMocked(t *testing.T, loadBalancerIn *types.LoadBalancer) 
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID), mapIn).Return(dOut, 200, nil)
 	loadBalancerOut, err := ds.UpdateLoadBalancer(loadBalancerIn.ID, mapIn)
 
 	assert.Nil(err, "Error updating load balancer")
@@ -380,7 +384,8 @@ func UpdateLoadBalancerFailErrMocked(t *testing.T, loadBalancerIn *types.LoadBal
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	loadBalancerOut, err := ds.UpdateLoadBalancer(loadBalancerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -410,7 +415,7 @@ func UpdateLoadBalancerFailStatusMocked(t *testing.T, loadBalancerIn *types.Load
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID), mapIn).Return(dOut, 499, nil)
 	loadBalancerOut, err := ds.UpdateLoadBalancer(loadBalancerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -439,7 +444,7 @@ func UpdateLoadBalancerFailJSONMocked(t *testing.T, loadBalancerIn *types.LoadBa
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID), mapIn).Return(dIn, 200, nil)
 	loadBalancerOut, err := ds.UpdateLoadBalancer(loadBalancerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -465,7 +470,7 @@ func DeleteLoadBalancerMocked(t *testing.T, loadBalancerIn *types.LoadBalancer) 
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID)).Return(dIn, 200, nil)
 	loadBalancerOut, err := ds.DeleteLoadBalancer(loadBalancerIn.ID)
 
 	assert.Nil(err, "Error deleting load balancer")
@@ -489,7 +494,8 @@ func DeleteLoadBalancerFailErrMocked(t *testing.T, loadBalancerIn *types.LoadBal
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	loadBalancerOut, err := ds.DeleteLoadBalancer(loadBalancerIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -513,7 +519,7 @@ func DeleteLoadBalancerFailStatusMocked(t *testing.T, loadBalancerIn *types.Load
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID)).Return(dIn, 499, nil)
 	loadBalancerOut, err := ds.DeleteLoadBalancer(loadBalancerIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -536,7 +542,7 @@ func DeleteLoadBalancerFailJSONMocked(t *testing.T, loadBalancerIn *types.LoadBa
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/load_balancers/%s", loadBalancerIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkLoadBalancer, loadBalancerIn.ID)).Return(dIn, 200, nil)
 	loadBalancerOut, err := ds.DeleteLoadBalancer(loadBalancerIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -564,7 +570,7 @@ func RetryLoadBalancerMocked(t *testing.T, loadBalancerIn *types.LoadBalancer) *
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s/retry", loadBalancerIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancerRetry, loadBalancerIn.ID), mapIn).Return(dOut, 200, nil)
 	loadBalancerOut, err := ds.RetryLoadBalancer(loadBalancerIn.ID, mapIn)
 
 	assert.Nil(err, "Error retrying load balancer")
@@ -593,7 +599,8 @@ func RetryLoadBalancerFailErrMocked(t *testing.T, loadBalancerIn *types.LoadBala
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s/retry", loadBalancerIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancerRetry, loadBalancerIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	loadBalancerOut, err := ds.RetryLoadBalancer(loadBalancerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -623,7 +630,7 @@ func RetryLoadBalancerFailStatusMocked(t *testing.T, loadBalancerIn *types.LoadB
 	assert.Nil(err, "LoadBalancer test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s/retry", loadBalancerIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancerRetry, loadBalancerIn.ID), mapIn).Return(dOut, 499, nil)
 	loadBalancerOut, err := ds.RetryLoadBalancer(loadBalancerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -652,7 +659,7 @@ func RetryLoadBalancerFailJSONMocked(t *testing.T, loadBalancerIn *types.LoadBal
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/load_balancers/%s/retry", loadBalancerIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkLoadBalancerRetry, loadBalancerIn.ID), mapIn).Return(dIn, 200, nil)
 	loadBalancerOut, err := ds.RetryLoadBalancer(loadBalancerIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -663,7 +670,11 @@ func RetryLoadBalancerFailJSONMocked(t *testing.T, loadBalancerIn *types.LoadBal
 }
 
 // GetLoadBalancerPlanMocked test mocked function
-func GetLoadBalancerPlanMocked(t *testing.T, loadBalancerPlanID string, loadBalancerPlanIn *types.LoadBalancerPlan) *types.LoadBalancerPlan {
+func GetLoadBalancerPlanMocked(
+	t *testing.T,
+	loadBalancerPlanID string,
+	loadBalancerPlanIn *types.LoadBalancerPlan,
+) *types.LoadBalancerPlan {
 
 	assert := assert.New(t)
 
@@ -678,7 +689,7 @@ func GetLoadBalancerPlanMocked(t *testing.T, loadBalancerPlanID string, loadBala
 	assert.Nil(err, "LoadBalancerPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancer_plans/%s", loadBalancerPlanID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerPlan, loadBalancerPlanID)).Return(dIn, 200, nil)
 	loadBalancerPlanOut, err := ds.GetLoadBalancerPlan(loadBalancerPlanID)
 
 	assert.Nil(err, "Error getting load balancer plan")
@@ -688,7 +699,11 @@ func GetLoadBalancerPlanMocked(t *testing.T, loadBalancerPlanID string, loadBala
 }
 
 // GetLoadBalancerPlanFailErrMocked test mocked function
-func GetLoadBalancerPlanFailErrMocked(t *testing.T, loadBalancerPlanID string, loadBalancerPlanIn *types.LoadBalancerPlan) *types.LoadBalancerPlan {
+func GetLoadBalancerPlanFailErrMocked(
+	t *testing.T,
+	loadBalancerPlanID string,
+	loadBalancerPlanIn *types.LoadBalancerPlan,
+) *types.LoadBalancerPlan {
 
 	assert := assert.New(t)
 
@@ -703,7 +718,8 @@ func GetLoadBalancerPlanFailErrMocked(t *testing.T, loadBalancerPlanID string, l
 	assert.Nil(err, "LoadBalancerPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancer_plans/%s", loadBalancerPlanID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerPlan, loadBalancerPlanID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	loadBalancerPlanOut, err := ds.GetLoadBalancerPlan(loadBalancerPlanID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -714,7 +730,11 @@ func GetLoadBalancerPlanFailErrMocked(t *testing.T, loadBalancerPlanID string, l
 }
 
 // GetLoadBalancerPlanFailStatusMocked test mocked function
-func GetLoadBalancerPlanFailStatusMocked(t *testing.T, loadBalancerPlanID string, loadBalancerPlanIn *types.LoadBalancerPlan) *types.LoadBalancerPlan {
+func GetLoadBalancerPlanFailStatusMocked(
+	t *testing.T,
+	loadBalancerPlanID string,
+	loadBalancerPlanIn *types.LoadBalancerPlan,
+) *types.LoadBalancerPlan {
 
 	assert := assert.New(t)
 
@@ -729,7 +749,7 @@ func GetLoadBalancerPlanFailStatusMocked(t *testing.T, loadBalancerPlanID string
 	assert.Nil(err, "LoadBalancerPlan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancer_plans/%s", loadBalancerPlanID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerPlan, loadBalancerPlanID)).Return(dIn, 499, nil)
 	loadBalancerPlanOut, err := ds.GetLoadBalancerPlan(loadBalancerPlanID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -740,7 +760,11 @@ func GetLoadBalancerPlanFailStatusMocked(t *testing.T, loadBalancerPlanID string
 }
 
 // GetLoadBalancerPlanFailJSONMocked test mocked function
-func GetLoadBalancerPlanFailJSONMocked(t *testing.T, loadBalancerPlanID string, loadBalancerPlanIn *types.LoadBalancerPlan) *types.LoadBalancerPlan {
+func GetLoadBalancerPlanFailJSONMocked(
+	t *testing.T,
+	loadBalancerPlanID string,
+	loadBalancerPlanIn *types.LoadBalancerPlan,
+) *types.LoadBalancerPlan {
 
 	assert := assert.New(t)
 
@@ -754,7 +778,7 @@ func GetLoadBalancerPlanFailJSONMocked(t *testing.T, loadBalancerPlanID string, 
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancer_plans/%s", loadBalancerPlanID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerPlan, loadBalancerPlanID)).Return(dIn, 200, nil)
 	loadBalancerPlanOut, err := ds.GetLoadBalancerPlan(loadBalancerPlanID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // TODO exclude from release compile
@@ -27,7 +30,7 @@ func ListGenericImagesMocked(t *testing.T, genericImagesIn []*types.GenericImage
 	assert.Nil(err, "GenericImage test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/generic_images").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCloudGenericImages).Return(dIn, 200, nil)
 	genericImagesOut, err := ds.ListGenericImages()
 	assert.Nil(err, "Error getting genericImage list")
 	assert.Equal(genericImagesIn, genericImagesOut, "ListGenericImages returned different genericImages")
@@ -51,7 +54,7 @@ func ListGenericImagesFailErrMocked(t *testing.T, genericImagesIn []*types.Gener
 	assert.Nil(err, "GenericImage test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/generic_images").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathCloudGenericImages).Return(dIn, 200, fmt.Errorf("mocked error"))
 	genericImagesOut, err := ds.ListGenericImages()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -77,7 +80,7 @@ func ListGenericImagesFailStatusMocked(t *testing.T, genericImagesIn []*types.Ge
 	assert.Nil(err, "GenericImage test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/generic_images").Return(dIn, 499, nil)
+	cs.On("Get", APIPathCloudGenericImages).Return(dIn, 499, nil)
 	genericImagesOut, err := ds.ListGenericImages()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -102,7 +105,7 @@ func ListGenericImagesFailJSONMocked(t *testing.T, genericImagesIn []*types.Gene
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/cloud/generic_images").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCloudGenericImages).Return(dIn, 200, nil)
 	genericImagesOut, err := ds.ListGenericImages()
 
 	assert.NotNil(err, "We are expecting a marshalling error")

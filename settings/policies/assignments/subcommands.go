@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package assignments
 
 import (
@@ -52,12 +54,16 @@ func SubCommands() []cli.Command {
 					Usage: "Identifier of the policy definition to be assigned",
 				},
 				cli.StringFlag{
-					Name:  "parameters",
-					Usage: "The parameters used to configure the policy assignment, as a json formatted parameter. \n\ti.e: --parameters '{\"param1\":\"val1\",\"param2\":\"val2\",\"param3\":{\"id\":\"val3\"},\"param4\":true}'",
+					Name: "parameters",
+					Usage: "The parameters used to configure the policy assignment, as a json formatted parameter. \n\t" +
+						"i.e: --parameters '{\"param1\":\"val1\",\"param2\":\"val2\",\"param3\":{\"id\":\"val3\"},\"param4\":true}'",
 				},
 				cli.StringFlag{
-					Name:  "parameters-from-file",
-					Usage: "The parameters used to configure the policy assignment, from file or STDIN, as a json formatted parameter. \n\tFrom file: --parameters-from-file params.json \n\tFrom STDIN: --parameters-from-file -",
+					Name: "parameters-from-file",
+					Usage: "The parameters used to configure the policy assignment, from file or STDIN, " +
+						"as a json formatted parameter. \n\t" +
+						"From file: --parameters-from-file params.json \n\t" +
+						"From STDIN: --parameters-from-file -",
 				},
 			},
 		},

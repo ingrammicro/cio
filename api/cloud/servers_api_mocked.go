@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
@@ -28,7 +30,7 @@ func ListServersMocked(t *testing.T, serversIn []*types.Server) []*types.Server 
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/servers").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCloudServers).Return(dIn, 200, nil)
 	serversOut, err := ds.ListServers()
 	assert.Nil(err, "Error getting server list")
 	assert.Equal(serversIn, serversOut, "ListServers returned different servers")
@@ -52,7 +54,7 @@ func ListServersFailErrMocked(t *testing.T, serversIn []*types.Server) []*types.
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/servers").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathCloudServers).Return(dIn, 200, fmt.Errorf("mocked error"))
 	serversOut, err := ds.ListServers()
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(serversOut, "Expecting nil output")
@@ -77,7 +79,7 @@ func ListServersFailStatusMocked(t *testing.T, serversIn []*types.Server) []*typ
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/servers").Return(dIn, 499, nil)
+	cs.On("Get", APIPathCloudServers).Return(dIn, 499, nil)
 	serversOut, err := ds.ListServers()
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(serversOut, "Expecting nil output")
@@ -101,7 +103,7 @@ func ListServersFailJSONMocked(t *testing.T, serversIn []*types.Server) []*types
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/cloud/servers").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCloudServers).Return(dIn, 200, nil)
 	serversOut, err := ds.ListServers()
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serversOut, "Expecting nil output")
@@ -126,7 +128,7 @@ func GetServerMocked(t *testing.T, server *types.Server) *types.Server {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s", server.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServer, server.ID)).Return(dIn, 200, nil)
 	serverOut, err := ds.GetServer(server.ID)
 	assert.Nil(err, "Error getting server")
 	assert.Equal(*server, *serverOut, "GetServer returned different servers")
@@ -150,7 +152,7 @@ func GetServerFailErrMocked(t *testing.T, server *types.Server) *types.Server {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s", server.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCloudServer, server.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	serverOut, err := ds.GetServer(server.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -176,7 +178,7 @@ func GetServerFailStatusMocked(t *testing.T, server *types.Server) *types.Server
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s", server.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServer, server.ID)).Return(dIn, 499, nil)
 	serverOut, err := ds.GetServer(server.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -201,7 +203,7 @@ func GetServerFailJSONMocked(t *testing.T, server *types.Server) *types.Server {
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s", server.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServer, server.ID)).Return(dIn, 200, nil)
 	serverOut, err := ds.GetServer(server.ID)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(serverOut, "Expecting nil output")
@@ -230,7 +232,7 @@ func CreateServerMocked(t *testing.T, serverIn *types.Server) *types.Server {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Post", "/cloud/servers/", mapIn).Return(dOut, 200, nil)
+	cs.On("Post", APIPathCloudServers, mapIn).Return(dOut, 200, nil)
 	serverOut, err := ds.CreateServer(mapIn)
 	assert.Nil(err, "Error creating server list")
 	assert.Equal(serverIn, serverOut, "CreateServer returned different servers")
@@ -258,7 +260,7 @@ func CreateServerFailErrMocked(t *testing.T, serverIn *types.Server) *types.Serv
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Post", "/cloud/servers/", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathCloudServers, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverOut, err := ds.CreateServer(mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -288,7 +290,7 @@ func CreateServerFailStatusMocked(t *testing.T, serverIn *types.Server) *types.S
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Post", "/cloud/servers/", mapIn).Return(dOut, 499, nil)
+	cs.On("Post", APIPathCloudServers, mapIn).Return(dOut, 499, nil)
 	serverOut, err := ds.CreateServer(mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -317,7 +319,7 @@ func CreateServerFailJSONMocked(t *testing.T, serverIn *types.Server) *types.Ser
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", "/cloud/servers/", mapIn).Return(dIn, 200, nil)
+	cs.On("Post", APIPathCloudServers, mapIn).Return(dIn, 200, nil)
 	serverOut, err := ds.CreateServer(mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -347,7 +349,7 @@ func UpdateServerMocked(t *testing.T, serverIn *types.Server) *types.Server {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s", serverIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServer, serverIn.ID), mapIn).Return(dOut, 200, nil)
 	serverOut, err := ds.UpdateServer(serverIn.ID, mapIn)
 	assert.Nil(err, "Error updating server list")
 	assert.Equal(serverIn, serverOut, "UpdateServer returned different servers")
@@ -375,7 +377,7 @@ func UpdateServerFailErrMocked(t *testing.T, serverIn *types.Server) *types.Serv
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s", serverIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCloudServer, serverIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverOut, err := ds.UpdateServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -405,7 +407,7 @@ func UpdateServerFailStatusMocked(t *testing.T, serverIn *types.Server) *types.S
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s", serverIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServer, serverIn.ID), mapIn).Return(dOut, 499, nil)
 	serverOut, err := ds.UpdateServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -434,7 +436,7 @@ func UpdateServerFailJSONMocked(t *testing.T, serverIn *types.Server) *types.Ser
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s", serverIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServer, serverIn.ID), mapIn).Return(dIn, 200, nil)
 	serverOut, err := ds.UpdateServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -464,7 +466,7 @@ func BootServerMocked(t *testing.T, serverIn *types.Server) *types.Server {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/boot", serverIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerBoot, serverIn.ID), mapIn).Return(dOut, 200, nil)
 	serverOut, err := ds.BootServer(serverIn.ID, mapIn)
 	assert.Nil(err, "Error updating server list")
 	assert.Equal(serverIn, serverOut, "BootServer returned different servers")
@@ -492,7 +494,8 @@ func BootServerFailErrMocked(t *testing.T, serverIn *types.Server) *types.Server
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/boot", serverIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerBoot, serverIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverOut, err := ds.BootServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -522,7 +525,7 @@ func BootServerFailStatusMocked(t *testing.T, serverIn *types.Server) *types.Ser
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/boot", serverIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerBoot, serverIn.ID), mapIn).Return(dOut, 499, nil)
 	serverOut, err := ds.BootServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -551,7 +554,7 @@ func BootServerFailJSONMocked(t *testing.T, serverIn *types.Server) *types.Serve
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/boot", serverIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerBoot, serverIn.ID), mapIn).Return(dIn, 200, nil)
 	serverOut, err := ds.BootServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -581,7 +584,7 @@ func RebootServerMocked(t *testing.T, serverIn *types.Server) *types.Server {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/reboot", serverIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerReboot, serverIn.ID), mapIn).Return(dOut, 200, nil)
 	serverOut, err := ds.RebootServer(serverIn.ID, mapIn)
 	assert.Nil(err, "Error updating server list")
 	assert.Equal(serverIn, serverOut, "RebootServer returned different servers")
@@ -609,7 +612,8 @@ func RebootServerFailErrMocked(t *testing.T, serverIn *types.Server) *types.Serv
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/reboot", serverIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerReboot, serverIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverOut, err := ds.RebootServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -639,7 +643,7 @@ func RebootServerFailStatusMocked(t *testing.T, serverIn *types.Server) *types.S
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/reboot", serverIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerReboot, serverIn.ID), mapIn).Return(dOut, 499, nil)
 	serverOut, err := ds.RebootServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -668,7 +672,7 @@ func RebootServerFailJSONMocked(t *testing.T, serverIn *types.Server) *types.Ser
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/reboot", serverIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerReboot, serverIn.ID), mapIn).Return(dIn, 200, nil)
 	serverOut, err := ds.RebootServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -698,7 +702,7 @@ func ShutdownServerMocked(t *testing.T, serverIn *types.Server) *types.Server {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/shutdown", serverIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerShutdown, serverIn.ID), mapIn).Return(dOut, 200, nil)
 	serverOut, err := ds.ShutdownServer(serverIn.ID, mapIn)
 	assert.Nil(err, "Error updating server list")
 	assert.Equal(serverIn, serverOut, "ShutdownServer returned different servers")
@@ -726,7 +730,8 @@ func ShutdownServerFailErrMocked(t *testing.T, serverIn *types.Server) *types.Se
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/shutdown", serverIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerShutdown, serverIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverOut, err := ds.ShutdownServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -756,7 +761,7 @@ func ShutdownServerFailStatusMocked(t *testing.T, serverIn *types.Server) *types
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/shutdown", serverIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerShutdown, serverIn.ID), mapIn).Return(dOut, 499, nil)
 	serverOut, err := ds.ShutdownServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -785,7 +790,7 @@ func ShutdownServerFailJSONMocked(t *testing.T, serverIn *types.Server) *types.S
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/shutdown", serverIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerShutdown, serverIn.ID), mapIn).Return(dIn, 200, nil)
 	serverOut, err := ds.ShutdownServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -815,7 +820,7 @@ func OverrideServerMocked(t *testing.T, serverIn *types.Server) *types.Server {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/override", serverIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerOverride, serverIn.ID), mapIn).Return(dOut, 200, nil)
 	serverOut, err := ds.OverrideServer(serverIn.ID, mapIn)
 	assert.Nil(err, "Error updating server list")
 	assert.Equal(serverIn, serverOut, "OverrideServer returned different servers")
@@ -843,7 +848,8 @@ func OverrideServerFailErrMocked(t *testing.T, serverIn *types.Server) *types.Se
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/override", serverIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerOverride, serverIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverOut, err := ds.OverrideServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -873,7 +879,7 @@ func OverrideServerFailStatusMocked(t *testing.T, serverIn *types.Server) *types
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/override", serverIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerOverride, serverIn.ID), mapIn).Return(dOut, 499, nil)
 	serverOut, err := ds.OverrideServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -902,7 +908,7 @@ func OverrideServerFailJSONMocked(t *testing.T, serverIn *types.Server) *types.S
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/override", serverIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerOverride, serverIn.ID), mapIn).Return(dIn, 200, nil)
 	serverOut, err := ds.OverrideServer(serverIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -928,7 +934,7 @@ func DeleteServerMocked(t *testing.T, serverIn *types.Server) {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/cloud/servers/%s", serverIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathCloudServer, serverIn.ID)).Return(dIn, 200, nil)
 	err = ds.DeleteServer(serverIn.ID)
 	assert.Nil(err, "Error deleting server")
 }
@@ -949,7 +955,7 @@ func DeleteServerFailErrMocked(t *testing.T, serverIn *types.Server) {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/cloud/servers/%s", serverIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathCloudServer, serverIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DeleteServer(serverIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -972,7 +978,7 @@ func DeleteServerFailStatusMocked(t *testing.T, serverIn *types.Server) {
 	assert.Nil(err, "Server test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/cloud/servers/%s", serverIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathCloudServer, serverIn.ID)).Return(dIn, 499, nil)
 	err = ds.DeleteServer(serverIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -995,7 +1001,7 @@ func ListServerFloatingIPsMocked(t *testing.T, floatingIPsIn []*types.FloatingIP
 	assert.Nil(err, "Server floating IP test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/floating_ips", serverID)).Return(fIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerFloatingIPs, serverID)).Return(fIn, 200, nil)
 	floatingIPsOut, err := ds.ListServerFloatingIPs(serverID)
 	assert.Nil(err, "Error getting server floating IP list")
 	assert.Equal(floatingIPsIn, floatingIPsOut, "ListServerFloatingIPsMocked returned different server floating IPs")
@@ -1004,7 +1010,11 @@ func ListServerFloatingIPsMocked(t *testing.T, floatingIPsIn []*types.FloatingIP
 }
 
 // ListServerFloatingIPsFailErrMocked test mocked function
-func ListServerFloatingIPsFailErrMocked(t *testing.T, floatingIPsIn []*types.FloatingIP, serverID string) []*types.FloatingIP {
+func ListServerFloatingIPsFailErrMocked(
+	t *testing.T,
+	floatingIPsIn []*types.FloatingIP,
+	serverID string,
+) []*types.FloatingIP {
 
 	assert := assert.New(t)
 
@@ -1019,7 +1029,7 @@ func ListServerFloatingIPsFailErrMocked(t *testing.T, floatingIPsIn []*types.Flo
 	assert.Nil(err, "Server floating IP test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/floating_ips", serverID)).Return(fIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerFloatingIPs, serverID)).Return(fIn, 200, fmt.Errorf("mocked error"))
 	floatingIPsOut, err := ds.ListServerFloatingIPs(serverID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -1030,7 +1040,11 @@ func ListServerFloatingIPsFailErrMocked(t *testing.T, floatingIPsIn []*types.Flo
 }
 
 // ListServerFloatingIPsFailStatusMocked test mocked function
-func ListServerFloatingIPsFailStatusMocked(t *testing.T, floatingIPsIn []*types.FloatingIP, serverID string) []*types.FloatingIP {
+func ListServerFloatingIPsFailStatusMocked(
+	t *testing.T,
+	floatingIPsIn []*types.FloatingIP,
+	serverID string,
+) []*types.FloatingIP {
 
 	assert := assert.New(t)
 
@@ -1045,7 +1059,7 @@ func ListServerFloatingIPsFailStatusMocked(t *testing.T, floatingIPsIn []*types.
 	assert.Nil(err, "Server floating IP test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/floating_ips", serverID)).Return(fIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerFloatingIPs, serverID)).Return(fIn, 499, nil)
 	floatingIPsOut, err := ds.ListServerFloatingIPs(serverID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -1056,7 +1070,11 @@ func ListServerFloatingIPsFailStatusMocked(t *testing.T, floatingIPsIn []*types.
 }
 
 // ListServerFloatingIPsFailJSONMocked test mocked function
-func ListServerFloatingIPsFailJSONMocked(t *testing.T, floatingIPsIn []*types.FloatingIP, serverID string) []*types.FloatingIP {
+func ListServerFloatingIPsFailJSONMocked(
+	t *testing.T,
+	floatingIPsIn []*types.FloatingIP,
+	serverID string,
+) []*types.FloatingIP {
 
 	assert := assert.New(t)
 
@@ -1070,7 +1088,7 @@ func ListServerFloatingIPsFailJSONMocked(t *testing.T, floatingIPsIn []*types.Fl
 	fIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/floating_ips", serverID)).Return(fIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerFloatingIPs, serverID)).Return(fIn, 200, nil)
 	floatingIPsOut, err := ds.ListServerFloatingIPs(serverID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -1096,7 +1114,7 @@ func ListServerVolumesMocked(t *testing.T, volumesIn []*types.Volume, serverID s
 	assert.Nil(err, "Server volume test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/volumes", serverID)).Return(vIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerVolumes, serverID)).Return(vIn, 200, nil)
 	vOut, err := ds.ListServerVolumes(serverID)
 	assert.Nil(err, "Error getting server volume list")
 	assert.Equal(volumesIn, vOut, "ListServerVolumesMocked returned different server volumes")
@@ -1120,7 +1138,7 @@ func ListServerVolumesFailErrMocked(t *testing.T, volumesIn []*types.Volume, ser
 	assert.Nil(err, "Server volume test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/volumes", serverID)).Return(vIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerVolumes, serverID)).Return(vIn, 200, fmt.Errorf("mocked error"))
 	vOut, err := ds.ListServerVolumes(serverID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -1146,7 +1164,7 @@ func ListServerVolumesFailStatusMocked(t *testing.T, volumesIn []*types.Volume, 
 	assert.Nil(err, "Server volume test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/volumes", serverID)).Return(vIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerVolumes, serverID)).Return(vIn, 499, nil)
 	vOut, err := ds.ListServerVolumes(serverID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -1171,7 +1189,7 @@ func ListServerVolumesFailJSONMocked(t *testing.T, volumesIn []*types.Volume, se
 	vIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/volumes", serverID)).Return(vIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerVolumes, serverID)).Return(vIn, 200, nil)
 	vOut, err := ds.ListServerVolumes(serverID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -1197,7 +1215,7 @@ func ListEventsListMocked(t *testing.T, eventsIn []*types.Event, serverID string
 	assert.Nil(err, "Server event test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/events", serverID)).Return(evIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerEvents, serverID)).Return(evIn, 200, nil)
 	evOut, err := ds.ListEvents(serverID)
 	assert.Nil(err, "Error getting server event list")
 	assert.Equal(eventsIn, evOut, "ListEventsList returned different server events")
@@ -1221,7 +1239,7 @@ func ListEventsListFailErrMocked(t *testing.T, eventsIn []*types.Event, serverID
 	assert.Nil(err, "Server event test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/events", serverID)).Return(evIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerEvents, serverID)).Return(evIn, 200, fmt.Errorf("mocked error"))
 	evOut, err := ds.ListEvents(serverID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -1247,7 +1265,7 @@ func ListEventsListFailStatusMocked(t *testing.T, eventsIn []*types.Event, serve
 	assert.Nil(err, "Server event test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/events", serverID)).Return(evIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerEvents, serverID)).Return(evIn, 499, nil)
 	evOut, err := ds.ListEvents(serverID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -1272,7 +1290,7 @@ func ListEventsListFailJSONMocked(t *testing.T, eventsIn []*types.Event, serverI
 	evIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/events", serverID)).Return(evIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerEvents, serverID)).Return(evIn, 200, nil)
 	evOut, err := ds.ListEvents(serverID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -1298,7 +1316,7 @@ func ListOperationalScriptsMocked(t *testing.T, scriptsIn []*types.ScriptChar, s
 	assert.Nil(err, "Server operational scripts test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/operational_scripts", serverID)).Return(oscIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerOperationalScripts, serverID)).Return(oscIn, 200, nil)
 	scriptsOut, err := ds.ListOperationalScripts(serverID)
 	assert.Nil(err, "Error getting operational script list")
 	assert.Equal(scriptsIn, scriptsOut, "ListOperationalScripts returned different operational scripts")
@@ -1307,7 +1325,11 @@ func ListOperationalScriptsMocked(t *testing.T, scriptsIn []*types.ScriptChar, s
 }
 
 // ListOperationalScriptsFailErrMocked test mocked function
-func ListOperationalScriptsFailErrMocked(t *testing.T, scriptsIn []*types.ScriptChar, serverID string) []*types.ScriptChar {
+func ListOperationalScriptsFailErrMocked(
+	t *testing.T,
+	scriptsIn []*types.ScriptChar,
+	serverID string,
+) []*types.ScriptChar {
 
 	assert := assert.New(t)
 
@@ -1322,7 +1344,8 @@ func ListOperationalScriptsFailErrMocked(t *testing.T, scriptsIn []*types.Script
 	assert.Nil(err, "Server operational scripts test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/operational_scripts", serverID)).Return(oscIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerOperationalScripts, serverID)).
+		Return(oscIn, 200, fmt.Errorf("mocked error"))
 	scriptsOut, err := ds.ListOperationalScripts(serverID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -1333,7 +1356,11 @@ func ListOperationalScriptsFailErrMocked(t *testing.T, scriptsIn []*types.Script
 }
 
 // ListOperationalScriptsFailStatusMocked test mocked function
-func ListOperationalScriptsFailStatusMocked(t *testing.T, scriptsIn []*types.ScriptChar, serverID string) []*types.ScriptChar {
+func ListOperationalScriptsFailStatusMocked(
+	t *testing.T,
+	scriptsIn []*types.ScriptChar,
+	serverID string,
+) []*types.ScriptChar {
 
 	assert := assert.New(t)
 
@@ -1348,7 +1375,7 @@ func ListOperationalScriptsFailStatusMocked(t *testing.T, scriptsIn []*types.Scr
 	assert.Nil(err, "Server operational scripts test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/operational_scripts", serverID)).Return(oscIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerOperationalScripts, serverID)).Return(oscIn, 499, nil)
 	scriptsOut, err := ds.ListOperationalScripts(serverID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -1359,7 +1386,11 @@ func ListOperationalScriptsFailStatusMocked(t *testing.T, scriptsIn []*types.Scr
 }
 
 // ListOperationalScriptsFailJSONMocked test mocked function
-func ListOperationalScriptsFailJSONMocked(t *testing.T, scriptsIn []*types.ScriptChar, serverID string) []*types.ScriptChar {
+func ListOperationalScriptsFailJSONMocked(
+	t *testing.T,
+	scriptsIn []*types.ScriptChar,
+	serverID string,
+) []*types.ScriptChar {
 
 	assert := assert.New(t)
 
@@ -1373,7 +1404,7 @@ func ListOperationalScriptsFailJSONMocked(t *testing.T, scriptsIn []*types.Scrip
 	oscIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/cloud/servers/%s/operational_scripts", serverID)).Return(oscIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathCloudServerOperationalScripts, serverID)).Return(oscIn, 200, nil)
 	scriptsOut, err := ds.ListOperationalScripts(serverID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -1384,7 +1415,12 @@ func ListOperationalScriptsFailJSONMocked(t *testing.T, scriptsIn []*types.Scrip
 }
 
 // ExecuteOperationalScriptListMocked test mocked function
-func ExecuteOperationalScriptListMocked(t *testing.T, scriptIn *types.ScriptChar, serverID string, eventDataIn *types.Event) *types.Event {
+func ExecuteOperationalScriptListMocked(
+	t *testing.T,
+	scriptIn *types.ScriptChar,
+	serverID string,
+	eventDataIn *types.Event,
+) *types.Event {
 
 	assert := assert.New(t)
 
@@ -1401,7 +1437,8 @@ func ExecuteOperationalScriptListMocked(t *testing.T, scriptIn *types.ScriptChar
 	assert.Nil(err, "Server operational scripts test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/operational_scripts/%s/execute", serverID, scriptIn.ID), params).Return(oscIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerOperationalScriptExecute, serverID, scriptIn.ID), params).
+		Return(oscIn, 200, nil)
 	eventDataOut, err := ds.ExecuteOperationalScript(serverID, scriptIn.ID, params)
 
 	assert.Nil(err, "Error executing operational script")
@@ -1428,7 +1465,8 @@ func ExecuteOperationalScriptFailErrMocked(t *testing.T, scriptIn *types.ScriptC
 	assert.Nil(err, "Server operational scripts test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/operational_scripts/%s/execute", serverID, scriptIn.ID), params).Return(oscIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerOperationalScriptExecute, serverID, scriptIn.ID), params).
+		Return(oscIn, 200, fmt.Errorf("mocked error"))
 	scriptResponseOut, err := ds.ExecuteOperationalScript(serverID, scriptIn.ID, params)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -1456,7 +1494,8 @@ func ExecuteOperationalScriptFailStatusMocked(t *testing.T, scriptIn *types.Scri
 	assert.Nil(err, "Server operational scripts test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/operational_scripts/%s/execute", serverID, scriptIn.ID), params).Return(oscIn, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerOperationalScriptExecute, serverID, scriptIn.ID), params).
+		Return(oscIn, 499, nil)
 	scriptResponseOut, err := ds.ExecuteOperationalScript(serverID, scriptIn.ID, params)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -1485,7 +1524,8 @@ func ExecuteOperationalScriptFailJSONMocked(t *testing.T, scriptIn *types.Script
 	oscIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/cloud/servers/%s/operational_scripts/%s/execute", serverID, scriptIn.ID), params).Return(oscIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathCloudServerOperationalScriptExecute, serverID, scriptIn.ID), params).
+		Return(oscIn, 200, nil)
 	scriptResponseOut, err := ds.ExecuteOperationalScript(serverID, scriptIn.ID, params)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

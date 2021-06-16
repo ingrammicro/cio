@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -8,7 +10,9 @@ import (
 )
 
 // WireUpBrownfieldCloudAccount prepares common resources to send request to Concerto API
-func WireUpBrownfieldCloudAccount(c *cli.Context) (ds *clientbrownfield.BrownfieldCloudAccountService, f format.Formatter) {
+func WireUpBrownfieldCloudAccount(
+	c *cli.Context,
+) (ds *clientbrownfield.BrownfieldCloudAccountService, f format.Formatter) {
 
 	f = format.GetFormatter()
 
@@ -44,7 +48,7 @@ func BrownfieldCloudAccountList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(cloudAccounts); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

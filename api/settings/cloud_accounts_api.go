@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package settings
 
 import (
@@ -8,6 +10,9 @@ import (
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathSettingsCloudAccounts = "/settings/cloud_accounts"
+const APIPathSettingsCloudAccount = "/settings/cloud_accounts/%s"
 
 // CloudAccountService manages cloud account operations
 type CloudAccountService struct {
@@ -29,7 +34,7 @@ func NewCloudAccountService(concertoService utils.ConcertoService) (*CloudAccoun
 func (cas *CloudAccountService) ListCloudAccounts() (cloudAccounts []*types.CloudAccount, err error) {
 	log.Debug("ListCloudAccounts")
 
-	data, status, err := cas.concertoService.Get("/settings/cloud_accounts")
+	data, status, err := cas.concertoService.Get(APIPathSettingsCloudAccounts)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +54,7 @@ func (cas *CloudAccountService) ListCloudAccounts() (cloudAccounts []*types.Clou
 func (cas *CloudAccountService) GetCloudAccount(cloudAccountID string) (cloudAccount *types.CloudAccount, err error) {
 	log.Debug("GetCloudAccount")
 
-	data, status, err := cas.concertoService.Get(fmt.Sprintf("/settings/cloud_accounts/%s", cloudAccountID))
+	data, status, err := cas.concertoService.Get(fmt.Sprintf(APIPathSettingsCloudAccount, cloudAccountID))
 	if err != nil {
 		return nil, err
 	}

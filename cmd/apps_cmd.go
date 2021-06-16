@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -38,7 +40,7 @@ func AppList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive app data", err)
 	}
 	if err = formatter.PrintList(apps); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -64,7 +66,7 @@ func AppDeploy(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't deploy app", err)
 	}
 	if err = formatter.PrintItem(*app); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

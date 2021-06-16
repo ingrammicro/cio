@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/settings"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
@@ -40,7 +43,7 @@ func PolicyDefinitionList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(definitions); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -57,7 +60,7 @@ func PolicyDefinitionShow(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*definition); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -69,7 +72,9 @@ func PolicyDefinitionCreate(c *cli.Context) error {
 
 	checkRequiredFlags(c, []string{"name", "description"}, formatter)
 	if c.IsSet("definition") && c.IsSet("definition-from-file") {
-		return fmt.Errorf("invalid parameters detected. Please provide only one: 'definition' or 'definition-from-file'")
+		return fmt.Errorf(
+			"invalid parameters detected. Please provide only one: 'definition' or 'definition-from-file'",
+		)
 	}
 
 	definitionIn := map[string]interface{}{
@@ -93,7 +98,7 @@ func PolicyDefinitionCreate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*definition); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -117,7 +122,7 @@ func PolicyDefinitionUpdate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*definition); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -147,7 +152,7 @@ func PolicyDefinitionListAssignments(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(assignments); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

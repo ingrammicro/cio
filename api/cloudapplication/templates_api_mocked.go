@@ -1,16 +1,22 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloudapplication
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListTemplatesMocked test mocked function
-func ListTemplatesMocked(t *testing.T, cloudApplicationTemplatesIn []*types.CloudApplicationTemplate) []*types.CloudApplicationTemplate {
+func ListTemplatesMocked(
+	t *testing.T,
+	cloudApplicationTemplatesIn []*types.CloudApplicationTemplate,
+) []*types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -25,17 +31,24 @@ func ListTemplatesMocked(t *testing.T, cloudApplicationTemplatesIn []*types.Clou
 	assert.Nil(err, "CloudApplicationTemplates test data corrupted")
 
 	// call service
-	cs.On("Get", "/plugins/tosca/cats").Return(dIn, 200, nil)
+	cs.On("Get", APIPathPluginsToscaCats).Return(dIn, 200, nil)
 	cloudApplicationTemplatesOut, err := ds.ListTemplates()
 
 	assert.Nil(err, "Error getting cloud application templates")
-	assert.Equal(cloudApplicationTemplatesIn, cloudApplicationTemplatesOut, "ListTemplates returned different cloud application templates")
+	assert.Equal(
+		cloudApplicationTemplatesIn,
+		cloudApplicationTemplatesOut,
+		"ListTemplates returned different cloud application templates",
+	)
 
 	return cloudApplicationTemplatesOut
 }
 
 // ListTemplatesFailErrMocked test mocked function
-func ListTemplatesFailErrMocked(t *testing.T, cloudApplicationTemplatesIn []*types.CloudApplicationTemplate) []*types.CloudApplicationTemplate {
+func ListTemplatesFailErrMocked(
+	t *testing.T,
+	cloudApplicationTemplatesIn []*types.CloudApplicationTemplate,
+) []*types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -50,7 +63,7 @@ func ListTemplatesFailErrMocked(t *testing.T, cloudApplicationTemplatesIn []*typ
 	assert.Nil(err, "CloudApplicationTemplates test data corrupted")
 
 	// call service
-	cs.On("Get", "/plugins/tosca/cats").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathPluginsToscaCats).Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudApplicationTemplatesOut, err := ds.ListTemplates()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -61,7 +74,10 @@ func ListTemplatesFailErrMocked(t *testing.T, cloudApplicationTemplatesIn []*typ
 }
 
 // ListTemplatesFailStatusMocked test mocked function
-func ListTemplatesFailStatusMocked(t *testing.T, cloudApplicationTemplatesIn []*types.CloudApplicationTemplate) []*types.CloudApplicationTemplate {
+func ListTemplatesFailStatusMocked(
+	t *testing.T,
+	cloudApplicationTemplatesIn []*types.CloudApplicationTemplate,
+) []*types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -76,7 +92,7 @@ func ListTemplatesFailStatusMocked(t *testing.T, cloudApplicationTemplatesIn []*
 	assert.Nil(err, "CloudApplicationTemplates test data corrupted")
 
 	// call service
-	cs.On("Get", "/plugins/tosca/cats").Return(dIn, 499, nil)
+	cs.On("Get", APIPathPluginsToscaCats).Return(dIn, 499, nil)
 	cloudApplicationTemplatesOut, err := ds.ListTemplates()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -87,7 +103,10 @@ func ListTemplatesFailStatusMocked(t *testing.T, cloudApplicationTemplatesIn []*
 }
 
 // ListTemplatesFailJSONMocked test mocked function
-func ListTemplatesFailJSONMocked(t *testing.T, cloudApplicationTemplatesIn []*types.CloudApplicationTemplate) []*types.CloudApplicationTemplate {
+func ListTemplatesFailJSONMocked(
+	t *testing.T,
+	cloudApplicationTemplatesIn []*types.CloudApplicationTemplate,
+) []*types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -101,7 +120,7 @@ func ListTemplatesFailJSONMocked(t *testing.T, cloudApplicationTemplatesIn []*ty
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/plugins/tosca/cats").Return(dIn, 200, nil)
+	cs.On("Get", APIPathPluginsToscaCats).Return(dIn, 200, nil)
 	cloudApplicationTemplatesOut, err := ds.ListTemplates()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -112,7 +131,10 @@ func ListTemplatesFailJSONMocked(t *testing.T, cloudApplicationTemplatesIn []*ty
 }
 
 // GetTemplateMocked test mocked function
-func GetTemplateMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func GetTemplateMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -127,17 +149,24 @@ func GetTemplateMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudAppl
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/cats/%s", cloudApplicationTemplateIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaCat, cloudApplicationTemplateIn.ID)).Return(dIn, 200, nil)
 	cloudApplicationTemplateOut, err := ds.GetTemplate(cloudApplicationTemplateIn.ID)
 
 	assert.Nil(err, "Error getting cloud application template")
-	assert.Equal(*cloudApplicationTemplateIn, *cloudApplicationTemplateOut, "GetTemplate returned different cloud application template")
+	assert.Equal(
+		*cloudApplicationTemplateIn,
+		*cloudApplicationTemplateOut,
+		"GetTemplate returned different cloud application template",
+	)
 
 	return cloudApplicationTemplateOut
 }
 
 // GetTemplateFailErrMocked test mocked function
-func GetTemplateFailErrMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func GetTemplateFailErrMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -152,7 +181,8 @@ func GetTemplateFailErrMocked(t *testing.T, cloudApplicationTemplateIn *types.Cl
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/cats/%s", cloudApplicationTemplateIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaCat, cloudApplicationTemplateIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudApplicationTemplateOut, err := ds.GetTemplate(cloudApplicationTemplateIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -163,7 +193,10 @@ func GetTemplateFailErrMocked(t *testing.T, cloudApplicationTemplateIn *types.Cl
 }
 
 // GetTemplateFailStatusMocked test mocked function
-func GetTemplateFailStatusMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func GetTemplateFailStatusMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -178,7 +211,7 @@ func GetTemplateFailStatusMocked(t *testing.T, cloudApplicationTemplateIn *types
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/cats/%s", cloudApplicationTemplateIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaCat, cloudApplicationTemplateIn.ID)).Return(dIn, 499, nil)
 	cloudApplicationTemplateOut, err := ds.GetTemplate(cloudApplicationTemplateIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -189,7 +222,10 @@ func GetTemplateFailStatusMocked(t *testing.T, cloudApplicationTemplateIn *types
 }
 
 // GetTemplateFailJSONMocked test mocked function
-func GetTemplateFailJSONMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func GetTemplateFailJSONMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -203,7 +239,7 @@ func GetTemplateFailJSONMocked(t *testing.T, cloudApplicationTemplateIn *types.C
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/cats/%s", cloudApplicationTemplateIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaCat, cloudApplicationTemplateIn.ID)).Return(dIn, 200, nil)
 	cloudApplicationTemplateOut, err := ds.GetTemplate(cloudApplicationTemplateIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -214,7 +250,10 @@ func GetTemplateFailJSONMocked(t *testing.T, cloudApplicationTemplateIn *types.C
 }
 
 // CreateTemplateMocked test mocked function
-func CreateTemplateMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func CreateTemplateMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -233,17 +272,24 @@ func CreateTemplateMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudA
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Post", "/plugins/tosca/cats", mapIn).Return(dOut, 200, nil)
+	cs.On("Post", APIPathPluginsToscaCats, mapIn).Return(dOut, 200, nil)
 	cloudApplicationTemplateOut, err := ds.CreateTemplate(mapIn)
 
 	assert.Nil(err, "Error creating cloud application template")
-	assert.Equal(cloudApplicationTemplateIn, cloudApplicationTemplateOut, "CreateTemplate returned different cloud application template")
+	assert.Equal(
+		cloudApplicationTemplateIn,
+		cloudApplicationTemplateOut,
+		"CreateTemplate returned different cloud application template",
+	)
 
 	return cloudApplicationTemplateOut
 }
 
 // CreateTemplateFailErrMocked test mocked function
-func CreateTemplateFailErrMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func CreateTemplateFailErrMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -262,7 +308,7 @@ func CreateTemplateFailErrMocked(t *testing.T, cloudApplicationTemplateIn *types
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Post", "/plugins/tosca/cats", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathPluginsToscaCats, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	cloudApplicationTemplateOut, err := ds.CreateTemplate(mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -273,7 +319,10 @@ func CreateTemplateFailErrMocked(t *testing.T, cloudApplicationTemplateIn *types
 }
 
 // CreateTemplateFailStatusMocked test mocked function
-func CreateTemplateFailStatusMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func CreateTemplateFailStatusMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -292,7 +341,7 @@ func CreateTemplateFailStatusMocked(t *testing.T, cloudApplicationTemplateIn *ty
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Post", "/plugins/tosca/cats", mapIn).Return(dOut, 499, nil)
+	cs.On("Post", APIPathPluginsToscaCats, mapIn).Return(dOut, 499, nil)
 	cloudApplicationTemplateOut, err := ds.CreateTemplate(mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -303,7 +352,10 @@ func CreateTemplateFailStatusMocked(t *testing.T, cloudApplicationTemplateIn *ty
 }
 
 // CreateTemplateFailJSONMocked test mocked function
-func CreateTemplateFailJSONMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func CreateTemplateFailJSONMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -321,7 +373,7 @@ func CreateTemplateFailJSONMocked(t *testing.T, cloudApplicationTemplateIn *type
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", "/plugins/tosca/cats", mapIn).Return(dIn, 200, nil)
+	cs.On("Post", APIPathPluginsToscaCats, mapIn).Return(dIn, 200, nil)
 	cloudApplicationTemplateOut, err := ds.CreateTemplate(mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -393,7 +445,10 @@ func UpdateTemplateFailStatusMocked(t *testing.T, cbIn *types.CloudApplicationTe
 }
 
 // ParseMetadataTemplateMocked test mocked function
-func ParseMetadataTemplateMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func ParseMetadataTemplateMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -410,17 +465,25 @@ func ParseMetadataTemplateMocked(t *testing.T, cloudApplicationTemplateIn *types
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/plugins/tosca/cats/%s/parse_metadata", cloudApplicationTemplateIn.ID), &mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathPluginsToscaCatParseMetadata, cloudApplicationTemplateIn.ID), &mapIn).
+		Return(dIn, 200, nil)
 	cloudApplicationTemplateOut, err := ds.ParseMetadataTemplate(cloudApplicationTemplateIn.ID)
 
 	assert.Nil(err, "Error parsing cloud application template metadata")
-	assert.Equal(*cloudApplicationTemplateIn, *cloudApplicationTemplateOut, "ParseMetadataTemplate returned different cloud application template")
+	assert.Equal(
+		*cloudApplicationTemplateIn,
+		*cloudApplicationTemplateOut,
+		"ParseMetadataTemplate returned different cloud application template",
+	)
 
 	return cloudApplicationTemplateOut
 }
 
 // ParseMetadataTemplateFailErrMocked test mocked function
-func ParseMetadataTemplateFailErrMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func ParseMetadataTemplateFailErrMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -437,7 +500,8 @@ func ParseMetadataTemplateFailErrMocked(t *testing.T, cloudApplicationTemplateIn
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/plugins/tosca/cats/%s/parse_metadata", cloudApplicationTemplateIn.ID), &mapIn).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathPluginsToscaCatParseMetadata, cloudApplicationTemplateIn.ID), &mapIn).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudApplicationTemplateOut, err := ds.ParseMetadataTemplate(cloudApplicationTemplateIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -448,7 +512,10 @@ func ParseMetadataTemplateFailErrMocked(t *testing.T, cloudApplicationTemplateIn
 }
 
 // ParseMetadataTemplateFailStatusMocked test mocked function
-func ParseMetadataTemplateFailStatusMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func ParseMetadataTemplateFailStatusMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -465,7 +532,8 @@ func ParseMetadataTemplateFailStatusMocked(t *testing.T, cloudApplicationTemplat
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/plugins/tosca/cats/%s/parse_metadata", cloudApplicationTemplateIn.ID), &mapIn).Return(dIn, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathPluginsToscaCatParseMetadata, cloudApplicationTemplateIn.ID), &mapIn).
+		Return(dIn, 499, nil)
 	cloudApplicationTemplateOut, err := ds.ParseMetadataTemplate(cloudApplicationTemplateIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -476,7 +544,10 @@ func ParseMetadataTemplateFailStatusMocked(t *testing.T, cloudApplicationTemplat
 }
 
 // ParseMetadataTemplateFailJSONMocked test mocked function
-func ParseMetadataTemplateFailJSONMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudApplicationTemplate) *types.CloudApplicationTemplate {
+func ParseMetadataTemplateFailJSONMocked(
+	t *testing.T,
+	cloudApplicationTemplateIn *types.CloudApplicationTemplate,
+) *types.CloudApplicationTemplate {
 
 	assert := assert.New(t)
 
@@ -492,7 +563,8 @@ func ParseMetadataTemplateFailJSONMocked(t *testing.T, cloudApplicationTemplateI
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/plugins/tosca/cats/%s/parse_metadata", cloudApplicationTemplateIn.ID), &mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathPluginsToscaCatParseMetadata, cloudApplicationTemplateIn.ID), &mapIn).
+		Return(dIn, 200, nil)
 	cloudApplicationTemplateOut, err := ds.ParseMetadataTemplate(cloudApplicationTemplateIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -518,7 +590,7 @@ func DeleteTemplateMocked(t *testing.T, cloudApplicationTemplateIn *types.CloudA
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/plugins/tosca/cats/%s", cloudApplicationTemplateIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathPluginsToscaCat, cloudApplicationTemplateIn.ID)).Return(dIn, 200, nil)
 	err = ds.DeleteTemplate(cloudApplicationTemplateIn.ID)
 	assert.Nil(err, "Error deleting cloud application template")
 }
@@ -539,7 +611,8 @@ func DeleteTemplateFailErrMocked(t *testing.T, cloudApplicationTemplateIn *types
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/plugins/tosca/cats/%s", cloudApplicationTemplateIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathPluginsToscaCat, cloudApplicationTemplateIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DeleteTemplate(cloudApplicationTemplateIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -562,7 +635,7 @@ func DeleteTemplateFailStatusMocked(t *testing.T, cloudApplicationTemplateIn *ty
 	assert.Nil(err, "CloudApplicationTemplate test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/plugins/tosca/cats/%s", cloudApplicationTemplateIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathPluginsToscaCat, cloudApplicationTemplateIn.ID)).Return(dIn, 499, nil)
 	err = ds.DeleteTemplate(cloudApplicationTemplateIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")

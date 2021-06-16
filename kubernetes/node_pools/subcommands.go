@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package node_pools
 
 import (
@@ -52,7 +54,7 @@ func SubCommands() []cli.Command {
 					Usage: "Identifier of the node pool plan that this node pool is based",
 				},
 				cli.StringFlag{
-					Name:  "cpu-type",
+					Name: "cpu-type",
 					Usage: "Type of CPU each node of the node pools will have. " +
 						"Can be nil only if the node pool plan does not have any cpu types",
 				},
