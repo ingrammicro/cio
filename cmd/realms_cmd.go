@@ -75,11 +75,6 @@ func RealmNodePoolPlansList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive realms data", err)
 	}
 
-	cloudProvidersMap := LoadCloudProvidersMapping(c)
-	for id, sp := range realms {
-		realms[id].CloudProviderName = cloudProvidersMap[sp.CloudProviderID]
-	}
-
 	if err = formatter.PrintList(realms); err != nil {
 		formatter.PrintFatal(PrintFormatError, err)
 	}

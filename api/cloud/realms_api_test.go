@@ -36,8 +36,8 @@ func TestGetRealm(t *testing.T) {
 
 func TestListRealmNodePoolPlans(t *testing.T) {
 	nodePoolPlansIn := testdata.GetNodePoolPlanData()
-	ListRealmNodePoolPlansMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].CloudProviderID)
-	ListRealmNodePoolPlansFailErrMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].CloudProviderID)
-	ListRealmNodePoolPlansFailStatusMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].CloudProviderID)
-	ListRealmNodePoolPlansFailJSONMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].CloudProviderID)
+	ListRealmNodePoolPlansMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].RealmID)
+	ListRealmNodePoolPlansFailErrMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].RealmID)
+	ListRealmNodePoolPlansFailStatusMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].RealmID)
+	ListRealmNodePoolPlansFailJSONMocked(t, nodePoolPlansIn, nodePoolPlansIn[0].RealmID)
 }

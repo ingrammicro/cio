@@ -48,8 +48,8 @@ type ClusterPlan struct {
 	DefaultVersion      string   `json:"default_version"                 header:"DEFAULT_VERSION"`
 	MaxPodsPerNode      int      `json:"max_pods_per_node"               header:"MAX_PODS_PER_NODE"`
 	MaxNodesPerNodePool int      `json:"max_nodes_per_node_pool"         header:"MAX_NODES_PER_NODE_POOL"`
-	CloudProviderID     string   `json:"cloud_provider_id,omitempty"     header:"CLOUD_PROVIDER_ID"`
-	CloudProviderName   string   `                                       header:"CLOUD_PROVIDER_NAME"`
+	CloudProviderID     string   `json:"cloud_provider_id,omitempty"     header:"CLOUD_PROVIDER_ID" show:"noshow"`
+	CloudProviderName   string   `                                       header:"CLOUD_PROVIDER_NAME" show:"noshow"`
 	RealmID             string   `json:"realm_id,omitempty"              header:"REALM_ID"`
 	RealmProviderName   string   `json:"realm_provider_name,omitempty"   header:"REALM_PROVIDER_NAME"`
 	FlavourProviderName string   `json:"flavour_provider_name,omitempty" header:"FLAVOUR_PROVIDER_NAME"`
@@ -64,8 +64,6 @@ type NodePoolPlan struct {
 	CPUTypes             []string `json:"cpu_types"                   header:"CPU_TYPES"`
 	CPUs                 int      `json:"cpus"                        header:"CPUS"`
 	Memory               int      `json:"memory"                      header:"MEMORY"`
-	CloudProviderID      string   `json:"cloud_provider_id,omitempty" header:"CLOUD_PROVIDER_ID"`
-	CloudProviderName    string   `                                   header:"CLOUD_PROVIDER_NAME"`
 	RealmID              string   `json:"realm_id,omitempty"          header:"REALM_ID"`
 	ServerPlanID         string   `json:"server_plan_id,omitempty"    header:"SERVER_PLAN_ID"`
 	AutoscalingCapable   bool     `json:"autoscaling_capable"         header:"AUTOSCALING_CAPABLE"     show:"nolist"`

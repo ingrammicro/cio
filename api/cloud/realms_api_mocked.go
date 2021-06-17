@@ -219,7 +219,7 @@ func GetRealmFailJSONMocked(t *testing.T, realmIn *types.Realm) *types.Realm {
 
 // ListRealmNodePoolPlansMocked test mocked function
 func ListRealmNodePoolPlansMocked(
-	t *testing.T, nodePoolPlansIn []*types.NodePoolPlan, cloudProviderID string,
+	t *testing.T, nodePoolPlansIn []*types.NodePoolPlan, realmID string,
 ) []*types.NodePoolPlan {
 
 	assert := assert.New(t)
@@ -235,8 +235,8 @@ func ListRealmNodePoolPlansMocked(
 	assert.Nil(err, "NodePoolPlans test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, cloudProviderID)).Return(dIn, 200, nil)
-	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(cloudProviderID)
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, realmID)).Return(dIn, 200, nil)
+	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(realmID)
 
 	assert.Nil(err, "Error getting node pool plan list")
 	assert.Equal(nodePoolPlansIn, nodePoolPlansOut, "ListRealmNodePoolPlans returned different node pool plans")
@@ -246,7 +246,7 @@ func ListRealmNodePoolPlansMocked(
 
 // ListRealmNodePoolPlansFailErrMocked test mocked function
 func ListRealmNodePoolPlansFailErrMocked(
-	t *testing.T, nodePoolPlansIn []*types.NodePoolPlan, cloudProviderID string,
+	t *testing.T, nodePoolPlansIn []*types.NodePoolPlan, realmID string,
 ) []*types.NodePoolPlan {
 
 	assert := assert.New(t)
@@ -262,9 +262,9 @@ func ListRealmNodePoolPlansFailErrMocked(
 	assert.Nil(err, "NodePoolPlans test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, cloudProviderID)).
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, realmID)).
 		Return(dIn, 200, fmt.Errorf("mocked error"))
-	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(cloudProviderID)
+	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(realmID)
 
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(nodePoolPlansOut, "Expecting nil output")
@@ -275,7 +275,7 @@ func ListRealmNodePoolPlansFailErrMocked(
 
 // ListRealmNodePoolPlansFailStatusMocked test mocked function
 func ListRealmNodePoolPlansFailStatusMocked(
-	t *testing.T, nodePoolPlansIn []*types.NodePoolPlan, cloudProviderID string,
+	t *testing.T, nodePoolPlansIn []*types.NodePoolPlan, realmID string,
 ) []*types.NodePoolPlan {
 
 	assert := assert.New(t)
@@ -291,8 +291,8 @@ func ListRealmNodePoolPlansFailStatusMocked(
 	assert.Nil(err, "NodePoolPlans test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, cloudProviderID)).Return(dIn, 499, nil)
-	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(cloudProviderID)
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, realmID)).Return(dIn, 499, nil)
+	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(realmID)
 
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(nodePoolPlansOut, "Expecting nil output")
@@ -303,7 +303,7 @@ func ListRealmNodePoolPlansFailStatusMocked(
 
 // ListRealmNodePoolPlansFailJSONMocked test mocked function
 func ListRealmNodePoolPlansFailJSONMocked(
-	t *testing.T, nodePoolPlansIn []*types.NodePoolPlan, cloudProviderID string,
+	t *testing.T, nodePoolPlansIn []*types.NodePoolPlan, realmID string,
 ) []*types.NodePoolPlan {
 
 	assert := assert.New(t)
@@ -318,8 +318,8 @@ func ListRealmNodePoolPlansFailJSONMocked(
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, cloudProviderID)).Return(dIn, 200, nil)
-	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(cloudProviderID)
+	cs.On("Get", fmt.Sprintf(APIPathCloudRealmNodePoolPlans, realmID)).Return(dIn, 200, nil)
+	nodePoolPlansOut, err := ds.ListRealmNodePoolPlans(realmID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(nodePoolPlansOut, "Expecting nil output")

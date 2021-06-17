@@ -228,9 +228,6 @@ func ClusterPlanShow(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't show cluster plan", err)
 	}
 
-	cloudProvidersMap := LoadCloudProvidersMapping(c)
-	clusterPlan.CloudProviderName = cloudProvidersMap[clusterPlan.CloudProviderID]
-
 	if err = formatter.PrintItem(*clusterPlan); err != nil {
 		formatter.PrintFatal(PrintFormatError, err)
 	}
