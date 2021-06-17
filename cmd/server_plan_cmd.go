@@ -66,10 +66,7 @@ func ServerPlanShow(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive serverPlan data", err)
 	}
 
-	cloudProvidersMap := LoadCloudProvidersMapping(c)
 	locationsMap := LoadLocationsMapping(c)
-
-	serverPlan.CloudProviderName = cloudProvidersMap[serverPlan.CloudProviderID]
 	serverPlan.LocationName = locationsMap[serverPlan.LocationID]
 
 	if err = formatter.PrintItem(*serverPlan); err != nil {

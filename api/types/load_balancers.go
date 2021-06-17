@@ -19,21 +19,21 @@ type LoadBalancer struct {
 }
 
 type LoadBalancerPlan struct {
-	ID                                   string `json:"id" header:"ID"`
-	Name                                 string `json:"name" header:"NAME"`
-	CloudProviderID                      string `json:"cloud_provider_id" header:"CLOUD_PROVIDER_ID"`
-	CloudProviderName                    string `header:"CLOUD_PROVIDER_NAME"`
-	RealmID                              string `json:"realm_id" header:"REALM_ID"`
-	RealmProviderName                    string `json:"realm_provider_name,omitempty" header:"REALM_PROVIDER_NAME"`
-	FlavourProviderName                  string `json:"flavour_provider_name,omitempty" header:"FLAVOUR_PROVIDER_NAME"`
-	Protocols                            []string `json:"protocols" header:"PROTOCOLS"`
-	HealthCheckProtocols                 []string `json:"health_check_protocols" header:"HEALTH_CHECK_PROTOCOLS"`
-	RuleFields                           []string `json:"rule_fields" header:"RULE_FIELDS" show:"nolist"`
-	HealthCheckIntervalValidValues       map[string]interface{} `json:"health_check_interval_valid_values" header:"HEALTH_CHECK_INTERVAL_VALID_VALUES" show:"nolist"`
-	HealthCheckTimeoutValidValues        map[string]interface{} `json:"health_check_timeout_valid_values" header:"HEALTH_CHECK_TIMEOUT_VALID_VALUES" show:"nolist"`
+	ID                               string `json:"id" header:"ID"`
+	Name                             string `json:"name" header:"NAME"`
+	CloudProviderID                  string `json:"cloud_provider_id,omitempty" header:"CLOUD_PROVIDER_ID" show:"noshow"`
+	CloudProviderName                string `header:"CLOUD_PROVIDER_NAME" show:"noshow"`
+	RealmID                          string `json:"realm_id" header:"REALM_ID"`
+	RealmProviderName                string `json:"realm_provider_name,omitempty" header:"REALM_PROVIDER_NAME"`
+	FlavourProviderName              string `json:"flavour_provider_name,omitempty" header:"FLAVOUR_PROVIDER_NAME"`
+	Protocols                        []string `json:"protocols" header:"PROTOCOLS"`
+	HealthCheckProtocols             []string `json:"health_check_protocols" header:"HEALTH_CHECK_PROTOCOLS"`
+	RuleFields                       []string `json:"rule_fields" header:"RULE_FIELDS" show:"nolist"`
+	HealthCheckIntervalValidValues   map[string]interface{} `json:"health_check_interval_valid_values" header:"HEALTH_CHECK_INTERVAL_VALID_VALUES" show:"nolist"`
+	HealthCheckTimeoutValidValues    map[string]interface{} `json:"health_check_timeout_valid_values" header:"HEALTH_CHECK_TIMEOUT_VALID_VALUES" show:"nolist"`
 	HealthCheckThresholdCountValidValues map[string]interface{} `json:"health_check_threshold_count_valid_values" header:"HEALTH_CHECK_THRESHOLD_COUNT_VALID_VALUES" show:"nolist"`
-	Deprecated                           bool `json:"deprecated,omitempty" header:"DEPRECATED" show:"nolist,noshow"`
-	ResourceType                         string `json:"resource_type" header:"RESOURCE_TYPE" show:"nolist"`
+	Deprecated                       bool `json:"deprecated,omitempty" header:"DEPRECATED" show:"nolist,noshow"`
+	ResourceType                     string `json:"resource_type" header:"RESOURCE_TYPE" show:"nolist"`
 }
 
 type TargetGroup struct {

@@ -185,9 +185,6 @@ func NodePoolPlanShow(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't show node pool plan", err)
 	}
 
-	cloudProvidersMap := LoadCloudProvidersMapping(c)
-	nodePoolPlan.CloudProviderName = cloudProvidersMap[nodePoolPlan.CloudProviderID]
-
 	if err = formatter.PrintItem(*nodePoolPlan); err != nil {
 		formatter.PrintFatal(PrintFormatError, err)
 	}

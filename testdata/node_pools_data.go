@@ -41,8 +41,6 @@ func GetNodePoolPlanData() []*types.NodePoolPlan {
 			CPUTypes:             nil,
 			CPUs:                 1,
 			Memory:               2,
-			CloudProviderID:      "fakeCloudProviderID0",
-			CloudProviderName:    "fakeCloudProviderName0",
 			RealmID:              "fakeRealmID0",
 			ServerPlanID:         "fakeServerPlanID0",
 			AutoscalingCapable:   false,

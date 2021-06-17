@@ -188,9 +188,6 @@ func LoadBalancerPlanShow(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive load balancer plan data", err)
 	}
 
-	cloudProvidersMap := LoadCloudProvidersMapping(c)
-	lbp.CloudProviderName = cloudProvidersMap[lbp.CloudProviderID]
-
 	if err = formatter.PrintItem(*lbp); err != nil {
 		formatter.PrintFatal(PrintFormatError, err)
 	}
