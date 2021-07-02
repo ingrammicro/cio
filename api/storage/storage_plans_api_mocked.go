@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package storage
 
 import (
@@ -28,7 +30,7 @@ func GetStoragePlanMocked(t *testing.T, storagePlan *types.StoragePlan) *types.S
 	assert.Nil(err, "Storage plan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/storage/plans/%s", storagePlan.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathStoragePlan, storagePlan.ID)).Return(dIn, 200, nil)
 	storagePlanOut, err := ds.GetStoragePlan(storagePlan.ID)
 	assert.Nil(err, "Error getting storage plan")
 	assert.Equal(*storagePlan, *storagePlanOut, "GetStoragePlan returned different storage plans")
@@ -52,7 +54,7 @@ func GetStoragePlanFailErrMocked(t *testing.T, storagePlan *types.StoragePlan) *
 	assert.Nil(err, "Storage plan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/storage/plans/%s", storagePlan.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathStoragePlan, storagePlan.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
 	storagePlanOut, err := ds.GetStoragePlan(storagePlan.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -78,7 +80,7 @@ func GetStoragePlanFailStatusMocked(t *testing.T, storagePlan *types.StoragePlan
 	assert.Nil(err, "Storage plan test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/storage/plans/%s", storagePlan.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathStoragePlan, storagePlan.ID)).Return(dIn, 499, nil)
 	storagePlanOut, err := ds.GetStoragePlan(storagePlan.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -103,7 +105,7 @@ func GetStoragePlanFailJSONMocked(t *testing.T, storagePlan *types.StoragePlan) 
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/storage/plans/%s", storagePlan.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathStoragePlan, storagePlan.ID)).Return(dIn, 200, nil)
 	storagePlanOut, err := ds.GetStoragePlan(storagePlan.ID)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(storagePlanOut, "Expecting nil output")

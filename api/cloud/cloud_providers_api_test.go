@@ -1,9 +1,12 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
+	"testing"
+
 	"github.com/ingrammicro/cio/testdata"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestNewCloudProviderServiceNil(t *testing.T) {
@@ -35,4 +38,12 @@ func TestListLoadBalancerPlans(t *testing.T) {
 	ListLoadBalancerPlansFailErrMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
 	ListLoadBalancerPlansFailStatusMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
 	ListLoadBalancerPlansFailJSONMocked(t, loadBalancerPlansIn, loadBalancerPlansIn[0].CloudProviderID)
+}
+
+func TestListClusterPlans(t *testing.T) {
+	clusterPlansIn := testdata.GetClusterPlanData()
+	ListClusterPlansMocked(t, clusterPlansIn, clusterPlansIn[0].CloudProviderID)
+	ListClusterPlansFailErrMocked(t, clusterPlansIn, clusterPlansIn[0].CloudProviderID)
+	ListClusterPlansFailStatusMocked(t, clusterPlansIn, clusterPlansIn[0].CloudProviderID)
+	ListClusterPlansFailJSONMocked(t, clusterPlansIn, clusterPlansIn[0].CloudProviderID)
 }

@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -44,7 +46,7 @@ func LabelList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(labels); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -60,7 +62,7 @@ func LabelCreate(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't create label", err)
 	}
 	if err = formatter.PrintItem(*label); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -91,7 +93,8 @@ func LabelFiltering(c *cli.Context, items []types.Labelable, labelIDsByName map[
 }
 
 // LabelAssignNamesForIDs subcommand function receives a collection of references to labelables objects
-// Resolves the Labels names associated to a each resource from given Labels ids, loading object with respective labels names
+// Resolves the Labels names associated to a each resource from given Labels ids, loading object with respective labels
+// names
 func LabelAssignNamesForIDs(c *cli.Context, items []types.Labelable, labelNamesByID map[string]string) {
 	debugCmdFuncInfo(c)
 	for _, labelable := range items {
@@ -99,7 +102,8 @@ func LabelAssignNamesForIDs(c *cli.Context, items []types.Labelable, labelNamesB
 	}
 }
 
-// LabelLoadsMapping subcommand function retrieves the current label list in IMCO; then prepares two mapping structures (Name <-> ID and ID <-> Name)
+// LabelLoadsMapping subcommand function retrieves the current label list in IMCO; then prepares two mapping structures
+// (Name <-> ID and ID <-> Name)
 func LabelLoadsMapping(c *cli.Context) (map[string]string, map[string]string) {
 	debugCmdFuncInfo(c)
 
@@ -126,17 +130,31 @@ func LabelsUnifyInputNames(labelsNames string, formatter format.Formatter) []str
 	for _, c := range labelNamesIn {
 		matched := regexp.MustCompile(`^[A-Za-z0-9 .\s_-]+$`).MatchString(c)
 		if !matched {
-			formatter.PrintFatal("Invalid label name ", fmt.Errorf("invalid label format: %v (Labels would be indicated with their name, which must satisfy to be composed of spaces, underscores, dots, dashes and/or lower/upper -case alphanumeric characters-)", c))
+			formatter.PrintFatal(
+				"Invalid label name ",
+				fmt.Errorf(
+					"invalid label format: %v (Labels would be indicated with their name, "+
+						"which must satisfy to be composed of spaces, underscores, dots, dashes "+
+						"and/or lower/upper -case alphanumeric characters-)",
+					c,
+				),
+			)
 		}
 	}
 	return labelNamesIn
 }
 
 // LabelResolution subcommand function retrieves a labels map(Name<->ID) based on label names received to be processed.
-// The function evaluates the received labels names (comma separated string); with them, solves the assigned IDs for the given labels names.
+// The function evaluates the received labels names (comma separated string); with them, solves the assigned IDs for the
+// given labels names.
 // If the label name is not available in IMCO yet, it is created.
 // If new label is created, mapping structures labelNamesByID/labelIDsByName are updated
-func LabelResolution(c *cli.Context, labelsNames string, labelNamesByID *map[string]string, labelIDsByName *map[string]string) []string {
+func LabelResolution(
+	c *cli.Context,
+	labelsNames string,
+	labelNamesByID *map[string]string,
+	labelIDsByName *map[string]string,
+) []string {
 	debugCmdFuncInfo(c)
 
 	labelsSvc, formatter := WireUpLabel(c)
@@ -178,7 +196,10 @@ func LabelAdd(c *cli.Context) error {
 	labelIDsByName, labelNamesByID := LabelLoadsMapping(c)
 	labelIds := LabelResolution(c, c.String("label"), &labelNamesByID, &labelIDsByName)
 	if len(labelIds) > 1 {
-		formatter.PrintFatal("Too many label names. Please, Use only one label name", fmt.Errorf("invalid parameter: %v - %v", c.String("label"), labelIds))
+		formatter.PrintFatal(
+			"Too many label names. Please, Use only one label name",
+			fmt.Errorf("invalid parameter: %v - %v", c.String("label"), labelIds),
+		)
 	}
 	labelID := labelIds[0]
 
@@ -197,7 +218,7 @@ func LabelAdd(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't add label data", err)
 	}
 	if err = formatter.PrintList(labeledResources); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

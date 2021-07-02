@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud_providers
 
 import (
@@ -28,6 +30,17 @@ func SubCommands() []cli.Command {
 			Name:   "list-load-balancer-plans",
 			Usage:  "This action lists the load balancer plans offered by the cloud provider identified by the given id",
 			Action: cmd.CloudProviderLoadBalancerPlansList,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "cloud-provider-id",
+					Usage: "Cloud provider id",
+				},
+			},
+		},
+		{
+			Name:   "list-cluster-plans",
+			Usage:  "This action lists the cluster plans offered by the cloud provider identified by the given id",
+			Action: cmd.CloudProviderClusterPlansList,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "cloud-provider-id",

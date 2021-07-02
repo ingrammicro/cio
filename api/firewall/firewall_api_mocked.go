@@ -1,12 +1,15 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package firewall
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // GetPolicyMocked test mocked function
@@ -25,7 +28,7 @@ func GetPolicyMocked(t *testing.T, policyIn *types.Policy) *types.Policy {
 	assert.Nil(err, "Firewall test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/firewall_profile").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCloudFirewallProfile).Return(dIn, 200, nil)
 	policyOut, err := ds.GetPolicy()
 	policyIn.Md5 = policyOut.Md5
 	assert.Nil(err, "Error getting firewall policy")
@@ -50,7 +53,7 @@ func GetPolicyFailErrMocked(t *testing.T, policyIn *types.Policy) *types.Policy 
 	assert.Nil(err, "Firewall test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/firewall_profile").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathCloudFirewallProfile).Return(dIn, 200, fmt.Errorf("mocked error"))
 	policyOut, err := ds.GetPolicy()
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(policyOut, "Expecting nil output")
@@ -75,7 +78,7 @@ func GetPolicyFailStatusMocked(t *testing.T, policyIn *types.Policy) *types.Poli
 	assert.Nil(err, "Firewall test data corrupted")
 
 	// call service
-	cs.On("Get", "/cloud/firewall_profile").Return(dIn, 499, nil)
+	cs.On("Get", APIPathCloudFirewallProfile).Return(dIn, 499, nil)
 	policyOut, err := ds.GetPolicy()
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(policyOut, "Expecting nil output")
@@ -99,7 +102,7 @@ func GetPolicyFailJSONMocked(t *testing.T, policyIn *types.Policy) *types.Policy
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/cloud/firewall_profile").Return(dIn, 200, nil)
+	cs.On("Get", APIPathCloudFirewallProfile).Return(dIn, 200, nil)
 	policyOut, err := ds.GetPolicy()
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(policyOut, "Expecting nil output")
@@ -128,7 +131,7 @@ func AddPolicyRuleMocked(t *testing.T, policyRuleIn *types.PolicyRule) *types.Po
 	assert.Nil(err, "Firewall test data corrupted")
 
 	// call service
-	cs.On("Post", "/cloud/firewall_profile/rules", mapIn).Return(dOut, 200, nil)
+	cs.On("Post", APIPathCloudFirewallProfileRules, mapIn).Return(dOut, 200, nil)
 	policyRuleOut, err := ds.AddPolicyRule(mapIn)
 	assert.Nil(err, "Error adding policy rule")
 	assert.Equal(policyRuleIn, policyRuleOut, "AddPolicyRule returned different rules")
@@ -156,7 +159,7 @@ func AddPolicyRuleFailErrMocked(t *testing.T, policyRuleIn *types.PolicyRule) *t
 	assert.Nil(err, "Firewall test data corrupted")
 
 	// call service
-	cs.On("Post", "/cloud/firewall_profile/rules", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathCloudFirewallProfileRules, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	policyRuleOut, err := ds.AddPolicyRule(mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -186,7 +189,7 @@ func AddPolicyRuleFailStatusMocked(t *testing.T, policyRuleIn *types.PolicyRule)
 	assert.Nil(err, "Firewall test data corrupted")
 
 	// call service
-	cs.On("Post", "/cloud/firewall_profile/rules", mapIn).Return(dOut, 499, nil)
+	cs.On("Post", APIPathCloudFirewallProfileRules, mapIn).Return(dOut, 499, nil)
 	policyRuleOut, err := ds.AddPolicyRule(mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -215,7 +218,7 @@ func AddPolicyRuleFailJSONMocked(t *testing.T, policyRuleIn *types.PolicyRule) *
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", "/cloud/firewall_profile/rules", mapIn).Return(dIn, 200, nil)
+	cs.On("Post", APIPathCloudFirewallProfileRules, mapIn).Return(dIn, 200, nil)
 	policyRuleOut, err := ds.AddPolicyRule(mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -245,7 +248,7 @@ func UpdatePolicyMocked(t *testing.T, policyIn *types.Policy) *types.Policy {
 	assert.Nil(err, "Firewall test data corrupted")
 
 	// call service
-	cs.On("Put", "/cloud/firewall_profile", mapIn).Return(dOut, 200, nil)
+	cs.On("Put", APIPathCloudFirewallProfile, mapIn).Return(dOut, 200, nil)
 	policyOut, err := ds.UpdatePolicy(mapIn)
 	assert.Nil(err, "Error updating policy")
 	assert.Equal(policyIn, policyOut, "UpdatePolicy returned different policies")
@@ -273,7 +276,7 @@ func UpdatePolicyFailErrMocked(t *testing.T, policyIn *types.Policy) *types.Poli
 	assert.Nil(err, "Firewall test data corrupted")
 
 	// call service
-	cs.On("Put", "/cloud/firewall_profile", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", APIPathCloudFirewallProfile, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	policyOut, err := ds.UpdatePolicy(mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -303,7 +306,7 @@ func UpdatePolicyFailStatusMocked(t *testing.T, policyIn *types.Policy) *types.P
 	assert.Nil(err, "Firewall test data corrupted")
 
 	// call service
-	cs.On("Put", "/cloud/firewall_profile", mapIn).Return(dOut, 499, nil)
+	cs.On("Put", APIPathCloudFirewallProfile, mapIn).Return(dOut, 499, nil)
 	policyOut, err := ds.UpdatePolicy(mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -332,7 +335,7 @@ func UpdatePolicyFailJSONMocked(t *testing.T, policyIn *types.Policy) *types.Pol
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", "/cloud/firewall_profile", mapIn).Return(dIn, 200, nil)
+	cs.On("Put", APIPathCloudFirewallProfile, mapIn).Return(dIn, 200, nil)
 	policyOut, err := ds.UpdatePolicy(mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

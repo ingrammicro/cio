@@ -1,16 +1,23 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package settings
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListAssignmentsMocked test mocked function
-func ListAssignmentsMocked(t *testing.T, cloudAccountID string, policyAssignmentsIn []*types.PolicyAssignment) []*types.PolicyAssignment {
+func ListAssignmentsMocked(
+	t *testing.T,
+	cloudAccountID string,
+	policyAssignmentsIn []*types.PolicyAssignment,
+) []*types.PolicyAssignment {
 
 	assert := assert.New(t)
 
@@ -25,7 +32,7 @@ func ListAssignmentsMocked(t *testing.T, cloudAccountID string, policyAssignment
 	assert.Nil(err, "PolicyAssignments test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/settings/cloud_accounts/%s/policy_assignments", cloudAccountID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathSettingsCloudAccountPolicyAssignments, cloudAccountID)).Return(dIn, 200, nil)
 	policyAssignmentsOut, err := ds.ListAssignments(cloudAccountID)
 
 	assert.Nil(err, "Error getting policy assignments")
@@ -35,7 +42,11 @@ func ListAssignmentsMocked(t *testing.T, cloudAccountID string, policyAssignment
 }
 
 // ListAssignmentsFailErrMocked test mocked function
-func ListAssignmentsFailErrMocked(t *testing.T, cloudAccountID string, policyAssignmentsIn []*types.PolicyAssignment) []*types.PolicyAssignment {
+func ListAssignmentsFailErrMocked(
+	t *testing.T,
+	cloudAccountID string,
+	policyAssignmentsIn []*types.PolicyAssignment,
+) []*types.PolicyAssignment {
 
 	assert := assert.New(t)
 
@@ -50,7 +61,8 @@ func ListAssignmentsFailErrMocked(t *testing.T, cloudAccountID string, policyAss
 	assert.Nil(err, "PolicyAssignments test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/settings/cloud_accounts/%s/policy_assignments", cloudAccountID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathSettingsCloudAccountPolicyAssignments, cloudAccountID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	policyAssignmentsOut, err := ds.ListAssignments(cloudAccountID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -61,7 +73,11 @@ func ListAssignmentsFailErrMocked(t *testing.T, cloudAccountID string, policyAss
 }
 
 // ListAssignmentsFailStatusMocked test mocked function
-func ListAssignmentsFailStatusMocked(t *testing.T, cloudAccountID string, policyAssignmentsIn []*types.PolicyAssignment) []*types.PolicyAssignment {
+func ListAssignmentsFailStatusMocked(
+	t *testing.T,
+	cloudAccountID string,
+	policyAssignmentsIn []*types.PolicyAssignment,
+) []*types.PolicyAssignment {
 
 	assert := assert.New(t)
 
@@ -76,7 +92,7 @@ func ListAssignmentsFailStatusMocked(t *testing.T, cloudAccountID string, policy
 	assert.Nil(err, "PolicyAssignments test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/settings/cloud_accounts/%s/policy_assignments", cloudAccountID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathSettingsCloudAccountPolicyAssignments, cloudAccountID)).Return(dIn, 499, nil)
 	policyAssignmentsOut, err := ds.ListAssignments(cloudAccountID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -87,7 +103,11 @@ func ListAssignmentsFailStatusMocked(t *testing.T, cloudAccountID string, policy
 }
 
 // ListAssignmentsFailJSONMocked test mocked function
-func ListAssignmentsFailJSONMocked(t *testing.T, cloudAccountID string, policyAssignmentsIn []*types.PolicyAssignment) []*types.PolicyAssignment {
+func ListAssignmentsFailJSONMocked(
+	t *testing.T,
+	cloudAccountID string,
+	policyAssignmentsIn []*types.PolicyAssignment,
+) []*types.PolicyAssignment {
 
 	assert := assert.New(t)
 
@@ -101,7 +121,7 @@ func ListAssignmentsFailJSONMocked(t *testing.T, cloudAccountID string, policyAs
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/settings/cloud_accounts/%s/policy_assignments", cloudAccountID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathSettingsCloudAccountPolicyAssignments, cloudAccountID)).Return(dIn, 200, nil)
 	policyAssignmentsOut, err := ds.ListAssignments(cloudAccountID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -127,7 +147,7 @@ func GetAssignmentMocked(t *testing.T, policyAssignmentIn *types.PolicyAssignmen
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID)).Return(dIn, 200, nil)
 	policyAssignmentOut, err := ds.GetAssignment(policyAssignmentIn.ID)
 
 	assert.Nil(err, "Error getting policy assignment")
@@ -152,7 +172,8 @@ func GetAssignmentFailErrMocked(t *testing.T, policyAssignmentIn *types.PolicyAs
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	policyAssignmentOut, err := ds.GetAssignment(policyAssignmentIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -178,7 +199,7 @@ func GetAssignmentFailStatusMocked(t *testing.T, policyAssignmentIn *types.Polic
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID)).Return(dIn, 499, nil)
 	policyAssignmentOut, err := ds.GetAssignment(policyAssignmentIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -203,7 +224,7 @@ func GetAssignmentFailJSONMocked(t *testing.T, policyAssignmentIn *types.PolicyA
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID)).Return(dIn, 200, nil)
 	policyAssignmentOut, err := ds.GetAssignment(policyAssignmentIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -233,7 +254,8 @@ func CreateAssignmentMocked(t *testing.T, policyAssignmentIn *types.PolicyAssign
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/policy/definitions/%s/assignments", policyAssignmentIn.DefinitionID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathPolicyDefinitionAssignments, policyAssignmentIn.DefinitionID), mapIn).
+		Return(dOut, 200, nil)
 	policyAssignmentOut, err := ds.CreateAssignment(policyAssignmentIn.DefinitionID, mapIn)
 
 	assert.Nil(err, "Error creating policy assignment")
@@ -262,7 +284,8 @@ func CreateAssignmentFailErrMocked(t *testing.T, policyAssignmentIn *types.Polic
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/policy/definitions/%s/assignments", policyAssignmentIn.DefinitionID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathPolicyDefinitionAssignments, policyAssignmentIn.DefinitionID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	policyAssignmentOut, err := ds.CreateAssignment(policyAssignmentIn.DefinitionID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -273,7 +296,10 @@ func CreateAssignmentFailErrMocked(t *testing.T, policyAssignmentIn *types.Polic
 }
 
 // CreateAssignmentFailStatusMocked test mocked function
-func CreateAssignmentFailStatusMocked(t *testing.T, policyAssignmentIn *types.PolicyAssignment) *types.PolicyAssignment {
+func CreateAssignmentFailStatusMocked(
+	t *testing.T,
+	policyAssignmentIn *types.PolicyAssignment,
+) *types.PolicyAssignment {
 
 	assert := assert.New(t)
 
@@ -292,7 +318,8 @@ func CreateAssignmentFailStatusMocked(t *testing.T, policyAssignmentIn *types.Po
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/policy/definitions/%s/assignments", policyAssignmentIn.DefinitionID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathPolicyDefinitionAssignments, policyAssignmentIn.DefinitionID), mapIn).
+		Return(dOut, 499, nil)
 	policyAssignmentOut, err := ds.CreateAssignment(policyAssignmentIn.DefinitionID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -321,7 +348,8 @@ func CreateAssignmentFailJSONMocked(t *testing.T, policyAssignmentIn *types.Poli
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/policy/definitions/%s/assignments", policyAssignmentIn.DefinitionID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathPolicyDefinitionAssignments, policyAssignmentIn.DefinitionID), mapIn).
+		Return(dIn, 200, nil)
 	policyAssignmentOut, err := ds.CreateAssignment(policyAssignmentIn.DefinitionID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -351,7 +379,7 @@ func UpdateAssignmentMocked(t *testing.T, policyAssignmentIn *types.PolicyAssign
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID), mapIn).Return(dIn, 200, nil)
 	policyAssignmentOut, err := ds.UpdateAssignment(policyAssignmentIn.ID, mapIn)
 
 	assert.Nil(err, "Error updating assignment")
@@ -380,7 +408,8 @@ func UpdateAssignmentFailErrMocked(t *testing.T, policyAssignmentIn *types.Polic
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID), mapIn).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID), mapIn).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	policyAssignmentOut, err := ds.UpdateAssignment(policyAssignmentIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -391,7 +420,10 @@ func UpdateAssignmentFailErrMocked(t *testing.T, policyAssignmentIn *types.Polic
 }
 
 // UpdateAssignmentFailStatusMocked test mocked function
-func UpdateAssignmentFailStatusMocked(t *testing.T, policyAssignmentIn *types.PolicyAssignment) *types.PolicyAssignment {
+func UpdateAssignmentFailStatusMocked(
+	t *testing.T,
+	policyAssignmentIn *types.PolicyAssignment,
+) *types.PolicyAssignment {
 
 	assert := assert.New(t)
 
@@ -410,7 +442,7 @@ func UpdateAssignmentFailStatusMocked(t *testing.T, policyAssignmentIn *types.Po
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID), mapIn).Return(dIn, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID), mapIn).Return(dIn, 499, nil)
 	policyAssignmentOut, err := ds.UpdateAssignment(policyAssignmentIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -439,7 +471,7 @@ func UpdateAssignmentFailJSONMocked(t *testing.T, policyAssignmentIn *types.Poli
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID), mapIn).Return(dIn, 200, nil)
 	policyAssignmentOut, err := ds.UpdateAssignment(policyAssignmentIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -465,7 +497,7 @@ func DeleteAssignmentMocked(t *testing.T, policyAssignmentIn *types.PolicyAssign
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID)).Return(dIn, 200, nil)
 	policyAssignmentOut, err := ds.DeleteAssignment(policyAssignmentIn.ID)
 
 	assert.Nil(err, "Error deleting policy assignment")
@@ -488,7 +520,8 @@ func DeleteAssignmentFailErrMocked(t *testing.T, policyAssignmentIn *types.Polic
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	policyAssignmentOut, err := ds.DeleteAssignment(policyAssignmentIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -512,7 +545,7 @@ func DeleteAssignmentFailStatusMocked(t *testing.T, policyAssignmentIn *types.Po
 	assert.Nil(err, "PolicyAssignment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID)).Return(dIn, 499, nil)
 	policyAssignmentOut, err := ds.DeleteAssignment(policyAssignmentIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -535,7 +568,7 @@ func DeleteAssignmentFailJSONMocked(t *testing.T, policyAssignmentIn *types.Poli
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/policy/assignments/%s", policyAssignmentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathPolicyAssignment, policyAssignmentIn.ID)).Return(dIn, 200, nil)
 	policyAssignmentOut, err := ds.DeleteAssignment(policyAssignmentIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

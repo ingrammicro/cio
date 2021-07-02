@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmdpolling
 
 import (
@@ -47,13 +49,13 @@ func cmdStart(c *cli.Context) error {
 	}
 
 	pollingPingTimingIntervalLong := c.Int64("longTime")
-	if !(pollingPingTimingIntervalLong > 0) {
+	if pollingPingTimingIntervalLong <= 0 {
 		pollingPingTimingIntervalLong = DefaultPollingPingTimingIntervalLong
 	}
 	log.Debug("Ping long time interval:", pollingPingTimingIntervalLong)
 
 	pollingPingTimingIntervalShort := c.Int64("shortTime")
-	if !(pollingPingTimingIntervalShort > 0) {
+	if pollingPingTimingIntervalShort <= 0 {
 		pollingPingTimingIntervalShort = DefaultPollingPingTimingIntervalShort
 	}
 	log.Debug("Ping short time interval:", pollingPingTimingIntervalShort)
@@ -132,7 +134,11 @@ func pingRoutine(ctx context.Context, c *cli.Context, longTimePeriod int64, shor
 }
 
 // Subsidiary routine for commands processing
-func processingCommandRoutine(pollingSvc *polling.PollingService, formatter format.Formatter, commandProcessed chan bool) {
+func processingCommandRoutine(
+	pollingSvc *polling.PollingService,
+	formatter format.Formatter,
+	commandProcessed chan bool,
+) {
 	log.Debug("processingCommandRoutine")
 
 	// 1. Request for the new command available

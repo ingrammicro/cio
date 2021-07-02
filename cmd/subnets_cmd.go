@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -40,7 +42,7 @@ func SubnetList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(subnets); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -57,7 +59,7 @@ func SubnetShow(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*subnet); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -82,7 +84,7 @@ func SubnetCreate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*subnet); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -104,7 +106,7 @@ func SubnetUpdate(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintItem(*subnet); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -134,7 +136,7 @@ func SubnetServerList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(servers); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -151,7 +153,7 @@ func SubnetServerArrayList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(serverArrays); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

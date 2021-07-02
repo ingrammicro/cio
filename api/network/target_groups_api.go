@@ -1,12 +1,21 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathNetworkLoadBalancerTargetGroups = "/network/load_balancers/%s/target_groups"
+const APIPathNetworkTargetGroup = "/network/target_groups/%s"
+const APIPathNetworkTargetGroupRetry = "/network/target_groups/%s/retry"
+const APIPathNetworkTargetGroupTargets = "/network/target_groups/%s/targets"
+const APIPathNetworkTargetGroupTarget = "/network/target_groups/%s/targets/%s/%s"
 
 // TargetGroupService manages target group operations
 type TargetGroupService struct {
@@ -28,7 +37,9 @@ func NewTargetGroupService(concertoService utils.ConcertoService) (*TargetGroupS
 func (tgs *TargetGroupService) ListTargetGroups(loadBalancerID string) (targetGroups []*types.TargetGroup, err error) {
 	log.Debug("ListTargetGroups")
 
-	data, status, err := tgs.concertoService.Get(fmt.Sprintf("/network/load_balancers/%s/target_groups", loadBalancerID))
+	data, status, err := tgs.concertoService.Get(
+		fmt.Sprintf(APIPathNetworkLoadBalancerTargetGroups, loadBalancerID),
+	)
 
 	if err != nil {
 		return nil, err
@@ -49,7 +60,7 @@ func (tgs *TargetGroupService) ListTargetGroups(loadBalancerID string) (targetGr
 func (tgs *TargetGroupService) GetTargetGroup(targetGroupID string) (targetGroup *types.TargetGroup, err error) {
 	log.Debug("GetTargetGroup")
 
-	data, status, err := tgs.concertoService.Get(fmt.Sprintf("/network/target_groups/%s", targetGroupID))
+	data, status, err := tgs.concertoService.Get(fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupID))
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +77,16 @@ func (tgs *TargetGroupService) GetTargetGroup(targetGroupID string) (targetGroup
 }
 
 // CreateTargetGroup creates a target group in a load balancer by its ID
-func (tgs *TargetGroupService) CreateTargetGroup(loadBalancerID string, targetGroupParams *map[string]interface{}) (targetGroup *types.TargetGroup, err error) {
+func (tgs *TargetGroupService) CreateTargetGroup(
+	loadBalancerID string,
+	targetGroupParams *map[string]interface{},
+) (targetGroup *types.TargetGroup, err error) {
 	log.Debug("CreateTargetGroup")
 
-	data, status, err := tgs.concertoService.Post(fmt.Sprintf("/network/load_balancers/%s/target_groups", loadBalancerID), targetGroupParams)
+	data, status, err := tgs.concertoService.Post(
+		fmt.Sprintf(APIPathNetworkLoadBalancerTargetGroups, loadBalancerID),
+		targetGroupParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +103,16 @@ func (tgs *TargetGroupService) CreateTargetGroup(loadBalancerID string, targetGr
 }
 
 // UpdateTargetGroup updates a target group by its ID
-func (tgs *TargetGroupService) UpdateTargetGroup(targetGroupID string, targetGroupParams *map[string]interface{}) (targetGroup *types.TargetGroup, err error) {
+func (tgs *TargetGroupService) UpdateTargetGroup(
+	targetGroupID string,
+	targetGroupParams *map[string]interface{},
+) (targetGroup *types.TargetGroup, err error) {
 	log.Debug("UpdateTargetGroup")
 
-	data, status, err := tgs.concertoService.Put(fmt.Sprintf("/network/target_groups/%s", targetGroupID), targetGroupParams)
+	data, status, err := tgs.concertoService.Put(
+		fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupID),
+		targetGroupParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +132,7 @@ func (tgs *TargetGroupService) UpdateTargetGroup(targetGroupID string, targetGro
 func (tgs *TargetGroupService) DeleteTargetGroup(targetGroupID string) (targetGroup *types.TargetGroup, err error) {
 	log.Debug("DeleteTargetGroup")
 
-	data, status, err := tgs.concertoService.Delete(fmt.Sprintf("/network/target_groups/%s", targetGroupID))
+	data, status, err := tgs.concertoService.Delete(fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupID))
 	if err != nil {
 		return nil, err
 	}
@@ -126,10 +149,16 @@ func (tgs *TargetGroupService) DeleteTargetGroup(targetGroupID string) (targetGr
 }
 
 // RetryTargetGroup retries a target group by its ID
-func (tgs *TargetGroupService) RetryTargetGroup(targetGroupID string, targetGroupParams *map[string]interface{}) (targetGroup *types.TargetGroup, err error) {
+func (tgs *TargetGroupService) RetryTargetGroup(
+	targetGroupID string,
+	targetGroupParams *map[string]interface{},
+) (targetGroup *types.TargetGroup, err error) {
 	log.Debug("RetryTargetGroup")
 
-	data, status, err := tgs.concertoService.Put(fmt.Sprintf("/network/target_groups/%s/retry", targetGroupID), targetGroupParams)
+	data, status, err := tgs.concertoService.Put(
+		fmt.Sprintf(APIPathNetworkTargetGroupRetry, targetGroupID),
+		targetGroupParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +178,7 @@ func (tgs *TargetGroupService) RetryTargetGroup(targetGroupID string, targetGrou
 func (tgs *TargetGroupService) ListTargets(targetGroupID string) (targets []*types.Target, err error) {
 	log.Debug("ListTargets")
 
-	data, status, err := tgs.concertoService.Get(fmt.Sprintf("/network/target_groups/%s/targets", targetGroupID))
+	data, status, err := tgs.concertoService.Get(fmt.Sprintf(APIPathNetworkTargetGroupTargets, targetGroupID))
 	if err != nil {
 		return nil, err
 	}
@@ -166,10 +195,16 @@ func (tgs *TargetGroupService) ListTargets(targetGroupID string) (targets []*typ
 }
 
 // CreateTarget creates a target in a target group by its ID
-func (tgs *TargetGroupService) CreateTarget(targetGroupID string, targetParams *map[string]interface{}) (target *types.Target, err error) {
+func (tgs *TargetGroupService) CreateTarget(
+	targetGroupID string,
+	targetParams *map[string]interface{},
+) (target *types.Target, err error) {
 	log.Debug("CreateTarget")
 
-	data, status, err := tgs.concertoService.Post(fmt.Sprintf("/network/target_groups/%s/targets", targetGroupID), targetParams)
+	data, status, err := tgs.concertoService.Post(
+		fmt.Sprintf(APIPathNetworkTargetGroupTargets, targetGroupID),
+		targetParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -186,10 +221,16 @@ func (tgs *TargetGroupService) CreateTarget(targetGroupID string, targetParams *
 }
 
 // DeleteTarget deletes a target in a target group by given IDs and resource type
-func (tgs *TargetGroupService) DeleteTarget(targetGroupID string, targetResourceType string, targetResourceID string) (err error) {
+func (tgs *TargetGroupService) DeleteTarget(
+	targetGroupID string,
+	targetResourceType string,
+	targetResourceID string,
+) (err error) {
 	log.Debug("DeleteTarget")
 
-	data, status, err := tgs.concertoService.Delete(fmt.Sprintf("/network/target_groups/%s/targets/%s/%s", targetGroupID, targetResourceType, targetResourceID))
+	data, status, err := tgs.concertoService.Delete(
+		fmt.Sprintf(APIPathNetworkTargetGroupTarget, targetGroupID, targetResourceType, targetResourceID),
+	)
 	if err != nil {
 		return err
 	}

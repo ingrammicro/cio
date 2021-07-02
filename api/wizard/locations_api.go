@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package wizard
 
 import (
@@ -8,6 +10,8 @@ import (
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathWizardLocations = "/wizard/locations"
 
 // LocationService manages location operations
 type LocationService struct {
@@ -29,7 +33,7 @@ func NewLocationService(concertoService utils.ConcertoService) (*LocationService
 func (ls *LocationService) ListLocations() (locations []*types.Location, err error) {
 	log.Debug("ListLocations")
 
-	data, status, err := ls.concertoService.Get("/wizard/locations")
+	data, status, err := ls.concertoService.Get(APIPathWizardLocations)
 	if err != nil {
 		return nil, err
 	}

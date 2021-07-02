@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package format
 
 import (
@@ -77,7 +79,11 @@ func TestPrintListTXT(t *testing.T) {
 	mockOut.Flush()
 
 	// TODO add more accurate parsing
-	assert.Regexp(fmt.Sprintf("^ID.*\n%s.*\n.*", serversOut[0].ID), b.String(), "Text output didn't match regular expression")
+	assert.Regexp(
+		fmt.Sprintf("^ID.*\n%s.*\n.*", serversOut[0].ID),
+		b.String(),
+		"Text output didn't match regular expression",
+	)
 }
 
 func TestPrintListTemplateTXT(t *testing.T) {
@@ -97,7 +103,11 @@ func TestPrintListTemplateTXT(t *testing.T) {
 	mockOut.Flush()
 
 	// TODO add more accurate parsing
-	assert.Regexp(fmt.Sprintf("^ID.*\n%s.*\n.*", templatesOut[0].ID), b.String(), "Text output didn't match regular expression")
+	assert.Regexp(
+		fmt.Sprintf("^ID.*\n%s.*\n.*", templatesOut[0].ID),
+		b.String(),
+		"Text output didn't match regular expression",
+	)
 }
 
 func TestPrintListTemplateScriptsTXT(t *testing.T) {
@@ -119,7 +129,11 @@ func TestPrintListTemplateScriptsTXT(t *testing.T) {
 		mockOut.Flush()
 
 		// TODO add more accurate parsing
-		assert.Regexp(fmt.Sprintf("^ID.*\n%s.*\n.*", tScriptsOut[0].ID), b.String(), "Text output didn't match regular expression")
+		assert.Regexp(
+			fmt.Sprintf("^ID.*\n%s.*\n.*", tScriptsOut[0].ID),
+			b.String(),
+			"Text output didn't match regular expression",
+		)
 
 	}
 }

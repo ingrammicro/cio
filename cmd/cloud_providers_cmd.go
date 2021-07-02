@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
@@ -38,7 +40,7 @@ func CloudProviderList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive cloudProvider data", err)
 	}
 	if err = formatter.PrintList(cloudProviders); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -63,7 +65,7 @@ func CloudProviderStoragePlansList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(storagePlans); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -85,7 +87,29 @@ func CloudProviderLoadBalancerPlansList(c *cli.Context) error {
 	}
 
 	if err = formatter.PrintList(loadBalancerPlans); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
+	}
+	return nil
+}
+
+// CloudProviderClusterPlansList subcommand function
+func CloudProviderClusterPlansList(c *cli.Context) error {
+	debugCmdFuncInfo(c)
+	cloudProvidersSvc, formatter := WireUpCloudProvider(c)
+
+	checkRequiredFlags(c, []string{"cloud-provider-id"}, formatter)
+	clusterPlans, err := cloudProvidersSvc.ListClusterPlans(c.String("cloud-provider-id"))
+	if err != nil {
+		formatter.PrintFatal("Couldn't receive cluster plans data", err)
+	}
+
+	cloudProvidersMap := LoadCloudProvidersMapping(c)
+	for id, sp := range clusterPlans {
+		clusterPlans[id].CloudProviderName = cloudProvidersMap[sp.CloudProviderID]
+	}
+
+	if err = formatter.PrintList(clusterPlans); err != nil {
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

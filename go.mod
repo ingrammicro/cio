@@ -1,18 +1,18 @@
 module github.com/ingrammicro/cio
 
-go 1.14
+go 1.16
 
 require (
-	github.com/allan-simon/go-singleinstance v0.0.0-20160830203053-79edcfdc2dfc
+	github.com/allan-simon/go-singleinstance v0.0.0-20210120080615-d0997106ab37
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	github.com/sirupsen/logrus v1.6.0
-	github.com/stretchr/objx v0.2.0 // indirect
-	github.com/stretchr/testify v1.6.1
-	github.com/urfave/cli v1.22.4
-	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
-	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/sirupsen/logrus v1.8.1
+	github.com/stretchr/objx v0.3.0 // indirect
+	github.com/stretchr/testify v1.7.0
+	github.com/urfave/cli v1.22.5
+	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

@@ -1,8 +1,11 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
 	"github.com/ingrammicro/cio/cloud/cloud_providers"
 	"github.com/ingrammicro/cio/cloud/generic_images"
+	"github.com/ingrammicro/cio/cloud/realms"
 	"github.com/ingrammicro/cio/cloud/server_arrays"
 	"github.com/ingrammicro/cio/cloud/server_plan"
 	"github.com/ingrammicro/cio/cloud/servers"
@@ -38,6 +41,11 @@ func SubCommands() []cli.Command {
 			Name:        "cloud-providers",
 			Usage:       "Provides information on cloud providers",
 			Subcommands: append(cloud_providers.SubCommands()),
+		},
+		{
+			Name:        "realms",
+			Usage:       "Provides information on realms",
+			Subcommands: append(realms.SubCommands()),
 		},
 		{
 			Name:        "server-plans",

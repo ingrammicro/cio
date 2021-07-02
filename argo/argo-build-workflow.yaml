@@ -34,6 +34,18 @@ spec:
       value: "false"
     - name: pull_request_base
       value: REPLACED
+    - name: git_url
+      value: git@github.com:ingrammicro/cio.git
+    - name: PLACEHOLDER_1
+      value: REPLACED
+    - name: PLACEHOLDER_2
+      value: REPLACED
+    - name: PLACEHOLDER_3
+      value: REPLACED
+    - name: PLACEHOLDER_4
+      value: REPLACED
+    - name: PLACEHOLDER_5
+      value: REPLACED
   volumes:
     - name: github-keypair
       secret:
@@ -51,7 +63,7 @@ spec:
       tasks:
       - name: dependencies
         templateRef:
-          name: workflow-template-common-template-1.0
+          name: workflow-template-common-template-1.2
           template: get-src
         arguments:
           parameters:
@@ -74,7 +86,7 @@ spec:
       - name: go-tests
         dependencies: [go-build]
         templateRef:
-          name: workflow-template-common-template-1.0
+          name: workflow-template-common-template-1.2
           template: go-tests
         arguments:
           parameters:
@@ -84,12 +96,14 @@ spec:
             value: "{{workflow.parameters.repo}}"
           - name: test_path
             value: .
+          - name: go-image
+            value: golang:1.16
         when: "{{workflow.parameters.skip_tests}} == false"
 
       - name: sonar-branch-analysis
         dependencies: [go-tests]
         templateRef:
-          name: workflow-template-sonar-template-1.0
+          name: workflow-template-sonar-template-1.1
           template: sonar-branch-analysis
         arguments:
           parameters:
@@ -110,7 +124,7 @@ spec:
       - name: sonar-pr-analysis
         dependencies: [go-tests]
         templateRef:
-          name: workflow-template-sonar-template-1.0
+          name: workflow-template-sonar-template-1.1
           template: sonar-pr-analysis
         arguments:
           parameters:
@@ -137,7 +151,7 @@ spec:
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.14.4
+        value: golang:1.16
       - name: notifiable_commits
       - name: source_mountpath
         value: /usr/src

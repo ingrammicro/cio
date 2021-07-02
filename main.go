@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package main
 
 import (
@@ -17,6 +19,7 @@ import (
 	"github.com/ingrammicro/cio/converge"
 	"github.com/ingrammicro/cio/dispatcher"
 	"github.com/ingrammicro/cio/firewall"
+	"github.com/ingrammicro/cio/kubernetes"
 	"github.com/ingrammicro/cio/labels"
 	"github.com/ingrammicro/cio/network"
 	"github.com/ingrammicro/cio/settings"
@@ -69,9 +72,10 @@ var clientCommands = []cli.Command{
 		Subcommands: append(blueprint.SubCommands()),
 	},
 	{
-		Name:        "brownfield",
-		ShortName:   "bf",
-		Usage:       "Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs and volumes from different cloud accounts into the system.",
+		Name:      "brownfield",
+		ShortName: "bf",
+		Usage: "Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs, " +
+			"volumes and policies from different cloud accounts into the system.",
 		Subcommands: append(clientbrownfield.SubCommands()),
 	},
 	{
@@ -81,9 +85,10 @@ var clientCommands = []cli.Command{
 		Subcommands: append(cloudapplications.SubCommands()),
 	},
 	{
-		Name:        "cloud",
-		ShortName:   "clo",
-		Usage:       "Manages cloud related commands for server arrays, servers, generic images, ssh profiles, cloud providers server plans and infrastructure archives",
+		Name:      "cloud",
+		ShortName: "clo",
+		Usage: "Manages cloud related commands for server arrays, servers, generic images, ssh profiles, " +
+			"cloud providers, realms, server plans and infrastructure archives",
 		Subcommands: append(cloud.SubCommands()),
 	},
 	{
@@ -115,6 +120,12 @@ var clientCommands = []cli.Command{
 		ShortName:   "st",
 		Usage:       "Manages storage commands for plans and volumes",
 		Subcommands: append(storage.SubCommands()),
+	},
+	{
+		Name:        "kubernetes",
+		ShortName:   "k8s",
+		Usage:       "Manages kubernetes commands for clusters and node pools",
+		Subcommands: append(kubernetes.SubCommands()),
 	},
 	{
 		Name:        "settings",
@@ -246,7 +257,9 @@ func prepareFlags(c *cli.Context) error {
 		c.App.Commands = clientCommands
 
 		// Excluding Server/Agent contextual flags
-		c.App.Flags = excludeFlags(c.App.VisibleFlags(), []string{"concerto-brownfield-token", "concerto-command-polling-token", "concerto-server-id"})
+		c.App.Flags = excludeFlags(c.App.VisibleFlags(), []string{
+			"concerto-brownfield-token", "concerto-command-polling-token", "concerto-server-id",
+		})
 	}
 
 	sort.Sort(cli.CommandsByName(c.App.Commands))

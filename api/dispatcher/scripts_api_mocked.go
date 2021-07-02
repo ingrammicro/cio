@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package dispatcher
 
 import (
@@ -11,7 +13,11 @@ import (
 )
 
 // GetDispatcherScriptCharacterizationsByTypeMocked test mocked function
-func GetDispatcherScriptCharacterizationsByTypeMocked(t *testing.T, phase string, scIn []*types.ScriptCharacterization) []*types.ScriptCharacterization {
+func GetDispatcherScriptCharacterizationsByTypeMocked(
+	t *testing.T,
+	phase string,
+	scIn []*types.ScriptCharacterization,
+) []*types.ScriptCharacterization {
 
 	assert := assert.New(t)
 
@@ -26,7 +32,7 @@ func GetDispatcherScriptCharacterizationsByTypeMocked(t *testing.T, phase string
 	assert.Nil(err, "Dispatcher test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/script_characterizations?type=%s", phase)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintScriptCharacterizationsByType, phase)).Return(dIn, 200, nil)
 	scOut, err := ds.GetDispatcherScriptCharacterizationsByType(phase)
 	assert.Nil(err, "Error getting dispatcher")
 	assert.Equal(scIn, scOut, "GetDispatcherScriptCharacterizationsByType returned different services")
@@ -35,7 +41,11 @@ func GetDispatcherScriptCharacterizationsByTypeMocked(t *testing.T, phase string
 }
 
 // GetDispatcherScriptCharacterizationsByTypeFailErrMocked test mocked function
-func GetDispatcherScriptCharacterizationsByTypeFailErrMocked(t *testing.T, phase string, scIn []*types.ScriptCharacterization) []*types.ScriptCharacterization {
+func GetDispatcherScriptCharacterizationsByTypeFailErrMocked(
+	t *testing.T,
+	phase string,
+	scIn []*types.ScriptCharacterization,
+) []*types.ScriptCharacterization {
 
 	assert := assert.New(t)
 
@@ -50,7 +60,8 @@ func GetDispatcherScriptCharacterizationsByTypeFailErrMocked(t *testing.T, phase
 	assert.Nil(err, "Dispatcher test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/script_characterizations?type=%s", phase)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintScriptCharacterizationsByType, phase)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	scOut, err := ds.GetDispatcherScriptCharacterizationsByType(phase)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -61,7 +72,11 @@ func GetDispatcherScriptCharacterizationsByTypeFailErrMocked(t *testing.T, phase
 }
 
 // GetDispatcherScriptCharacterizationsByTypeFailStatusMocked test mocked function
-func GetDispatcherScriptCharacterizationsByTypeFailStatusMocked(t *testing.T, phase string, scIn []*types.ScriptCharacterization) []*types.ScriptCharacterization {
+func GetDispatcherScriptCharacterizationsByTypeFailStatusMocked(
+	t *testing.T,
+	phase string,
+	scIn []*types.ScriptCharacterization,
+) []*types.ScriptCharacterization {
 
 	assert := assert.New(t)
 
@@ -76,7 +91,7 @@ func GetDispatcherScriptCharacterizationsByTypeFailStatusMocked(t *testing.T, ph
 	assert.Nil(err, "Dispatcher test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/script_characterizations?type=%s", phase)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintScriptCharacterizationsByType, phase)).Return(dIn, 499, nil)
 	scOut, err := ds.GetDispatcherScriptCharacterizationsByType(phase)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -87,7 +102,11 @@ func GetDispatcherScriptCharacterizationsByTypeFailStatusMocked(t *testing.T, ph
 }
 
 // GetDispatcherScriptCharacterizationsByTypeFailJSONMocked test mocked function
-func GetDispatcherScriptCharacterizationsByTypeFailJSONMocked(t *testing.T, phase string, scIn []*types.ScriptCharacterization) []*types.ScriptCharacterization {
+func GetDispatcherScriptCharacterizationsByTypeFailJSONMocked(
+	t *testing.T,
+	phase string,
+	scIn []*types.ScriptCharacterization,
+) []*types.ScriptCharacterization {
 
 	assert := assert.New(t)
 
@@ -101,7 +120,7 @@ func GetDispatcherScriptCharacterizationsByTypeFailJSONMocked(t *testing.T, phas
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/script_characterizations?type=%s", phase)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintScriptCharacterizationsByType, phase)).Return(dIn, 200, nil)
 	scOut, err := ds.GetDispatcherScriptCharacterizationsByType(phase)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -112,7 +131,11 @@ func GetDispatcherScriptCharacterizationsByTypeFailJSONMocked(t *testing.T, phas
 }
 
 // GetDispatcherScriptCharacterizationByUUIDMocked test mocked function
-func GetDispatcherScriptCharacterizationByUUIDMocked(t *testing.T, scriptCharacterizationUUID string, scIn *types.ScriptCharacterization) *types.ScriptCharacterization {
+func GetDispatcherScriptCharacterizationByUUIDMocked(
+	t *testing.T,
+	scriptCharacterizationUUID string,
+	scIn *types.ScriptCharacterization,
+) *types.ScriptCharacterization {
 
 	assert := assert.New(t)
 
@@ -127,7 +150,8 @@ func GetDispatcherScriptCharacterizationByUUIDMocked(t *testing.T, scriptCharact
 	assert.Nil(err, "Dispatcher test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/script_characterizations/%s", scriptCharacterizationUUID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintScriptCharacterization, scriptCharacterizationUUID)).
+		Return(dIn, 200, nil)
 	scOut, err := ds.GetDispatcherScriptCharacterizationByUUID(scriptCharacterizationUUID)
 	assert.Nil(err, "Error getting dispatcher")
 	assert.Equal(scIn, scOut, "GetDispatcherScriptCharacterizationByUUID returned different services")
@@ -136,7 +160,11 @@ func GetDispatcherScriptCharacterizationByUUIDMocked(t *testing.T, scriptCharact
 }
 
 // GetDispatcherScriptCharacterizationByUUIDFailErrMocked test mocked function
-func GetDispatcherScriptCharacterizationByUUIDFailErrMocked(t *testing.T, scriptCharacterizationUUID string, scIn *types.ScriptCharacterization) *types.ScriptCharacterization {
+func GetDispatcherScriptCharacterizationByUUIDFailErrMocked(
+	t *testing.T,
+	scriptCharacterizationUUID string,
+	scIn *types.ScriptCharacterization,
+) *types.ScriptCharacterization {
 
 	assert := assert.New(t)
 
@@ -151,7 +179,8 @@ func GetDispatcherScriptCharacterizationByUUIDFailErrMocked(t *testing.T, script
 	assert.Nil(err, "Dispatcher test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/script_characterizations/%s", scriptCharacterizationUUID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintScriptCharacterization, scriptCharacterizationUUID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	scOut, err := ds.GetDispatcherScriptCharacterizationByUUID(scriptCharacterizationUUID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -162,7 +191,11 @@ func GetDispatcherScriptCharacterizationByUUIDFailErrMocked(t *testing.T, script
 }
 
 // GetDispatcherScriptCharacterizationByUUIDFailStatusMocked test mocked function
-func GetDispatcherScriptCharacterizationByUUIDFailStatusMocked(t *testing.T, scriptCharacterizationUUID string, scIn *types.ScriptCharacterization) *types.ScriptCharacterization {
+func GetDispatcherScriptCharacterizationByUUIDFailStatusMocked(
+	t *testing.T,
+	scriptCharacterizationUUID string,
+	scIn *types.ScriptCharacterization,
+) *types.ScriptCharacterization {
 
 	assert := assert.New(t)
 
@@ -177,7 +210,8 @@ func GetDispatcherScriptCharacterizationByUUIDFailStatusMocked(t *testing.T, scr
 	assert.Nil(err, "Dispatcher test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/script_characterizations/%s", scriptCharacterizationUUID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintScriptCharacterization, scriptCharacterizationUUID)).
+		Return(dIn, 499, nil)
 	scOut, err := ds.GetDispatcherScriptCharacterizationByUUID(scriptCharacterizationUUID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -188,7 +222,11 @@ func GetDispatcherScriptCharacterizationByUUIDFailStatusMocked(t *testing.T, scr
 }
 
 // GetDispatcherScriptCharacterizationByUUIDFailJSONMocked test mocked function
-func GetDispatcherScriptCharacterizationByUUIDFailJSONMocked(t *testing.T, scriptCharacterizationUUID string, scIn *types.ScriptCharacterization) *types.ScriptCharacterization {
+func GetDispatcherScriptCharacterizationByUUIDFailJSONMocked(
+	t *testing.T,
+	scriptCharacterizationUUID string,
+	scIn *types.ScriptCharacterization,
+) *types.ScriptCharacterization {
 
 	assert := assert.New(t)
 
@@ -202,7 +240,8 @@ func GetDispatcherScriptCharacterizationByUUIDFailJSONMocked(t *testing.T, scrip
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/blueprint/script_characterizations/%s", scriptCharacterizationUUID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathBlueprintScriptCharacterization, scriptCharacterizationUUID)).
+		Return(dIn, 200, nil)
 	scOut, err := ds.GetDispatcherScriptCharacterizationByUUID(scriptCharacterizationUUID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -232,7 +271,7 @@ func ReportScriptConclusionsMocked(t *testing.T, scIn *types.ScriptConclusion) *
 	assert.Nil(err, "Dispatcher test data corrupted")
 
 	// call service
-	cs.On("Post", "/blueprint/script_conclusions", mapIn).Return(dOut, 200, nil)
+	cs.On("Post", APIPathBlueprintScriptConclusions, mapIn).Return(dOut, 200, nil)
 	scOut, _, err := ds.ReportScriptConclusions(mapIn)
 	assert.Nil(err, "Error processing dispatcher")
 	assert.Equal(scIn, scOut, "ReportScriptConclusions returned different dispatcher")
@@ -260,7 +299,7 @@ func ReportScriptConclusionsFailErrMocked(t *testing.T, cbIn *types.ScriptConclu
 	assert.Nil(err, "Dispatcher test data corrupted")
 
 	// call service
-	cs.On("Post", "/blueprint/script_conclusions", mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", APIPathBlueprintScriptConclusions, mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	scOut, _, err := ds.ReportScriptConclusions(mapIn)
 	assert.NotNil(err, "We are expecting an error")
 	assert.Nil(scOut, "Expecting nil output")
@@ -289,7 +328,7 @@ func ReportScriptConclusionsFailStatusMocked(t *testing.T, cbIn *types.ScriptCon
 	assert.Nil(err, "Dispatcher test data corrupted")
 
 	// call service
-	cs.On("Post", "/blueprint/script_conclusions", mapIn).Return(dOut, 499, nil)
+	cs.On("Post", APIPathBlueprintScriptConclusions, mapIn).Return(dOut, 499, nil)
 	scOut, _, err := ds.ReportScriptConclusions(mapIn)
 	assert.NotNil(err, "We are expecting an status code error")
 	assert.Nil(scOut, "Expecting nil output")
@@ -317,7 +356,7 @@ func ReportScriptConclusionsFailJSONMocked(t *testing.T, cbIn *types.ScriptConcl
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", "/blueprint/script_conclusions", mapIn).Return(dIn, 201, nil)
+	cs.On("Post", APIPathBlueprintScriptConclusions, mapIn).Return(dIn, 201, nil)
 	scOut, _, err := ds.ReportScriptConclusions(mapIn)
 	assert.NotNil(err, "We are expecting a marshalling error")
 	assert.Nil(scOut, "Expecting nil output")

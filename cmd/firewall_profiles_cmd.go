@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/network"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -52,13 +55,13 @@ func FirewallProfileList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		fw, ok := labelable.(*types.FirewallProfile)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.FirewallProfile, got a %T", labelable))
 		}
 		firewallProfiles[i] = fw
 	}
 	if err = formatter.PrintList(firewallProfiles); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -76,7 +79,7 @@ func FirewallProfileShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	firewallProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*firewallProfile); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -114,7 +117,7 @@ func FirewallProfileCreate(c *cli.Context) error {
 
 	firewallProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*firewallProfile); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -149,7 +152,7 @@ func FirewallProfileUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	firewallProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*firewallProfile); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

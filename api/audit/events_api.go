@@ -1,12 +1,18 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package audit
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathAuditEvents = "/audit/events"
+const APIPathAuditSystemEvents = "/audit/system_events"
 
 // EventService manages event operations
 type EventService struct {
@@ -28,7 +34,7 @@ func NewEventService(concertoService utils.ConcertoService) (*EventService, erro
 func (es *EventService) ListEvents() (events []*types.Event, err error) {
 	log.Debug("ListEvents")
 
-	data, status, err := es.concertoService.Get("/audit/events")
+	data, status, err := es.concertoService.Get(APIPathAuditEvents)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +54,7 @@ func (es *EventService) ListEvents() (events []*types.Event, err error) {
 func (es *EventService) ListSysEvents() (events []*types.Event, err error) {
 	log.Debug("ListSysEvents")
 
-	data, status, err := es.concertoService.Get("/audit/system_events")
+	data, status, err := es.concertoService.Get(APIPathAuditSystemEvents)
 	if err != nil {
 		return nil, err
 	}

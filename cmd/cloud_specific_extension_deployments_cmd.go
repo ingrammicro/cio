@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/cloudspecificextension"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -10,7 +13,9 @@ import (
 )
 
 // WireUpCloudSpecificExtensionDeployment prepares common resources to send request to Concerto API
-func WireUpCloudSpecificExtensionDeployment(c *cli.Context) (ds *cloudspecificextension.CloudSpecificExtensionDeploymentService, f format.Formatter) {
+func WireUpCloudSpecificExtensionDeployment(
+	c *cli.Context,
+) (ds *cloudspecificextension.CloudSpecificExtensionDeploymentService, f format.Formatter) {
 
 	f = format.GetFormatter()
 
@@ -52,13 +57,13 @@ func CloudSpecificExtensionDeploymentList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.CloudSpecificExtensionDeployment)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.CloudSpecificExtensionDeployment, got a %T", labelable))
 		}
 		cseds[i] = v
 	}
 	if err = formatter.PrintList(cseds); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -76,7 +81,7 @@ func CloudSpecificExtensionDeploymentShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	csed.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*csed); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -88,7 +93,9 @@ func CloudSpecificExtensionDeploymentCreate(c *cli.Context) error {
 
 	checkRequiredFlags(c, []string{"id", "name", "cloud-account-id", "realm-id"}, formatter)
 	if c.IsSet("parameters") && c.IsSet("parameters-from-file") {
-		return fmt.Errorf("invalid parameters detected. Please provide only one: 'parameters' or 'parameters-from-file'")
+		return fmt.Errorf(
+			"invalid parameters detected. Please provide only one: 'parameters' or 'parameters-from-file'",
+		)
 	}
 
 	cseDeploymentIn := map[string]interface{}{
@@ -124,7 +131,7 @@ func CloudSpecificExtensionDeploymentCreate(c *cli.Context) error {
 
 	cseDeployment.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cseDeployment); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -147,7 +154,7 @@ func CloudSpecificExtensionDeploymentUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	cseDeployment.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cseDeployment); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -166,7 +173,7 @@ func CloudSpecificExtensionDeploymentDelete(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	cseDeployment.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cseDeployment); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 
 	return nil

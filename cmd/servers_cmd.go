@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/cloud"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -52,13 +55,13 @@ func ServerList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		s, ok := labelable.(*types.Server)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.Server, got a %T", labelable))
 		}
 		servers[i] = s
 	}
 	if err = formatter.PrintList(servers); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -77,7 +80,7 @@ func ServerShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -87,7 +90,11 @@ func ServerCreate(c *cli.Context) error {
 	debugCmdFuncInfo(c)
 	serverSvc, formatter := WireUpServer(c)
 
-	checkRequiredFlags(c, []string{"name", "ssh-profile-id", "firewall-profile-id", "template-id", "server-plan-id", "cloud-account-id"}, formatter)
+	checkRequiredFlags(
+		c,
+		[]string{"name", "ssh-profile-id", "firewall-profile-id", "template-id", "server-plan-id", "cloud-account-id"},
+		formatter,
+	)
 	serverIn := map[string]interface{}{
 		"name":                c.String("name"),
 		"ssh_profile_id":      c.String("ssh-profile-id"),
@@ -110,7 +117,7 @@ func ServerCreate(c *cli.Context) error {
 
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -129,7 +136,7 @@ func ServerUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -148,7 +155,7 @@ func ServerBoot(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -167,7 +174,7 @@ func ServerReboot(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -186,7 +193,7 @@ func ServerShutdown(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -205,7 +212,7 @@ func ServerOverride(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -246,13 +253,13 @@ func ServerFloatingIPList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		fIP, ok := labelable.(*types.FloatingIP)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.FloatingIP, got a %T", labelable))
 		}
 		floatingIPs[i] = fIP
 	}
 	if err = formatter.PrintList(floatingIPs); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -280,13 +287,13 @@ func ServerVolumesList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.Volume)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.Volume, got a %T", labelable))
 		}
 		volumes[i] = v
 	}
 	if err = formatter.PrintList(volumes); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -304,7 +311,7 @@ func EventsList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive event data", err)
 	}
 	if err = formatter.PrintList(events); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -322,7 +329,7 @@ func OperationalScriptsList(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't receive script data", err)
 	}
 	if err = formatter.PrintList(scripts); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -339,7 +346,7 @@ func OperationalScriptExecute(c *cli.Context) error {
 		formatter.PrintFatal("Couldn't execute operational script", err)
 	}
 	if err = formatter.PrintItem(*scriptOut); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

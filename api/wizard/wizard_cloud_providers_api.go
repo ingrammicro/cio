@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package wizard
 
 import (
@@ -8,6 +10,8 @@ import (
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathWizardCloudProvidersByAppLocation = "/wizard/cloud_providers?app_id=%s&location_id=%s"
 
 // WizardCloudProviderService manages wizard cloud provider operations
 type WizardCloudProviderService struct {
@@ -26,10 +30,15 @@ func NewWizardCloudProviderService(concertoService utils.ConcertoService) (*Wiza
 }
 
 // ListWizardCloudProviders returns the list of cloud providers as an array of CloudProvider
-func (wcps *WizardCloudProviderService) ListWizardCloudProviders(appID string, locationID string) (cloudProviders []*types.CloudProvider, err error) {
+func (wcps *WizardCloudProviderService) ListWizardCloudProviders(
+	appID string,
+	locationID string,
+) (cloudProviders []*types.CloudProvider, err error) {
 	log.Debug("ListWizardCloudProviders")
 
-	data, status, err := wcps.concertoService.Get(fmt.Sprintf("/wizard/cloud_providers?app_id=%s&location_id=%s", appID, locationID))
+	data, status, err := wcps.concertoService.Get(
+		fmt.Sprintf(APIPathWizardCloudProvidersByAppLocation, appID, locationID),
+	)
 	if err != nil {
 		return nil, err
 	}

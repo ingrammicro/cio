@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package testdata
 
 import "github.com/ingrammicro/cio/api/types"
@@ -27,20 +29,29 @@ func GetLoadBalancerPlanData() []*types.LoadBalancerPlan {
 
 	return []*types.LoadBalancerPlan{
 		{
-			ID:                                   "fakeID0",
-			Name:                                 "fakeName0",
-			CloudProviderID:                      "fakeCloudProviderID0",
-			CloudProviderName:                    "fakeCloudProviderName0",
-			RealmID:                              "fakeRealmID0",
-			RealmProviderName:                    "fakeRealmProviderName0",
-			FlavourProviderName:                  "fakeFlavourProviderName0",
-			Protocols:                            []string{"fakeProtocol00", "fakeProtocol01"},
-			HealthCheckProtocols:                 []string{"fakeHealthCheckProtocol00", "fakeHealthCheckProtocol01"},
-			RuleFields:                           []string{"fakeRuleField00", "fakeRuleField01"},
-			HealthCheckIntervalValidValues:       map[string]interface{}{"fakeHealthCheckIntervalValidValue00": "x", "fakeHealthCheckIntervalValidValue01": "y"},
-			HealthCheckTimeoutValidValues:        map[string]interface{}{"fakeHealthCheckTimeoutValidValue00": "x", "fakeHealthCheckTimeoutValidValue01": "y"},
-			HealthCheckThresholdCountValidValues: map[string]interface{}{"fakeHealthCheckThresholdCountValidValue00": "x", "fakeHealthCheckThresholdCountValidValue01": "y"},
-			Deprecated:                           false,
+			ID:                   "fakeID0",
+			Name:                 "fakeName0",
+			CloudProviderID:      "fakeCloudProviderID0",
+			CloudProviderName:    "fakeCloudProviderName0",
+			RealmID:              "fakeRealmID0",
+			RealmProviderName:    "fakeRealmProviderName0",
+			FlavourProviderName:  "fakeFlavourProviderName0",
+			Protocols:            []string{"fakeProtocol00", "fakeProtocol01"},
+			HealthCheckProtocols: []string{"fakeHealthCheckProtocol00", "fakeHealthCheckProtocol01"},
+			RuleFields:           []string{"fakeRuleField00", "fakeRuleField01"},
+			HealthCheckIntervalValidValues: map[string]interface{}{
+				"fakeHealthCheckIntervalValidValue00": "x",
+				"fakeHealthCheckIntervalValidValue01": "y",
+			},
+			HealthCheckTimeoutValidValues: map[string]interface{}{
+				"fakeHealthCheckTimeoutValidValue00": "x",
+				"fakeHealthCheckTimeoutValidValue01": "y",
+			},
+			HealthCheckThresholdCountValidValues: map[string]interface{}{
+				"fakeHealthCheckThresholdCountValidValue00": "x",
+				"fakeHealthCheckThresholdCountValidValue01": "y",
+			},
+			Deprecated: false,
 		},
 	}
 }

@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package firewall_profiles
 
 import (
@@ -44,8 +46,10 @@ func SubCommands() []cli.Command {
 					Usage: "Description of the firewall profile",
 				},
 				cli.StringFlag{
-					Name:  "rules",
-					Usage: "Set of rules of the firewall profile, i.e: --rules TCP/8080-8081:0.0.0.0/0,TCP/9090-9091:any,UDP/3456:1.2.3.4\n\tRule format: [PROTOCOL/MIN_PORT[-MAX_PORT]:CIDR_IP]",
+					Name: "rules",
+					Usage: "Set of rules of the firewall profile, " +
+						"i.e: --rules TCP/8080-8081:0.0.0.0/0,TCP/9090-9091:any,UDP/3456:1.2.3.4\n\t" +
+						"Rule format: [PROTOCOL/MIN_PORT[-MAX_PORT]:CIDR_IP]",
 				},
 				cli.StringFlag{
 					Name:  "labels",
@@ -71,8 +75,10 @@ func SubCommands() []cli.Command {
 					Usage: "Description of the firewall profile",
 				},
 				cli.StringFlag{
-					Name:  "rules",
-					Usage: "Set of rules of the firewall profile, i.e: --rules TCP/8080-8081:0.0.0.0/0,TCP/9090-9091:any,UDP/3456:1.2.3.4\n\tRule format: [PROTOCOL/MIN_PORT[-MAX_PORT]:CIDR_IP]",
+					Name: "rules",
+					Usage: "Set of rules of the firewall profile, " +
+						"i.e: --rules TCP/8080-8081:0.0.0.0/0,TCP/9090-9091:any,UDP/3456:1.2.3.4\n\t" +
+						"Rule format: [PROTOCOL/MIN_PORT[-MAX_PORT]:CIDR_IP]",
 				},
 			},
 		},

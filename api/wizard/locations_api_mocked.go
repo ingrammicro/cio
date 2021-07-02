@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package wizard
 
 import (
@@ -28,7 +30,7 @@ func ListLocationsMocked(t *testing.T, locationsIn []*types.Location) []*types.L
 	assert.Nil(err, "Location test data corrupted")
 
 	// call service
-	cs.On("Get", "/wizard/locations").Return(dIn, 200, nil)
+	cs.On("Get", APIPathWizardLocations).Return(dIn, 200, nil)
 	locationsOut, err := ds.ListLocations()
 	assert.Nil(err, "Error getting location list")
 	assert.Equal(locationsIn, locationsOut, "ListLocations returned different locations")
@@ -52,7 +54,7 @@ func ListLocationsFailErrMocked(t *testing.T, locationsIn []*types.Location) []*
 	assert.Nil(err, "Location test data corrupted")
 
 	// call service
-	cs.On("Get", "/wizard/locations").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathWizardLocations).Return(dIn, 200, fmt.Errorf("mocked error"))
 	locationsOut, err := ds.ListLocations()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -78,7 +80,7 @@ func ListLocationsFailStatusMocked(t *testing.T, locationsIn []*types.Location) 
 	assert.Nil(err, "Location test data corrupted")
 
 	// call service
-	cs.On("Get", "/wizard/locations").Return(dIn, 499, nil)
+	cs.On("Get", APIPathWizardLocations).Return(dIn, 499, nil)
 	locationsOut, err := ds.ListLocations()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -103,7 +105,7 @@ func ListLocationsFailJSONMocked(t *testing.T, locationsIn []*types.Location) []
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/wizard/locations").Return(dIn, 200, nil)
+	cs.On("Get", APIPathWizardLocations).Return(dIn, 200, nil)
 	locationsOut, err := ds.ListLocations()
 
 	assert.NotNil(err, "We are expecting a marshalling error")

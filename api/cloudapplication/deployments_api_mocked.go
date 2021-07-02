@@ -1,16 +1,22 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloudapplication
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListDeploymentsMocked test mocked function
-func ListDeploymentsMocked(t *testing.T, cloudApplicationDeploymentsIn []*types.CloudApplicationDeployment) []*types.CloudApplicationDeployment {
+func ListDeploymentsMocked(
+	t *testing.T,
+	cloudApplicationDeploymentsIn []*types.CloudApplicationDeployment,
+) []*types.CloudApplicationDeployment {
 
 	assert := assert.New(t)
 
@@ -25,17 +31,24 @@ func ListDeploymentsMocked(t *testing.T, cloudApplicationDeploymentsIn []*types.
 	assert.Nil(err, "CloudApplicationDeployments test data corrupted")
 
 	// call service
-	cs.On("Get", "/labels").Return(dIn, 200, nil)
+	cs.On("Get", APIPathDeploymentLabels).Return(dIn, 200, nil)
 	cloudApplicationDeploymentsOut, err := ds.ListDeployments()
 
 	assert.Nil(err, "Error getting cloud application deployments")
-	assert.Equal(cloudApplicationDeploymentsIn, cloudApplicationDeploymentsOut, "ListDeployments returned different cloud application deployments")
+	assert.Equal(
+		cloudApplicationDeploymentsIn,
+		cloudApplicationDeploymentsOut,
+		"ListDeployments returned different cloud application deployments",
+	)
 
 	return cloudApplicationDeploymentsOut
 }
 
 // ListDeploymentsFailErrMocked test mocked function
-func ListDeploymentsFailErrMocked(t *testing.T, cloudApplicationDeploymentsIn []*types.CloudApplicationDeployment) []*types.CloudApplicationDeployment {
+func ListDeploymentsFailErrMocked(
+	t *testing.T,
+	cloudApplicationDeploymentsIn []*types.CloudApplicationDeployment,
+) []*types.CloudApplicationDeployment {
 
 	assert := assert.New(t)
 
@@ -50,7 +63,7 @@ func ListDeploymentsFailErrMocked(t *testing.T, cloudApplicationDeploymentsIn []
 	assert.Nil(err, "CloudApplicationDeployments test data corrupted")
 
 	// call service
-	cs.On("Get", "/labels").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathDeploymentLabels).Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudApplicationDeploymentsOut, err := ds.ListDeployments()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -61,7 +74,10 @@ func ListDeploymentsFailErrMocked(t *testing.T, cloudApplicationDeploymentsIn []
 }
 
 // ListDeploymentsFailStatusMocked test mocked function
-func ListDeploymentsFailStatusMocked(t *testing.T, cloudApplicationDeploymentsIn []*types.CloudApplicationDeployment) []*types.CloudApplicationDeployment {
+func ListDeploymentsFailStatusMocked(
+	t *testing.T,
+	cloudApplicationDeploymentsIn []*types.CloudApplicationDeployment,
+) []*types.CloudApplicationDeployment {
 
 	assert := assert.New(t)
 
@@ -76,7 +92,7 @@ func ListDeploymentsFailStatusMocked(t *testing.T, cloudApplicationDeploymentsIn
 	assert.Nil(err, "CloudApplicationDeployments test data corrupted")
 
 	// call service
-	cs.On("Get", "/labels").Return(dIn, 499, nil)
+	cs.On("Get", APIPathDeploymentLabels).Return(dIn, 499, nil)
 	cloudApplicationDeploymentsOut, err := ds.ListDeployments()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -87,7 +103,10 @@ func ListDeploymentsFailStatusMocked(t *testing.T, cloudApplicationDeploymentsIn
 }
 
 // ListDeploymentsFailJSONMocked test mocked function
-func ListDeploymentsFailJSONMocked(t *testing.T, cloudApplicationDeploymentsIn []*types.CloudApplicationDeployment) []*types.CloudApplicationDeployment {
+func ListDeploymentsFailJSONMocked(
+	t *testing.T,
+	cloudApplicationDeploymentsIn []*types.CloudApplicationDeployment,
+) []*types.CloudApplicationDeployment {
 
 	assert := assert.New(t)
 
@@ -101,7 +120,7 @@ func ListDeploymentsFailJSONMocked(t *testing.T, cloudApplicationDeploymentsIn [
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/labels").Return(dIn, 200, nil)
+	cs.On("Get", APIPathDeploymentLabels).Return(dIn, 200, nil)
 	cloudApplicationDeploymentsOut, err := ds.ListDeployments()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -112,7 +131,10 @@ func ListDeploymentsFailJSONMocked(t *testing.T, cloudApplicationDeploymentsIn [
 }
 
 // GetDeploymentMocked test mocked function
-func GetDeploymentMocked(t *testing.T, cloudApplicationDeploymentIn *types.CloudApplicationDeployment) *types.CloudApplicationDeployment {
+func GetDeploymentMocked(
+	t *testing.T,
+	cloudApplicationDeploymentIn *types.CloudApplicationDeployment,
+) *types.CloudApplicationDeployment {
 
 	assert := assert.New(t)
 
@@ -127,17 +149,24 @@ func GetDeploymentMocked(t *testing.T, cloudApplicationDeploymentIn *types.Cloud
 	assert.Nil(err, "CloudApplicationDeployment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/deployments/%s", cloudApplicationDeploymentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaDeployment, cloudApplicationDeploymentIn.ID)).Return(dIn, 200, nil)
 	cloudApplicationDeploymentOut, _, err := ds.GetDeployment(cloudApplicationDeploymentIn.ID)
 
 	assert.Nil(err, "Error getting cloud application deployment")
-	assert.Equal(*cloudApplicationDeploymentIn, *cloudApplicationDeploymentOut, "GetDeployment returned different cloud application deployment")
+	assert.Equal(
+		*cloudApplicationDeploymentIn,
+		*cloudApplicationDeploymentOut,
+		"GetDeployment returned different cloud application deployment",
+	)
 
 	return cloudApplicationDeploymentOut
 }
 
 // GetDeploymentFailErrMocked test mocked function
-func GetDeploymentFailErrMocked(t *testing.T, cloudApplicationDeploymentIn *types.CloudApplicationDeployment) *types.CloudApplicationDeployment {
+func GetDeploymentFailErrMocked(
+	t *testing.T,
+	cloudApplicationDeploymentIn *types.CloudApplicationDeployment,
+) *types.CloudApplicationDeployment {
 
 	assert := assert.New(t)
 
@@ -152,7 +181,8 @@ func GetDeploymentFailErrMocked(t *testing.T, cloudApplicationDeploymentIn *type
 	assert.Nil(err, "CloudApplicationDeployment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/deployments/%s", cloudApplicationDeploymentIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaDeployment, cloudApplicationDeploymentIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudApplicationDeploymentOut, _, err := ds.GetDeployment(cloudApplicationDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -163,7 +193,10 @@ func GetDeploymentFailErrMocked(t *testing.T, cloudApplicationDeploymentIn *type
 }
 
 // GetDeploymentFailStatusMocked test mocked function
-func GetDeploymentFailStatusMocked(t *testing.T, cloudApplicationDeploymentIn *types.CloudApplicationDeployment) *types.CloudApplicationDeployment {
+func GetDeploymentFailStatusMocked(
+	t *testing.T,
+	cloudApplicationDeploymentIn *types.CloudApplicationDeployment,
+) *types.CloudApplicationDeployment {
 
 	assert := assert.New(t)
 
@@ -178,7 +211,7 @@ func GetDeploymentFailStatusMocked(t *testing.T, cloudApplicationDeploymentIn *t
 	assert.Nil(err, "CloudApplicationDeployment test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/deployments/%s", cloudApplicationDeploymentIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaDeployment, cloudApplicationDeploymentIn.ID)).Return(dIn, 499, nil)
 	cloudApplicationDeploymentOut, _, err := ds.GetDeployment(cloudApplicationDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -189,7 +222,10 @@ func GetDeploymentFailStatusMocked(t *testing.T, cloudApplicationDeploymentIn *t
 }
 
 // GetDeploymentFailJSONMocked test mocked function
-func GetDeploymentFailJSONMocked(t *testing.T, cloudApplicationDeploymentIn *types.CloudApplicationDeployment) *types.CloudApplicationDeployment {
+func GetDeploymentFailJSONMocked(
+	t *testing.T,
+	cloudApplicationDeploymentIn *types.CloudApplicationDeployment,
+) *types.CloudApplicationDeployment {
 
 	assert := assert.New(t)
 
@@ -203,7 +239,7 @@ func GetDeploymentFailJSONMocked(t *testing.T, cloudApplicationDeploymentIn *typ
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/deployments/%s", cloudApplicationDeploymentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaDeployment, cloudApplicationDeploymentIn.ID)).Return(dIn, 200, nil)
 	cloudApplicationDeploymentOut, _, err := ds.GetDeployment(cloudApplicationDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -229,10 +265,14 @@ func DeleteDeploymentMocked(t *testing.T, cloudApplicationDeploymentIn *types.Cl
 	assert.Nil(err, "CloudApplicationDeployment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/plugins/tosca/deployments/%s", cloudApplicationDeploymentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathPluginsToscaDeployment, cloudApplicationDeploymentIn.ID)).Return(dIn, 200, nil)
 	cloudApplicationDeploymentOut, err := ds.DeleteDeployment(cloudApplicationDeploymentIn.ID)
 	assert.Nil(err, "Error deleting cloud application deployment")
-	assert.Equal(*cloudApplicationDeploymentIn, *cloudApplicationDeploymentOut, "DeleteDeployment returned different cloud application deployment")
+	assert.Equal(
+		*cloudApplicationDeploymentIn,
+		*cloudApplicationDeploymentOut,
+		"DeleteDeployment returned different cloud application deployment",
+	)
 }
 
 // DeleteDeploymentFailErrMocked test mocked function
@@ -251,7 +291,8 @@ func DeleteDeploymentFailErrMocked(t *testing.T, cloudApplicationDeploymentIn *t
 	assert.Nil(err, "CloudApplicationDeployment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/plugins/tosca/deployments/%s", cloudApplicationDeploymentIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathPluginsToscaDeployment, cloudApplicationDeploymentIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudApplicationDeploymentOut, err := ds.DeleteDeployment(cloudApplicationDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -275,7 +316,7 @@ func DeleteDeploymentFailStatusMocked(t *testing.T, cloudApplicationDeploymentIn
 	assert.Nil(err, "CloudApplicationDeployment test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/plugins/tosca/deployments/%s", cloudApplicationDeploymentIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathPluginsToscaDeployment, cloudApplicationDeploymentIn.ID)).Return(dIn, 499, nil)
 	cloudApplicationDeploymentOut, err := ds.DeleteDeployment(cloudApplicationDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -284,7 +325,10 @@ func DeleteDeploymentFailStatusMocked(t *testing.T, cloudApplicationDeploymentIn
 }
 
 // DeleteDeploymentFailJSONMocked test mocked function
-func DeleteDeploymentFailJSONMocked(t *testing.T, cloudApplicationDeploymentIn *types.CloudApplicationDeployment) *types.CloudApplicationDeployment {
+func DeleteDeploymentFailJSONMocked(
+	t *testing.T,
+	cloudApplicationDeploymentIn *types.CloudApplicationDeployment,
+) *types.CloudApplicationDeployment {
 
 	assert := assert.New(t)
 
@@ -298,7 +342,7 @@ func DeleteDeploymentFailJSONMocked(t *testing.T, cloudApplicationDeploymentIn *
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/plugins/tosca/deployments/%s", cloudApplicationDeploymentIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathPluginsToscaDeployment, cloudApplicationDeploymentIn.ID)).Return(dIn, 200, nil)
 	cloudApplicationDeploymentOut, err := ds.DeleteDeployment(cloudApplicationDeploymentIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -309,7 +353,11 @@ func DeleteDeploymentFailJSONMocked(t *testing.T, cloudApplicationDeploymentIn *
 }
 
 // CreateDeploymentTaskMocked test mocked function
-func CreateDeploymentTaskMocked(t *testing.T, catID string, cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask) *types.CloudApplicationDeploymentTask {
+func CreateDeploymentTaskMocked(
+	t *testing.T,
+	catID string,
+	cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask,
+) *types.CloudApplicationDeploymentTask {
 
 	assert := assert.New(t)
 
@@ -327,17 +375,25 @@ func CreateDeploymentTaskMocked(t *testing.T, catID string, cloudApplicationDepl
 	assert.Nil(err, "CloudApplicationDeploymentTask test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks", catID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathPluginsToscaCatDeploymentTasks, catID), mapIn).Return(dOut, 200, nil)
 	cloudApplicationDeploymentTaskOut, err := ds.CreateDeploymentTask(catID, mapIn)
 
 	assert.Nil(err, "Error creating cloud application deployment task")
-	assert.Equal(cloudApplicationDeploymentTaskIn, cloudApplicationDeploymentTaskOut, "CreateDeploymentTask returned different cloud application deployment task")
+	assert.Equal(
+		cloudApplicationDeploymentTaskIn,
+		cloudApplicationDeploymentTaskOut,
+		"CreateDeploymentTask returned different cloud application deployment task",
+	)
 
 	return cloudApplicationDeploymentTaskOut
 }
 
 // CreateDeploymentTaskFailErrMocked test mocked function
-func CreateDeploymentTaskFailErrMocked(t *testing.T, catID string, cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask) *types.CloudApplicationDeploymentTask {
+func CreateDeploymentTaskFailErrMocked(
+	t *testing.T,
+	catID string,
+	cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask,
+) *types.CloudApplicationDeploymentTask {
 
 	assert := assert.New(t)
 
@@ -356,7 +412,8 @@ func CreateDeploymentTaskFailErrMocked(t *testing.T, catID string, cloudApplicat
 	assert.Nil(err, "CloudApplicationDeploymentTask test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks", catID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathPluginsToscaCatDeploymentTasks, catID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	cloudApplicationDeploymentTaskOut, err := ds.CreateDeploymentTask(catID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -367,7 +424,11 @@ func CreateDeploymentTaskFailErrMocked(t *testing.T, catID string, cloudApplicat
 }
 
 // CreateDeploymentTaskFailStatusMocked test mocked function
-func CreateDeploymentTaskFailStatusMocked(t *testing.T, catID string, cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask) *types.CloudApplicationDeploymentTask {
+func CreateDeploymentTaskFailStatusMocked(
+	t *testing.T,
+	catID string,
+	cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask,
+) *types.CloudApplicationDeploymentTask {
 
 	assert := assert.New(t)
 
@@ -386,7 +447,7 @@ func CreateDeploymentTaskFailStatusMocked(t *testing.T, catID string, cloudAppli
 	assert.Nil(err, "CloudApplicationDeploymentTask test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks", catID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathPluginsToscaCatDeploymentTasks, catID), mapIn).Return(dOut, 499, nil)
 	cloudApplicationDeploymentTaskOut, err := ds.CreateDeploymentTask(catID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -397,7 +458,11 @@ func CreateDeploymentTaskFailStatusMocked(t *testing.T, catID string, cloudAppli
 }
 
 // CreateDeploymentTaskFailJSONMocked test mocked function
-func CreateDeploymentTaskFailJSONMocked(t *testing.T, catID string, cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask) *types.CloudApplicationDeploymentTask {
+func CreateDeploymentTaskFailJSONMocked(
+	t *testing.T,
+	catID string,
+	cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask,
+) *types.CloudApplicationDeploymentTask {
 
 	assert := assert.New(t)
 
@@ -415,7 +480,7 @@ func CreateDeploymentTaskFailJSONMocked(t *testing.T, catID string, cloudApplica
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks", catID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathPluginsToscaCatDeploymentTasks, catID), mapIn).Return(dIn, 200, nil)
 	cloudApplicationDeploymentTaskOut, err := ds.CreateDeploymentTask(catID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -426,7 +491,11 @@ func CreateDeploymentTaskFailJSONMocked(t *testing.T, catID string, cloudApplica
 }
 
 // GetDeploymentTaskMocked test mocked function
-func GetDeploymentTaskMocked(t *testing.T, catID string, cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask) *types.CloudApplicationDeploymentTask {
+func GetDeploymentTaskMocked(
+	t *testing.T,
+	catID string,
+	cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask,
+) *types.CloudApplicationDeploymentTask {
 
 	assert := assert.New(t)
 
@@ -441,17 +510,26 @@ func GetDeploymentTaskMocked(t *testing.T, catID string, cloudApplicationDeploym
 	assert.Nil(err, "CloudApplicationDeploymentTask test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks/%s", catID, cloudApplicationDeploymentTaskIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaCatDeploymentTask, catID, cloudApplicationDeploymentTaskIn.ID)).
+		Return(dIn, 200, nil)
 	cloudApplicationDeploymentTaskOut, err := ds.GetDeploymentTask(catID, cloudApplicationDeploymentTaskIn.ID)
 
 	assert.Nil(err, "Error getting cloud application deployment task")
-	assert.Equal(*cloudApplicationDeploymentTaskIn, *cloudApplicationDeploymentTaskOut, "GetDeploymentTask returned different cloud application deployment task")
+	assert.Equal(
+		*cloudApplicationDeploymentTaskIn,
+		*cloudApplicationDeploymentTaskOut,
+		"GetDeploymentTask returned different cloud application deployment task",
+	)
 
 	return cloudApplicationDeploymentTaskOut
 }
 
 // GetDeploymentTaskFailErrMocked test mocked function
-func GetDeploymentTaskFailErrMocked(t *testing.T, catID string, cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask) *types.CloudApplicationDeploymentTask {
+func GetDeploymentTaskFailErrMocked(
+	t *testing.T,
+	catID string,
+	cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask,
+) *types.CloudApplicationDeploymentTask {
 
 	assert := assert.New(t)
 
@@ -466,7 +544,8 @@ func GetDeploymentTaskFailErrMocked(t *testing.T, catID string, cloudApplication
 	assert.Nil(err, "CloudApplicationDeploymentTask test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks/%s", catID, cloudApplicationDeploymentTaskIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaCatDeploymentTask, catID, cloudApplicationDeploymentTaskIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	cloudApplicationDeploymentTaskOut, err := ds.GetDeploymentTask(catID, cloudApplicationDeploymentTaskIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -477,7 +556,11 @@ func GetDeploymentTaskFailErrMocked(t *testing.T, catID string, cloudApplication
 }
 
 // GetDeploymentTaskFailStatusMocked test mocked function
-func GetDeploymentTaskFailStatusMocked(t *testing.T, catID string, cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask) *types.CloudApplicationDeploymentTask {
+func GetDeploymentTaskFailStatusMocked(
+	t *testing.T,
+	catID string,
+	cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask,
+) *types.CloudApplicationDeploymentTask {
 
 	assert := assert.New(t)
 
@@ -492,7 +575,8 @@ func GetDeploymentTaskFailStatusMocked(t *testing.T, catID string, cloudApplicat
 	assert.Nil(err, "CloudApplicationDeploymentTask test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks/%s", catID, cloudApplicationDeploymentTaskIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaCatDeploymentTask, catID, cloudApplicationDeploymentTaskIn.ID)).
+		Return(dIn, 499, nil)
 	cloudApplicationDeploymentTaskOut, err := ds.GetDeploymentTask(catID, cloudApplicationDeploymentTaskIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -503,7 +587,11 @@ func GetDeploymentTaskFailStatusMocked(t *testing.T, catID string, cloudApplicat
 }
 
 // GetDeploymentTaskFailJSONMocked test mocked function
-func GetDeploymentTaskFailJSONMocked(t *testing.T, catID string, cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask) *types.CloudApplicationDeploymentTask {
+func GetDeploymentTaskFailJSONMocked(
+	t *testing.T,
+	catID string,
+	cloudApplicationDeploymentTaskIn *types.CloudApplicationDeploymentTask,
+) *types.CloudApplicationDeploymentTask {
 
 	assert := assert.New(t)
 
@@ -517,7 +605,8 @@ func GetDeploymentTaskFailJSONMocked(t *testing.T, catID string, cloudApplicatio
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/plugins/tosca/cats/%s/deployment_tasks/%s", catID, cloudApplicationDeploymentTaskIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathPluginsToscaCatDeploymentTask, catID, cloudApplicationDeploymentTaskIn.ID)).
+		Return(dIn, 200, nil)
 	cloudApplicationDeploymentTaskOut, err := ds.GetDeploymentTask(catID, cloudApplicationDeploymentTaskIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

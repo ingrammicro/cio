@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package server_arrays
 
 import (
@@ -56,20 +58,24 @@ func SubCommands() []cli.Command {
 					Usage: "Identifier of the server plan in which the server array shall be deployed",
 				},
 				cli.StringFlag{
-					Name:  "firewall-profile-id",
-					Usage: "Identifier of the firewall profile to which the server array belongs. It will take default firewall profile if it is not given",
+					Name: "firewall-profile-id",
+					Usage: "Identifier of the firewall profile to which the server array belongs. " +
+						"It will take default firewall profile if it is not given",
 				},
 				cli.StringFlag{
-					Name:  "ssh-profile-id",
-					Usage: "Identifier of the ssh profile to which the server array belongs. It will take default ssh profile if it is not given",
+					Name: "ssh-profile-id",
+					Usage: "Identifier of the ssh profile to which the server array belongs. " +
+						"It will take default ssh profile if it is not given",
 				},
 				cli.StringFlag{
-					Name:  "subnet-id",
-					Usage: "Identifier of the subnet to which the server array belongs. It will not be on any subnet managed by IMCO if not given",
+					Name: "subnet-id",
+					Usage: "Identifier of the subnet to which the server array belongs. " +
+						"It will not be on any subnet managed by IMCO if not given",
 				},
 				cli.BoolFlag{
-					Name:  "privateness",
-					Usage: "If the server array is private, set this flag, i.e: --privateness. If it's public, do not set this flag",
+					Name: "privateness",
+					Usage: "If the server array is private, set this flag, i.e: --privateness. " +
+						"If it's public, do not set this flag",
 				},
 				cli.StringFlag{
 					Name:  "labels",
@@ -93,8 +99,9 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "boot",
-			Usage:  "This action boots all the servers in the server array with the given id. The server array must be in an inactive state",
+			Name: "boot",
+			Usage: "This action boots all the servers in the server array with the given id. " +
+				"The server array must be in an inactive state",
 			Action: cmd.ServerArrayBoot,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -104,8 +111,9 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "shutdown",
-			Usage:  "This action shuts down all the servers in the server array identified by the given id. The server must be in a bootstrap",
+			Name: "shutdown",
+			Usage: "This action shuts down all the servers in the server array identified by the given id. " +
+				"The server must be in a bootstrap",
 			Action: cmd.ServerArrayShutdown,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -152,8 +160,9 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "delete",
-			Usage:  "This action decommissions the server array with the given id. This action will only be allowed if the server array is empty",
+			Name: "delete",
+			Usage: "This action decommissions the server array with the given id. " +
+				"This action will only be allowed if the server array is empty",
 			Action: cmd.ServerArrayDelete,
 			Flags: []cli.Flag{
 				cli.StringFlag{

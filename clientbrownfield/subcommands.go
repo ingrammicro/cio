@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package clientbrownfield
 
 import (
@@ -10,75 +12,74 @@ import (
 func SubCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:        "cloud-accounts",
-			Usage:       "Provides information about brownfield cloud accounts. Allows querying cloud accounts to discover (and list) candidate resources from IMCO.",
+			Name: "cloud-accounts",
+			Usage: "Provides information about brownfield cloud accounts. " +
+				"Allows querying cloud accounts to import resources from IMCO.",
 			Subcommands: append(cloud_accounts.SubCommands()),
 		},
 		{
-			Name:   "import-server",
-			Usage:  "Import server import candidate, given its id",
-			Action: cmd.ImportCandidateServerImport,
+			Name:   "import-servers",
+			Usage:  "Import servers for a given cloud account id",
+			Action: cmd.ImportServers,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "id",
-					Usage: "Import candidate server Id",
-				},
-				cli.StringFlag{
-					Name:  "ssh-profile-id",
-					Usage: "Identifier of the ssh profile which the server shall use",
-				},
-				cli.StringFlag{
-					Name:  "ssh-profile-ids",
-					Usage: "A list of comma separated ssh profiles ids",
-				},
-				cli.StringFlag{
-					Name:  "labels",
-					Usage: "A list of comma separated label as a query filter",
+					Usage: "Cloud account Id",
 				},
 			},
 		},
 		{
-			Name:   "import-vpc",
-			Usage:  "Import VPC import candidate, given its id",
-			Action: cmd.ImportCandidateVPCImport,
+			Name:   "import-vpcs",
+			Usage:  "Import VPCs for a given cloud account id",
+			Action: cmd.ImportVPCs,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "id",
-					Usage: "Import candidate VPC Id",
-				},
-				cli.StringFlag{
-					Name:  "labels",
-					Usage: "A list of comma separated label as a query filter",
+					Usage: "Cloud account Id",
 				},
 			},
 		},
 		{
-			Name:   "import-floating-ip",
-			Usage:  "Import Floating IP import candidate, given its id",
-			Action: cmd.ImportCandidateFloatingIPImport,
+			Name:   "import-floating-ips",
+			Usage:  "Import Floating IPs for a given cloud account id",
+			Action: cmd.ImportFloatingIPs,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "id",
-					Usage: "Import candidate floating IP Id",
-				},
-				cli.StringFlag{
-					Name:  "labels",
-					Usage: "A list of comma separated label as a query filter",
+					Usage: "Cloud account Id",
 				},
 			},
 		},
 		{
-			Name:   "import-volume",
-			Usage:  "Import volume import candidate, given its id",
-			Action: cmd.ImportCandidateVolumeImport,
+			Name:   "import-volumes",
+			Usage:  "Import volumes for a given cloud account id",
+			Action: cmd.ImportVolumes,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "id",
-					Usage: "Import candidate volume Id",
+					Usage: "Cloud account Id",
 				},
+			},
+		},
+		{
+			Name:   "import-policies",
+			Usage:  "Import policies for a given cloud account id",
+			Action: cmd.ImportPolicies,
+			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "labels",
-					Usage: "A list of comma separated label as a query filter",
+					Name:  "id",
+					Usage: "Cloud account Id",
+				},
+			},
+		},
+		{
+			Name:   "import-k8s-clusters",
+			Usage:  "Import kubernetes clusters for a given cloud account id",
+			Action: cmd.ImportKubernetesClusters,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "id",
+					Usage: "Cloud account Id",
 				},
 			},
 		},

@@ -1,12 +1,17 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package storage
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathStoragePlan = "/storage/plans/%s"
 
 // StoragePlanService manages storage plan operations
 type StoragePlanService struct {
@@ -28,7 +33,7 @@ func NewStoragePlanService(concertoService utils.ConcertoService) (*StoragePlanS
 func (sps *StoragePlanService) GetStoragePlan(storagePlanID string) (storagePlan *types.StoragePlan, err error) {
 	log.Debug("GetStoragePlan")
 
-	data, status, err := sps.concertoService.Get(fmt.Sprintf("/storage/plans/%s", storagePlanID))
+	data, status, err := sps.concertoService.Get(fmt.Sprintf(APIPathStoragePlan, storagePlanID))
 	if err != nil {
 		return nil, err
 	}

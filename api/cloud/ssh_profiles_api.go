@@ -1,12 +1,18 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloud
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathCloudSSHProfiles = "/cloud/ssh_profiles"
+const APIPathCloudSSHProfile = "/cloud/ssh_profiles/%s"
 
 // SSHProfileService manages ssh profile operations
 type SSHProfileService struct {
@@ -28,7 +34,7 @@ func NewSSHProfileService(concertoService utils.ConcertoService) (*SSHProfileSer
 func (sps *SSHProfileService) ListSSHProfiles() (sshProfiles []*types.SSHProfile, err error) {
 	log.Debug("ListSSHProfiles")
 
-	data, status, err := sps.concertoService.Get("/cloud/ssh_profiles")
+	data, status, err := sps.concertoService.Get(APIPathCloudSSHProfiles)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +54,7 @@ func (sps *SSHProfileService) ListSSHProfiles() (sshProfiles []*types.SSHProfile
 func (sps *SSHProfileService) GetSSHProfile(sshProfileID string) (sshProfile *types.SSHProfile, err error) {
 	log.Debug("GetSSHProfile")
 
-	data, status, err := sps.concertoService.Get(fmt.Sprintf("/cloud/ssh_profiles/%s", sshProfileID))
+	data, status, err := sps.concertoService.Get(fmt.Sprintf(APIPathCloudSSHProfile, sshProfileID))
 	if err != nil {
 		return nil, err
 	}
@@ -65,10 +71,12 @@ func (sps *SSHProfileService) GetSSHProfile(sshProfileID string) (sshProfile *ty
 }
 
 // CreateSSHProfile creates a sshProfile
-func (sps *SSHProfileService) CreateSSHProfile(sshProfileParams *map[string]interface{}) (sshProfile *types.SSHProfile, err error) {
+func (sps *SSHProfileService) CreateSSHProfile(
+	sshProfileParams *map[string]interface{},
+) (sshProfile *types.SSHProfile, err error) {
 	log.Debug("CreateSSHProfile")
 
-	data, status, err := sps.concertoService.Post("/cloud/ssh_profiles/", sshProfileParams)
+	data, status, err := sps.concertoService.Post(APIPathCloudSSHProfiles, sshProfileParams)
 
 	if err != nil {
 		return nil, err
@@ -86,10 +94,13 @@ func (sps *SSHProfileService) CreateSSHProfile(sshProfileParams *map[string]inte
 }
 
 // UpdateSSHProfile updates a sshProfile by its ID
-func (sps *SSHProfileService) UpdateSSHProfile(sshProfileID string, sshProfileParams *map[string]interface{}) (sshProfile *types.SSHProfile, err error) {
+func (sps *SSHProfileService) UpdateSSHProfile(
+	sshProfileID string,
+	sshProfileParams *map[string]interface{},
+) (sshProfile *types.SSHProfile, err error) {
 	log.Debug("UpdateSSHProfile")
 
-	data, status, err := sps.concertoService.Put(fmt.Sprintf("/cloud/ssh_profiles/%s", sshProfileID), sshProfileParams)
+	data, status, err := sps.concertoService.Put(fmt.Sprintf(APIPathCloudSSHProfile, sshProfileID), sshProfileParams)
 
 	if err != nil {
 		return nil, err
@@ -110,7 +121,7 @@ func (sps *SSHProfileService) UpdateSSHProfile(sshProfileID string, sshProfilePa
 func (sps *SSHProfileService) DeleteSSHProfile(sshProfileID string) (err error) {
 	log.Debug("DeleteSSHProfile")
 
-	data, status, err := sps.concertoService.Delete(fmt.Sprintf("/cloud/ssh_profiles/%s", sshProfileID))
+	data, status, err := sps.concertoService.Delete(fmt.Sprintf(APIPathCloudSSHProfile, sshProfileID))
 	if err != nil {
 		return err
 	}

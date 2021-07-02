@@ -1,12 +1,18 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathNetworkLoadBalancerCertificates = "/network/load_balancers/%s/certificates"
+const APIPathNetworkLoadBalancerCertificate = "/network/load_balancers/%s/certificates/%s"
 
 // CertificateService manages certificate operations
 type CertificateService struct {
@@ -28,7 +34,7 @@ func NewCertificateService(concertoService utils.ConcertoService) (*CertificateS
 func (cs *CertificateService) ListCertificates(loadBalancerID string) (certificates []*types.Certificate, err error) {
 	log.Debug("ListCertificates")
 
-	data, status, err := cs.concertoService.Get(fmt.Sprintf("/network/load_balancers/%s/certificates", loadBalancerID))
+	data, status, err := cs.concertoService.Get(fmt.Sprintf(APIPathNetworkLoadBalancerCertificates, loadBalancerID))
 
 	if err != nil {
 		return nil, err
@@ -46,10 +52,15 @@ func (cs *CertificateService) ListCertificates(loadBalancerID string) (certifica
 }
 
 // GetCertificate returns a certificate by its ID
-func (cs *CertificateService) GetCertificate(loadBalancerID string, certificateID string) (certificate *types.Certificate, err error) {
+func (cs *CertificateService) GetCertificate(
+	loadBalancerID string,
+	certificateID string,
+) (certificate *types.Certificate, err error) {
 	log.Debug("GetCertificate")
 
-	data, status, err := cs.concertoService.Get(fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateID))
+	data, status, err := cs.concertoService.Get(
+		fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateID),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +77,16 @@ func (cs *CertificateService) GetCertificate(loadBalancerID string, certificateI
 }
 
 // CreateCertificate creates a certificate in a load balancer by its ID
-func (cs *CertificateService) CreateCertificate(loadBalancerID string, certificateParams *map[string]interface{}) (certificate *types.Certificate, err error) {
+func (cs *CertificateService) CreateCertificate(
+	loadBalancerID string,
+	certificateParams *map[string]interface{},
+) (certificate *types.Certificate, err error) {
 	log.Debug("CreateCertificate")
 
-	data, status, err := cs.concertoService.Post(fmt.Sprintf("/network/load_balancers/%s/certificates", loadBalancerID), certificateParams)
+	data, status, err := cs.concertoService.Post(
+		fmt.Sprintf(APIPathNetworkLoadBalancerCertificates, loadBalancerID),
+		certificateParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +103,17 @@ func (cs *CertificateService) CreateCertificate(loadBalancerID string, certifica
 }
 
 // UpdateCertificate updates a certificate by its ID
-func (cs *CertificateService) UpdateCertificate(loadBalancerID string, certificateID string, certificateParams *map[string]interface{}) (certificate *types.Certificate, err error) {
+func (cs *CertificateService) UpdateCertificate(
+	loadBalancerID string,
+	certificateID string,
+	certificateParams *map[string]interface{},
+) (certificate *types.Certificate, err error) {
 	log.Debug("UpdateCertificate")
 
-	data, status, err := cs.concertoService.Put(fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateID), certificateParams)
+	data, status, err := cs.concertoService.Put(
+		fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateID),
+		certificateParams,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +133,9 @@ func (cs *CertificateService) UpdateCertificate(loadBalancerID string, certifica
 func (cs *CertificateService) DeleteCertificate(loadBalancerID string, certificateID string) (err error) {
 	log.Debug("DeleteCertificate")
 
-	data, status, err := cs.concertoService.Delete(fmt.Sprintf("/network/load_balancers/%s/certificates/%s", loadBalancerID, certificateID))
+	data, status, err := cs.concertoService.Delete(
+		fmt.Sprintf(APIPathNetworkLoadBalancerCertificate, loadBalancerID, certificateID),
+	)
 	if err != nil {
 		return err
 	}

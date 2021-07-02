@@ -1,12 +1,18 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathNetworkVpcVpn = "/network/vpcs/%s/vpn"
+const APIPathNetworkVpcVpnPlans = "/network/vpcs/%s/vpn_plans"
 
 // VPNService manages VPN operations
 type VPNService struct {
@@ -28,7 +34,7 @@ func NewVPNService(concertoService utils.ConcertoService) (*VPNService, error) {
 func (vs *VPNService) GetVPN(vpcID string) (vpn *types.Vpn, err error) {
 	log.Debug("GetVPN")
 
-	data, status, err := vs.concertoService.Get(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID))
+	data, status, err := vs.concertoService.Get(fmt.Sprintf(APIPathNetworkVpcVpn, vpcID))
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +54,7 @@ func (vs *VPNService) GetVPN(vpcID string) (vpn *types.Vpn, err error) {
 func (vs *VPNService) CreateVPN(vpcID string, vpnParams *map[string]interface{}) (vpn *types.Vpn, err error) {
 	log.Debug("CreateVPN")
 
-	data, status, err := vs.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID), vpnParams)
+	data, status, err := vs.concertoService.Post(fmt.Sprintf(APIPathNetworkVpcVpn, vpcID), vpnParams)
 
 	if err != nil {
 		return nil, err
@@ -69,7 +75,7 @@ func (vs *VPNService) CreateVPN(vpcID string, vpnParams *map[string]interface{})
 func (vs *VPNService) DeleteVPN(vpcID string) (err error) {
 	log.Debug("DeleteVPN")
 
-	data, status, err := vs.concertoService.Delete(fmt.Sprintf("/network/vpcs/%s/vpn", vpcID))
+	data, status, err := vs.concertoService.Delete(fmt.Sprintf(APIPathNetworkVpcVpn, vpcID))
 	if err != nil {
 		return err
 	}
@@ -85,7 +91,7 @@ func (vs *VPNService) DeleteVPN(vpcID string) (err error) {
 func (vs *VPNService) ListVPNPlans(vpcID string) (vpnPlans []*types.VpnPlan, err error) {
 	log.Debug("ListVPNPlans")
 
-	data, status, err := vs.concertoService.Get(fmt.Sprintf("/network/vpcs/%s/vpn_plans", vpcID))
+	data, status, err := vs.concertoService.Get(fmt.Sprintf(APIPathNetworkVpcVpnPlans, vpcID))
 
 	if err != nil {
 		return nil, err

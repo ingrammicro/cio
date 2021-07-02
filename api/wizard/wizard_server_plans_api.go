@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package wizard
 
 import (
@@ -8,6 +10,9 @@ import (
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathWizardServerPlansByAppLocationCloudProvider =
+	"/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s"
 
 // WizardServerPlanService manages wizard server plan operations
 type WizardServerPlanService struct {
@@ -26,10 +31,21 @@ func NewWizardServerPlanService(concertoService utils.ConcertoService) (*WizardS
 }
 
 // ListWizardServerPlans returns the list of server plans as an array of ServerPlan
-func (wsps *WizardServerPlanService) ListWizardServerPlans(appID string, locationID string, cloudProviderID string) (serverPlans []*types.ServerPlan, err error) {
+func (wsps *WizardServerPlanService) ListWizardServerPlans(
+	appID string,
+	locationID string,
+	cloudProviderID string,
+) (serverPlans []*types.ServerPlan, err error) {
 	log.Debug("ListWizardServerPlans")
 
-	data, status, err := wsps.concertoService.Get(fmt.Sprintf("/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s", appID, locationID, cloudProviderID))
+	data, status, err := wsps.concertoService.Get(
+		fmt.Sprintf(
+			APIPathWizardServerPlansByAppLocationCloudProvider,
+			appID,
+			locationID,
+			cloudProviderID,
+		),
+	)
 	if err != nil {
 		return nil, err
 	}

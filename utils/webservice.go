@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package utils
 
 import (
@@ -5,14 +7,19 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
+
+const WebServiceConfigurationFailed = "web service configuration failed. No data in configuration"
+const ContentTypeApplicationJson = "application/json"
+const ConfigurationIsIncomplete = "configuration is incomplete"
 
 // ConcertoService defines actions to be performed by web service manager
 type ConcertoService interface {
@@ -34,11 +41,11 @@ type HTTPConcertoservice struct {
 func NewHTTPConcertoService(config *Config) (hcs *HTTPConcertoservice, err error) {
 
 	if config == nil {
-		return nil, fmt.Errorf("web service configuration failed. No data in configuration")
+		return nil, fmt.Errorf(WebServiceConfigurationFailed)
 	}
 
 	if !config.IsConfigReady() {
-		return nil, fmt.Errorf("configuration is incomplete")
+		return nil, fmt.Errorf(ConfigurationIsIncomplete)
 	}
 
 	// creates HTTP Concerto service with config
@@ -57,7 +64,12 @@ func NewHTTPConcertoService(config *Config) (hcs *HTTPConcertoservice, err error
 	// Loads Clients Certificates and creates and 509KeyPair
 	cert, err := tls.LoadX509KeyPair(hcs.config.Certificate.Cert, hcs.config.Certificate.Key)
 	if err != nil {
-		return nil, fmt.Errorf("cannot read IMCO API key (from '%s' and '%s'): %v", hcs.config.Certificate.Cert, hcs.config.Certificate.Key, err)
+		return nil, fmt.Errorf(
+			"cannot read IMCO API key (from '%s' and '%s'): %v",
+			hcs.config.Certificate.Cert,
+			hcs.config.Certificate.Key,
+			err,
+		)
 	}
 
 	// Creates a client with specific transport configurations
@@ -76,11 +88,11 @@ func NewHTTPConcertoService(config *Config) (hcs *HTTPConcertoservice, err error
 func NewHTTPConcertoServiceWithBrownfieldToken(config *Config) (hcs *HTTPConcertoservice, err error) {
 
 	if config == nil {
-		return nil, fmt.Errorf("web service configuration failed. No data in configuration")
+		return nil, fmt.Errorf(WebServiceConfigurationFailed)
 	}
 
 	if !config.IsConfigReadyBrownfield() {
-		return nil, fmt.Errorf("configuration is incomplete")
+		return nil, fmt.Errorf(ConfigurationIsIncomplete)
 	}
 
 	// creates HTTP Concerto service with config
@@ -102,11 +114,11 @@ func NewHTTPConcertoServiceWithBrownfieldToken(config *Config) (hcs *HTTPConcert
 func NewHTTPConcertoServiceWithCommandPolling(config *Config) (hcs *HTTPConcertoservice, err error) {
 
 	if config == nil {
-		return nil, fmt.Errorf("web service configuration failed. No data in configuration")
+		return nil, fmt.Errorf(WebServiceConfigurationFailed)
 	}
 
 	if !config.IsConfigReadyCommandPolling() {
-		return nil, fmt.Errorf("configuration is incomplete")
+		return nil, fmt.Errorf(ConfigurationIsIncomplete)
 	}
 
 	// creates HTTP Concerto service with config
@@ -134,13 +146,19 @@ func (hcs *HTTPConcertoservice) Post(path string, payload *map[string]interface{
 
 	log.Debugf("Sending POST request to %s with payload %v ", url, jsPayload)
 	req, err := http.NewRequest("POST", url, jsPayload)
-	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Content-Type", ContentTypeApplicationJson)
 	if hcs.config.BrownfieldToken != "" {
-		log.Debugf("Including brownfield token %s in POST request as X-Concerto-Brownfield-Token header ", hcs.config.BrownfieldToken)
+		log.Debugf(
+			"Including brownfield token %s in POST request as X-Concerto-Brownfield-Token header ",
+			hcs.config.BrownfieldToken,
+		)
 		req.Header.Add("X-Concerto-Brownfield-Token", hcs.config.BrownfieldToken)
 	}
 	if hcs.config.CommandPollingToken != "" && hcs.config.ServerID != "" {
-		log.Debugf("Including command polling token %s in POST request as X-IMCO-Command-Polling-Token header ", hcs.config.CommandPollingToken)
+		log.Debugf(
+			"Including command polling token %s in POST request as X-IMCO-Command-Polling-Token header ",
+			hcs.config.CommandPollingToken,
+		)
 		req.Header.Add("X-IMCO-Command-Polling-Token", hcs.config.CommandPollingToken)
 		log.Debugf("Including Server id %s in POST request as X-IMCO-Server-ID header ", hcs.config.ServerID)
 		req.Header.Add("X-IMCO-Server-ID", hcs.config.ServerID)
@@ -165,7 +183,7 @@ func (hcs *HTTPConcertoservice) Put(path string, payload *map[string]interface{}
 	if err != nil {
 		return nil, 0, err
 	}
-	request.Header = map[string][]string{"Content-type": {"application/json"}}
+	request.Header = map[string][]string{"Content-type": {ContentTypeApplicationJson}}
 	response, err := hcs.client.Do(request)
 	if err != nil {
 		return nil, 0, err
@@ -186,7 +204,7 @@ func (hcs *HTTPConcertoservice) Delete(path string) ([]byte, int, error) {
 	if err != nil {
 		return nil, 0, err
 	}
-	request.Header = map[string][]string{"Content-type": {"application/json"}}
+	request.Header = map[string][]string{"Content-type": {ContentTypeApplicationJson}}
 	response, err := hcs.client.Do(request)
 	if err != nil {
 		return nil, 0, err
@@ -230,7 +248,11 @@ func (hcs *HTTPConcertoservice) GetFile(url string, filePath string, discoveryFi
 		if err != nil {
 			return "", 0, err
 		}
-		realFileName = fmt.Sprintf("%s/%s", filePath, r.FindStringSubmatch(response.Header.Get("Content-Disposition"))[1])
+		realFileName = fmt.Sprintf(
+			"%s/%s",
+			filePath,
+			r.FindStringSubmatch(response.Header.Get("Content-Disposition"))[1],
+		)
 	}
 
 	output, err := os.Create(realFileName)
@@ -272,7 +294,10 @@ func (hcs *HTTPConcertoservice) PutFile(sourceFilePath string, targetURL string)
 	return buf, status, nil
 }
 
-func (hcs *HTTPConcertoservice) prepareCall(path string, payload *map[string]interface{}) (url string, jsPayload *strings.Reader, err error) {
+func (hcs *HTTPConcertoservice) prepareCall(
+	path string,
+	payload *map[string]interface{},
+) (url string, jsPayload *strings.Reader, err error) {
 
 	if hcs.config == nil || hcs.client == nil {
 		return "", nil, fmt.Errorf("Can not call web service without loading configuration")

@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/cloud"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -52,13 +55,13 @@ func ServerArrayList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		sa, ok := labelable.(*types.ServerArray)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.ServerArray, got a %T", labelable))
 		}
 		serverArrays[i] = sa
 	}
 	if err = formatter.PrintList(serverArrays); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -77,7 +80,7 @@ func ServerArrayShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -124,7 +127,7 @@ func ServerArrayCreate(c *cli.Context) error {
 
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -143,7 +146,7 @@ func ServerArrayUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -162,7 +165,7 @@ func ServerArrayBoot(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -181,7 +184,7 @@ func ServerArrayShutdown(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -200,7 +203,7 @@ func ServerArrayEmpty(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -212,7 +215,7 @@ func ServerArrayEnlarge(c *cli.Context) error {
 
 	checkRequiredFlags(c, []string{"id", "size"}, formatter)
 	serverArrayEnlargeIn := map[string]interface{}{
-		"size": c.Int("size"),
+		"size_increase": c.Int("size"),
 	}
 	serverArray, err := serverArraySvc.EnlargeServerArray(c.String("id"), &serverArrayEnlargeIn)
 	if err != nil {
@@ -222,7 +225,7 @@ func ServerArrayEnlarge(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -250,13 +253,13 @@ func ServerArrayServerList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		s, ok := labelable.(*types.Server)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.Server, got a %T", labelable))
 		}
 		servers[i] = s
 	}
 	if err = formatter.PrintList(servers); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

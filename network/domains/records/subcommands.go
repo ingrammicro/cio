@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package records
 
 import (
@@ -36,16 +38,16 @@ func SubCommands() []cli.Command {
 			Action: cmd.DomainCreateRecord,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:     "domain-id",
-					Usage:    "Identifier of the DNS domain",
+					Name:  "domain-id",
+					Usage: "Identifier of the DNS domain",
 				},
 				cli.StringFlag{
-					Name:     "name",
-					Usage:    "Name of the DNS record",
+					Name:  "name",
+					Usage: "Name of the DNS record",
 				},
 				cli.StringFlag{
-					Name:     "type",
-					Usage:    "Type of the  DNS record, among 'a', 'aaaa', 'cname', 'mx', 'srv', 'txt'",
+					Name:  "type",
+					Usage: "Type of the  DNS record, among 'a', 'aaaa', 'cname', 'mx', 'srv', 'txt'",
 				},
 				cli.StringFlag{
 					Name:  "content",
@@ -56,28 +58,34 @@ func SubCommands() []cli.Command {
 					Usage: "TTL of the DNS record. Defaults to 3600 if not provided",
 				},
 				cli.StringFlag{
-					Name:  "server-id",
-					Usage: "Identifier of the Server that is wanted to be attached to the record. Only valid for records of type 'a'",
+					Name: "server-id",
+					Usage: "Identifier of the Server that is wanted to be attached to the record. " +
+						"Only valid for records of type 'a'",
 				},
 				cli.StringFlag{
-					Name:  "floating-ip-id",
-					Usage: "Identifier of the floating IP that is wanted to be attached to the record. Only valid for records of type 'a'",
+					Name: "floating-ip-id",
+					Usage: "Identifier of the floating IP that is wanted to be attached to the record. " +
+						"Only valid for records of type 'a'",
 				},
 				cli.StringFlag{
-					Name:  "load-balancer-id",
-					Usage: "Identifier of the load balancer that is wanted to be attached to the record. Only valid for records of type 'cname'",
+					Name: "load-balancer-id",
+					Usage: "Identifier of the load balancer that is wanted to be attached to the record. " +
+						"Only valid for records of type 'cname'",
 				},
 				cli.IntFlag{
-					Name:  "priority",
-					Usage: "Priority of the record. Only valid for 'mx' and 'srv' types. Defaults to 0. Only valid for records of types 'mx' and 'srv'",
+					Name: "priority",
+					Usage: "Priority of the record. Only valid for 'mx' and 'srv' types. Defaults to 0. " +
+						"Only valid for records of types 'mx' and 'srv'",
 				},
 				cli.IntFlag{
-					Name:  "weight",
-					Usage: "Weight of the record. Only valid for 'srv' type. Defaults to 0. Only valid for records of type 'srv'",
+					Name: "weight",
+					Usage: "Weight of the record. Only valid for 'srv' type. Defaults to 0. " +
+						"Only valid for records of type 'srv'",
 				},
 				cli.IntFlag{
-					Name:  "port",
-					Usage: "Port of the record. Only valid for 'srv' type. Defaults to 0. Only valid for records of type 'srv'",
+					Name: "port",
+					Usage: "Port of the record. Only valid for 'srv' type. Defaults to 0. " +
+						"Only valid for records of type 'srv'",
 				},
 			},
 		},
@@ -91,8 +99,8 @@ func SubCommands() []cli.Command {
 					Usage: "Identifier of the DNS record",
 				},
 				cli.StringFlag{
-					Name:     "name",
-					Usage:    "Name of the DNS record",
+					Name:  "name",
+					Usage: "Name of the DNS record",
 				},
 				cli.StringFlag{
 					Name:  "content",
@@ -103,16 +111,19 @@ func SubCommands() []cli.Command {
 					Usage: "TTL of the DNS record. Defaults to 3600 if not provided",
 				},
 				cli.IntFlag{
-					Name:  "priority",
-					Usage: "Priority of the record. Only valid for 'mx' and 'srv' types. Defaults to 0. Only valid for records of types 'mx' and 'srv'",
+					Name: "priority",
+					Usage: "Priority of the record. Only valid for 'mx' and 'srv' types. Defaults to 0. " +
+						"Only valid for records of types 'mx' and 'srv'",
 				},
 				cli.IntFlag{
-					Name:  "weight",
-					Usage: "Weight of the record. Only valid for 'srv' type. Defaults to 0. Only valid for records of type 'srv'",
+					Name: "weight",
+					Usage: "Weight of the record. Only valid for 'srv' type. Defaults to 0. " +
+						"Only valid for records of type 'srv'",
 				},
 				cli.IntFlag{
-					Name:  "port",
-					Usage: "Port of the record. Only valid for 'srv' type. Defaults to 0. Only valid for records of type 'srv'",
+					Name: "port",
+					Usage: "Port of the record. Only valid for 'srv' type. Defaults to 0. " +
+						"Only valid for records of type 'srv'",
 				},
 			},
 		},

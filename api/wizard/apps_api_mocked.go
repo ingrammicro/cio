@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package wizard
 
 import (
@@ -28,7 +30,7 @@ func ListAppsMocked(t *testing.T, appsIn []*types.WizardApp) []*types.WizardApp 
 	assert.Nil(err, "App test data corrupted")
 
 	// call service
-	cs.On("Get", "/wizard/apps").Return(dIn, 200, nil)
+	cs.On("Get", APIPathWizardApps).Return(dIn, 200, nil)
 	appsOut, err := ds.ListApps()
 	assert.Nil(err, "Error getting app list")
 	assert.Equal(appsIn, appsOut, "ListApps returned different apps")
@@ -52,7 +54,7 @@ func ListAppsFailErrMocked(t *testing.T, appsIn []*types.WizardApp) []*types.Wiz
 	assert.Nil(err, "App test data corrupted")
 
 	// call service
-	cs.On("Get", "/wizard/apps").Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", APIPathWizardApps).Return(dIn, 200, fmt.Errorf("mocked error"))
 	appsOut, err := ds.ListApps()
 
 	assert.NotNil(err, "We are expecting an error")
@@ -78,7 +80,7 @@ func ListAppsFailStatusMocked(t *testing.T, appsIn []*types.WizardApp) []*types.
 	assert.Nil(err, "App test data corrupted")
 
 	// call service
-	cs.On("Get", "/wizard/apps").Return(dIn, 499, nil)
+	cs.On("Get", APIPathWizardApps).Return(dIn, 499, nil)
 	appsOut, err := ds.ListApps()
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -103,7 +105,7 @@ func ListAppsFailJSONMocked(t *testing.T, appsIn []*types.WizardApp) []*types.Wi
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", "/wizard/apps").Return(dIn, 200, nil)
+	cs.On("Get", APIPathWizardApps).Return(dIn, 200, nil)
 	appsOut, err := ds.ListApps()
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -133,7 +135,7 @@ func DeployAppMocked(t *testing.T, appIn *types.WizardApp) *types.Server {
 	assert.Nil(err, "App test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/wizard/apps/%s/deploy", appIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathWizardAppDeploy, appIn.ID), mapIn).Return(dOut, 200, nil)
 	serverOut, err := ds.DeployApp(appIn.ID, mapIn)
 	assert.Nil(err, "Error deploying app")
 
@@ -160,7 +162,7 @@ func DeployAppFailErrMocked(t *testing.T, appIn *types.WizardApp) *types.Server 
 	assert.Nil(err, "App test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/wizard/apps/%s/deploy", appIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathWizardAppDeploy, appIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
 	serverOut, err := ds.DeployApp(appIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -190,7 +192,7 @@ func DeployAppFailStatusMocked(t *testing.T, appIn *types.WizardApp) *types.Serv
 	assert.Nil(err, "App test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/wizard/apps/%s/deploy", appIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathWizardAppDeploy, appIn.ID), mapIn).Return(dOut, 499, nil)
 	serverOut, err := ds.DeployApp(appIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -219,7 +221,7 @@ func DeployAppFailJSONMocked(t *testing.T, appIn *types.WizardApp) *types.Server
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/wizard/apps/%s/deploy", appIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathWizardAppDeploy, appIn.ID), mapIn).Return(dIn, 200, nil)
 	serverOut, err := ds.DeployApp(appIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")

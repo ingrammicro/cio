@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 // +build solaris
 
 package firewall
@@ -29,12 +31,20 @@ func Apply(policy types.Policy) error {
 	f.WriteString("pass in quick on net0 proto icmp from any to any keep state\n")
 
 	for _, rule := range policy.Rules {
-		f.WriteString(fmt.Sprintf("pass in quick on net0 proto %s from %s to any %s\n", rule.Protocol, rule.Cidr, determinePort(rule.MinPort, rule.MaxPort)))
+		f.WriteString(
+			fmt.Sprintf(
+				"pass in quick on net0 proto %s from %s to any %s\n",
+				rule.Protocol,
+				rule.Cidr,
+				determinePort(rule.MinPort, rule.MaxPort),
+			),
+		)
 	}
 
 	f.WriteString("block in on net0 from any to any\n")
 
-	if output, exit, _, _ := utils.RunCmd("svcadm enable ipfilter; svcadm restart ipfilter; ipf -Fa -f /etc/ipf/ipf.conf"); exit != 0 {
+	cmd := "svcadm enable ipfilter; svcadm restart ipfilter; ipf -Fa -f /etc/ipf/ipf.conf"
+	if output, exit, _, _ := utils.RunCmd(cmd); exit != 0 {
 		return fmt.Errorf("Error executing firewall enable: (%d) %s", exit, output)
 	}
 

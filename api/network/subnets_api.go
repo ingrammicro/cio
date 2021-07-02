@@ -1,12 +1,20 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathNetworkVpcSubnets = "/network/vpcs/%s/subnets"
+const APIPathNetworkSubnet = "/network/subnets/%s"
+const APIPathNetworkSubnetServers = "/network/subnets/%s/servers"
+const APIPathNetworkSubnetServerArrays = "/network/subnets/%s/server_arrays"
 
 // SubnetService manages subnet operations
 type SubnetService struct {
@@ -28,7 +36,7 @@ func NewSubnetService(concertoService utils.ConcertoService) (*SubnetService, er
 func (ss *SubnetService) ListSubnets(vpcID string) (subnets []*types.Subnet, err error) {
 	log.Debug("ListSubnets")
 
-	data, status, err := ss.concertoService.Get(fmt.Sprintf("/network/vpcs/%s/subnets", vpcID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf(APIPathNetworkVpcSubnets, vpcID))
 
 	if err != nil {
 		return nil, err
@@ -49,7 +57,7 @@ func (ss *SubnetService) ListSubnets(vpcID string) (subnets []*types.Subnet, err
 func (ss *SubnetService) GetSubnet(subnetID string) (subnet *types.Subnet, err error) {
 	log.Debug("GetSubnet")
 
-	data, status, err := ss.concertoService.Get(fmt.Sprintf("/network/subnets/%s", subnetID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf(APIPathNetworkSubnet, subnetID))
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +74,13 @@ func (ss *SubnetService) GetSubnet(subnetID string) (subnet *types.Subnet, err e
 }
 
 // CreateSubnet creates a Subnet
-func (ss *SubnetService) CreateSubnet(vpcID string, subnetParams *map[string]interface{}) (subnet *types.Subnet, err error) {
+func (ss *SubnetService) CreateSubnet(
+	vpcID string,
+	subnetParams *map[string]interface{},
+) (subnet *types.Subnet, err error) {
 	log.Debug("CreateSubnet")
 
-	data, status, err := ss.concertoService.Post(fmt.Sprintf("/network/vpcs/%s/subnets", vpcID), subnetParams)
+	data, status, err := ss.concertoService.Post(fmt.Sprintf(APIPathNetworkVpcSubnets, vpcID), subnetParams)
 
 	if err != nil {
 		return nil, err
@@ -87,10 +98,13 @@ func (ss *SubnetService) CreateSubnet(vpcID string, subnetParams *map[string]int
 }
 
 // UpdateSubnet updates a Subnet by its ID
-func (ss *SubnetService) UpdateSubnet(subnetID string, subnetParams *map[string]interface{}) (subnet *types.Subnet, err error) {
+func (ss *SubnetService) UpdateSubnet(
+	subnetID string,
+	subnetParams *map[string]interface{},
+) (subnet *types.Subnet, err error) {
 	log.Debug("UpdateSubnet")
 
-	data, status, err := ss.concertoService.Put(fmt.Sprintf("/network/subnets/%s", subnetID), subnetParams)
+	data, status, err := ss.concertoService.Put(fmt.Sprintf(APIPathNetworkSubnet, subnetID), subnetParams)
 
 	if err != nil {
 		return nil, err
@@ -111,7 +125,7 @@ func (ss *SubnetService) UpdateSubnet(subnetID string, subnetParams *map[string]
 func (ss *SubnetService) DeleteSubnet(subnetID string) (err error) {
 	log.Debug("DeleteSubnet")
 
-	data, status, err := ss.concertoService.Delete(fmt.Sprintf("/network/subnets/%s", subnetID))
+	data, status, err := ss.concertoService.Delete(fmt.Sprintf(APIPathNetworkSubnet, subnetID))
 	if err != nil {
 		return err
 	}
@@ -127,7 +141,7 @@ func (ss *SubnetService) DeleteSubnet(subnetID string) (err error) {
 func (ss *SubnetService) ListSubnetServers(subnetID string) (servers []*types.Server, err error) {
 	log.Debug("ListSubnetServers")
 
-	data, status, err := ss.concertoService.Get(fmt.Sprintf("/network/subnets/%s/servers", subnetID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf(APIPathNetworkSubnetServers, subnetID))
 
 	if err != nil {
 		return nil, err
@@ -148,7 +162,7 @@ func (ss *SubnetService) ListSubnetServers(subnetID string) (servers []*types.Se
 func (ss *SubnetService) ListSubnetServerArrays(subnetID string) (serverArrays []*types.ServerArray, err error) {
 	log.Debug("ListSubnetServerArrays")
 
-	data, status, err := ss.concertoService.Get(fmt.Sprintf("/network/subnets/%s/server_arrays", subnetID))
+	data, status, err := ss.concertoService.Get(fmt.Sprintf(APIPathNetworkSubnetServerArrays, subnetID))
 
 	if err != nil {
 		return nil, err

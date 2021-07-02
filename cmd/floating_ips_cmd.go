@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/network"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -52,13 +55,13 @@ func FloatingIPList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		fw, ok := labelable.(*types.FloatingIP)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.FloatingIP, got a %T", labelable))
 		}
 		floatingIPs[i] = fw
 	}
 	if err = formatter.PrintList(floatingIPs); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -76,7 +79,7 @@ func FloatingIPShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	floatingIP.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*floatingIP); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -107,7 +110,7 @@ func FloatingIPCreate(c *cli.Context) error {
 
 	floatingIP.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*floatingIP); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -131,7 +134,7 @@ func FloatingIPUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	floatingIP.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*floatingIP); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -155,7 +158,7 @@ func FloatingIPAttach(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

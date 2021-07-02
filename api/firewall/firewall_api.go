@@ -1,13 +1,19 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package firewall
 
 import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathCloudFirewallProfile = "/cloud/firewall_profile"
+const APIPathCloudFirewallProfileRules = "/cloud/firewall_profile/rules"
 
 // FirewallService manages firewall operations
 type FirewallService struct {
@@ -29,7 +35,7 @@ func NewFirewallService(concertoService utils.ConcertoService) (*FirewallService
 func (fs *FirewallService) GetPolicy() (policy *types.Policy, err error) {
 	log.Debug("GetPolicy")
 
-	data, status, err := fs.concertoService.Get("/cloud/firewall_profile")
+	data, status, err := fs.concertoService.Get(APIPathCloudFirewallProfile)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +56,7 @@ func (fs *FirewallService) GetPolicy() (policy *types.Policy, err error) {
 func (fs *FirewallService) AddPolicyRule(ruleParams *map[string]interface{}) (policyRule *types.PolicyRule, err error) {
 	log.Debug("AddPolicyRule")
 
-	data, status, err := fs.concertoService.Post("/cloud/firewall_profile/rules", ruleParams)
+	data, status, err := fs.concertoService.Post(APIPathCloudFirewallProfileRules, ruleParams)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +75,7 @@ func (fs *FirewallService) AddPolicyRule(ruleParams *map[string]interface{}) (po
 func (fs *FirewallService) UpdatePolicy(policyParams *map[string]interface{}) (policy *types.Policy, err error) {
 	log.Debug("UpdatePolicy")
 
-	data, status, err := fs.concertoService.Put("/cloud/firewall_profile", policyParams)
+	data, status, err := fs.concertoService.Put(APIPathCloudFirewallProfile, policyParams)
 	if err != nil {
 		return nil, err
 	}

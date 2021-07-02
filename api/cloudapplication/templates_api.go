@@ -1,12 +1,19 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cloudapplication
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+const APIPathPluginsToscaCats = "/plugins/tosca/cats"
+const APIPathPluginsToscaCat = "/plugins/tosca/cats/%s"
+const APIPathPluginsToscaCatParseMetadata = "/plugins/tosca/cats/%s/parse_metadata"
 
 // CloudApplicationTemplateService manages cloud application template operations
 type CloudApplicationTemplateService struct {
@@ -14,7 +21,9 @@ type CloudApplicationTemplateService struct {
 }
 
 // NewCloudApplicationTemplateService returns a Concerto cloud application template service
-func NewCloudApplicationTemplateService(concertoService utils.ConcertoService) (*CloudApplicationTemplateService, error) {
+func NewCloudApplicationTemplateService(
+	concertoService utils.ConcertoService,
+) (*CloudApplicationTemplateService, error) {
 	if concertoService == nil {
 		return nil, fmt.Errorf("must initialize ConcertoService before using it")
 	}
@@ -28,7 +37,7 @@ func NewCloudApplicationTemplateService(concertoService utils.ConcertoService) (
 func (cats *CloudApplicationTemplateService) ListTemplates() (templates []*types.CloudApplicationTemplate, err error) {
 	log.Debug("ListTemplates")
 
-	data, status, err := cats.concertoService.Get("/plugins/tosca/cats")
+	data, status, err := cats.concertoService.Get(APIPathPluginsToscaCats)
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +54,12 @@ func (cats *CloudApplicationTemplateService) ListTemplates() (templates []*types
 }
 
 // GetTemplate returns a cloud application template by its ID
-func (cats *CloudApplicationTemplateService) GetTemplate(templateID string) (template *types.CloudApplicationTemplate, err error) {
+func (cats *CloudApplicationTemplateService) GetTemplate(
+	templateID string,
+) (template *types.CloudApplicationTemplate, err error) {
 	log.Debug("GetTemplate")
 
-	data, status, err := cats.concertoService.Get(fmt.Sprintf("/plugins/tosca/cats/%s", templateID))
+	data, status, err := cats.concertoService.Get(fmt.Sprintf(APIPathPluginsToscaCat, templateID))
 	if err != nil {
 		return nil, err
 	}
@@ -65,10 +76,12 @@ func (cats *CloudApplicationTemplateService) GetTemplate(templateID string) (tem
 }
 
 // CreateTemplate creates a cloud application template
-func (cats *CloudApplicationTemplateService) CreateTemplate(catParams *map[string]interface{}) (template *types.CloudApplicationTemplate, err error) {
+func (cats *CloudApplicationTemplateService) CreateTemplate(
+	catParams *map[string]interface{},
+) (template *types.CloudApplicationTemplate, err error) {
 	log.Debug("CreateTemplate")
 
-	data, status, err := cats.concertoService.Post("/plugins/tosca/cats", catParams)
+	data, status, err := cats.concertoService.Post(APIPathPluginsToscaCats, catParams)
 	if err != nil {
 		return nil, err
 	}
@@ -101,11 +114,16 @@ func (cats *CloudApplicationTemplateService) UploadTemplate(sourceFilePath strin
 }
 
 // ParseMetadataTemplate process cloud application template metadata
-func (cats *CloudApplicationTemplateService) ParseMetadataTemplate(templateID string) (template *types.CloudApplicationTemplate, err error) {
+func (cats *CloudApplicationTemplateService) ParseMetadataTemplate(
+	templateID string,
+) (template *types.CloudApplicationTemplate, err error) {
 	log.Debug("ParseMetadataTemplate")
 
 	catIn := map[string]interface{}{}
-	data, status, err := cats.concertoService.Put(fmt.Sprintf("/plugins/tosca/cats/%s/parse_metadata", templateID), &catIn)
+	data, status, err := cats.concertoService.Put(
+		fmt.Sprintf(APIPathPluginsToscaCatParseMetadata, templateID),
+		&catIn,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +143,7 @@ func (cats *CloudApplicationTemplateService) ParseMetadataTemplate(templateID st
 func (cats *CloudApplicationTemplateService) DeleteTemplate(templateID string) (err error) {
 	log.Debug("DeleteTemplate")
 
-	data, status, err := cats.concertoService.Delete(fmt.Sprintf("/plugins/tosca/cats/%s", templateID))
+	data, status, err := cats.concertoService.Delete(fmt.Sprintf(APIPathPluginsToscaCat, templateID))
 	if err != nil {
 		return err
 	}

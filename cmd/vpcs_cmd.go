@@ -1,7 +1,10 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package cmd
 
 import (
 	"fmt"
+
 	"github.com/ingrammicro/cio/api/network"
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
@@ -52,13 +55,13 @@ func VPCList(c *cli.Context) error {
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.Vpc)
 		if !ok {
-			formatter.PrintFatal("Label filtering returned unexpected result",
+			formatter.PrintFatal(LabelFilteringUnexpected,
 				fmt.Errorf("expected labelable to be a *types.Vpc, got a %T", labelable))
 		}
 		vpcs[i] = v
 	}
 	if err = formatter.PrintList(vpcs); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -76,7 +79,7 @@ func VPCShow(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	vpc.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*vpc); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -108,7 +111,7 @@ func VPCCreate(c *cli.Context) error {
 
 	vpc.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*vpc); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }
@@ -132,7 +135,7 @@ func VPCUpdate(c *cli.Context) error {
 	_, labelNamesByID := LabelLoadsMapping(c)
 	vpc.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*vpc); err != nil {
-		formatter.PrintFatal("Couldn't print/format result", err)
+		formatter.PrintFatal(PrintFormatError, err)
 	}
 	return nil
 }

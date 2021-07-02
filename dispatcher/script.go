@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package dispatcher
 
 import (
@@ -5,8 +7,11 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/api/dispatcher"
 	"github.com/ingrammicro/cio/cmd"
+	"github.com/ingrammicro/cio/utils/format"
+
+	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -27,10 +32,10 @@ func cmdShutdown(c *cli.Context) error {
 	return nil
 }
 
-func execute(c *cli.Context, phase string, scriptCharacterizationUUID string) {
+func getDispatcherScriptCharacterization(
+	dispatcherSvc *dispatcher.DispatcherService, formatter format.Formatter, phase, scriptCharacterizationUUID string,
+) []*types.ScriptCharacterization {
 	var scriptChars []*types.ScriptCharacterization
-	dispatcherSvc, config, formatter := cmd.WireUpDispatcher(c)
-
 	var err error
 	log.Debugf("Current Script Characterization %s (UUID=%s)", phase, scriptCharacterizationUUID)
 	if scriptCharacterizationUUID == "" {
@@ -43,6 +48,51 @@ func execute(c *cli.Context, phase string, scriptCharacterizationUUID string) {
 	if err != nil {
 		formatter.PrintFatal("Couldn't receive Script Characterization data", err)
 	}
+	return scriptChars
+}
+
+func setEnvironmentVariables(formatter format.Formatter, parameters map[string]string) {
+	log.Infof("Environment Variables")
+	for index, value := range parameters {
+		if err := os.Setenv(index, value); err != nil {
+			formatter.PrintFatal(fmt.Sprintf("Couldn't set environment variable %s:%s", index, value), err)
+		}
+		log.Infof("\t - %s=%s", index, value)
+	}
+}
+
+func getAttachmentDir(formatter format.Formatter) string {
+	attachmentDir := os.Getenv("ATTACHMENT_DIR")
+	if err := os.Mkdir(attachmentDir, 0777); err != nil {
+		formatter.PrintFatal("Couldn't create attachments directory", err)
+	}
+	return attachmentDir
+}
+
+func downloadAttachments(
+	attachmentDir string,
+	attachmentPaths []string,
+	dispatcherSvc *dispatcher.DispatcherService,
+	config *utils.Config,
+	formatter format.Formatter,
+) {
+	log.Infof("Attachment Folder: %s", attachmentDir)
+	log.Infof("Attachments")
+	for _, endpoint := range attachmentPaths {
+		realFileName, _, err := dispatcherSvc.DownloadAttachment(
+			fmt.Sprintf("%s%s", config.APIEndpoint, endpoint),
+			attachmentDir,
+		)
+		if err != nil {
+			formatter.PrintFatal("Couldn't download attachment", err)
+		}
+		log.Infof("\t - %s --> %s", endpoint, realFileName)
+	}
+}
+
+func execute(c *cli.Context, phase string, scriptCharacterizationUUID string) {
+	dispatcherSvc, config, formatter := cmd.WireUpDispatcher(c)
+	scriptChars := getDispatcherScriptCharacterization(dispatcherSvc, formatter, phase, scriptCharacterizationUUID)
 
 	for _, sc := range scriptChars {
 		log.Infof("------------------------------------------------------------------------------------------------")
@@ -59,30 +109,13 @@ func execute(c *cli.Context, phase string, scriptCharacterizationUUID string) {
 		log.Infof("UUID: %s", sc.UUID)
 		log.Infof("Home Folder: %s", path)
 
-		attachmentDir := os.Getenv("ATTACHMENT_DIR")
-		if err = os.Mkdir(attachmentDir, 0777); err != nil {
-			formatter.PrintFatal("Couldn't create attachments directory", err)
-		}
+		attachmentDir := getAttachmentDir(formatter)
 
 		// Setting up environment Variables
-		log.Infof("Environment Variables")
-		for index, value := range sc.Parameters {
-			if err = os.Setenv(index, value); err != nil {
-				formatter.PrintFatal(fmt.Sprintf("Couldn't set environment variable %s:%s", index, value), err)
-			}
-			log.Infof("\t - %s=%s", index, value)
-		}
+		setEnvironmentVariables(formatter, sc.Parameters)
 
 		if len(sc.Script.AttachmentPaths) > 0 {
-			log.Infof("Attachment Folder: %s", attachmentDir)
-			log.Infof("Attachments")
-			for _, endpoint := range sc.Script.AttachmentPaths {
-				realFileName, _, err := dispatcherSvc.DownloadAttachment(fmt.Sprintf("%s%s", config.APIEndpoint, endpoint), attachmentDir)
-				if err != nil {
-					formatter.PrintFatal("Couldn't download attachment", err)
-				}
-				log.Infof("\t - %s --> %s", endpoint, realFileName)
-			}
+			downloadAttachments(attachmentDir, sc.Script.AttachmentPaths, dispatcherSvc, config, formatter)
 		}
 
 		output, exitCode, startedAt, finishedAt := utils.ExecCode(sc.Script.Code, path, sc.Script.UUID)

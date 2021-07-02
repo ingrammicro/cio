@@ -1,16 +1,23 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package network
 
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // ListTargetGroupsMocked test mocked function
-func ListTargetGroupsMocked(t *testing.T, loadBalancerID string, targetGroupsIn []*types.TargetGroup) []*types.TargetGroup {
+func ListTargetGroupsMocked(
+	t *testing.T,
+	loadBalancerID string,
+	targetGroupsIn []*types.TargetGroup,
+) []*types.TargetGroup {
 
 	assert := assert.New(t)
 
@@ -25,7 +32,7 @@ func ListTargetGroupsMocked(t *testing.T, loadBalancerID string, targetGroupsIn 
 	assert.Nil(err, "TargetGroups test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/target_groups", loadBalancerID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerTargetGroups, loadBalancerID)).Return(dIn, 200, nil)
 	targetGroupsOut, err := ds.ListTargetGroups(loadBalancerID)
 
 	assert.Nil(err, "Error getting target groups")
@@ -35,7 +42,11 @@ func ListTargetGroupsMocked(t *testing.T, loadBalancerID string, targetGroupsIn 
 }
 
 // ListTargetGroupsFailErrMocked test mocked function
-func ListTargetGroupsFailErrMocked(t *testing.T, loadBalancerID string, targetGroupsIn []*types.TargetGroup) []*types.TargetGroup {
+func ListTargetGroupsFailErrMocked(
+	t *testing.T,
+	loadBalancerID string,
+	targetGroupsIn []*types.TargetGroup,
+) []*types.TargetGroup {
 
 	assert := assert.New(t)
 
@@ -50,7 +61,8 @@ func ListTargetGroupsFailErrMocked(t *testing.T, loadBalancerID string, targetGr
 	assert.Nil(err, "TargetGroups test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/target_groups", loadBalancerID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerTargetGroups, loadBalancerID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	targetGroupsOut, err := ds.ListTargetGroups(loadBalancerID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -61,7 +73,11 @@ func ListTargetGroupsFailErrMocked(t *testing.T, loadBalancerID string, targetGr
 }
 
 // ListTargetGroupsFailStatusMocked test mocked function
-func ListTargetGroupsFailStatusMocked(t *testing.T, loadBalancerID string, targetGroupsIn []*types.TargetGroup) []*types.TargetGroup {
+func ListTargetGroupsFailStatusMocked(
+	t *testing.T,
+	loadBalancerID string,
+	targetGroupsIn []*types.TargetGroup,
+) []*types.TargetGroup {
 
 	assert := assert.New(t)
 
@@ -76,7 +92,7 @@ func ListTargetGroupsFailStatusMocked(t *testing.T, loadBalancerID string, targe
 	assert.Nil(err, "TargetGroups test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/target_groups", loadBalancerID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerTargetGroups, loadBalancerID)).Return(dIn, 499, nil)
 	targetGroupsOut, err := ds.ListTargetGroups(loadBalancerID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -87,7 +103,11 @@ func ListTargetGroupsFailStatusMocked(t *testing.T, loadBalancerID string, targe
 }
 
 // ListTargetGroupsFailJSONMocked test mocked function
-func ListTargetGroupsFailJSONMocked(t *testing.T, loadBalancerID string, targetGroupsIn []*types.TargetGroup) []*types.TargetGroup {
+func ListTargetGroupsFailJSONMocked(
+	t *testing.T,
+	loadBalancerID string,
+	targetGroupsIn []*types.TargetGroup,
+) []*types.TargetGroup {
 
 	assert := assert.New(t)
 
@@ -101,7 +121,7 @@ func ListTargetGroupsFailJSONMocked(t *testing.T, loadBalancerID string, targetG
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/load_balancers/%s/target_groups", loadBalancerID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkLoadBalancerTargetGroups, loadBalancerID)).Return(dIn, 200, nil)
 	targetGroupsOut, err := ds.ListTargetGroups(loadBalancerID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -127,7 +147,7 @@ func GetTargetGroupMocked(t *testing.T, targetGroupIn *types.TargetGroup) *types
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID)).Return(dIn, 200, nil)
 	targetGroupOut, err := ds.GetTargetGroup(targetGroupIn.ID)
 
 	assert.Nil(err, "Error getting target group")
@@ -152,7 +172,8 @@ func GetTargetGroupFailErrMocked(t *testing.T, targetGroupIn *types.TargetGroup)
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	targetGroupOut, err := ds.GetTargetGroup(targetGroupIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -178,7 +199,7 @@ func GetTargetGroupFailStatusMocked(t *testing.T, targetGroupIn *types.TargetGro
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID)).Return(dIn, 499, nil)
 	targetGroupOut, err := ds.GetTargetGroup(targetGroupIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -203,7 +224,7 @@ func GetTargetGroupFailJSONMocked(t *testing.T, targetGroupIn *types.TargetGroup
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID)).Return(dIn, 200, nil)
 	targetGroupOut, err := ds.GetTargetGroup(targetGroupIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -233,7 +254,7 @@ func CreateTargetGroupMocked(t *testing.T, loadBalancerID string, targetGroupIn 
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/target_groups", loadBalancerID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerTargetGroups, loadBalancerID), mapIn).Return(dOut, 200, nil)
 	targetGroupOut, err := ds.CreateTargetGroup(loadBalancerID, mapIn)
 
 	assert.Nil(err, "Error creating target group")
@@ -243,7 +264,11 @@ func CreateTargetGroupMocked(t *testing.T, loadBalancerID string, targetGroupIn 
 }
 
 // CreateTargetGroupFailErrMocked test mocked function
-func CreateTargetGroupFailErrMocked(t *testing.T, loadBalancerID string, targetGroupIn *types.TargetGroup) *types.TargetGroup {
+func CreateTargetGroupFailErrMocked(
+	t *testing.T,
+	loadBalancerID string,
+	targetGroupIn *types.TargetGroup,
+) *types.TargetGroup {
 
 	assert := assert.New(t)
 
@@ -262,7 +287,8 @@ func CreateTargetGroupFailErrMocked(t *testing.T, loadBalancerID string, targetG
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/target_groups", loadBalancerID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerTargetGroups, loadBalancerID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	targetGroupOut, err := ds.CreateTargetGroup(loadBalancerID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -273,7 +299,11 @@ func CreateTargetGroupFailErrMocked(t *testing.T, loadBalancerID string, targetG
 }
 
 // CreateTargetGroupFailStatusMocked test mocked function
-func CreateTargetGroupFailStatusMocked(t *testing.T, loadBalancerID string, targetGroupIn *types.TargetGroup) *types.TargetGroup {
+func CreateTargetGroupFailStatusMocked(
+	t *testing.T,
+	loadBalancerID string,
+	targetGroupIn *types.TargetGroup,
+) *types.TargetGroup {
 
 	assert := assert.New(t)
 
@@ -292,7 +322,7 @@ func CreateTargetGroupFailStatusMocked(t *testing.T, loadBalancerID string, targ
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/target_groups", loadBalancerID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerTargetGroups, loadBalancerID), mapIn).Return(dOut, 499, nil)
 	targetGroupOut, err := ds.CreateTargetGroup(loadBalancerID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -303,7 +333,11 @@ func CreateTargetGroupFailStatusMocked(t *testing.T, loadBalancerID string, targ
 }
 
 // CreateTargetGroupFailJSONMocked test mocked function
-func CreateTargetGroupFailJSONMocked(t *testing.T, loadBalancerID string, targetGroupIn *types.TargetGroup) *types.TargetGroup {
+func CreateTargetGroupFailJSONMocked(
+	t *testing.T,
+	loadBalancerID string,
+	targetGroupIn *types.TargetGroup,
+) *types.TargetGroup {
 
 	assert := assert.New(t)
 
@@ -321,7 +355,7 @@ func CreateTargetGroupFailJSONMocked(t *testing.T, loadBalancerID string, target
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/load_balancers/%s/target_groups", loadBalancerID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkLoadBalancerTargetGroups, loadBalancerID), mapIn).Return(dIn, 200, nil)
 	targetGroupOut, err := ds.CreateTargetGroup(loadBalancerID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -351,7 +385,7 @@ func UpdateTargetGroupMocked(t *testing.T, targetGroupIn *types.TargetGroup) *ty
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID), mapIn).Return(dOut, 200, nil)
 	targetGroupOut, err := ds.UpdateTargetGroup(targetGroupIn.ID, mapIn)
 
 	assert.Nil(err, "Error updating target group")
@@ -380,7 +414,8 @@ func UpdateTargetGroupFailErrMocked(t *testing.T, targetGroupIn *types.TargetGro
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	targetGroupOut, err := ds.UpdateTargetGroup(targetGroupIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -410,7 +445,7 @@ func UpdateTargetGroupFailStatusMocked(t *testing.T, targetGroupIn *types.Target
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID), mapIn).Return(dOut, 499, nil)
 	targetGroupOut, err := ds.UpdateTargetGroup(targetGroupIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -439,7 +474,7 @@ func UpdateTargetGroupFailJSONMocked(t *testing.T, targetGroupIn *types.TargetGr
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID), mapIn).Return(dIn, 200, nil)
 	targetGroupOut, err := ds.UpdateTargetGroup(targetGroupIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -465,7 +500,7 @@ func DeleteTargetGroupMocked(t *testing.T, targetGroupIn *types.TargetGroup) {
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID)).Return(dIn, 200, nil)
 	targetGroupOut, err := ds.DeleteTargetGroup(targetGroupIn.ID)
 
 	assert.Nil(err, "Error deleting target group")
@@ -489,7 +524,8 @@ func DeleteTargetGroupFailErrMocked(t *testing.T, targetGroupIn *types.TargetGro
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	targetGroupOut, err := ds.DeleteTargetGroup(targetGroupIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -513,7 +549,7 @@ func DeleteTargetGroupFailStatusMocked(t *testing.T, targetGroupIn *types.Target
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID)).Return(dIn, 499, nil)
 	targetGroupOut, err := ds.DeleteTargetGroup(targetGroupIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -536,7 +572,7 @@ func DeleteTargetGroupFailJSONMocked(t *testing.T, targetGroupIn *types.TargetGr
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/target_groups/%s", targetGroupIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkTargetGroup, targetGroupIn.ID)).Return(dIn, 200, nil)
 	targetGroupOut, err := ds.DeleteTargetGroup(targetGroupIn.ID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -564,7 +600,7 @@ func RetryTargetGroupMocked(t *testing.T, targetGroupIn *types.TargetGroup) *typ
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/target_groups/%s/retry", targetGroupIn.ID), mapIn).Return(dOut, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkTargetGroupRetry, targetGroupIn.ID), mapIn).Return(dOut, 200, nil)
 	targetGroupOut, err := ds.RetryTargetGroup(targetGroupIn.ID, mapIn)
 
 	assert.Nil(err, "Error retrying target group")
@@ -593,7 +629,8 @@ func RetryTargetGroupFailErrMocked(t *testing.T, targetGroupIn *types.TargetGrou
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/target_groups/%s/retry", targetGroupIn.ID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Put", fmt.Sprintf(APIPathNetworkTargetGroupRetry, targetGroupIn.ID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	targetGroupOut, err := ds.RetryTargetGroup(targetGroupIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -623,7 +660,7 @@ func RetryTargetGroupFailStatusMocked(t *testing.T, targetGroupIn *types.TargetG
 	assert.Nil(err, "TargetGroup test data corrupted")
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/target_groups/%s/retry", targetGroupIn.ID), mapIn).Return(dOut, 499, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkTargetGroupRetry, targetGroupIn.ID), mapIn).Return(dOut, 499, nil)
 	targetGroupOut, err := ds.RetryTargetGroup(targetGroupIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -652,7 +689,7 @@ func RetryTargetGroupFailJSONMocked(t *testing.T, targetGroupIn *types.TargetGro
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Put", fmt.Sprintf("/network/target_groups/%s/retry", targetGroupIn.ID), mapIn).Return(dIn, 200, nil)
+	cs.On("Put", fmt.Sprintf(APIPathNetworkTargetGroupRetry, targetGroupIn.ID), mapIn).Return(dIn, 200, nil)
 	targetGroupOut, err := ds.RetryTargetGroup(targetGroupIn.ID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -678,7 +715,7 @@ func ListTargetsMocked(t *testing.T, targetGroupID string, targetsIn []*types.Ta
 	assert.Nil(err, "Targets test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/target_groups/%s/targets", targetGroupID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkTargetGroupTargets, targetGroupID)).Return(dIn, 200, nil)
 	targetsOut, err := ds.ListTargets(targetGroupID)
 
 	assert.Nil(err, "Error getting targets")
@@ -703,7 +740,8 @@ func ListTargetsFailErrMocked(t *testing.T, targetGroupID string, targetsIn []*t
 	assert.Nil(err, "Targets test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/target_groups/%s/targets", targetGroupID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Get", fmt.Sprintf(APIPathNetworkTargetGroupTargets, targetGroupID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	targetsOut, err := ds.ListTargets(targetGroupID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -729,7 +767,7 @@ func ListTargetsFailStatusMocked(t *testing.T, targetGroupID string, targetsIn [
 	assert.Nil(err, "Targets test data corrupted")
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/target_groups/%s/targets", targetGroupID)).Return(dIn, 499, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkTargetGroupTargets, targetGroupID)).Return(dIn, 499, nil)
 	targetsOut, err := ds.ListTargets(targetGroupID)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -754,7 +792,7 @@ func ListTargetsFailJSONMocked(t *testing.T, targetGroupID string, targetsIn []*
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Get", fmt.Sprintf("/network/target_groups/%s/targets", targetGroupID)).Return(dIn, 200, nil)
+	cs.On("Get", fmt.Sprintf(APIPathNetworkTargetGroupTargets, targetGroupID)).Return(dIn, 200, nil)
 	targetsOut, err := ds.ListTargets(targetGroupID)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -784,7 +822,7 @@ func CreateTargetMocked(t *testing.T, targetGroupID string, targetIn *types.Targ
 	assert.Nil(err, "Target test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/target_groups/%s/targets", targetGroupID), mapIn).Return(dOut, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkTargetGroupTargets, targetGroupID), mapIn).Return(dOut, 200, nil)
 	targetOut, err := ds.CreateTarget(targetGroupID, mapIn)
 
 	assert.Nil(err, "Error creating target")
@@ -813,7 +851,8 @@ func CreateTargetFailErrMocked(t *testing.T, targetGroupID string, targetIn *typ
 	assert.Nil(err, "Target test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/target_groups/%s/targets", targetGroupID), mapIn).Return(dOut, 200, fmt.Errorf("mocked error"))
+	cs.On("Post", fmt.Sprintf(APIPathNetworkTargetGroupTargets, targetGroupID), mapIn).
+		Return(dOut, 200, fmt.Errorf("mocked error"))
 	targetOut, err := ds.CreateTarget(targetGroupID, mapIn)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -843,7 +882,7 @@ func CreateTargetFailStatusMocked(t *testing.T, targetGroupID string, targetIn *
 	assert.Nil(err, "Target test data corrupted")
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/target_groups/%s/targets", targetGroupID), mapIn).Return(dOut, 499, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkTargetGroupTargets, targetGroupID), mapIn).Return(dOut, 499, nil)
 	targetOut, err := ds.CreateTarget(targetGroupID, mapIn)
 
 	assert.NotNil(err, "We are expecting an status code error")
@@ -872,7 +911,7 @@ func CreateTargetFailJSONMocked(t *testing.T, targetGroupID string, targetIn *ty
 	dIn := []byte{10, 20, 30}
 
 	// call service
-	cs.On("Post", fmt.Sprintf("/network/target_groups/%s/targets", targetGroupID), mapIn).Return(dIn, 200, nil)
+	cs.On("Post", fmt.Sprintf(APIPathNetworkTargetGroupTargets, targetGroupID), mapIn).Return(dIn, 200, nil)
 	targetOut, err := ds.CreateTarget(targetGroupID, mapIn)
 
 	assert.NotNil(err, "We are expecting a marshalling error")
@@ -898,7 +937,8 @@ func DeleteTargetMocked(t *testing.T, targetGroupID string, targetIn *types.Targ
 	assert.Nil(err, "Target test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/target_groups/%s/targets/%s/%s", targetGroupID, targetIn.ResourceType, targetIn.ID)).Return(dIn, 200, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkTargetGroupTarget, targetGroupID, targetIn.ResourceType, targetIn.ID)).
+		Return(dIn, 200, nil)
 	err = ds.DeleteTarget(targetGroupID, targetIn.ResourceType, targetIn.ID)
 
 	assert.Nil(err, "Error deleting target")
@@ -920,7 +960,8 @@ func DeleteTargetFailErrMocked(t *testing.T, targetGroupID string, targetIn *typ
 	assert.Nil(err, "Target test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/target_groups/%s/targets/%s/%s", targetGroupID, targetIn.ResourceType, targetIn.ID)).Return(dIn, 200, fmt.Errorf("mocked error"))
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkTargetGroupTarget, targetGroupID, targetIn.ResourceType, targetIn.ID)).
+		Return(dIn, 200, fmt.Errorf("mocked error"))
 	err = ds.DeleteTarget(targetGroupID, targetIn.ResourceType, targetIn.ID)
 
 	assert.NotNil(err, "We are expecting an error")
@@ -943,7 +984,8 @@ func DeleteTargetFailStatusMocked(t *testing.T, targetGroupID string, targetIn *
 	assert.Nil(err, "Target test data corrupted")
 
 	// call service
-	cs.On("Delete", fmt.Sprintf("/network/target_groups/%s/targets/%s/%s", targetGroupID, targetIn.ResourceType, targetIn.ID)).Return(dIn, 499, nil)
+	cs.On("Delete", fmt.Sprintf(APIPathNetworkTargetGroupTarget, targetGroupID, targetIn.ResourceType, targetIn.ID)).
+		Return(dIn, 499, nil)
 	err = ds.DeleteTarget(targetGroupID, targetIn.ResourceType, targetIn.ID)
 
 	assert.NotNil(err, "We are expecting an status code error")
