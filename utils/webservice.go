@@ -238,9 +238,11 @@ func (hcs *HTTPConcertoservice) GetFile(url string, filePath string, discoveryFi
 	if err != nil {
 		return "", 0, err
 	}
-
 	defer response.Body.Close()
 	log.Debugf("Status code:%d message:%s", response.StatusCode, response.Status)
+	if response.StatusCode < 200 || response.StatusCode > 299 {
+		return "", response.StatusCode, fmt.Errorf("HTTP request failed with status %s", response.Status)
+	}
 
 	realFileName := filePath
 	if discoveryFileName {
