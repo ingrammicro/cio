@@ -4,20 +4,6 @@ metadata:
   generateName: -build-wf-
 spec:
   entrypoint: build-pipeline
-  ttlSecondsAfterFinished: 86400
-  activeDeadlineSeconds: 7200
-  serviceAccountName: argo
-  nodeSelector:
-    agentpool: argopool
-  tolerations:
-  - effect: NoSchedule
-    key: pooltype
-    operator: Equal
-    value: lowpri
-  - effect: NoSchedule
-    key: argo
-    operator: Equal
-    value: dedicated
   arguments:
     parameters:
     - name: repo
@@ -71,6 +57,13 @@ spec:
             value: "{{workflow.parameters.repo}}"
           - name: branch
             value: "{{workflow.parameters.branch}}"
+
+      - name: dependency-track
+        dependencies: [dependencies]
+        templateRef:
+          name: workflow-template-sonar-template-1.1
+          template: go-dependency-track
+        when: "('{{workflow.parameters.branch}}' =~ '^v[0-9\\.]+$')"
 
       - name: go-build
         dependencies: [dependencies]
