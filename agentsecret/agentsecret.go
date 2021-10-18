@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2021 Ingram Micro Inc.
+
 package agentsecret
 
 import (
@@ -7,12 +9,13 @@ import (
 	"github.com/urfave/cli"
 )
 
-// SubCommands returns dispatcher commands
+// SubCommands returns secret commands
 func SubCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:   "retrieve",
-			Usage:  "Renders content of a secret",
+			Name: "retrieve",
+			Usage: "Dumps contents of the secret version with the ID given as " +
+				"first argument into the file given as second argument",
 			Action: cmdRetrieveSecret,
 		},
 	}
