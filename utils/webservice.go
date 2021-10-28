@@ -13,6 +13,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -20,6 +21,7 @@ import (
 const WebServiceConfigurationFailed = "web service configuration failed. No data in configuration"
 const ContentTypeApplicationJson = "application/json"
 const ConfigurationIsIncomplete = "configuration is incomplete"
+const HttpTimeOut = 30
 
 // ConcertoService defines actions to be performed by web service manager
 type ConcertoService interface {
@@ -80,6 +82,7 @@ func NewHTTPConcertoService(config *Config) (hcs *HTTPConcertoservice, err error
 				Certificates: []tls.Certificate{cert},
 			},
 		},
+		Timeout: time.Second * time.Duration(HttpTimeOut),
 	}
 	return hcs, nil
 }
@@ -106,6 +109,7 @@ func NewHTTPConcertoServiceWithBrownfieldToken(config *Config) (hcs *HTTPConcert
 				InsecureSkipVerify: true,
 			},
 		},
+		Timeout: time.Second * time.Duration(HttpTimeOut),
 	}
 	return hcs, nil
 }
@@ -132,6 +136,7 @@ func NewHTTPConcertoServiceWithCommandPolling(config *Config) (hcs *HTTPConcerto
 				InsecureSkipVerify: true,
 			},
 		},
+		Timeout: time.Second * time.Duration(HttpTimeOut),
 	}
 	return hcs, nil
 }
