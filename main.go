@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 
+	"github.com/ingrammicro/cio/agentsecret"
 	"github.com/ingrammicro/cio/audit"
 	"github.com/ingrammicro/cio/blueprint"
 	"github.com/ingrammicro/cio/bootstrapping"
@@ -61,6 +62,11 @@ var serverCommands = []cli.Command{
 		Name:        "scripts",
 		Usage:       "Manages Execution Scripts within a Host",
 		Subcommands: append(dispatcher.SubCommands()),
+	},
+	{
+		Name:        "secret",
+		Usage:       "Accesses to secrets within a Host",
+		Subcommands: append(agentsecret.SubCommands()),
 	},
 }
 
