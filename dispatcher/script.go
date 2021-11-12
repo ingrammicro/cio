@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/ingrammicro/cio/api/dispatcher"
 	"github.com/ingrammicro/cio/cmd"
@@ -129,7 +130,24 @@ func execute(c *cli.Context, phase string, scriptCharacterizationUUID string) {
 		scriptConclusionRootIn := map[string]interface{}{
 			"script_conclusion": scriptConclusionIn,
 		}
-		_, _, err = dispatcherSvc.ReportScriptConclusions(&scriptConclusionRootIn)
+
+		err = utils.Retry(5, time.Second, func() error {
+			log.Info("Calling ReportScriptConclusions")
+
+			_, statusCode, err := dispatcherSvc.ReportScriptConclusions(&scriptConclusionRootIn)
+			switch {
+			// 0<100 error cases??
+			case statusCode == 0:
+				return fmt.Errorf("communication error %v %v", statusCode, err)
+			case statusCode >= 500:
+				return fmt.Errorf("server error %v %v", statusCode, err)
+			case statusCode >= 400:
+				return fmt.Errorf("client error %v %v", statusCode, err)
+			default:
+				return nil
+			}
+		})
+
 		if err != nil {
 			formatter.PrintFatal("Couldn't send script_conclusions report data", err)
 		}
