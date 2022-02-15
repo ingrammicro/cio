@@ -19,10 +19,10 @@ func TestNewServerPlanServiceNil(t *testing.T) {
 func TestListServerPlans(t *testing.T) {
 	serverPlansIn := testdata.GetServerPlanData()
 	for _, serverPlanIn := range serverPlansIn {
-		ListServerPlansMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
-		ListServerPlansFailErrMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
-		ListServerPlansFailStatusMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
-		ListServerPlansFailJSONMocked(t, serverPlansIn, serverPlanIn.CloudProviderID)
+		ListServerPlansMocked(t, serverPlansIn, serverPlanIn.CloudProviderID, serverPlanIn.RealmID)
+		ListServerPlansFailErrMocked(t, serverPlansIn, serverPlanIn.CloudProviderID, serverPlanIn.RealmID)
+		ListServerPlansFailStatusMocked(t, serverPlansIn, serverPlanIn.CloudProviderID, serverPlanIn.RealmID)
+		ListServerPlansFailJSONMocked(t, serverPlansIn, serverPlanIn.CloudProviderID, serverPlanIn.RealmID)
 	}
 }
 
