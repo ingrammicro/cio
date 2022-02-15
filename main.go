@@ -74,7 +74,7 @@ var clientCommands = []cli.Command{
 	{
 		Name:        "blueprint",
 		ShortName:   "bl",
-		Usage:       "Manages blueprint commands for scripts, services and templates",
+		Usage:       "Manages blueprint commands for scripts, cookbook versions and templates",
 		Subcommands: append(blueprint.SubCommands()),
 	},
 	{

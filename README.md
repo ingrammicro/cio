@@ -9,7 +9,7 @@ Ingram Micro Cloud Orchestrator Command Line Interface (aka IMCO CLI) allows you
 
 If you are already using IMCO CLI, and only want to obtain the latest version, download IMCO CLI from <https://github.com/ingrammicro/cio/releases/latest>
 
-> NOTE: IMCO CLI is named as `concerto` in terms of the binary and executable.
+> NOTE: IMCO CLI is named as `cio` in terms of the binary and executable.
 
 If you want to build the CLI using the source code, please, take into account that the master branch is the adequate one to be used for latest stable and published version of IMCO CLI.
 
@@ -29,7 +29,7 @@ If you want to build the CLI using the source code, please, take into account th
   - [Blueprint](#blueprint)
     - [Blueprint Use Case](#blueprint-use-case)
       - [Template OS](#template-os)
-      - [Service List](#service-list)
+      - [Cookbook versions](#cookbook-versions)
       - [Instantiate a server](#instantiate-a-server)
   - [Firewall Management](#firewall-management)
     - [Firewall Update Case](#firewall-update-case)
@@ -43,7 +43,7 @@ If you want to build the CLI using the source code, please, take into account th
 
 Before setting up the CLI, you will need a IMCO account, and an API key associated with your account.
 
-> NOTE: The API Endpoint server value depends on the targeted IMCO platform domain: <https://clients.{IMCO_DOMAIN}:886>
+> NOTE: The API Endpoint server value depends on the targeted IMCO platform domain: <https://clients.{IMCO_DOMAIN}>
 
 Once your account has been provisioned, we recommend you to follow the configuration guide indicated below: [manual setup](#manual-setup)
 
@@ -51,7 +51,7 @@ Once your account has been provisioned, we recommend you to follow the configura
 
 Use IMCO's Web UI to navigate the menus to `Settings` > `User Details` and scroll down until you find the `API Key` button.
 
-<img src="./docs/images/newAPIkey.png" alt="API Key" width="500px" >
+<img src="./docs/images/newAPIkey.png" alt="API Key">
 
 Pressing `Create and download a new API key` will download a compressed file that contains the necessary files to authenticate with IMCO API and manage your infrastructure. `Keep it safe`.
 
@@ -60,9 +60,7 @@ Extract the contents with your zip compressor of choice and continue using the s
 ## Linux and OSX
 
 ### Configuration
-
-IMCO CLI configuration will usually be located in your personal folder under `.concerto`. If you are using root, CLI will look for contiguration files under `/etc/cio`.
-We will assume that you are not root, so create the folder and drop the certificates to this location:
+IMCO CLI configuration will usually be located in your personal folder under `.concerto`. If you are using root, CLI will look for configuration files under `/etc/cio`. We will assume that you are not root, so create the folder and drop the certificates to this location:
 
 ```bash
 $ mkdir -p ~/.concerto/ssl/
@@ -80,13 +78,13 @@ This command will generate the file `~/.concerto/client.xml` with suitable conte
 
 ```bash
 $ cat <<EOF > ~/.concerto/client.xml
-<concerto version="1.0" server="https://clients.{IMCO_DOMAIN}:886/" log_file="/var/log/concerto-client.log" log_level="info">
+<concerto version="1.0" server="https://clients.{IMCO_DOMAIN}/v3/" log_file="/var/log/concerto-client.log" log_level="info">
  <ssl cert="$HOME/.concerto/ssl/cert.crt" key="$HOME/.concerto/ssl/private/cert.key" server_ca="$HOME/.concerto/ssl/ca_cert.pem" />
 </concerto>
 EOF
 ```
 
-> NOTE: Please, remember to replace `{IMCO_DOMAIN}` with the right domain of your IMCO platform.
+> NOTE: Please, remember to replace `{IMCO_DOMAIN}` with the right domain of your IMCO platform. At the same time, ensure to set the current API version: `v3`
 
 We should have in your `.concerto` folder this structure:
 
@@ -130,75 +128,72 @@ NAME:
 USAGE:
    cio [global options] command [command options] [arguments...]
 
-VERSION:
-   0.7.0
-
 AUTHOR:
    Ingram Micro <https://github.com/ingrammicro/cio>
 
 COMMANDS:
-     blueprint, bl  Manages blueprint commands for scripts, services and templates
-     cloud, clo     Manages cloud related commands for servers, generic images, ssh profiles, cloud providers, server plans and Saas providers
-     events, ev     Events allow the user to track their actions and the state of their servers
-     labels, lbl    Provides information about labels
-     network, net   Manages network related commands for firewall profiles
-     settings, set  Provides settings for cloud accounts
-     setup, se      Configures and setups concerto cli enviroment
-     wizard, wiz    Manages wizard related commands for apps, locations, cloud providers, server plans
+   blueprint, bl                   Manages blueprint commands for scripts, cookbook versions and templates
+   brownfield, bf                  Manages brownfield resources, allowing users to discover and import servers, VPCs, floating IPs, volumes and policies from different cloud accounts into the system.
+   cloud, clo                      Manages cloud related commands for server arrays, servers, generic images, ssh profiles, cloud providers, realms, server plans and infrastructure archives
+   cloud-applications, ca          Manages cloud application templates -CATs- and deployments
+   cloud-specific-extensions, cse  Manages cloud specific extensions -CSEs- templates and deployments
+   events, ev                      Events allow the user to track their actions and the state of their servers
+   kubernetes, k8s                 Manages kubernetes commands for clusters and node pools
+   labels, lbl                     Provides information about labels
+   network, net                    Manages network related commands
+   settings, set                   Provides settings for cloud accounts and policies
+   storage, st                     Manages storage commands for plans and volumes
+   wizard, wiz                     Manages wizard related commands for apps, locations, cloud providers, server plans
 ...
 ```
 
 To test that certificates are valid, and that we can communicate with IMCO server, obtain the list of cloud providers at your IMCO account using this command
 
 ```bash
-$ cio cloud cloud_providers list
-ID                         NAME
-5aabb7511de0240abb000001   AWS
-5aabb7511de0240abb000002   Mock
-5aabb7511de0240abb000003   DigitalOcean
-5aabb7511de0240abb000004   Microsoft Azure ARM
-5aabb7511de0240abb000005   Microsoft Azure
-5aba04be425b5d0c16000000   VCloud
+$ cio cloud cloud-providers list
+ID                         NAME                  
+5da72f97588464053ffcb855   AWS                  
+5da72f98588464053ffcb857   Microsoft Azure
 ```
 
 ## Environment variables
 
 When using IMCO CLI you can override configuration parameters using the following environment variables:
 
-Env. Variable | Descripcion
-------------------------|---------------------
-`CONCERTO_CA_CERT` | CA certificate used with the API endpoint.
-`CONCERTO_CLIENT_CERT` | Client certificate used with the API endpoint.
-`CONCERTO_CLIENT_KEY` | Client key used with the API endpoint.
-`CONCERTO_CONFIG` | Config file to be read by Concerto CLI.
-`CONCERTO_ENDPOINT` | IMCO API endpoint
-`CONCERTO_URL` | IMCO web site URL.
+| Env. Variable          | Description                                    |
+|------------------------|------------------------------------------------|
+| `CONCERTO_CA_CERT`     | CA certificate used with the API endpoint.     |
+| `CONCERTO_CLIENT_CERT` | Client certificate used with the API endpoint. |
+| `CONCERTO_CLIENT_KEY`  | Client key used with the API endpoint.         |
+| `CONCERTO_CONFIG`      | Config file to be read by IMCO CLI.            |
+| `CONCERTO_ENDPOINT`    | IMCO API endpoint.                             |
+| `CONCERTO_URL`         | IMCO web site URL.                             |
 
 ## Troubleshooting
 
 If you got an error executing IMCO CLI:
 
-- execute `which concerto` to make sure that the binary is installed.
-- execute `ls -l /path/to/concerto` with the output from the previous command, and check that you have execute permissions.
-- execute `$PATH` and search for the path where `concerto` is installed. If `concerto` isn't in the path, move it to a `$PATH` location.
-- check that your internet connection can reach `clients.{IMCO_DOMAIN}`
-- make sure that your firewall lets you access to <https://clients.{IMCO_DOMAIN}:886>
-- check that `client.xml` is pointing to the correct certificates location
-- if `concerto` executes but only shows server commands, you are probably trying to use `cio` from a commissioned server, and the configuration is being read from `/etc/cio`. If that's the case, you should leave `concerto` configuration untouched so that server commands are available for our remote management.
+- execute `which cio` to make sure that the binary is installed.
+- execute `ls -l /path/to/cio` with the output from the previous command, and check that you have execute permissions.
+- execute `$PATH` and search for the path where `cio` is installed. If `cio` isn't in the path, move it to a `$PATH` location.
+- check that your internet connection can reach `clients.{IMCO_DOMAIN}`.
+- make sure that your firewall lets you access to <https://clients.{IMCO_DOMAIN}>.
+- check that `client.xml` is pointing to the correct certificates' location.
+- if `cio` executes but only shows server commands, you are probably trying to use `cio` from a commissioned server, and the configuration is being read from `/etc/cio`. If that's the case, you should leave `cio` configuration untouched so that server commands are available for our remote management.
 
 ## Usage
 
-We include the most common use cases here. If you feel there is a missing a use case here, open an github issue <https://github.com/ingrammicro/cio/issues/new>.
+We include the most common use cases here. If you feel there is a missing a use case here, open a GitHub issue <https://github.com/ingrammicro/cio/issues/new>.
 
-From release 0.7.0 the resources can be organized using labels, a many-to-many relationship between labels and resources, based on User criteria and needs ('workspaces' are not available anymore)
+The resources can be organized using labels, a many-to-many relationship between labels and resources, based on User criteria and needs.
 
 ## Wizard
 
-The Wizard command for IMCO CLI is the command line version of our `Quick add server` in the IMCO's Web UI.
+The Wizard command for IMCO CLI is the command line version of our `Quick launch server` in the IMCO's Web UI.
 
-<img src="./docs/images/webwizard.png" alt="Web Wizard" width="500px" >
+<img src="./docs/images/webwizard.png" alt="Web Wizard">
 
-Wizard is the quickest way to install a well known stack in a cloud server. You can get an idea of what the wizard does using the command `concerto wizard` without further subcommands:
+Wizard is the quickest way to install a well known stack in a cloud server. You can get an idea of what the wizard does using the command `cio wizard` without further subcommands:
 
 ```bash
 $ cio wizard
@@ -209,10 +204,10 @@ USAGE:
     command [command options] [arguments...]
 
 COMMANDS:
-     apps             Provides information about apps
-     cloud_providers  Provides information about cloud providers
-     locations        Provides information about locations
-     server_plans     Provides information about server plans
+    apps             Provides information about apps
+    cloud-providers  Provides information about cloud providers
+    locations        Provides information about locations
+    server-plans     Provides information about server plans
 ...
 ```
 
@@ -220,217 +215,302 @@ IMCO CLI Wizard lets you select the application layer, the location, the cloud p
 
 ### Wizard Use Case
 
-Let's type `concerto wizard apps list` to check what applications we can instantiate as cloud servers using IMCO CLI wizard.
+Let's type `cio wizard apps list` to check what applications we can instantiate as cloud servers using IMCO CLI wizard.
 
 ```bash
 $ cio wizard apps list
-ID                         NAME              FLAVOUR_REQUIREMENTS   GENERIC_IMAGE_ID
-5aabb75a1de0240abb000185   Ubuntu 14.04      {}                     5aabb7551de0240abb000064
-5aabb75a1de0240abb000186   Ubuntu 16.04      {}                     5aabb7551de0240abb000065
-5aabb75a1de0240abb000187   Windows 2012 R2   {"memory":4096}        5aabb7551de0240abb000066
-5aabb75a1de0240abb000188   Joomla            {"memory":1024}        5aabb7551de0240abb000064
-5aabb75a1de0240abb000189   Magento           {"memory":1024}        5aabb7551de0240abb000064
-5aabb75b1de0240abb00018a   MongoDB           {}                     5aabb7551de0240abb000064
-5aabb75b1de0240abb00018b   Wordpress         {"memory":1024}        5aabb7551de0240abb000064
-5aabb75b1de0240abb00018c   Docker            {"memory":2048}        5aabb7551de0240abb000064
+ID                         NAME                 FLAVOUR_REQUIREMENTS                           GENERIC_IMAGE_ID           
+6033af5b63648203278f6778   MongoDB              [architecture:x86_64 memory:2048]              5da72f9c588464053ffcb876   
+6033af8e6364820345e2499a   Ubuntu 20.04         [architecture:x86_64]                          5f3281737e8b380531f1a5c0   
+6033afbf636482036209736c   Wordpress            [architecture:x86_64 memory:2048]              5da72f9c588464053ffcb876   
+6033b2da63648203b817d688   Ubuntu 18.04         [architecture:x86_64]                          5da72f9c588464053ffcb876   
+6033b709f034c3004ef62cdb   Windows 2019         [architecture:x86_64 memory:4096 storage:40]   5e2491f92a9c6405447637b1   
+6033b785f034c3006ad10d2b   Docker               [architecture:x86_64 memory:2048]              5da72f9c588464053ffcb876   
+6033b7bdf034c30078315671   Joomla               [architecture:x86_64 memory:2048]              5da72f9c588464053ffcb876   
+60d97b189c1004006e2b8de9   Ubuntu 18.04 arm64   [architecture:arm64 memory:1024]               609520351c93140124bac1fb   
+60d97b2d9c10040097e2b6a5   Ubuntu 20.04 arm64   [architecture:arm64 memory:1024]               609520351c93140124bac1fc   
+60ded3a6038daf008ab1d38b   Magento              [architecture:x86_64 memory:2048]              5da72f9c588464053ffcb876   
+618b8790862c1b00d1b550fe   Red Hat 8 arm64      [architecture:arm64 memory:4096 storage:40]    609520351c93140124bac1fe   
+618b8798862c1b00e6963928   Red Hat 8            [architecture:x86_64 memory:4096 storage:40]   609520351c93140124bac1fd
 ```
 
-You can choose whatever application/stack is fine for your purpose, we choose `Wordpress`. Take note of the application identifier, `5aabb75b1de0240abb00018b` for `Wordpress`.
+You can choose whatever application/stack is fine for your purpose, we choose `Wordpress`. Take note of the application identifier, `6033afbf636482036209736c` for `Wordpress`.
 
-We will also need the location where we want our server to be instantiated. Execute `concerto wizard locations list` to get the possible locations and its identifier.
+We will also need the location where we want our server to be instantiated. Execute `cio wizard locations list` to get the possible locations and its identifier.
 
 ```bash
 $ cio wizard locations list
-ID                         NAME
-5aabb7551de0240abb000060   North America
-5aabb7551de0240abb000061   Europe
-5aabb7551de0240abb000062   Asia Pacific
-5aabb7551de0240abb000063   South America
+ID                         NAME            
+5da72f9b588464053ffcb870   North America   
+5da72f9b588464053ffcb871   Europe          
+5da72f9b588464053ffcb872   Asia Pacific    
+5da72f9b588464053ffcb873   South America   
+609520351c93140124bac204   Africa          
+609520351c93140124bac205   Middle East 
 ```
 
-Take note of your preferred location. We will use `5aabb7551de0240abb000060` for `North America`.
+Take note of your preferred location. We will use `5da72f9b588464053ffcb870` for `North America`.
 
-When using IMCO's Web UI, the wizard may take care of filtering appropriate cloud accounts for that provider and location. However, by using the CLI, it is the user's responsibility to choose a provider cloud account for that application/stack and location; and a server plan capable of instantiating the stack in that location.
-To show all possible cloud providers execute this command:
+When using IMCO's Web UI, the wizard may take care of filtering appropriate cloud accounts for that provider and location. However, by using the CLI, it is the user's responsibility to choose a provider cloud account for that application/stack and location; and a server plan capable of instantiating the stack in that location. To show all possible cloud providers execute this command:
 
 ```bash
-$ cio wizard cloud_providers list --app_id 5aabb75b1de0240abb00018b --location_id 5aabb7551de0240abb000060
-ID                         NAME
-5aabb7511de0240abb000001   AWS
-5aabb7511de0240abb000002   Mock
-5aabb7511de0240abb000004   Microsoft Azure ARM
-5aabb7511de0240abb000005   Microsoft Azure
+$ cio wizard cloud-providers list --app-id 6033afbf636482036209736c --location-id 5da72f9b588464053ffcb870
+ID                         NAME                  
+5da72f97588464053ffcb855   AWS                   
+5da72f98588464053ffcb857   Microsoft Azure
 ```
 
-It's necessary to retrieve the adequeate Cloud Account ID for `Microsoft Azure` Cloud Provider, in our case `5aabb7531de0240abb000024`.
-We will choose `Microsoft Azure`, whose ID is `5aabb7511de0240abb000005`:
+It's necessary to retrieve the adequate Cloud Account ID for `Microsoft Azure` Cloud Provider, in our case `620a84f81376db00068f9598`. We will choose `Microsoft Azure`, whose ID is `5da72f98588464053ffcb857`:
 
 ```bash
-$ cio settings cloud_accounts list
-ID                         NAME                                     CLOUD_PROVIDER_ID          CLOUD_PROVIDER_NAME
-5aabb7521de0240abb00001b   AWS-cloud_account-name                   5aabb7511de0240abb000001   AWS
-5aabb7521de0240abb00001c   Mock-cloud_account-name-0                5aabb7511de0240abb000002   Mock
-5aabb7531de0240abb00001d   Mock-cloud_account-name-1                5aabb7511de0240abb000002   Mock
-5aabb7531de0240abb00001e   Mock-cloud_account-name-2                5aabb7511de0240abb000002   Mock
-5aabb7531de0240abb000020   DigitalOcean-cloud_account-name          5aabb7511de0240abb000003   DigitalOcean
-5aabb7531de0240abb000022   Microsoft Azure ARM-cloud_account-name   5aabb7511de0240abb000004   Microsoft Azure ARM
-5aabb7531de0240abb000024   Microsoft Azure-cloud_account-name       5aabb7511de0240abb000005   Microsoft Azure
-5aba0656425b5d0c64000001   VMWare-cloud_account-name                5aba04be425b5d0c16000000   VCloud
-5aba066c425b5d0c64000002   VMWare-Routed-cloud_account-name         5aba04be425b5d0c16000000   VCloud
+$ cio settings cloud-accounts list
+ID                         NAME              SUBSCRIPTION_ID            REMOTE_ID      CLOUD_PROVIDER_ID          CLOUD_PROVIDER_NAME   STATE          
+620a84f81376db00068f9598   Microsoft Azure   620a84853a974d001aa32609                  5da72f98588464053ffcb857   Microsoft Azure       idle           
+620a85091376db00068f959a   AWS               620a84853a974d001aa3260b                  5da72f97588464053ffcb855   AWS                   idle   
 ```
 
 Now that we have all the data that we need, commission the server:
 
 ```bash
-$ cio wizard apps deploy --id 5aabb75b1de0240abb00018b --location_id 5aabb7551de0240abb000060 --cloud_account_id 5aabb7531de0240abb000024 --hostname wpnode1
-ID:                     5b0ea6377906e900fab96798
-NAME:                   wpnode1
-FLAVOUR_REQUIREMENTS:
-GENERIC_IMAGE_ID:
+$ cio wizard apps deploy --id 6033afbf636482036209736c --location-id 5da72f9b588464053ffcb870 --cloud-account-id 620a84f81376db00068f9598 --hostname wpnode1
+ID:                    620b61d27f8081000a9783b4
+NAME:                  wpnode1
+FQDN:                  
+STATE:                 commissioning
+PUBLIC_IP:             
+PRIVATE_IP:            
+TEMPLATE_ID:           620a8b5c3a974d0008a3260d
+SERVER_PLAN_ID:        5da7301fa126060529b47c5e
+CLOUD_ACCOUNT_ID:      620a84f81376db00068f9598
+SSH_PROFILE_ID:        
+SSH_PROFILE_IDS:       
+BROWNFIELD_STATE:      Pure
+FIREWALL_PROFILE_ID:   620a8b5d3a974d0008a32611
+SERVER_ARRAY_ID:       
+SUBNET_ID:             
+VPC_ID:                
+PRIVATENESS:           false
+RESOURCE_TYPE:         server
+LABELS:
 ```
 
 We have a new server template with a commissioned server in IMCO.
 
-<img src="./docs/images/commissioned-server.png" alt="Server Commissioned" width="500px" >
+<img src="./docs/images/commissioned-server.png" alt="Server Commissioned">
 
-Our server's ID is `5b0ea6377906e900fab96798`. We can now use `cio cloud servers` subcommands to manage the server. Lets bring wordpress up:
+Our server's ID is `620b61d27f8081000a9783b4`. We can now use `cio cloud servers` subcommands to manage the server.
+
+Let's bring WordPress up:
 
 ```bash
-$ cio cloud servers boot --id 5b0ea6377906e900fab96798
-ID:                    5b0ea6377906e900fab96798
+$ cio cloud servers boot --id 620b61d27f8081000a9783b4
+ID:                    620b61d27f8081000a9783b4
 NAME:                  wpnode1
-FQDN:                  sf98aa2c61069a1b.centralus.cloudapp.azure.com
+FQDN:                  
 STATE:                 booting
-PUBLIC_IP:             104.43.245.138
-TEMPLATE_ID:           5b0ea6377906e900fab96792
-SERVER_PLAN_ID:        5aac0c05348f190b3e0011c2
-CLOUD_ACCOUNT_ID:      5aabb7531de0240abb000024
-SSH_PROFILE_ID:        5aabb7521de0240abb00000e
-FIREWALL_PROFILE_ID:   5b50a4c75f7c880ad9c6bbfb
+PUBLIC_IP:             
+PRIVATE_IP:            
+TEMPLATE_ID:           620a8b5c3a974d0008a3260d
+SERVER_PLAN_ID:        5da7301fa126060529b47c5e
+CLOUD_ACCOUNT_ID:      620a84f81376db00068f9598
+SSH_PROFILE_ID:        
+SSH_PROFILE_IDS:       
+BROWNFIELD_STATE:      Pure
+FIREWALL_PROFILE_ID:   620a8b5d3a974d0008a32611
+SERVER_ARRAY_ID:       
+SUBNET_ID:             
+VPC_ID:                
+PRIVATENESS:           false
 RESOURCE_TYPE:         server
-LABELS:                [Wordpress]
+LABELS:                Wordpress
 ```
 
-Server status: `Bootstraping`
+Server status: `Bootstraping`:
 
-<img src="./docs/images/server-bootstraping.png" alt="Server Bootstraping" width="500px" >
+```bash
+$ cio cloud servers show --id 620b61d27f8081000a9783b4
+ID:                    620b61d27f8081000a9783b4
+NAME:                  wpnode1
+FQDN:                  s3ef8ed2ba4407b8.centralus.cloudapp.azure.com
+STATE:                 bootstrapping
+PUBLIC_IP:             52.165.165.245
+PRIVATE_IP:            10.0.0.4
+TEMPLATE_ID:           620a8b5c3a974d0008a3260d
+SERVER_PLAN_ID:        5da7301fa126060529b47c5e
+CLOUD_ACCOUNT_ID:      620a84f81376db00068f9598
+SSH_PROFILE_ID:        
+SSH_PROFILE_IDS:       
+BROWNFIELD_STATE:      Pure
+FIREWALL_PROFILE_ID:   620a8b5d3a974d0008a32611
+SERVER_ARRAY_ID:       
+SUBNET_ID:             
+VPC_ID:                
+PRIVATENESS:           false
+RESOURCE_TYPE:         server
+LABELS:                Wordpress
+```
 
-Server status: `Operational`
+<img src="./docs/images/server-bootstrapping.png" alt="Server Bootstrapping">
 
-<img src="./docs/images/server-operational.png" alt="Server Operational" width="500px" >
+Server status: `Operational`:
+
+```bash
+$ cio cloud servers show --id 620b61d27f8081000a9783b4
+ID:                    620b61d27f8081000a9783b4
+NAME:                  wpnode1
+FQDN:                  s3ef8ed2ba4407b8.centralus.cloudapp.azure.com
+STATE:                 operational
+PUBLIC_IP:             52.165.165.245
+PRIVATE_IP:            10.0.0.4
+TEMPLATE_ID:           620a8b5c3a974d0008a3260d
+SERVER_PLAN_ID:        5da7301fa126060529b47c5e
+CLOUD_ACCOUNT_ID:      620a84f81376db00068f9598
+SSH_PROFILE_ID:        
+SSH_PROFILE_IDS:       
+BROWNFIELD_STATE:      Pure
+FIREWALL_PROFILE_ID:   620a8b5d3a974d0008a32611
+SERVER_ARRAY_ID:       
+SUBNET_ID:             
+VPC_ID:                
+PRIVATENESS:           false
+RESOURCE_TYPE:         server
+LABELS:                Wordpress
+
+```
+
+<img src="./docs/images/server-operational.png" alt="Server Operational">
 
 After a brief amount of time you will have your new `Wordpress` server up and running, ready to be configured.
 
-<img src="./docs/images/wordpress.png" alt="Wordpress" width="500px" >
+<img src="./docs/images/wordpress.png" alt="Wordpress">
 
 ## Blueprint
 
 IMCO blueprints are the compendium of:
 
-- services, they map to IMCO's Web UI cookbooks. Use `cio blueprint services list` to show all cookbooks available at your account.
-- scripts, they provide a way to execute custom scripts after bootstraping, before a clean shutdown, or on demand.
-- templates, an ordered combination of services and scripts.
+- cookbook-versions, they map to IMCO's Web UI cookbooks. Use `cio blueprint cookbook-versions list` to show all cookbooks available at your account.
+- scripts, they provide a way to execute custom scripts after bootstrapping, before a clean shutdown, or on demand.
+- attachments, provides attachments to store on the servers.
+- templates, an ordered combination of cookbook-versions and scripts.
 
 ### Blueprint Use Case
 
-A template must be created with an OS target, a service list, and a list of custom attributes for those services.
+A template must be created with an OS target, a cookbook-versions list, and a list of custom attributes for those cookbooks.
 
 #### Template OS
 
 Blueprints are associated with an Operative System, and each cloud provider has a different way of identifying the OS that a machine is running.
 
-IMCO takes care of the gap, and lets you select a cloud provider independent OS, and find out later which image is appropriate for the chosen cloud provider account and location. Hence blueprints are bound to OS, but cloud provider and location independent.
+IMCO takes care of the gap, and lets you select a cloud provider independent OS, and find out later which image is appropriate for the chosen cloud provider account and location. Hence, blueprints are bound to OS, but cloud provider and location independent.
 
-For our case we will be using Ubuntu 16.04. Let's find its IMCO ID
+For our case we will be using `Ubuntu 20.04 Focal Fossa x86_64`. Let's find its IMCO ID:
 
 ```bash
-$ cio cloud generic_images list
+$ cio cloud generic-images list
 ID                         NAME
-5aabb7551de0240abb000064   Ubuntu 14.04 Trusty Tahr x86_64
-5aabb7551de0240abb000065   Ubuntu 16.04 Xenial Xerus x86_64
-5aabb7551de0240abb000066   Windows 2012 R2 x86_64
-5aabb7551de0240abb000067   Windows 2016 x86_64
-5aabb7551de0240abb000068   Red Hat Enterprise Linux 7.3 x86_64
-5aabb7551de0240abb000069   CentOS 7.4 x86_64
-5aabb7551de0240abb00006a   Debian 9 x86_64
-5b2a331ee09b740b5ee72f24   Ubuntu 18.04 Bionic Beaver x86_64
+5da72f9c588464053ffcb878   Windows 2016 x86_64
+5e2491f92a9c6405447637b1   Windows 2019 x86_64
+5da72f9c588464053ffcb876   Ubuntu 18.04 Bionic Beaver x86_64
+609520351c93140124bac1fb   Ubuntu 18.04 Bionic Beaver arm64
+5f3281737e8b380531f1a5c0   Ubuntu 20.04 Focal Fossa x86_64
+609520351c93140124bac1fc   Ubuntu 20.04 Focal Fossa arm64
+609520351c93140124bac1fd   Red Hat Enterprise Linux 8 x86_64
+609520351c93140124bac1fe   Red Hat Enterprise Linux 8 arm64
+609520351c93140124bac1ff   CentOS 8 x86_64
+609520351c93140124bac200   CentOS 8 arm64
+5da72f9c588464053ffcb87b   Debian 9 x86_64
+609520351c93140124bac201   Debian 10 x86_64
+609520351c93140124bac202   Debian 10 arm64
 ```
 
-Take note of Ubuntu 16.04 ID, `5aabb7551de0240abb000065`.
+Take note of `Ubuntu 20.04 Focal Fossa x86_64` ID, `5f3281737e8b380531f1a5c0`.
 
-#### Service List
+#### Cookbook versions
 
-We want to use IMCO's curated Joomla cookbook. Use `cio blueprint services` to find the cookbooks to add.
+We want to use IMCO's curated Joomla cookbook. Use `cio blueprint cookbook-versions` to find the cookbooks to add.
 
 ```bash
-$ cio blueprint services list | awk 'NR==1 || /joomla/'
-ID                         NAME                  DESCRIPTION                               PUBLIC         LICENSE
-5aabb871e4997809f700000e   joomla                Installs/Configures joomla environment    false          All rights reserved
+$ cio blueprint cookbook-versions list | awk 'NR==1 || /joomla/'
+ID                         NAME             VERSION        STATE          REVISION_ID                                DESCRIPTION                                                                       LABELS         
+5da72fc3588464054f87d7c8   joomla           0.11.1         ready          161a5d9c95e4c54b9b1a51135907323752a2321e   Installs/Configures joomla environment                                            []             
+6023c920ec7c3f0019028d60   joomla           0.11.2         ready          ec2b9eea4c5a39759eca1dea67645d536e939070   Installs/Configures joomla environment                                            [] 
 ```
 
 Joomla curated cookbooks creates a local mysql database. We only have to tell our cookbook that we should override the `joomla.db.hostname` to `127.0.0.1`. Execute the following command to create the Joomla template.
 
 ```bash
-$ cio blueprint templates create --name joomla-tmplt --generic_image_id 5aabb7551de0240abb000065 --service_list '["joomla"]' --configuration_attributes '{"joomla":{"db":{"hostname":"127.0.0.1"}}}' --labels Joomla,mysite.com
-ID:                         5b5192b15f7c880ad9c6bc12
+$ cio blueprint templates create --name joomla-tmplt --generic-image-id 5f3281737e8b380531f1a5c0 --cookbook-versions "joomla:0.11.2" --configuration-attributes '{"joomla":{"db":{"hostname":"127.0.0.1"}}}' --labels Joomla,mysite.com
+ID:                         620b7d357f8081000a9783e0
 NAME:                       joomla-tmplt
-GENERIC IMAGE ID:           5aabb7551de0240abb000065
-SERVICE LIST:               [joomla]
-CONFIGURATION ATTRIBUTES:   {"joomla":{"db":{"hostname":"127.0.0.1"}}}
+GENERIC_IMAGE_ID:           5f3281737e8b380531f1a5c0
+RUN_LIST:                   
+CONFIGURATION_ATTRIBUTES:   {"joomla":{"db":{"hostname":"127.0.0.1"}}}
 RESOURCE_TYPE:              template
-LABELS:                     [mysite.com Joomla]
+COOKBOOK_VERSIONS:          joomla:0.11.2
+STATE:                      compiling
+LABELS:                     Joomla,mysite.com
 ```
 
 #### Instantiate a server
 
-Now that we have our server blueprint defined, let's start one. Servers in IMCO need to know the server plan for the cloud provider, and the template used to build the instance.
+Now that we have our server blueprint defined, let's start one. Servers in IMCO need to know the server plan for the cloud provider and realm, and the template used to build the instance.
 
 As we did in the Wizard use case, we can find the missing data using these commands:
 
 ##### Find cloud provider server plan
 
 ```bash
-$ cio cloud cloud_providers list
-ID                         NAME
-5aabb7511de0240abb000001   AWS
-5aabb7511de0240abb000002   Mock
-5aabb7511de0240abb000003   DigitalOcean
-5aabb7511de0240abb000004   Microsoft Azure ARM
-5aabb7511de0240abb000005   Microsoft Azure
-5aba04be425b5d0c16000000   VCloud
+$ cio cloud cloud-providers list
+ID                         NAME                  
+5da72f97588464053ffcb855   AWS                  
+5da72f98588464053ffcb857   Microsoft Azure
 ```
 
-We want to use `Microsoft Azure` with ID `5aabb7511de0240abb000005` and filtering by server_plan `Basic_A0`
+##### Select a realm by cloud provider
 
 ```bash
-$ cio cloud server_plans list --cloud_provider_id 5aabb7511de0240abb000005 | awk 'NR==1 || /Basic_A0/'
-ID                         NAME                  MEMORY         CPUS           STORAGE        LOCATION_ID                LOCATION_NAME   CLOUD_PROVIDER_ID          CLOUD_PROVIDER_NAME
-5aac0bff348f190b3e001030   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
-5aac0c02348f190b3e0010db   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
-5aac0c04348f190b3e001186   Basic_A0              768            1              20             5aabb7551de0240abb000060   North America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c06348f190b3e001231   Basic_A0              768            1              20             5aabb7551de0240abb000060   North America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c09348f190b3e0012dc   Basic_A0              768            1              20             5aabb7551de0240abb000060   North America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c0b348f190b3e001387   Basic_A0              768            1              20             5aabb7551de0240abb000060   North America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c0e348f190b3e001432   Basic_A0              768            1              20             5aabb7551de0240abb000060   North America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c10348f190b3e0014dd   Basic_A0              768            1              20             5aabb7551de0240abb000060   North America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c13348f190b3e001588   Basic_A0              768            1              20             5aabb7551de0240abb000061   Europe          5aabb7511de0240abb000005   Microsoft Azure
-5aac0c15348f190b3e001633   Basic_A0              768            1              20             5aabb7551de0240abb000061   Europe          5aabb7511de0240abb000005   Microsoft Azure
-5aac0c18348f190b3e0016de   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
-5aac0c1b348f190b3e001789   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
-5aac0c1d348f190b3e001834   Basic_A0              768            1              20             5aabb7551de0240abb000063   South America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c20348f190b3e0018df   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
-5aac0c23348f190b3e00198a   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
-5aac0c26348f190b3e001a35   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
-5aac0c29348f190b3e001ae0   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
-5aac0c2c348f190b3e001b8b   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
-5aac0c2f348f190b3e001c36   Basic_A0              768            1              20             5aabb7551de0240abb000060   North America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c32348f190b3e001ce1   Basic_A0              768            1              20             5aabb7551de0240abb000060   North America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c35348f190b3e001d8c   Basic_A0              768            1              20             5aabb7551de0240abb000061   Europe          5aabb7511de0240abb000005   Microsoft Azure
-5aac0c38348f190b3e001e37   Basic_A0              768            1              20             5aabb7551de0240abb000061   Europe          5aabb7511de0240abb000005   Microsoft Azure
-5aac0c3c348f190b3e001ee2   Basic_A0              768            1              20             5aabb7551de0240abb000060   North America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c3f348f190b3e001f8d   Basic_A0              768            1              20             5aabb7551de0240abb000060   North America   5aabb7511de0240abb000005   Microsoft Azure
-5aac0c42348f190b3e002038   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
-5aac0c45348f190b3e0020e3   Basic_A0              768            1              20             5aabb7551de0240abb000062   Asia Pacific    5aabb7511de0240abb000005   Microsoft Azure
+$ cio cloud realms list --id 5da72f98588464053ffcb857
+ID                         NAME                   LOCATION_ID                CLOUD_PROVIDER_ID          PROVIDER_NAME        
+5da73014a126060529b47b1e   East Asia              5da72f9b588464053ffcb872   5da72f98588464053ffcb857   eastasia             
+5da73019a126060529b47bba   Southeast Asia         5da72f9b588464053ffcb872   5da72f98588464053ffcb857   southeastasia        
+5da7301da126060529b47c25   Central US             5da72f9b588464053ffcb870   5da72f98588464053ffcb857   centralus            
+5da73022a126060529b47cb1   East US                5da72f9b588464053ffcb870   5da72f98588464053ffcb857   eastus               
+5da73027a126060529b47d42   East US 2              5da72f9b588464053ffcb870   5da72f98588464053ffcb857   eastus2              
+5da7302aa126060529b47db3   West US                5da72f9b588464053ffcb870   5da72f98588464053ffcb857   westus               
+5da73030a126060529b47e5c   North Central US       5da72f9b588464053ffcb870   5da72f98588464053ffcb857   northcentralus       
+5da73035a126060529b47ef3   South Central US       5da72f9b588464053ffcb870   5da72f98588464053ffcb857   southcentralus       
+5da7303ba126060529b47fae   North Europe           5da72f9b588464053ffcb871   5da72f98588464053ffcb857   northeurope          
+5da7303fa126060529b4801d   West Europe            5da72f9b588464053ffcb871   5da72f98588464053ffcb857   westeurope           
+5da73044a126060529b480af   Japan West             5da72f9b588464053ffcb872   5da72f98588464053ffcb857   japanwest            
+5da7304aa126060529b4814d   Japan East             5da72f9b588464053ffcb872   5da72f98588464053ffcb857   japaneast            
+5da7304da126060529b481b4   Brazil South           5da72f9b588464053ffcb873   5da72f98588464053ffcb857   brazilsouth          
+5da73052a126060529b48250   Australia East         5da72f9b588464053ffcb872   5da72f98588464053ffcb857   australiaeast        
+5da73058a126060529b48301   Australia Southeast    5da72f9b588464053ffcb872   5da72f98588464053ffcb857   australiasoutheast   
+5da7305ea126060529b4839f   UK South               5da72f9b588464053ffcb871   5da72f98588464053ffcb857   uksouth              
+5da73062a126060529b4840e   UK West                5da72f9b588464053ffcb871   5da72f98588464053ffcb857   ukwest               
+5da73068a126060529b484a4   West US 2              5da72f9b588464053ffcb870   5da72f98588464053ffcb857   westus2              
+5e282b7967b583057691831a   West Central US        5da72f9b588464053ffcb870   5da72f98588464053ffcb857   westcentralus        
+60366c4209db430014510528   Germany West Central   5da72f9b588464053ffcb871   5da72f98588464053ffcb857   germanywestcentral   
+609181bcf536d200201cba1e   South Africa North     609520351c93140124bac204   5da72f98588464053ffcb857   southafricanorth     
+609181d3f536d200201cbbe8   Central India          5da72f9b588464053ffcb872   5da72f98588464053ffcb857   centralindia         
+60918244f536d200201cc004   Korea Central          5da72f9b588464053ffcb872   5da72f98588464053ffcb857   koreacentral         
+60918266f536d200201cc2a3   Canada Central         5da72f9b588464053ffcb870   5da72f98588464053ffcb857   canadacentral        
+60918286f536d200201cc530   France Central         5da72f9b588464053ffcb871   5da72f98588464053ffcb857   francecentral        
+609182b7f536d200201cc8fb   Norway East            5da72f9b588464053ffcb871   5da72f98588464053ffcb857   norwayeast           
+609182d0f536d200201ccaf7   Switzerland North      5da72f9b588464053ffcb871   5da72f98588464053ffcb857   switzerlandnorth     
+609182eaf536d200201cccf3   UAE North              609520351c93140124bac205   5da72f98588464053ffcb857   uaenorth             
+60918388f536d200201cd559   Australia Central      5da72f9b588464053ffcb872   5da72f98588464053ffcb857   australiacentral     
+609183ebf536d200201cd8e8   Korea South            5da72f9b588464053ffcb872   5da72f98588464053ffcb857   koreasouth           
+60918405f536d200201cdaf7   South India            5da72f9b588464053ffcb872   5da72f98588464053ffcb857   southindia           
+60918434f536d200201cde95   Canada East            5da72f9b588464053ffcb870   5da72f98588464053ffcb857   canadaeast
+```
+
+We want to use provider `Microsoft Azure` with ID `5da72f98588464053ffcb857`, realm `North Central US` with ID `5da73030a126060529b47e5c` and filtering by server plan `Basic_A0`
+
+```bash
+$ cio cloud server-plans list --cloud-provider-id 5da72f98588464053ffcb857 --realm-id 5da73030a126060529b47e5c | awk 'NR==1 || /Basic_A0/'
+ID                         NAME       MEMORY   CPUS  STORAGE   LOCATION_ID                LOCATION_NAME   REALM_ID                   REALM_PROVIDER_NAME   FLAVOUR_PROVIDER_NAME   CLOUD_PROVIDER_ID          CLOUD_PROVIDER_NAME   
+5da73030a126060529b47e65   Basic_A0   768      1     20        5da72f9b588464053ffcb870   North America   5da73030a126060529b47e5c   northcentralus        Basic_A0                5da72f98588464053ffcb857   Microsoft Azure
 ```
 
 ##### Find Template ID
@@ -439,11 +519,10 @@ We already know our template ID, but in case you want to make sure
 
 ```bash
 $ cio blueprint templates list
-ID                         NAME                 GENERIC IMAGE ID              LABELS
-5afd5b4c42d90d09f00000aa   windows 2016         5aabb7551de0240abb000067      []
-5b067fe8f585000b80809a8e   ubuntu 16.04         5aabb7551de0240abb000065      []
-5b0ea6377906e900fab96792   Wordpress_template   5aabb7551de0240abb000064      [Wordpress]
-5b5192b15f7c880ad9c6bc12   joomla-tmplt         5aabb7551de0240abb000065      [mysite.com Joomla]
+ID                         NAME                 GENERIC_IMAGE_ID           LABELS                
+620a8b5c3a974d0008a3260d   Wordpress_template   5da72f9c588464053ffcb876   [Wordpress]           
+620b7d357f8081000a9783e0   joomla-tmplt         5f3281737e8b380531f1a5c0   [Joomla mysite.com]   
+
 ```
 
 ##### Find Location ID
@@ -452,29 +531,24 @@ We already know our location ID, but in case you want to make sure
 
 ```bash
 $ cio wizard locations list
-ID                         NAME
-5aabb7551de0240abb000060   North America
-5aabb7551de0240abb000061   Europe
-5aabb7551de0240abb000062   Asia Pacific
-5aabb7551de0240abb000063   South America
+ID                         NAME            
+5da72f9b588464053ffcb870   North America   
+5da72f9b588464053ffcb871   Europe          
+5da72f9b588464053ffcb872   Asia Pacific    
+5da72f9b588464053ffcb873   South America   
+609520351c93140124bac204   Africa          
+609520351c93140124bac205   Middle East
 ```
 
 ##### Find Cloud Account ID
 
-It's necessary to retrieve the adequate Cloud Account ID for `Microsoft Azure` Cloud Provider, in our case `5aabb7511de0240abb000005`:
+It's necessary to retrieve the adequate Cloud Account ID for `Microsoft Azure` Cloud Provider, in our case `5da72f98588464053ffcb857`:
 
 ```bash
-$ cio settings cloud_accounts list
-ID                         NAME                                     CLOUD_PROVIDER_ID          CLOUD_PROVIDER_NAME
-5aabb7521de0240abb00001b   AWS-cloud_account-name                   5aabb7511de0240abb000001   AWS
-5aabb7521de0240abb00001c   Mock-cloud_account-name-0                5aabb7511de0240abb000002   Mock
-5aabb7531de0240abb00001d   Mock-cloud_account-name-1                5aabb7511de0240abb000002   Mock
-5aabb7531de0240abb00001e   Mock-cloud_account-name-2                5aabb7511de0240abb000002   Mock
-5aabb7531de0240abb000020   DigitalOcean-cloud_account-name          5aabb7511de0240abb000003   DigitalOcean
-5aabb7531de0240abb000022   Microsoft Azure ARM-cloud_account-name   5aabb7511de0240abb000004   Microsoft Azure ARM
-5aabb7531de0240abb000024   Microsoft Azure-cloud_account-name       5aabb7511de0240abb000005   Microsoft Azure
-5aba0656425b5d0c64000001   VMWare-cloud_account-name                5aba04be425b5d0c16000000   VCloud
-5aba066c425b5d0c64000002   VMWare-Routed-cloud_account-name         5aba04be425b5d0c16000000   VCloud
+$ cio settings cloud-accounts list
+ID                         NAME              SUBSCRIPTION_ID            REMOTE_ID      CLOUD_PROVIDER_ID          CLOUD_PROVIDER_NAME   STATE          
+620a84f81376db00068f9598   Microsoft Azure   620a84853a974d001aa32609                  5da72f98588464053ffcb857   Microsoft Azure       idle           
+620a85091376db00068f959a   AWS               620a84853a974d001aa3260b                  5da72f97588464053ffcb855   AWS                   idle
 ```
 
 ##### Find SSH Profile ID
@@ -482,10 +556,10 @@ ID                         NAME                                     CLOUD_PROVID
 It's necessary to retrieve the adequate SSH Profile ID. It can be created using CLI commands or IMCO UI.
 
 ```bash
-$ cio cloud ssh_profiles list
+$ cio cloud ssh-profiles list
 ID                         NAME                 PUBLIC_KEY                   LABELS
-5aabb7521de0240abb00000d   default              ssh-rsa AAAAB3NzaC1yc[...]   []
-5aabb7521de0240abb00000e   Joomla SSH           ssh-rsa AAAABBfD4Klmn[...]   [mysite.com Joomla]
+620b97b93700550006ce0066   default              ssh-rsa AAAAB3NzaC1yc[...]   []
+620b98013700550006ce0068   Joomla SSH           ssh-rsa AAAABBfD4Klmn[...]   [mysite.com Joomla]
 [...]
 ```
 
@@ -494,126 +568,153 @@ ID                         NAME                 PUBLIC_KEY                   LAB
 It's necessary to retrieve the adequate Firewall Profile ID. It can be created using CLI commands or IMCO UI.
 
 ```bash
-$ cio network firewall_profiles list
-ID                         NAME                                     DESCRIPTION                                            DEFAULT        LABELS
-5aabb7521de0240abb00000c   Default firewall                         Firewall profile created by the platfom for your use   true           []
-5b519da77fb2480b0831d9d2   Joomla Firewall                          Firewall profile created for joomla management         false          [mysite.com Joomla]
+$ cio network firewall-profiles list
+ID                         NAME                 DESCRIPTION                                            DEFAULT        LABELS
+620a73973a974d001aa325f9   Default firewall     Firewall profile created by the platfom for your use   true           []           
+620b98783700550006ce006a   Joomla Firewall      Firewall profile created for joomla management         false          [Joomla mysite.com]
 [...]
 ```
 
 ##### Create our Joomla Server
 
 ```bash
-$ cio cloud servers create --name joomla-node1 --template_id 5b5192b15f7c880ad9c6bc12 --server_plan_id 5aac0c04348f190b3e001186 --cloud_account_id 5aabb7531de0240abb000024 --ssh_profile_id 5aabb7521de0240abb00000e --firewall_profile_id 5b519da77fb2480b0831d9d2 --labels Joomla,mysite.com
-ID:                    5b5193675f7c880ad9c6bc16
+$ cio cloud servers create --name joomla-node1 --template-id 620b7d357f8081000a9783e0 --server-plan-id 5da73030a126060529b47e65 --cloud-account-id 620a84f81376db00068f9598 --ssh-profile-id 620b98013700550006ce0068 --firewall-profile-id 620b98783700550006ce006a --labels Joomla,mysite.com
+ID:                    620b992e7f8081000a9783e5
 NAME:                  joomla-node1
-FQDN:
+FQDN:                  
 STATE:                 commissioning
-PUBLIC_IP:
-TEMPLATE_ID:           5b5192b15f7c880ad9c6bc12
-SERVER_PLAN_ID:        5aac0c04348f190b3e001186
-CLOUD_ACCOUNT_ID:      5aabb7531de0240abb000024
-SSH_PROFILE_ID:        5aabb7521de0240abb00000e
-FIREWALL_PROFILE_ID:   5b519da77fb2480b0831d9d2
+PUBLIC_IP:             
+PRIVATE_IP:            
+TEMPLATE_ID:           620b7d357f8081000a9783e0
+SERVER_PLAN_ID:        5da73030a126060529b47e65
+CLOUD_ACCOUNT_ID:      620a84f81376db00068f9598
+SSH_PROFILE_ID:        620b98013700550006ce0068
+SSH_PROFILE_IDS:       620b98013700550006ce0068
+BROWNFIELD_STATE:      Pure
+FIREWALL_PROFILE_ID:   620b98783700550006ce006a
+SERVER_ARRAY_ID:       
+SUBNET_ID:             
+VPC_ID:                
+PRIVATENESS:           false
 RESOURCE_TYPE:         server
-LABELS:                [mysite.com Joomla]
+LABELS:                Joomla,mysite.com
 ```
 
-And finally boot it
+And finally boot it:
 
 ```bash
-$ cio cloud servers boot --id 5b5193675f7c880ad9c6bc16
-ID:                    5b5193675f7c880ad9c6bc16
+$ cio cloud servers boot --id 620b992e7f8081000a9783e5
+ID:                    620b992e7f8081000a9783e5
 NAME:                  joomla-node1
-FQDN:
+FQDN:                  
 STATE:                 booting
-PUBLIC_IP:
-TEMPLATE_ID:           5b5192b15f7c880ad9c6bc12
-SERVER_PLAN_ID:        5aac0c04348f190b3e001186
-CLOUD_ACCOUNT_ID:      5aabb7531de0240abb000024
-SSH_PROFILE_ID:        5aabb7521de0240abb00000e
-FIREWALL_PROFILE_ID:   5b519da77fb2480b0831d9d2
+PUBLIC_IP:             
+PRIVATE_IP:            
+TEMPLATE_ID:           620b7d357f8081000a9783e0
+SERVER_PLAN_ID:        5da73030a126060529b47e65
+CLOUD_ACCOUNT_ID:      620a84f81376db00068f9598
+SSH_PROFILE_ID:        620b98013700550006ce0068
+SSH_PROFILE_IDS:       620b98013700550006ce0068
+BROWNFIELD_STATE:      Pure
+FIREWALL_PROFILE_ID:   620b98783700550006ce006a
+SERVER_ARRAY_ID:       
+SUBNET_ID:             
+VPC_ID:                
+PRIVATENESS:           false
 RESOURCE_TYPE:         server
-LABELS:                [mysite.com Joomla]
+LABELS:                Joomla,mysite.com
 ```
 
 You can retrieve the current status of the server and see how it transitions along different statuses (booting, bootstrapping, operational). Then, after a brief amount of time the final status is reached:
 
 ```bash
-$ cio cloud servers show --id 5b5193675f7c880ad9c6bc16
-ID:                    5b5193675f7c880ad9c6bc16
+$ cio cloud servers show --id 620b992e7f8081000a9783e5
+ID:                    620b992e7f8081000a9783e5
 NAME:                  joomla-node1
-FQDN:                  s6ef3f68038ec9e8.centralus.cloudapp.azure.com
+FQDN:                  s0f2a626f0824baa.northcentralus.cloudapp.azure.com
 STATE:                 operational
-PUBLIC_IP:             23.99.252.146
-TEMPLATE_ID:           5b5192b15f7c880ad9c6bc12
-SERVER_PLAN_ID:        5aac0c04348f190b3e001186
-CLOUD_ACCOUNT_ID:      5aabb7531de0240abb000024
-SSH_PROFILE_ID:        5aabb7521de0240abb00000e
-FIREWALL_PROFILE_ID:   5b519da77fb2480b0831d9d2
+PUBLIC_IP:             23.101.162.162
+PRIVATE_IP:            10.0.0.4
+TEMPLATE_ID:           620b7d357f8081000a9783e0
+SERVER_PLAN_ID:        5da73030a126060529b47e65
+CLOUD_ACCOUNT_ID:      620a84f81376db00068f9598
+SSH_PROFILE_ID:        620b98013700550006ce0068
+SSH_PROFILE_IDS:       620b98013700550006ce0068
+BROWNFIELD_STATE:      Pure
+FIREWALL_PROFILE_ID:   620b98783700550006ce006a
+SERVER_ARRAY_ID:       
+SUBNET_ID:             
+VPC_ID:                
+PRIVATENESS:           false
 RESOURCE_TYPE:         server
-LABELS:                [mysite.com Joomla]
+LABELS:                Joomla,mysite.com
 ```
 
 ## Firewall Management
 
 IMCO CLI's `network` command lets you manage a network settings at the server scope.
 
-As we have did before, execute this command with no futher commands to get usage information:
+As we have done before, execute this command with no further commands to get usage information:
 
 ```bash
-$ cio network
 NAME:
-    - Manages network related commands for firewall profiles
+    - Manages network related commands
 
 USAGE:
     command [command options] [arguments...]
 
 COMMANDS:
-     firewall_profiles  Provides information about firewall profiles
+    firewall-profiles  Provides information about firewall profiles
+    floating-ips       Provides information about floating IPs
+    load-balancers     Provides information about load balancers
+    vpcs               Provides information about Virtual Private Clouds (VPCs)
+    subnets            Provides information about VPC Subnets
+    vpns               Provides information about VPC Virtual Private Networks (VPNs)
+    dns-domains        Provides information about DNS domains and records
+...
 ```
 
 As you can see, you can manage firewall from IMCO CLI.
 
 ### Firewall Update Case
 
-Servers in IMCO are always associated with a firewall profile. By default ports 443 and 80 are open to fit most web environments, but if you are not using those ports but some others. We would need to close HTTP and HTTPS ports and open LDAP and LDAPS instead.
+Servers in IMCO are always associated with a firewall profile. By default, ports 443 and 80 are open to fit most web environments, but if you are not using those ports but some others. We would need to close HTTP and HTTPS ports and open LDAP and LDAPS instead.
 
-The first thing we will need is our servers's related firewall identifier. In this they can be found filtering by label assigned 'LDAP':
+The first thing we will need is our server's related firewall identifier. In this they can be found filtering by label assigned 'LDAP':
 
 ```bash
 $ cio cloud servers list --labels LDAP
-ID                         NAME           FQDN                                                 STATE          PUBLIC_IP       TEMPLATE_ID                SERVER_PLAN_ID             CLOUD_ACCOUNT_ID           SSH_PROFILE_ID      FIREWALL_PROFILE_ID        LABELS
-5b51a9dc7fb2480b0831d9eb   openldap-1                                                          inactive                       5afd5b4c42d90d09f00000aa   5aac0c0e348f190b3e001432   5aabb7531de0240abb000024   5b51a9617fb2480b0831d9e9   5b51a9377fb2480b0831d9e6   [LDAP]
-5b51a9ff7fb2480b0831d9ee   openldap-2     sca9229d77b151d4.northcentralus.cloudapp.azure.com   operational    23.100.76.238   5afd5b4c42d90d09f00000aa   5aac0c0e348f190b3e001432   5aabb7531de0240abb000024   5b51a9617fb2480b0831d9e9   5b51a9377fb2480b0831d9e6   [LDAP]
+ID                         NAME           FQDN                                           STATE          PUBLIC_IP       PRIVATE_IP     TEMPLATE_ID                SERVER_PLAN_ID             CLOUD_ACCOUNT_ID           SSH_PROFILE_ID             SSH_PROFILE_IDS              BROWNFIELD_STATE   FIREWALL_PROFILE_ID        LABELS         
+620bab883700550006ce007d   openldap-1                                                    inactive                                      620bab0a3700550006ce0076   5da73030a126060529b47e67   620a84f81376db00068f9598   620b97b93700550006ce0066   [620b97b93700550006ce0066]   Pure               620ba0fe3700550006ce0071   [LDAP]         
+620baff53700550006ce0093   openldap-2     sopenldap2.northcentralus.cloudapp.azure.com   operational    52.252.224.48   10.0.0.5       620bab0a3700550006ce0076   5da73031a126060529b47e68   620a84f81376db00068f9598   620b97b93700550006ce0066   [620b97b93700550006ce0066]   Pure               620ba0fe3700550006ce0071   [LDAP] 
 ```
 
-Now that we have the firewall profile ID, list it's contents
+Now that we have the firewall profile ID, list its contents
 
 ```bash
-$ cio network firewall_profiles show --id 5b51a9377fb2480b0831d9e6
-ID:              5b51a9377fb2480b0831d9e6
+$ cio network firewall-profiles show --id 620ba0fe3700550006ce0071
+ID:              620ba0fe3700550006ce0071
 NAME:            Firewall LDAP
 DESCRIPTION:     LDAP Services firewall
 DEFAULT:         false
-RULES:           [{Protocol:tcp MinPort:22 MaxPort:22 CidrIP:any} {Protocol:tcp MinPort:5985 MaxPort:5985 CidrIP:any} {Protocol:tcp MinPort:3389 MaxPort:3389 CidrIP:any} {Protocol:tcp MinPort:10050 MaxPort:10050 CidrIP:any} {Protocol:tcp MinPort:443 MaxPort:443 CidrIP:any} {Protocol:tcp MinPort:80 MaxPort:80 CidrIP:any}]
+RULES:           TCP/22-22:any,TCP/5985-5985:any,TCP/3389-3389:any,TCP/443-443:any,TCP/80-80:any
 RESOURCE_TYPE:   firewall_profile
-LABELS:          [LDAP]
+LABELS:          LDAP
 ```
 
-The first four values are ports that IMCO may use to keep the desired state of the machine, and that will always be accessed using certificates.
+The first three values are ports that IMCO may use to keep the desired state of the machine, and that will always be accessed using certificates.
 
-When updating, we tell IMCO a new set of rules. Execute the following command to open 389 and 686 to anyone.
+When updating, we tell IMCO a new set of rules. Beware of adding previous rules, update will replace existing items with the ones provided. Execute the following command to open 389 and 686 to anyone. 
 
 ```bash
-$ cio network firewall_profiles update --id 5b51a9377fb2480b0831d9e6 --rules '[{"ip_protocol":"tcp", "min_port":389, "max_port":389, "source":"0.0.0.0/0"}, {"ip_protocol":"tcp", "min_port":636, "max_port":636, "source":"0.0.0.0/0"}]'
-ID:              5b51a9377fb2480b0831d9e6
+$ cio network firewall-profiles update --id 620ba0fe3700550006ce0071 --rules TCP/22-22:any,TCP/5985-5985:any,TCP/3389-3389:any,TCP/443-443:any,TCP/80-80:any,TCP/389-389:any,TCP/636-636:any 
+ID:              620ba0fe3700550006ce0071
 NAME:            Firewall LDAP
 DESCRIPTION:     LDAP Services firewall
 DEFAULT:         false
-RULES:           [{Protocol:tcp MinPort:22 MaxPort:22 CidrIP:any} {Protocol:tcp MinPort:5985 MaxPort:5985 CidrIP:any} {Protocol:tcp MinPort:3389 MaxPort:3389 CidrIP:any} {Protocol:tcp MinPort:10050 MaxPort:10050 CidrIP:any} {Protocol:tcp MinPort:389 MaxPort:389 CidrIP:any} {Protocol:tcp MinPort:636 MaxPort:636 CidrIP:any}]
+RULES:           TCP/22-22:any,TCP/5985-5985:any,TCP/3389-3389:any,TCP/443-443:any,TCP/80-80:any,TCP/389-389:any,TCP/636-636:any
 RESOURCE_TYPE:   firewall_profile
-LABELS:          [LDAP]
+LABELS:          LDAP
 ```
 
 Firewall update returns the complete set of rules. As you can see, now LDAP and LDAPS ports are open.
@@ -629,53 +730,61 @@ Let's pretend there is an existing Joomla blueprint, and that we want to update 
 This is the Joomla blueprint that we created in a previous use case.
 
 ```bash
-$ cio blueprint templates show --id 5b5192b15f7c880ad9c6bc12
-ID:                         5b5192b15f7c880ad9c6bc12
+$ cio blueprint templates show --id 620b7d357f8081000a9783e0
+ID:                         620b7d357f8081000a9783e0
 NAME:                       joomla-tmplt
-GENERIC IMAGE ID:           5aabb7551de0240abb000065
-SERVICE LIST:               [joomla]
-CONFIGURATION ATTRIBUTES:   {"joomla":{"db":{"hostname":"127.0.0.1"}}}
+GENERIC_IMAGE_ID:           5f3281737e8b380531f1a5c0
+RUN_LIST:                   
+CONFIGURATION_ATTRIBUTES:   {"joomla":{"db":{"hostname":"127.0.0.1"}}}
 RESOURCE_TYPE:              template
-LABELS:                     [mysite.com Joomla]
+COOKBOOK_VERSIONS:          joomla:0.11.2
+STATE:                      ready
+LABELS:                     mysite.com,Joomla
 ```
 
-Beware of adding previous services or configuration attributes. Update will replace existing items with the ones provided. If we don't want to lose the `joomla.db.hostname` attribute, add it to our configuretion attributes parameter:
+Beware of adding previous cookbook versions or configuration attributes. Update will replace existing items with the ones provided. If we don't want to lose the `joomla.db.hostname` attribute, add it to our configuration attributes parameter:
 
 ```bash
-$ cio blueprint templates update --id 5b5192b15f7c880ad9c6bc12 --configuration_attributes '{"joomla":{"db":{"hostname":"127.0.0.1", "password":"$afeP4sSw0rd"}}}'
-ID:                         5b5192b15f7c880ad9c6bc12
+$ cio blueprint templates update --id 620b7d357f8081000a9783e0 --configuration-attributes '{"joomla":{"db":{"hostname":"127.0.0.1", "password":"$afeP4sSw0rd"}}}'
+ID:                         620b7d357f8081000a9783e0
 NAME:                       joomla-tmplt
-GENERIC IMAGE ID:           5aabb7551de0240abb000065
-SERVICE LIST:               [joomla]
-CONFIGURATION ATTRIBUTES:   {"joomla":{"db":{"hostname":"127.0.0.1","password":"$afeP4sSw0rd"}}}
+GENERIC_IMAGE_ID:           5f3281737e8b380531f1a5c0
+RUN_LIST:                   
+CONFIGURATION_ATTRIBUTES:   {"joomla":{"db":{"hostname":"127.0.0.1","password":"$afeP4sSw0rd"}}}
 RESOURCE_TYPE:              template
-LABELS:                     [mysite.com Joomla]
+COOKBOOK_VERSIONS:          joomla:0.11.2
+STATE:                      ready
+LABELS:                     Joomla,mysite.com
 ```
 
-As you can see, non specified parameters, like name and service list, remain unchanged. Let's now change the service list, adding a two cookbooks.
+As you can see, non specified parameters, like name and cookbook version list, remain unchanged. Let's now change the cookbook version list, adding two cookbooks.
 
 ```bash
-$ cio blueprint templates update --id 5b5192b15f7c880ad9c6bc12  --service_list '["joomla","python@1.4.6","polipo"]'
-ID:                         5b5192b15f7c880ad9c6bc12
+$ cio blueprint templates update --id 620b7d357f8081000a9783e0 --cookbook-versions "joomla:0.11.2,sa-python:0.0.3,polipo:0.1.0"
+ID:                         620b7d357f8081000a9783e0
 NAME:                       joomla-tmplt
-GENERIC IMAGE ID:           5aabb7551de0240abb000065
-SERVICE LIST:               [joomla python@1.4.6 polipo]
-CONFIGURATION ATTRIBUTES:   {"joomla":{"db":{"hostname":"127.0.0.1","password":"$afeP4sSw0rd"}}}
+GENERIC_IMAGE_ID:           5f3281737e8b380531f1a5c0
+RUN_LIST:                   
+CONFIGURATION_ATTRIBUTES:   {"joomla":{"db":{"hostname":"127.0.0.1","password":"$afeP4sSw0rd"}}}
 RESOURCE_TYPE:              template
-LABELS:                     [mysite.com Joomla]
+COOKBOOK_VERSIONS:          joomla:0.11.2,polipo:0.1.0,sa-python:0.0.3
+STATE:                      compiling
+LABELS:                     mysite.com,Joomla
 ```
 
-Of course, we can change service list and configuration attributes in one command.
+Of course, we can change cookbook versions list and configuration attributes in one command.
 
 ```bash
-$ cio blueprint templates update --id 5b5192b15f7c880ad9c6bc12 --configuration_attributes '{"joomla":{"db":{"hostname":"127.0.0.1", "password":"$afeP4sSw0rd"}}}' --service_list '["joomla","python@1.4.6","polipo"]'
-ID:                         5b5192b15f7c880ad9c6bc12
+$ cio blueprint templates update --id 620b7d357f8081000a9783e0 --configuration-attributes '{"joomla":{"db":{"hostname":"127.0.0.1", "password":"$afeP4sSw0rd"}}}' --cookbook-versions "joomla:0.11.2,sa-python:0.0.3,polipo:0.1.0"
+ID:                         620b7d357f8081000a9783e0
 NAME:                       joomla-tmplt
-GENERIC IMAGE ID:           5aabb7551de0240abb000065
-SERVICE LIST:               [joomla python@1.4.6 polipo]
-CONFIGURATION ATTRIBUTES:   {"joomla":{"db":{"hostname":"127.0.0.1","password":"$afeP4sSw0rd"}}}
+GENERIC_IMAGE_ID:           5f3281737e8b380531f1a5c0
+RUN_LIST:                   
+CONFIGURATION_ATTRIBUTES:   {"joomla":{"db":{"hostname":"127.0.0.1","password":"$afeP4sSw0rd"}}}
 RESOURCE_TYPE:              template
-LABELS:                     [mysite.com Joomla]
+COOKBOOK_VERSIONS:          joomla:0.11.2,polipo:0.1.0,sa-python:0.0.3
+STATE:                      ready
+LABELS:                     Joomla,mysite.com
 ```
 
 ## Contribute
@@ -683,11 +792,11 @@ LABELS:                     [mysite.com Joomla]
 To contribute
 
 - Find and open issue, or report a new one. Include proper information about the environment, at least: operating system, CLI version, steps to reproduce the issue and related issues. Avoid writing multi-issue reports, and make sure that the issue is unique.
-- Fork the repository to your account
-- Commit scoped chunks, adding concise and clear comments
-- Remember to add tests to your contributed code
-- Push changes to the forked repository
-- Submit the PR to IMCO CLI
+- Fork the repository to your account.
+- Commit scoped chunks, adding concise and clear comments.
+- Remember to add tests to your contributed code.
+- Push changes to the forked repository.
+- Submit the PR to IMCO CLI.
 - Let the maintainers give you the LGTM.
 
 Please, use gofmt, golint, go vet, and follow [go style](https://github.com/golang/go/wiki/CodeReviewComments) advices
