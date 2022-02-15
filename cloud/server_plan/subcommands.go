@@ -19,6 +19,10 @@ func SubCommands() []cli.Command {
 					Name:  "cloud-provider-id",
 					Usage: "Cloud provider id",
 				},
+				cli.StringFlag{
+					Name:  "realm-id",
+					Usage: "Identifier of the realm to which the server plan belongs",
+				},
 			},
 		},
 		{
