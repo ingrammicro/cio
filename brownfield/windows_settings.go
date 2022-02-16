@@ -5,6 +5,7 @@
 package brownfield
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -21,7 +22,7 @@ type Settings struct {
 }
 
 func applyConcertoSettings(cs *utils.HTTPConcertoservice, f format.Formatter, username, password string) {
-	_, err := obtainSettings(cs)
+	settings, err := obtainSettings(cs)
 	if err != nil {
 		f.PrintFatal("Cannot obtain settings", err)
 	}
@@ -38,7 +39,7 @@ func applyConcertoSettings(cs *utils.HTTPConcertoservice, f format.Formatter, us
 	scriptFilePath := fmt.Sprintf("%s\\configure.bat", dir)
 
 	// Writes content to file
-	if err := ioutil.WriteFile(scriptFilePath, []byte(scriptTemplate), 0600); err != nil {
+	if err := ioutil.WriteFile(scriptFilePath, []byte(createScriptTemplate(settings)), 0600); err != nil {
 		log.Fatalf("Error creating temp file: %v", err)
 	}
 
@@ -49,13 +50,26 @@ func applyConcertoSettings(cs *utils.HTTPConcertoservice, f format.Formatter, us
 	fmt.Printf("Setup script ran successfully\n")
 }
 
-func obtainSettings(cs *utils.HTTPConcertoservice) (*Settings, error) {
-	// We do not need settings data, but make the API call to log progress on API service log
-	_, _, err := cs.Get("/brownfield/settings")
+func obtainSettings(cs *utils.HTTPConcertoservice) (settings *Settings, err error) {
+	body, status, err := cs.Get("/brownfield/settings")
 	if err != nil {
-		return nil, err
+		return
 	}
-	return &Settings{}, nil
+	if status == 403 {
+		err = fmt.Errorf("server responded with 403 code: authentication was not successful")
+		return
+	}
+	if status >= 300 {
+		err = fmt.Errorf("server responded with %d code: %s", status, string(body))
+		return
+	}
+	settings = &Settings{}
+	err = json.Unmarshal(body, settings)
+	if err != nil {
+		err = fmt.Errorf("cannot parse as JSON server response %v: %v", string(body), err)
+		return
+	}
+	return
 }
 
 func sendUsernamePassword(cs *utils.HTTPConcertoservice, username, password string) error {
@@ -78,11 +92,16 @@ func sendUsernamePassword(cs *utils.HTTPConcertoservice, username, password stri
 	return nil
 }
 
-var scriptTemplate = strings.Join([]string{
-	`winrm quickconfig -q`,
-	`winrm set winrm/config/winrs @{MaxMemoryPerShellMB="1024"}`,
-	`winrm set winrm/config @{MaxTimeoutms="1800000"}`,
-	`winrm set winrm/config/service @{AllowUnencrypted="true"}`,
-	`winrm set winrm/config/service/auth @{Basic="true"}`,
-	`netsh advfirewall firewall set rule name="Windows Remote Management (HTTP-In)" profile=public protocol=tcp localport=5985 remoteip=localsubnet new remoteip=any`,
-}, " && ")
+func createScriptTemplate(settings *Settings) (string){
+	return strings.Join([]string{
+		`powershell -command "Set-Service -Name sshd -StartupType Automatic"`,
+		`powershell -command "Start-Service sshd"`,
+		`powershell -command "Set-Content -path C:\ProgramData\ssh\administrators_authorized_keys '`+settings.SSHPublicKeys[0]+`'"`,
+		`powershell -command "icacls C:\ProgramData\ssh\administrators_authorized_keys /inheritance:d"`,
+		`powershell -command "icacls C:\ProgramData\ssh\administrators_authorized_keys /remove 'NT AUTHORITY\Authenticated Users'"`,
+		`powershell -command "Restart-Service sshd"`,
+		`powershell -command "Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\' -Name 'shutdownwithoutlogon' -Value 0"`,
+		`powershell -command "Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp\' -Name 'UserAuthentication' -Value 0"`,
+		`powershell -command "Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\' -Name 'dontdisplaylastusername' -Value 1"`,
+	}, " && ")
+}
