@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/ingrammicro/cio/api/dispatcher"
@@ -103,7 +104,7 @@ func execute(c *cli.Context, phase string, scriptCharacterizationUUID string) {
 		}
 		defer os.RemoveAll(path)
 
-		if err = os.Setenv("ATTACHMENT_DIR", fmt.Sprintf("%s/%s", path, "attachments")); err != nil {
+		if err = os.Setenv("ATTACHMENT_DIR", filepath.Join(path, "attachments")); err != nil {
 			formatter.PrintFatal("Couldn't set attachments directory as environment variable", err)
 		}
 
