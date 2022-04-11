@@ -5,7 +5,7 @@ package types
 type CloudAccount struct {
 	ID                                  string `json:"id" header:"ID"`
 	Name                                string `json:"name" header:"NAME"`
-	SubscriptionID                      string `json:"subscription_id" header:"SUBSCRIPTION_D"`
+	SubscriptionID                      string `json:"subscription_id" header:"SUBSCRIPTION_ID"`
 	RemoteID                            string `json:"remote_id" header:"REMOTE_ID"`
 	CloudProviderID                     string `json:"cloud_provider_id" header:"CLOUD_PROVIDER_ID"`
 	CloudProviderName                   string `header:"CLOUD_PROVIDER_NAME"`
