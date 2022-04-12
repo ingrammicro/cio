@@ -31,7 +31,10 @@ func NewServerPlanService(concertoService utils.ConcertoService) (*ServerPlanSer
 }
 
 // ListServerPlans returns the list of serverPlans as an array of ServerPlan
-func (sps *ServerPlanService) ListServerPlans(providerID string, realmID string) (serverPlans []*types.ServerPlan, err error) {
+func (sps *ServerPlanService) ListServerPlans(
+	providerID string,
+	realmID string,
+) (serverPlans []*types.ServerPlan, err error) {
 	log.Debug("ListServerPlans")
 
 	data, status, err := sps.concertoService.Get(fmt.Sprintf(APIPathCloudProviderServerPlansByRealm, providerID, realmID))
