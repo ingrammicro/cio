@@ -1,13 +1,15 @@
-// Copyright (c) 2017-2021 Ingram Micro Inc.
+// Copyright (c) 2017-2022 Ingram Micro Inc.
 
 package testdata
 
-import "github.com/ingrammicro/cio/api/types"
+import (
+	types2 "github.com/ingrammicro/cio/types"
+)
 
 // GetDomainData loads test data
-func GetDomainData() []*types.Domain {
+func GetDomainData() []*types2.Domain {
 
-	return []*types.Domain{
+	return []*types2.Domain{
 		{
 			ID:             "fakeID0",
 			Name:           "fakeName0",
@@ -22,9 +24,9 @@ func GetDomainData() []*types.Domain {
 }
 
 // GetRecordData loads test data
-func GetRecordData() []*types.Record {
+func GetRecordData() []*types2.Record {
 
-	return []*types.Record{
+	return []*types2.Record{
 		{
 			ID:             "fakeID0",
 			Name:           "fakeName0",

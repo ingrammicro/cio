@@ -1,16 +1,17 @@
-// Copyright (c) 2017-2021 Ingram Micro Inc.
+// Copyright (c) 2017-2022 Ingram Micro Inc.
 
 package format
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ingrammicro/cio/logger"
 	"io"
 	"reflect"
 	"strings"
 	"text/tabwriter"
 
-	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/types"
 	"github.com/ingrammicro/cio/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -131,12 +132,11 @@ func (f *TextFormatter) printItemAux(w *tabwriter.Writer, item interface{}) erro
 
 // PrintItem prints item
 func (f *TextFormatter) PrintItem(item interface{}) error {
-	log.Debug("PrintItem")
+	logger.DebugFuncInfo()
 
 	w := tabwriter.NewWriter(f.output, 15, 1, 3, ' ', 0)
 	f.printItemAux(w, item)
 	w.Flush()
-
 	return nil
 }
 
@@ -164,25 +164,39 @@ func (f *TextFormatter) printListHeadersAux(w *tabwriter.Writer, t reflect.Type)
 	}
 }
 
+func (f *TextFormatter) printListBodyAuxSlice(w *tabwriter.Writer, rv reflect.Value, depth int) {
+	for i := 0; i < rv.Len(); i++ {
+		if rv.Index(i).Kind() == reflect.Ptr {
+			if !rv.Index(i).IsNil() {
+				f.printListBodyAux(w, rv.Index(i).Elem(), depth+1)
+				fmt.Fprintln(w)
+			}
+		} else {
+			///usr/local/go/bin/go run main.go firewall list
+			f.printListBodyAux(w, rv.Index(i), depth+1)
+			fmt.Fprintln(w)
+		}
+	}
+}
+
 func (f *TextFormatter) printListBodyAux(w *tabwriter.Writer, rv reflect.Value, depth int) {
 	switch rv.Kind() {
 	//case reflect.Array, reflect.Chan, reflect.Map, reflect.Ptr, reflect.Slice:
 	case reflect.Slice:
-		for i := 0; i < rv.Len(); i++ {
-			if rv.Index(i).Kind() == reflect.Ptr {
-				if !rv.Index(i).IsNil() {
-					f.printListBodyAux(w, rv.Index(i).Elem(), depth+1)
-					fmt.Fprintln(w)
-				}
-			} else {
-				///usr/local/go/bin/go run main.go firewall list
-				f.printListBodyAux(w, rv.Index(i), depth+1)
-				fmt.Fprintln(w)
-			}
-		}
+		f.printListBodyAuxSlice(w, rv, depth)
 	case reflect.Struct:
 		f.printListBodyAuxStruct(w, rv, depth)
 	default:
+	}
+}
+
+func (f *TextFormatter) printListBodyAuxStructDefault(w *tabwriter.Writer, field reflect.Value, depth int) {
+	if field.Kind() == reflect.Struct {
+		f.printListBodyAux(w, field, depth+1)
+	} else if field.Kind() == reflect.Map {
+		fmt.Fprint(w, strings.Replace(fmt.Sprintf("%+v\t", field), "map[", "[", -1))
+	} else {
+		fmt.Fprint(w, fmt.Sprintf("%+v\t", field))
 	}
 }
 
@@ -195,13 +209,7 @@ func (f *TextFormatter) printListBodyAuxStruct(w *tabwriter.Writer, rv reflect.V
 			case "time.Time":
 				fmt.Fprint(w, fmt.Sprintf("%+v\t", field.Interface()))
 			default:
-				if field.Kind() == reflect.Struct {
-					f.printListBodyAux(w, field, depth+1)
-				} else if field.Kind() == reflect.Map {
-					fmt.Fprint(w, strings.Replace(fmt.Sprintf("%+v\t", field), "map[", "[", -1))
-				} else {
-					fmt.Fprint(w, fmt.Sprintf("%+v\t", field))
-				}
+				f.printListBodyAuxStructDefault(w, field, depth)
 			}
 		}
 	}
@@ -209,7 +217,7 @@ func (f *TextFormatter) printListBodyAuxStruct(w *tabwriter.Writer, rv reflect.V
 
 // PrintList prints item list
 func (f *TextFormatter) PrintList(items interface{}) error {
-	log.Debug("PrintList")
+	logger.DebugFuncInfo()
 
 	// should be an array
 	its := reflect.ValueOf(items)
@@ -226,13 +234,12 @@ func (f *TextFormatter) PrintList(items interface{}) error {
 	fmt.Fprintln(w)
 
 	w.Flush()
-
 	return nil
 }
 
 // PrintError prints an error
 func (f *TextFormatter) PrintError(context string, err error) {
-	log.Debug("PrintError")
+	logger.DebugFuncInfo()
 
 	f.output.Write([]byte(fmt.Sprintf("ERROR: %s\n -> %s\n", context, err)))
 }

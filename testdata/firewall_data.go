@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2021 Ingram Micro Inc.
+// Copyright (c) 2017-2022 Ingram Micro Inc.
 
 package testdata
 
 import (
-	"github.com/ingrammicro/cio/api/types"
+	"github.com/ingrammicro/cio/types"
 )
 
 // GetPolicyData loads test data

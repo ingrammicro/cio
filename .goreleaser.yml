@@ -1,4 +1,5 @@
 builds:
+#  AGENT
   - main: main.go
     binary: cio
     goos:
@@ -8,6 +9,17 @@ builds:
     goarch:
       - amd64
       - arm64
+# CLI
+  - main: ./cio-cli/main.go
+    binary: cio-cli
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
 archive:
   name_template: "{{ .ProjectName }}.{{ .Arch }}.{{ .Os }}"
   format: binary

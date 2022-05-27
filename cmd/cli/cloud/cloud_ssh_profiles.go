@@ -1,0 +1,217 @@
+// Copyright (c) 2017-2022 Ingram Micro Inc.
+
+package cloud
+
+import (
+	"fmt"
+	"github.com/ingrammicro/cio/cmd/cli"
+
+	"github.com/ingrammicro/cio/cmd"
+	"github.com/ingrammicro/cio/cmd/cli/labels"
+	"github.com/ingrammicro/cio/logger"
+	"github.com/ingrammicro/cio/types"
+	"github.com/spf13/viper"
+)
+
+func init() {
+	fLabelsFilter := cmd.FlagContext{Type: cmd.String, Name: cmd.Labels,
+		Usage: "A list of comma separated label as a query filter"}
+
+	fId := cmd.FlagContext{Type: cmd.String, Name: cmd.Id, Required: true, Usage: "SSH profile id"}
+
+	fName := cmd.FlagContext{Type: cmd.String, Name: cmd.Name, Usage: "Name of the SSH profile"}
+	fNameReq := fName
+	fNameReq.Required = true
+
+	fPublicKey := cmd.FlagContext{Type: cmd.String, Name: cmd.PublicKey, Required: true,
+		Usage: "Public key of the SSH profile"}
+	fPublicKeyReq := fPublicKey
+	fPublicKeyReq.Required = true
+
+	fPrivateKey := cmd.FlagContext{Type: cmd.String, Name: cmd.PrivateKey, Usage: "Private key of the SSH profile"}
+
+	fLabels := cmd.FlagContext{Type: cmd.String, Name: cmd.Labels,
+		Usage: "A list of comma separated label names to be associated with SSH profile"}
+
+	fLabel := cmd.FlagContext{Type: cmd.String, Name: cmd.Label, Required: true, Usage: "Label name"}
+
+	fResourceType := cmd.FlagContext{
+		Type:         cmd.String,
+		Name:         cmd.ResourceType,
+		DefaultValue: "ssh_profile",
+		Hidden:       true,
+		Usage:        "Resource Type",
+	}
+
+	sshProfilesCmd := cmd.NewCommand(cloudCmd, &cmd.CommandContext{
+		Use:   "ssh-profiles",
+		Short: "Provides information on SSH profiles"},
+	)
+	cmd.NewCommand(sshProfilesCmd, &cmd.CommandContext{
+		Use:          "list",
+		Short:        "Lists all available SSH profiles",
+		RunMethod:    SSHProfileList,
+		FlagContexts: []cmd.FlagContext{fLabelsFilter}},
+	)
+	cmd.NewCommand(sshProfilesCmd, &cmd.CommandContext{
+		Use:          "show",
+		Short:        "Shows information about the SSH profile identified by the given id",
+		RunMethod:    SSHProfileShow,
+		FlagContexts: []cmd.FlagContext{fId}},
+	)
+	cmd.NewCommand(sshProfilesCmd, &cmd.CommandContext{
+		Use:          "create",
+		Short:        "Creates a new SSH profile",
+		RunMethod:    SSHProfileCreate,
+		FlagContexts: []cmd.FlagContext{fNameReq, fPublicKeyReq, fPrivateKey, fLabels}},
+	)
+	cmd.NewCommand(sshProfilesCmd, &cmd.CommandContext{
+		Use:          "update",
+		Short:        "Updates an existing SSH profile",
+		RunMethod:    SSHProfileUpdate,
+		FlagContexts: []cmd.FlagContext{fId, fName, fPublicKey, fPrivateKey}},
+	)
+	cmd.NewCommand(sshProfilesCmd, &cmd.CommandContext{
+		Use:          "delete",
+		Short:        "Deletes a SSH profile",
+		RunMethod:    SSHProfileDelete,
+		FlagContexts: []cmd.FlagContext{fId}},
+	)
+	cmd.NewCommand(sshProfilesCmd, &cmd.CommandContext{
+		Use:          "add-label",
+		Short:        "This action assigns a single label from a single labelable resource",
+		RunMethod:    labels.LabelAdd,
+		FlagContexts: []cmd.FlagContext{fId, fLabel, fResourceType}},
+	)
+	cmd.NewCommand(sshProfilesCmd, &cmd.CommandContext{
+		Use:          "remove-label",
+		Short:        "This action unassigns a single label from a single labelable resource",
+		RunMethod:    labels.LabelRemove,
+		FlagContexts: []cmd.FlagContext{fId, fLabel, fResourceType}},
+	)
+}
+
+// SSHProfileList subcommand function
+func SSHProfileList() error {
+	logger.DebugFuncInfo()
+	svc, _, formatter := cli.WireUpAPIClient()
+
+	sshProfiles, err := svc.ListSSHProfiles(cmd.GetContext())
+	if err != nil {
+		formatter.PrintFatal("Couldn't receive sshProfile data", err)
+	}
+
+	labelables := make([]types.Labelable, len(sshProfiles))
+	for i := 0; i < len(sshProfiles); i++ {
+		labelables[i] = types.Labelable(sshProfiles[i])
+	}
+	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
+	sshProfiles = make([]*types.SSHProfile, len(filteredLabelables))
+	for i, labelable := range filteredLabelables {
+		sshP, ok := labelable.(*types.SSHProfile)
+		if !ok {
+			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
+				fmt.Errorf("expected labelable to be a *types.SSHProfile, got a %T", labelable))
+		}
+		sshProfiles[i] = sshP
+	}
+
+	if err = formatter.PrintList(sshProfiles); err != nil {
+		formatter.PrintFatal(cmd.PrintFormatError, err)
+	}
+	return nil
+}
+
+// SSHProfileShow subcommand function
+func SSHProfileShow() error {
+	logger.DebugFuncInfo()
+	svc, _, formatter := cli.WireUpAPIClient()
+
+	sshProfile, err := svc.GetSSHProfile(cmd.GetContext(), viper.GetString(cmd.Id))
+	if err != nil {
+		formatter.PrintFatal("Couldn't receive sshProfile data", err)
+	}
+	_, labelNamesByID := labels.LabelLoadsMapping()
+	sshProfile.FillInLabelNames(labelNamesByID)
+	if err = formatter.PrintItem(*sshProfile); err != nil {
+		formatter.PrintFatal(cmd.PrintFormatError, err)
+	}
+	return nil
+}
+
+// SSHProfileCreate subcommand function
+func SSHProfileCreate() error {
+	logger.DebugFuncInfo()
+	svc, _, formatter := cli.WireUpAPIClient()
+
+	sshProfileIn := map[string]interface{}{
+		"name":       viper.GetString(cmd.Name),
+		"public_key": viper.GetString(cmd.PublicKey),
+	}
+	if viper.IsSet(cmd.PrivateKey) {
+		sshProfileIn["private_key"] = viper.GetString(cmd.PrivateKey)
+	}
+
+	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+
+	if viper.IsSet(cmd.Labels) {
+		sshProfileIn["label_ids"] = labels.LabelResolution(
+			viper.GetString(cmd.Labels),
+			&labelNamesByID,
+			&labelIDsByName,
+		)
+	}
+
+	sshProfile, err := svc.CreateSSHProfile(cmd.GetContext(), &sshProfileIn)
+	if err != nil {
+		formatter.PrintFatal("Couldn't create sshProfile", err)
+	}
+
+	sshProfile.FillInLabelNames(labelNamesByID)
+	if err = formatter.PrintItem(*sshProfile); err != nil {
+		formatter.PrintFatal(cmd.PrintFormatError, err)
+	}
+	return nil
+}
+
+// SSHProfileUpdate subcommand function
+func SSHProfileUpdate() error {
+	logger.DebugFuncInfo()
+	svc, _, formatter := cli.WireUpAPIClient()
+
+	sshProfileIn := map[string]interface{}{}
+	if viper.IsSet(cmd.Name) {
+		sshProfileIn["name"] = viper.GetString(cmd.Name)
+	}
+	if viper.IsSet(cmd.PublicKey) {
+		sshProfileIn["public_key"] = viper.GetString(cmd.PublicKey)
+	}
+	if viper.IsSet(cmd.PrivateKey) {
+		sshProfileIn["private_key"] = viper.GetString(cmd.PrivateKey)
+	}
+	sshProfile, err := svc.UpdateSSHProfile(cmd.GetContext(), viper.GetString(cmd.Id), &sshProfileIn)
+	if err != nil {
+		formatter.PrintFatal("Couldn't update sshProfile", err)
+	}
+
+	_, labelNamesByID := labels.LabelLoadsMapping()
+	sshProfile.FillInLabelNames(labelNamesByID)
+	if err = formatter.PrintItem(*sshProfile); err != nil {
+		formatter.PrintFatal(cmd.PrintFormatError, err)
+	}
+	return nil
+}
+
+// SSHProfileDelete subcommand function
+func SSHProfileDelete() error {
+	logger.DebugFuncInfo()
+	svc, _, formatter := cli.WireUpAPIClient()
+
+	err := svc.DeleteSSHProfile(cmd.GetContext(), viper.GetString(cmd.Id))
+	if err != nil {
+		formatter.PrintFatal("Couldn't delete sshProfile", err)
+	}
+	return nil
+}
