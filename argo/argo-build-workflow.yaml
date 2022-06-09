@@ -63,7 +63,6 @@ spec:
         templateRef:
           name: workflow-template-sonar-template-1.1
           template: go-dependency-track
-        when: "('{{workflow.parameters.branch}}' =~ '^v[0-9\\.]+$')"
 
       - name: go-build
         dependencies: [dependencies]
@@ -90,7 +89,7 @@ spec:
           - name: test_path
             value: .
           - name: go-image
-            value: golang:1.16
+            value: golang:1.18.3
         when: "{{workflow.parameters.skip_tests}} == false"
 
       - name: sonar-branch-analysis
@@ -139,12 +138,11 @@ spec:
             optional: true
         when: "('{{workflow.parameters.pull_request}}' =~ '^[0-9]+$')"
 
-
   - name: go-build
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.16
+        value: golang:1.18.3
       - name: notifiable_commits
       - name: source_mountpath
         value: /usr/src
