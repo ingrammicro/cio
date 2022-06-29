@@ -63,6 +63,7 @@ spec:
         templateRef:
           name: workflow-template-sonar-template-1.1
           template: go-dependency-track
+        when: "('{{workflow.parameters.branch}}' =~ '^v[0-9\\.]+$') || ('{{workflow.parameters.branch}}' == 'develop')"
 
       - name: go-build
         dependencies: [dependencies]
