@@ -375,12 +375,6 @@ func applyPolicyfiles(
 		formatter.PrintError("couldn't clean obsolete policy files", err)
 		return err
 	}
-	// Store the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
-	err = saveAttributes(bsProcess)
-	if err != nil {
-		formatter.PrintError("couldn't save attributes for policy files", err)
-		return err
-	}
 	// Process tarballs policies
 	err = processPolicyfiles(bootstrappingSvc, bsProcess)
 	// Finishing time
@@ -474,9 +468,9 @@ func cleanObsoletePolicyfiles(bsProcess *bootstrappingProcess) error {
 }
 
 // saveAttributes stores the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
-func saveAttributes(bsProcess *bootstrappingProcess) error {
+func saveAttributes(bsProcess *bootstrappingProcess, policyfileName string) error {
 	log.Debug("saveAttributes")
-
+	bsProcess.attributes.rawData["policy_name"] = policyfileName
 	attrs, err := json.Marshal(bsProcess.attributes.rawData)
 	if err != nil {
 		return err
@@ -491,6 +485,11 @@ func preparePolicyfileCommand(bsProcess *bootstrappingProcess, bsPolicyfile poli
 	string, string, string, error,
 ) {
 	log.Debug("preparePolicyfileCommand")
+	// Store the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
+	err := saveAttributes(bsProcess, bsPolicyfile.ID)
+	if err != nil {
+		return "", "", "", fmt.Errorf("couldn't save attributes for policy file %q: %w", bsPolicyfile.ID, err)
+	}
 	command := fmt.Sprintf("chef-client -z -j %s", bsProcess.attributes.FilePath(bsProcess.directoryPath))
 	policyfileDir := bsPolicyfile.Path(bsProcess.directoryPath)
 	var renamedPolicyfileDir string
