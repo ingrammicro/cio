@@ -139,6 +139,15 @@ spec:
             optional: true
         when: "('{{workflow.parameters.pull_request}}' =~ '^[0-9]+$')"
 
+      - name: goreleaser
+        dependencies: [go-build]
+        template: goreleaser
+        arguments:
+          artifacts:
+          - name: src
+            from: "{{tasks.dependencies.outputs.artifacts.src}}"
+        when: "'{{workflow.parameters.branch}}' =~ '^v[0-9\\.]+'"
+
   - name: go-build
     inputs:
       parameters:
@@ -222,3 +231,38 @@ spec:
           cpu: 900m
         limits:
           cpu: 900m
+
+  - name: goreleaser
+    inputs:
+      parameters:
+      - name: go-image
+        value: golang:1.18.3
+      artifacts:
+      - name: src
+        path: "/src"
+        s3:
+          endpoint: local-minio-service:9000
+          bucket: argo-workflow
+          insecure: true
+          key: "{{workflow.uid}}/src.tgz"
+          accessKeySecret:
+            name: s3-credentials-generated-by-kustomize
+            key: S3_ACCESS_KEY_ID
+          secretKeySecret:
+            name: s3-credentials-generated-by-kustomize
+            key: S3_SECRET_ACCESS_KEY
+    script:
+      image: "{{inputs.parameters.go-image}}"      
+      env:
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: github-token
+            key: token
+      command: [sh]
+      source: |
+        cd /src
+        apk add --no-cache git
+        go install github.com/goreleaser/goreleaser@v1.9.2
+        export GITHUB_TOKEN="${GITHUB_TOKEN}"
+        goreleaser
