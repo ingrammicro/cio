@@ -470,6 +470,7 @@ func cleanObsoletePolicyfiles(bsProcess *bootstrappingProcess) error {
 // saveAttributes stores the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
 func saveAttributes(bsProcess *bootstrappingProcess, policyfileName string) error {
 	log.Debug("saveAttributes")
+	bsProcess.attributes.rawData["policy_group"] = "local"
 	bsProcess.attributes.rawData["policy_name"] = policyfileName
 	attrs, err := json.Marshal(bsProcess.attributes.rawData)
 	if err != nil {
