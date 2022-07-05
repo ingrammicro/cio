@@ -502,7 +502,8 @@ func preparePolicyfileCommand(bsProcess *bootstrappingProcess, bsPolicyfile poli
 			return "", "", "", fmt.Errorf("could not rename %s as %s: %v", renamedPolicyfileDir, policyfileDir, err)
 		}
 		command = fmt.Sprintf(
-			"SET \"PATH=%%PATH%%;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\"\n%s",
+			"SET \"PATH=%%PATH%%;C:\\ruby\\bin;C:\\cinc-project\\cinc\\bin;C:\\cinc-project\\cinc\\embedded\\bin;"+
+				"C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\"\n%s",
 			command,
 		)
 	}

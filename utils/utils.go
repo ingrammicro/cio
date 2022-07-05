@@ -16,18 +16,25 @@ import (
 
 // TODO remove after migration
 
+var tarBinary string
+
+func init() {
+	tarBinary = "tar"
+	if runtime.GOOS == "windows" {
+		tarBinary = "C:\\cinc-project\\cinc\\bin\\tar.exe"
+		if _, err := os.Stat(tarBinary); err != nil {
+			tarBinary = "C:\\opscode\\chef\\bin\\tar.exe"
+		}
+	}
+}
+
 // Untar decompresses the source file to target file
 func Untar(ctx context.Context, source, target string) error {
 
 	if err := os.MkdirAll(target, 0600); err != nil {
 		return err
 	}
-
-	tarExecutable := "tar"
-	if runtime.GOOS == "windows" {
-		tarExecutable = "C:\\opscode\\chef\\bin\\tar.exe"
-	}
-	cmd := exec.CommandContext(ctx, tarExecutable, "-xzf", source, "-C", target)
+	cmd := exec.CommandContext(ctx, tarBinary, "-xzf", source, "-C", target)
 	if err := cmd.Run(); err != nil {
 		return err
 	}
