@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"syscall"
@@ -48,6 +49,8 @@ const (
 	retriesNumber   = 5
 )
 
+var cmsVersionRegex = regexp.MustCompile(`(Cinc|(Starting )?Chef) Client, version (?P<CMSVersion>[0-9.]+)`)
+
 type bootstrappingProcess struct {
 	startedAt                    time.Time
 	finishedAt                   time.Time
@@ -56,6 +59,7 @@ type bootstrappingProcess struct {
 	thresholdLines               int
 	directoryPath                string
 	appliedPolicyfileRevisionIDs map[string]string
+	cmsVersion                   string
 }
 type attributes struct {
 	revisionID string
@@ -524,11 +528,12 @@ func runCommand(fn func(chunk string) error, command string, thresholdLines int)
 	return nil
 }
 
-func getFunctionForChunksBootstrappingLog(bootstrappingSvc *blueprint.BootstrappingService) func(chunk string) error {
+func getFunctionForChunksBootstrappingLog(bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) func(chunk string) error {
 	fn := func(chunk string) error {
 		log.Debug("sendChunks")
 		err := utils.Retry(retriesNumber, time.Second, func() error {
 			log.Debug("Sending: ", chunk)
+			bsProcess.parseCMSVersion(chunk)
 
 			commandIn := map[string]interface{}{
 				"stdout": chunk,
@@ -565,10 +570,9 @@ func processPolicyfiles(bootstrappingSvc *blueprint.BootstrappingService, bsProc
 			return err
 		}
 		log.Debug(command)
-
+		bsProcess.cmsVersion = ""
 		// Custom method for chunks processing
-		fn := getFunctionForChunksBootstrappingLog(bootstrappingSvc)
-
+		fn := getFunctionForChunksBootstrappingLog(bootstrappingSvc, bsProcess)
 		if err = runCommand(fn, command, bsProcess.thresholdLines); err != nil {
 			return err
 		}
@@ -597,6 +601,24 @@ func reportAppliedConfiguration(
 		"finished_at":             bsProcess.finishedAt,
 		"policyfile_revision_ids": bsProcess.appliedPolicyfileRevisionIDs,
 		"attribute_revision_id":   bsProcess.attributes.revisionID,
+		"agent_version":           utils.VERSION,
+	}
+	if bsProcess.cmsVersion != "" {
+		payload["cms_version"] = bsProcess.cmsVersion
 	}
 	return bootstrappingSvc.ReportBootstrappingAppliedConfiguration(&payload)
+}
+
+func (bsProcess *bootstrappingProcess) parseCMSVersion(chunk string) {
+	if bsProcess.cmsVersion != "" {
+		return
+	}
+	match := cmsVersionRegex.FindStringSubmatch(chunk)
+	if match != nil {
+		for i, name := range cmsVersionRegex.SubexpNames() {
+			if name == "CMSVersion" && i < len(match) {
+				bsProcess.cmsVersion = match[i]
+			}
+		}
+	}
 }
