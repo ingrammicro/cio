@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"syscall"
@@ -48,6 +49,8 @@ const (
 	retriesNumber   = 5
 )
 
+var cmsVersionRegex = regexp.MustCompile(`(Cinc|(Starting )?Chef) Client, version (?P<CMSVersion>[0-9.]+)`)
+
 type bootstrappingProcess struct {
 	startedAt                    time.Time
 	finishedAt                   time.Time
@@ -56,6 +59,7 @@ type bootstrappingProcess struct {
 	thresholdLines               int
 	directoryPath                string
 	appliedPolicyfileRevisionIDs map[string]string
+	cmsVersion                   string
 }
 type attributes struct {
 	revisionID string
@@ -375,12 +379,6 @@ func applyPolicyfiles(
 		formatter.PrintError("couldn't clean obsolete policy files", err)
 		return err
 	}
-	// Store the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
-	err = saveAttributes(bsProcess)
-	if err != nil {
-		formatter.PrintError("couldn't save attributes for policy files", err)
-		return err
-	}
 	// Process tarballs policies
 	err = processPolicyfiles(bootstrappingSvc, bsProcess)
 	// Finishing time
@@ -474,9 +472,10 @@ func cleanObsoletePolicyfiles(bsProcess *bootstrappingProcess) error {
 }
 
 // saveAttributes stores the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
-func saveAttributes(bsProcess *bootstrappingProcess) error {
+func saveAttributes(bsProcess *bootstrappingProcess, policyfileName string) error {
 	log.Debug("saveAttributes")
-
+	bsProcess.attributes.rawData["policy_group"] = "local"
+	bsProcess.attributes.rawData["policy_name"] = policyfileName
 	attrs, err := json.Marshal(bsProcess.attributes.rawData)
 	if err != nil {
 		return err
@@ -491,6 +490,11 @@ func preparePolicyfileCommand(bsProcess *bootstrappingProcess, bsPolicyfile poli
 	string, string, string, error,
 ) {
 	log.Debug("preparePolicyfileCommand")
+	// Store the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
+	err := saveAttributes(bsProcess, bsPolicyfile.ID)
+	if err != nil {
+		return "", "", "", fmt.Errorf("couldn't save attributes for policy file %q: %w", bsPolicyfile.ID, err)
+	}
 	command := fmt.Sprintf("chef-client -z -j %s", bsProcess.attributes.FilePath(bsProcess.directoryPath))
 	policyfileDir := bsPolicyfile.Path(bsProcess.directoryPath)
 	var renamedPolicyfileDir string
@@ -502,7 +506,8 @@ func preparePolicyfileCommand(bsProcess *bootstrappingProcess, bsPolicyfile poli
 			return "", "", "", fmt.Errorf("could not rename %s as %s: %v", renamedPolicyfileDir, policyfileDir, err)
 		}
 		command = fmt.Sprintf(
-			"SET \"PATH=%%PATH%%;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\"\n%s",
+			"SET \"PATH=%%PATH%%;C:\\ruby\\bin;C:\\cinc-project\\cinc\\bin;C:\\cinc-project\\cinc\\embedded\\bin;"+
+				"C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\"\n%s",
 			command,
 		)
 	}
@@ -523,11 +528,12 @@ func runCommand(fn func(chunk string) error, command string, thresholdLines int)
 	return nil
 }
 
-func getFunctionForChunksBootstrappingLog(bootstrappingSvc *blueprint.BootstrappingService) func(chunk string) error {
+func getFunctionForChunksBootstrappingLog(bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) func(chunk string) error {
 	fn := func(chunk string) error {
 		log.Debug("sendChunks")
 		err := utils.Retry(retriesNumber, time.Second, func() error {
 			log.Debug("Sending: ", chunk)
+			bsProcess.parseCMSVersion(chunk)
 
 			commandIn := map[string]interface{}{
 				"stdout": chunk,
@@ -564,10 +570,9 @@ func processPolicyfiles(bootstrappingSvc *blueprint.BootstrappingService, bsProc
 			return err
 		}
 		log.Debug(command)
-
+		bsProcess.cmsVersion = ""
 		// Custom method for chunks processing
-		fn := getFunctionForChunksBootstrappingLog(bootstrappingSvc)
-
+		fn := getFunctionForChunksBootstrappingLog(bootstrappingSvc, bsProcess)
 		if err = runCommand(fn, command, bsProcess.thresholdLines); err != nil {
 			return err
 		}
@@ -596,6 +601,24 @@ func reportAppliedConfiguration(
 		"finished_at":             bsProcess.finishedAt,
 		"policyfile_revision_ids": bsProcess.appliedPolicyfileRevisionIDs,
 		"attribute_revision_id":   bsProcess.attributes.revisionID,
+		"agent_version":           utils.VERSION,
+	}
+	if bsProcess.cmsVersion != "" {
+		payload["cms_version"] = bsProcess.cmsVersion
 	}
 	return bootstrappingSvc.ReportBootstrappingAppliedConfiguration(&payload)
+}
+
+func (bsProcess *bootstrappingProcess) parseCMSVersion(chunk string) {
+	if bsProcess.cmsVersion != "" {
+		return
+	}
+	match := cmsVersionRegex.FindStringSubmatch(chunk)
+	if match != nil {
+		for i, name := range cmsVersionRegex.SubexpNames() {
+			if name == "CMSVersion" && i < len(match) {
+				bsProcess.cmsVersion = match[i]
+			}
+		}
+	}
 }
