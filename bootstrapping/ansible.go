@@ -26,12 +26,12 @@ func applyAnsiblePolicyfiles(
 ) error {
 	err := prepareAnsibleInventory(ctx, bsProcess)
 	if err != nil {
-		formatter.PrintError("couldn't prepare inventory: %v", err)
+		formatter.PrintError("couldn't prepare inventory:", err)
 		return err
 	}
 	err = processAnsiblePolicyfiles(bootstrappingSvc, bsProcess)
 	if err != nil {
-		formatter.PrintError("couldn't process policyfiles: %v", err)
+		formatter.PrintError("couldn't process policyfiles:", err)
 		return err
 	}
 	return nil
