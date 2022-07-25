@@ -222,14 +222,21 @@ func runBootstrapPeriodically(ctx context.Context, c *cli.Context, formatter for
 					}
 					applyAfterIterations, thresholdLines, interval, splay = getBootstrappingConfigOrDefaults(c, config)
 				}
+			} else {
+				log.Info(
+					"Configuration has not changed since last successful application and not %d iterations have passed since last application",
+					applyAfterIterations)
 			}
+		} else {
+			log.Info("Error ocurred while retrieving configuration to apply: %v", err)
 		}
 		noPolicyfileApplicationIterations++
 
 		// Sleep for a configured amount of time plus a random amount of time (10 minutes plus 0 to 5 minutes, for
 		// instance)
-		ticker := time.NewTicker(time.Duration(interval+r.Intn(int(splay))) * time.Second)
-
+		sleepSeconds := interval + r.Intn(int(splay))
+		ticker := time.NewTicker(time.Duration(sleepSeconds) * time.Second)
+		log.Info("Sleeping for %d seconds before checking for updates or reattempting", sleepSeconds)
 		select {
 		case <-ticker.C:
 			log.Debug("ticker")

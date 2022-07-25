@@ -14,6 +14,7 @@ import (
 
 const (
 	inventoryFile = "inventory.yml"
+	variableFile  = "variables.yml"
 	ansibleScript = "apply.sh"
 )
 
@@ -27,6 +28,11 @@ func applyAnsiblePolicyfiles(
 	err := prepareAnsibleInventory(ctx, bsProcess)
 	if err != nil {
 		formatter.PrintError("couldn't prepare inventory:", err)
+		return err
+	}
+	err = prepareAnsibleVariables(ctx, bsProcess)
+	if err != nil {
+		formatter.PrintError("couldn't prepare variables:", err)
 		return err
 	}
 	err = processAnsiblePolicyfiles(bootstrappingSvc, bsProcess)
@@ -44,11 +50,12 @@ func prepareAnsibleInventory(ctx context.Context, bsProcess *bootstrappingProces
 		return fmt.Errorf("opening inventory file to write: %w", err)
 	}
 	defer file.Close()
-	bsProcess.attributes.rawData["ansible_connection"] = "local"
 	inventory := map[string]interface{}{
 		"all": map[string]interface{}{
 			"hosts": map[string]interface{}{
-				"localhost": bsProcess.attributes.rawData,
+				"localhost": map[string]interface{}{
+					"ansible_connection": "local",
+				},
 			},
 		},
 	}
@@ -61,8 +68,28 @@ func prepareAnsibleInventory(ctx context.Context, bsProcess *bootstrappingProces
 	return nil
 }
 
+func prepareAnsibleVariables(ctx context.Context, bsProcess *bootstrappingProcess) error {
+	log.Debug("prepareAnsibleVariables")
+	file, err := os.Create(variableFilePath(bsProcess.directoryPath))
+	if err != nil {
+		return fmt.Errorf("opening variable file to write: %w", err)
+	}
+	defer file.Close()
+	encoder := yaml.NewEncoder(file)
+	defer encoder.Close()
+	err = encoder.Encode(bsProcess.attributes.rawData)
+	if err != nil {
+		return fmt.Errorf("encoding variables: %w", err)
+	}
+	return nil
+}
+
 func inventoryFilePath(dir string) string {
 	return filepath.Join(dir, inventoryFile)
+}
+
+func variableFilePath(dir string) string {
+	return filepath.Join(dir, variableFile)
 }
 
 // processAnsiblePolicyfiles applies for each policy the required ansible-galaxy and ansible-playbook commands, reporting in bunches of N lines
@@ -70,7 +97,10 @@ func processAnsiblePolicyfiles(bootstrappingSvc *blueprint.BootstrappingService,
 	log.Debug("processAnsiblePolicyfiles")
 	for _, bsPolicyfile := range bsProcess.policyfiles {
 		policyfileDir := bsPolicyfile.Path(bsProcess.directoryPath)
-		command := fmt.Sprintf("cd %s && sh %s %s", policyfileDir, ansibleScript, inventoryFilePath(bsProcess.directoryPath))
+		command := fmt.Sprintf(
+			"cd %s && sh %s %s %s",
+			policyfileDir,
+			ansibleScript, inventoryFilePath(bsProcess.directoryPath), variableFilePath(bsProcess.directoryPath))
 		log.Debug(command)
 		bsProcess.cmsVersion = ""
 		// Custom method for chunks processing
