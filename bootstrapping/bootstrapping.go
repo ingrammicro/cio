@@ -49,7 +49,8 @@ const (
 	CMSAnsible      = "ansible"
 )
 
-var cmsVersionRegex = regexp.MustCompile(`(Cinc|(Starting )?Chef) Client, version (?P<CMSVersion>[0-9.]+)`)
+var chefCMSVersionRegex = regexp.MustCompile(`(Cinc|(Starting )?Chef) Client, version (?P<CMSVersion>[0-9.]+)`)
+var ansibleCMSVersionRegex = regexp.MustCompile(`^ansible-playbook (\[core )?(?P<CMSVersion>[0-9.]+)\]?`)
 
 type bootstrappingProcess struct {
 	startedAt                    time.Time
@@ -323,12 +324,24 @@ func applyPolicyfiles(
 		return err
 	}
 	if blueprintConfig.ConfigurationManagementSystem == CMSChef {
-		return applyChefPolicyfiles(ctx, bsProcess, bootstrappingSvc, formatter)
+		err = applyChefPolicyfiles(ctx, blueprintConfig, bootstrappingSvc, bsProcess, formatter)
 	} else if blueprintConfig.ConfigurationManagementSystem == CMSAnsible {
-		return applyAnsiblePolicyfiles(ctx, bsProcess, bootstrappingSvc, formatter)
+		err = applyAnsiblePolicyfiles(ctx, blueprintConfig, bootstrappingSvc, bsProcess, formatter)
 	} else {
 		return fmt.Errorf("unknown configuration management system %q, expected %q or %q", blueprintConfig.ConfigurationManagementSystem, CMSChef, CMSAnsible)
 	}
+	// Finishing time
+	bsProcess.finishedAt = time.Now().UTC()
+
+	// Inform the platform of applied changes via a `PUT /blueprint/applied_configuration` request with a JSON payload
+	// similar to
+	log.Debug("reporting applied policy files")
+	reportErr := reportAppliedConfiguration(bootstrappingSvc, bsProcess)
+	if reportErr != nil {
+		formatter.PrintError("couldn't report applied status for policy files", err)
+		return err
+	}
+	return err
 }
 
 func getBootstrappingConfigOrDefaults(
@@ -394,12 +407,15 @@ func getBlueprintConfig(
 	return blueprintConfig, updated, ctx.Err()
 }
 
-func getBootstrapLogReporter(bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) func(chunk string) error {
+func getBootstrapLogReporter(
+	bootstrappingSvc *blueprint.BootstrappingService,
+	bsProcess *bootstrappingProcess,
+	blueprintConfig *types.BootstrappingConfiguration) func(chunk string) error {
 	fn := func(chunk string) error {
 		log.Debug("sendChunks")
 		err := utils.Retry(retriesNumber, time.Second, func() error {
 			log.Debug("Sending: ", chunk)
-			bsProcess.parseCMSVersion(chunk)
+			bsProcess.parseCMSVersion(blueprintConfig, chunk)
 
 			commandIn := map[string]interface{}{
 				"stdout": chunk,
@@ -447,13 +463,19 @@ func reportAppliedConfiguration(
 	return bootstrappingSvc.ReportBootstrappingAppliedConfiguration(&payload)
 }
 
-func (bsProcess *bootstrappingProcess) parseCMSVersion(chunk string) {
+func (bsProcess *bootstrappingProcess) parseCMSVersion(blueprintConfig *types.BootstrappingConfiguration, chunk string) {
 	if bsProcess.cmsVersion != "" {
 		return
 	}
-	match := cmsVersionRegex.FindStringSubmatch(chunk)
+	var cmsRegex *regexp.Regexp
+	if blueprintConfig.ConfigurationManagementSystem == "ansible" {
+		cmsRegex = ansibleCMSVersionRegex
+	} else {
+		cmsRegex = chefCMSVersionRegex
+	}
+	match := cmsRegex.FindStringSubmatch(chunk)
 	if match != nil {
-		for i, name := range cmsVersionRegex.SubexpNames() {
+		for i, name := range cmsRegex.SubexpNames() {
 			if name == "CMSVersion" && i < len(match) {
 				bsProcess.cmsVersion = match[i]
 			}

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/ingrammicro/cio/api/blueprint"
+	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils/format"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
@@ -21,8 +22,9 @@ const (
 // Subsidiary routine for commands processing
 func applyAnsiblePolicyfiles(
 	ctx context.Context,
-	bsProcess *bootstrappingProcess,
+	blueprintConfig *types.BootstrappingConfiguration,
 	bootstrappingSvc *blueprint.BootstrappingService,
+	bsProcess *bootstrappingProcess,
 	formatter format.Formatter,
 ) error {
 	err := prepareAnsibleInventory(ctx, bsProcess)
@@ -35,7 +37,7 @@ func applyAnsiblePolicyfiles(
 		formatter.PrintError("couldn't prepare variables:", err)
 		return err
 	}
-	err = processAnsiblePolicyfiles(bootstrappingSvc, bsProcess)
+	err = processAnsiblePolicyfiles(blueprintConfig, bootstrappingSvc, bsProcess)
 	if err != nil {
 		formatter.PrintError("couldn't process policyfiles:", err)
 		return err
@@ -93,7 +95,7 @@ func variableFilePath(dir string) string {
 }
 
 // processAnsiblePolicyfiles applies for each policy the required ansible-galaxy and ansible-playbook commands, reporting in bunches of N lines
-func processAnsiblePolicyfiles(bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) error {
+func processAnsiblePolicyfiles(blueprintConfig *types.BootstrappingConfiguration, bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) error {
 	log.Debug("processAnsiblePolicyfiles")
 	for _, bsPolicyfile := range bsProcess.policyfiles {
 		policyfileDir := bsPolicyfile.Path(bsProcess.directoryPath)
@@ -104,7 +106,7 @@ func processAnsiblePolicyfiles(bootstrappingSvc *blueprint.BootstrappingService,
 		log.Debug(command)
 		bsProcess.cmsVersion = ""
 		// Custom method for chunks processing
-		fn := getBootstrapLogReporter(bootstrappingSvc, bsProcess)
+		fn := getBootstrapLogReporter(bootstrappingSvc, bsProcess, blueprintConfig)
 		if err := runCommand(fn, command, bsProcess.thresholdLines); err != nil {
 			return err
 		}

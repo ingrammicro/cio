@@ -8,9 +8,9 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"time"
 
 	"github.com/ingrammicro/cio/api/blueprint"
+	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils"
 	"github.com/ingrammicro/cio/utils/format"
 	log "github.com/sirupsen/logrus"
@@ -19,24 +19,14 @@ import (
 // Subsidiary routine for commands processing
 func applyChefPolicyfiles(
 	ctx context.Context,
-	bsProcess *bootstrappingProcess,
+	blueprintConfig *types.BootstrappingConfiguration,
 	bootstrappingSvc *blueprint.BootstrappingService,
+	bsProcess *bootstrappingProcess,
 	formatter format.Formatter,
 ) error {
 	// Process tarballs policies
-	err := processPolicyfiles(bootstrappingSvc, bsProcess)
-	// Finishing time
-	bsProcess.finishedAt = time.Now().UTC()
+	return processChefPolicyfiles(blueprintConfig, bootstrappingSvc, bsProcess)
 
-	// Inform the platform of applied changes via a `PUT /blueprint/applied_configuration` request with a JSON payload
-	// similar to
-	log.Debug("reporting applied policy files")
-	reportErr := reportAppliedConfiguration(bootstrappingSvc, bsProcess)
-	if reportErr != nil {
-		formatter.PrintError("couldn't report applied status for policy files", err)
-		return err
-	}
-	return err
 }
 
 // saveAttributes stores the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
@@ -67,9 +57,9 @@ func runCommand(fn func(chunk string) error, command string, thresholdLines int)
 	return nil
 }
 
-// processPolicyfiles applies for each policy the required chef commands, reporting in bunches of N lines
-func processPolicyfiles(bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) error {
-	log.Debug("processPolicyfiles")
+// processChefPolicyfiles applies for each policy the required chef commands, reporting in bunches of N lines
+func processChefPolicyfiles(blueprintConfig *types.BootstrappingConfiguration, bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) error {
+	log.Debug("processChefPolicyfiles")
 	for _, bsPolicyfile := range bsProcess.policyfiles {
 		command, renamedPolicyfileDir, policyfileDir, err := preparePolicyfileCommand(bsProcess, bsPolicyfile)
 		if err != nil {
@@ -78,7 +68,7 @@ func processPolicyfiles(bootstrappingSvc *blueprint.BootstrappingService, bsProc
 		log.Debug(command)
 		bsProcess.cmsVersion = ""
 		// Custom method for chunks processing
-		fn := getBootstrapLogReporter(bootstrappingSvc, bsProcess)
+		fn := getBootstrapLogReporter(bootstrappingSvc, bsProcess, blueprintConfig)
 		if err = runCommand(fn, command, bsProcess.thresholdLines); err != nil {
 			return err
 		}
