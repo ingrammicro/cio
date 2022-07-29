@@ -36,7 +36,7 @@ const (
 	defaultSplaySeconds = 300 // 300 seconds = 5 minutes
 	// defaultThresholdLines is the default maximum number of lines a
 	// batch of policyfile application output report can have
-	defaultThresholdLines = 10
+	defaultThresholdLines = 20
 	// defaultApplyAfterIterations is the default number of iterations
 	// the continuous bootstrap command can go without attempting to apply
 	// policyfiles
@@ -225,11 +225,11 @@ func runBootstrapPeriodically(ctx context.Context, c *cli.Context, formatter for
 				}
 			} else {
 				log.Info(
-					"Configuration has not changed since last successful application and not %d iterations have passed since last application",
-					applyAfterIterations)
+					fmt.Sprintf("Configuration has not changed since last successful application and not %d iterations have passed since last application",
+						applyAfterIterations))
 			}
 		} else {
-			log.Info("Error ocurred while retrieving configuration to apply: %v", err)
+			log.Info(fmt.Sprintf("Error ocurred while retrieving configuration to apply: %v", err))
 		}
 		noPolicyfileApplicationIterations++
 
@@ -237,7 +237,7 @@ func runBootstrapPeriodically(ctx context.Context, c *cli.Context, formatter for
 		// instance)
 		sleepSeconds := interval + r.Intn(int(splay))
 		ticker := time.NewTicker(time.Duration(sleepSeconds) * time.Second)
-		log.Info("Sleeping for %d seconds before checking for updates or reattempting", sleepSeconds)
+		log.Info(fmt.Sprintf("Sleeping for %d seconds before checking for updates or reattempting", sleepSeconds))
 		select {
 		case <-ticker.C:
 			log.Debug("ticker")
