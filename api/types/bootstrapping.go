@@ -3,9 +3,10 @@
 package types
 
 type BootstrappingConfiguration struct {
-	Policyfiles []BootstrappingPolicyfile `json:"policyfiles,omitempty" header:"POLICY_FILES" show:"nolist"`
-	Attributes map[string]interface{} `json:"attributes,omitempty" header:"ATTRIBUTES" show:"nolist"`
-	AttributeRevisionID string `json:"attribute_revision_id,omitempty" header:"ATTRIBUTE_REVISION_ID"`
+	ConfigurationManagementSystem string                    `json:"cms,omitempty"`
+	Policyfiles                   []BootstrappingPolicyfile `json:"policyfiles,omitempty" header:"POLICY_FILES" show:"nolist"`
+	Attributes                    map[string]interface{}    `json:"attributes,omitempty" header:"ATTRIBUTES" show:"nolist"`
+	AttributeRevisionID           string                    `json:"attribute_revision_id,omitempty" header:"ATTRIBUTE_REVISION_ID"`
 }
 
 type BootstrappingPolicyfile struct {

@@ -4,7 +4,6 @@ package bootstrapping
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -13,7 +12,6 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strings"
 	"syscall"
 	"time"
@@ -47,9 +45,12 @@ const (
 	// command is the only one of its kind running
 	ProcessLockFile = "cio-bootstrapping.lock"
 	retriesNumber   = 5
+	CMSChef         = "chef"
+	CMSAnsible      = "ansible"
 )
 
-var cmsVersionRegex = regexp.MustCompile(`(Cinc|(Starting )?Chef) Client, version (?P<CMSVersion>[0-9.]+)`)
+var chefCMSVersionRegex = regexp.MustCompile(`(Cinc|(Starting )?Chef) Client, version (?P<CMSVersion>[0-9.]+)`)
+var ansibleCMSVersionRegex = regexp.MustCompile(`^ansible-playbook (\[core )?(?P<CMSVersion>[0-9.]+)\]?`)
 
 type bootstrappingProcess struct {
 	startedAt                    time.Time
@@ -222,14 +223,21 @@ func runBootstrapPeriodically(ctx context.Context, c *cli.Context, formatter for
 					}
 					applyAfterIterations, thresholdLines, interval, splay = getBootstrappingConfigOrDefaults(c, config)
 				}
+			} else {
+				log.Info(
+					"Configuration has not changed since last successful application and not %d iterations have passed since last application",
+					applyAfterIterations)
 			}
+		} else {
+			log.Info("Error ocurred while retrieving configuration to apply: %v", err)
 		}
 		noPolicyfileApplicationIterations++
 
 		// Sleep for a configured amount of time plus a random amount of time (10 minutes plus 0 to 5 minutes, for
 		// instance)
-		ticker := time.NewTicker(time.Duration(interval+r.Intn(int(splay))) * time.Second)
-
+		sleepSeconds := interval + r.Intn(int(splay))
+		ticker := time.NewTicker(time.Duration(sleepSeconds) * time.Second)
+		log.Info("Sleeping for %d seconds before checking for updates or reattempting", sleepSeconds)
 		select {
 		case <-ticker.C:
 			log.Debug("ticker")
@@ -272,6 +280,66 @@ func runBootstrapOnce(ctx context.Context, c *cli.Context, config *utils.Config,
 		if err == nil {
 			err = applyPolicyfiles(ctx, bootstrappingSvc, blueprintConfig, formatter, thresholdLines)
 		}
+	}
+	return err
+}
+
+// Subsidiary routine for commands processing
+func applyPolicyfiles(
+	ctx context.Context,
+	bootstrappingSvc *blueprint.BootstrappingService,
+	blueprintConfig *types.BootstrappingConfiguration,
+	formatter format.Formatter,
+	thresholdLines int,
+) error {
+	log.Debug("applyPolicyfiles")
+	err := generateWorkspaceDir()
+	if err != nil {
+		formatter.PrintError("couldn't generated workspace directory", err)
+		return err
+	}
+	bsProcess := &bootstrappingProcess{
+		startedAt:                    time.Now().UTC(),
+		thresholdLines:               thresholdLines,
+		directoryPath:                workspaceDir(),
+		appliedPolicyfileRevisionIDs: make(map[string]string),
+	}
+	// proto structures
+	err = initializePrototype(blueprintConfig, bsProcess)
+	if err != nil {
+		formatter.PrintError("couldn't initialize prototype", err)
+		return err
+	}
+	// For every policyfile, ensure its tarball (downloadable through their download_url) has been downloaded to the
+	// server ...
+	err = downloadPolicyfiles(ctx, bootstrappingSvc, bsProcess)
+	if err != nil {
+		formatter.PrintError("couldn't download policy files", err)
+		return err
+	}
+	//... and clean off any tarball that is no longer needed.
+	err = cleanObsoletePolicyfiles(bsProcess)
+	if err != nil {
+		formatter.PrintError("couldn't clean obsolete policy files", err)
+		return err
+	}
+	if blueprintConfig.ConfigurationManagementSystem == CMSChef {
+		err = applyChefPolicyfiles(ctx, blueprintConfig, bootstrappingSvc, bsProcess, formatter)
+	} else if blueprintConfig.ConfigurationManagementSystem == CMSAnsible {
+		err = applyAnsiblePolicyfiles(ctx, blueprintConfig, bootstrappingSvc, bsProcess, formatter)
+	} else {
+		return fmt.Errorf("unknown configuration management system %q, expected %q or %q", blueprintConfig.ConfigurationManagementSystem, CMSChef, CMSAnsible)
+	}
+	// Finishing time
+	bsProcess.finishedAt = time.Now().UTC()
+
+	// Inform the platform of applied changes via a `PUT /blueprint/applied_configuration` request with a JSON payload
+	// similar to
+	log.Debug("reporting applied policy files")
+	reportErr := reportAppliedConfiguration(bootstrappingSvc, bsProcess)
+	if reportErr != nil {
+		formatter.PrintError("couldn't report applied status for policy files", err)
+		return err
 	}
 	return err
 }
@@ -339,60 +407,80 @@ func getBlueprintConfig(
 	return blueprintConfig, updated, ctx.Err()
 }
 
-// Subsidiary routine for commands processing
-func applyPolicyfiles(
-	ctx context.Context,
+func getBootstrapLogReporter(
 	bootstrappingSvc *blueprint.BootstrappingService,
-	blueprintConfig *types.BootstrappingConfiguration,
-	formatter format.Formatter,
-	thresholdLines int,
+	bsProcess *bootstrappingProcess,
+	blueprintConfig *types.BootstrappingConfiguration) func(chunk string) error {
+	fn := func(chunk string) error {
+		log.Debug("sendChunks")
+		err := utils.Retry(retriesNumber, time.Second, func() error {
+			log.Debug("Sending: ", chunk)
+			bsProcess.parseCMSVersion(blueprintConfig, chunk)
+
+			commandIn := map[string]interface{}{
+				"stdout": chunk,
+			}
+
+			_, statusCode, err := bootstrappingSvc.ReportBootstrappingLog(&commandIn)
+			switch {
+			// 0<100 error cases??
+			case statusCode == 0:
+				return fmt.Errorf("communication error %v %v", statusCode, err)
+			case statusCode >= 500:
+				return fmt.Errorf("server error %v %v", statusCode, err)
+			case statusCode >= 400:
+				return fmt.Errorf("client error %v %v", statusCode, err)
+			default:
+				return nil
+			}
+		})
+
+		if err != nil {
+			return fmt.Errorf("cannot send the chunk data, %v", err)
+		}
+		return nil
+	}
+	return fn
+}
+
+// reportAppliedConfiguration Inform the platform of applied changes
+func reportAppliedConfiguration(
+	bootstrappingSvc *blueprint.BootstrappingService,
+	bsProcess *bootstrappingProcess,
 ) error {
-	log.Debug("applyPolicyfiles")
-	err := generateWorkspaceDir()
-	if err != nil {
-		formatter.PrintError("couldn't generated workspace directory", err)
-		return err
-	}
-	bsProcess := &bootstrappingProcess{
-		startedAt:                    time.Now().UTC(),
-		thresholdLines:               thresholdLines,
-		directoryPath:                workspaceDir(),
-		appliedPolicyfileRevisionIDs: make(map[string]string),
-	}
+	log.Debug("reportAppliedConfiguration")
 
-	// proto structures
-	err = initializePrototype(blueprintConfig, bsProcess)
-	if err != nil {
-		formatter.PrintError("couldn't initialize prototype", err)
-		return err
+	payload := map[string]interface{}{
+		"started_at":              bsProcess.startedAt,
+		"finished_at":             bsProcess.finishedAt,
+		"policyfile_revision_ids": bsProcess.appliedPolicyfileRevisionIDs,
+		"attribute_revision_id":   bsProcess.attributes.revisionID,
+		"agent_version":           utils.VERSION,
 	}
-	// For every policyfile, ensure its tarball (downloadable through their download_url) has been downloaded to the
-	// server ...
-	err = downloadPolicyfiles(ctx, bootstrappingSvc, bsProcess)
-	if err != nil {
-		formatter.PrintError("couldn't download policy files", err)
-		return err
+	if bsProcess.cmsVersion != "" {
+		payload["cms_version"] = bsProcess.cmsVersion
 	}
-	//... and clean off any tarball that is no longer needed.
-	err = cleanObsoletePolicyfiles(bsProcess)
-	if err != nil {
-		formatter.PrintError("couldn't clean obsolete policy files", err)
-		return err
-	}
-	// Process tarballs policies
-	err = processPolicyfiles(bootstrappingSvc, bsProcess)
-	// Finishing time
-	bsProcess.finishedAt = time.Now().UTC()
+	return bootstrappingSvc.ReportBootstrappingAppliedConfiguration(&payload)
+}
 
-	// Inform the platform of applied changes via a `PUT /blueprint/applied_configuration` request with a JSON payload
-	// similar to
-	log.Debug("reporting applied policy files")
-	reportErr := reportAppliedConfiguration(bootstrappingSvc, bsProcess)
-	if reportErr != nil {
-		formatter.PrintError("couldn't report applied status for policy files", err)
-		return err
+func (bsProcess *bootstrappingProcess) parseCMSVersion(blueprintConfig *types.BootstrappingConfiguration, chunk string) {
+	if bsProcess.cmsVersion != "" {
+		return
 	}
-	return err
+	var cmsRegex *regexp.Regexp
+	if blueprintConfig.ConfigurationManagementSystem == "ansible" {
+		cmsRegex = ansibleCMSVersionRegex
+	} else {
+		cmsRegex = chefCMSVersionRegex
+	}
+	match := cmsRegex.FindStringSubmatch(chunk)
+	if match != nil {
+		for i, name := range cmsRegex.SubexpNames() {
+			if name == "CMSVersion" && i < len(match) {
+				bsProcess.cmsVersion = match[i]
+			}
+		}
+	}
 }
 
 func initializePrototype(bsConfiguration *types.BootstrappingConfiguration, bsProcess *bootstrappingProcess) error {
@@ -469,156 +557,4 @@ func cleanObsoletePolicyfiles(bsProcess *bootstrappingProcess) error {
 		}
 	}
 	return nil
-}
-
-// saveAttributes stores the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
-func saveAttributes(bsProcess *bootstrappingProcess, policyfileName string) error {
-	log.Debug("saveAttributes")
-	bsProcess.attributes.rawData["policy_group"] = "local"
-	bsProcess.attributes.rawData["policy_name"] = policyfileName
-	attrs, err := json.Marshal(bsProcess.attributes.rawData)
-	if err != nil {
-		return err
-	}
-	if err := ioutil.WriteFile(bsProcess.attributes.FilePath(bsProcess.directoryPath), attrs, 0600); err != nil {
-		return err
-	}
-	return nil
-}
-
-func preparePolicyfileCommand(bsProcess *bootstrappingProcess, bsPolicyfile policyfile) (
-	string, string, string, error,
-) {
-	log.Debug("preparePolicyfileCommand")
-	// Store the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
-	err := saveAttributes(bsProcess, bsPolicyfile.ID)
-	if err != nil {
-		return "", "", "", fmt.Errorf("couldn't save attributes for policy file %q: %w", bsPolicyfile.ID, err)
-	}
-	command := fmt.Sprintf("chef-client -z -j %s", bsProcess.attributes.FilePath(bsProcess.directoryPath))
-	policyfileDir := bsPolicyfile.Path(bsProcess.directoryPath)
-	var renamedPolicyfileDir string
-	if runtime.GOOS == "windows" {
-		renamedPolicyfileDir = policyfileDir
-		policyfileDir = filepath.Join(bsProcess.directoryPath, "active")
-		err := os.Rename(renamedPolicyfileDir, policyfileDir)
-		if err != nil {
-			return "", "", "", fmt.Errorf("could not rename %s as %s: %v", renamedPolicyfileDir, policyfileDir, err)
-		}
-		command = fmt.Sprintf(
-			"SET \"PATH=%%PATH%%;C:\\ruby\\bin;C:\\cinc-project\\cinc\\bin;C:\\cinc-project\\cinc\\embedded\\bin;"+
-				"C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\"\n%s",
-			command,
-		)
-	}
-	command = fmt.Sprintf("cd %s\n%s", policyfileDir, command)
-	return command, renamedPolicyfileDir, policyfileDir, nil
-}
-
-func runCommand(fn func(chunk string) error, command string, thresholdLines int) error {
-	log.Debug("runCommand")
-	exitCode, err := utils.RunContinuousCmd(fn, command, -1, thresholdLines)
-	if err == nil && exitCode != 0 {
-		err = fmt.Errorf("policyfile application exited with %d code", exitCode)
-	}
-	if err != nil {
-		return err
-	}
-	log.Info("completed: ", exitCode)
-	return nil
-}
-
-func getFunctionForChunksBootstrappingLog(bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) func(chunk string) error {
-	fn := func(chunk string) error {
-		log.Debug("sendChunks")
-		err := utils.Retry(retriesNumber, time.Second, func() error {
-			log.Debug("Sending: ", chunk)
-			bsProcess.parseCMSVersion(chunk)
-
-			commandIn := map[string]interface{}{
-				"stdout": chunk,
-			}
-
-			_, statusCode, err := bootstrappingSvc.ReportBootstrappingLog(&commandIn)
-			switch {
-			// 0<100 error cases??
-			case statusCode == 0:
-				return fmt.Errorf("communication error %v %v", statusCode, err)
-			case statusCode >= 500:
-				return fmt.Errorf("server error %v %v", statusCode, err)
-			case statusCode >= 400:
-				return fmt.Errorf("client error %v %v", statusCode, err)
-			default:
-				return nil
-			}
-		})
-
-		if err != nil {
-			return fmt.Errorf("cannot send the chunk data, %v", err)
-		}
-		return nil
-	}
-	return fn
-}
-
-// processPolicyfiles applies for each policy the required chef commands, reporting in bunches of N lines
-func processPolicyfiles(bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) error {
-	log.Debug("processPolicyfiles")
-	for _, bsPolicyfile := range bsProcess.policyfiles {
-		command, renamedPolicyfileDir, policyfileDir, err := preparePolicyfileCommand(bsProcess, bsPolicyfile)
-		if err != nil {
-			return err
-		}
-		log.Debug(command)
-		bsProcess.cmsVersion = ""
-		// Custom method for chunks processing
-		fn := getFunctionForChunksBootstrappingLog(bootstrappingSvc, bsProcess)
-		if err = runCommand(fn, command, bsProcess.thresholdLines); err != nil {
-			return err
-		}
-
-		bsProcess.appliedPolicyfileRevisionIDs[bsPolicyfile.ID] = bsPolicyfile.RevisionID
-
-		if renamedPolicyfileDir != "" {
-			err = os.Rename(policyfileDir, renamedPolicyfileDir)
-			if err != nil {
-				return fmt.Errorf("could not rename %s as %s back: %v", policyfileDir, renamedPolicyfileDir, err)
-			}
-		}
-	}
-	return nil
-}
-
-// reportAppliedConfiguration Inform the platform of applied changes
-func reportAppliedConfiguration(
-	bootstrappingSvc *blueprint.BootstrappingService,
-	bsProcess *bootstrappingProcess,
-) error {
-	log.Debug("reportAppliedConfiguration")
-
-	payload := map[string]interface{}{
-		"started_at":              bsProcess.startedAt,
-		"finished_at":             bsProcess.finishedAt,
-		"policyfile_revision_ids": bsProcess.appliedPolicyfileRevisionIDs,
-		"attribute_revision_id":   bsProcess.attributes.revisionID,
-		"agent_version":           utils.VERSION,
-	}
-	if bsProcess.cmsVersion != "" {
-		payload["cms_version"] = bsProcess.cmsVersion
-	}
-	return bootstrappingSvc.ReportBootstrappingAppliedConfiguration(&payload)
-}
-
-func (bsProcess *bootstrappingProcess) parseCMSVersion(chunk string) {
-	if bsProcess.cmsVersion != "" {
-		return
-	}
-	match := cmsVersionRegex.FindStringSubmatch(chunk)
-	if match != nil {
-		for i, name := range cmsVersionRegex.SubexpNames() {
-			if name == "CMSVersion" && i < len(match) {
-				bsProcess.cmsVersion = match[i]
-			}
-		}
-	}
 }
