@@ -258,7 +258,12 @@ func RunTracedCmd(
 
 // thresholdTime  > 0 continuous report
 // thresholdLines > 0 bootstrapping
-func RunContinuousCmd(fn func(chunk string) error, command string, thresholdTime int, thresholdLines int) (int, error) {
+func RunContinuousCmd(
+	report func(chunk string) error,
+	command string,
+	thresholdTime int,
+	thresholdLines int) (int, error) {
+
 	log.Debug("RunContinuousCmd")
 
 	// Saves script/command in a temp file
@@ -282,14 +287,23 @@ func RunContinuousCmd(fn func(chunk string) error, command string, thresholdTime
 	chunk := ""
 	nLines, nTime := 0, 0
 	timeStart := time.Now()
-
-	scanner := bufio.NewScanner(bufio.NewReader(stdout))
-	for scanner.Scan() {
-		chunk = strings.Join([]string{chunk, scanner.Text(), "\n"}, "")
+	reader := bufio.NewReader(stdout)
+	line, incomplete, err := reader.ReadLine()
+	for ; err == nil; line, incomplete, err = reader.ReadLine() {
+		eol := "\n"
+		if incomplete {
+			eol = "[...]\n"
+		}
+		chunk = strings.Join([]string{chunk, string(line), eol}, "")
+		if incomplete {
+			for incomplete && err == nil {
+				_, incomplete, err = reader.ReadLine()
+			}
+		}
 		nLines++
-		nTime = int(time.Now().Sub(timeStart).Seconds())
+		nTime = int(time.Since(timeStart).Seconds())
 		if (thresholdTime > 0 && nTime >= thresholdTime) || (thresholdLines > 0 && nLines >= thresholdLines) {
-			if err := fn(chunk); err == nil {
+			if reportErr := report(chunk); reportErr == nil {
 				chunk = ""
 			}
 			nLines, nTime = 0, 0
@@ -297,14 +311,14 @@ func RunContinuousCmd(fn func(chunk string) error, command string, thresholdTime
 		}
 	}
 
-	if err := scanner.Err(); err != nil {
+	if err != nil && err != io.EOF {
 		log.Error("==> Error: ", err.Error())
 		chunk = strings.Join([]string{chunk, err.Error()}, "")
 	}
 
 	if len(chunk) > 0 {
 		log.Debug("Processing the last pending chunk")
-		if err := fn(chunk); err != nil {
+		if err := report(chunk); err != nil {
 			log.Error("Cannot process the last chunk", err.Error())
 		}
 	}

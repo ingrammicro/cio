@@ -6,3 +6,4 @@ coverage.txt
 profile.out
 .idea/*
 .idea/**/*
+dist/
