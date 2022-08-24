@@ -90,7 +90,7 @@ spec:
           - name: test_path
             value: .
           - name: go-image
-            value: golang:1.18.3
+            value: golang:1.18.5
         when: "{{workflow.parameters.skip_tests}} == false"
 
       - name: sonar-branch-analysis
@@ -140,7 +140,7 @@ spec:
         when: "('{{workflow.parameters.pull_request}}' =~ '^[0-9]+$')"
 
       - name: goreleaser
-        dependencies: [go-build]
+        dependencies: [go-tests]
         template: goreleaser
         arguments:
           artifacts:
@@ -152,7 +152,7 @@ spec:
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.18.3
+        value: golang:1.18.5
       - name: notifiable_commits
       - name: source_mountpath
         value: /usr/src
@@ -236,7 +236,7 @@ spec:
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.18.3
+        value: golang:1.18.5
       artifacts:
       - name: src
         path: "/src"
