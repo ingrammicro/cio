@@ -87,5 +87,5 @@ echo {{.}} >> $HOME/.ssh/authorized_keys
 sed -i -e "s/^#PubkeyAuthentication[ \t]*yes/PubkeyAuthentication yes/g" -e "s/^PubkeyAuthentication[ \t]*no/PubkeyAuthentication yes/g" /etc/ssh/sshd_config
 sed -i 's/root:x:0:0:root:\\/root:\\/sbin\\/nologin/root:x:0:0:root:\\/root:\\/bin\\/bash/' /etc/passwd
 sed -i -e 's/^AllowUsers /#AllowUsers /' -e 's/^PermitRootLogin /#PermitRootLogin /' /etc/ssh/sshd_config
-/etc/init.d/ssh* restart
+systemctl restart sshd.service
 `))
