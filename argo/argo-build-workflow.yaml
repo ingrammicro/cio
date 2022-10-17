@@ -3,7 +3,7 @@ kind: Workflow
 metadata:
   generateName: -build-wf-
 spec:
-  entrypoint: build-pipeline
+  entrypoint: cio-ci
   arguments:
     parameters:
     - name: repo
@@ -17,25 +17,15 @@ spec:
     - name: prodregistry
       value: imregistry.azurecr.io
     - name: skip_tests
-      value: "false"
+      value: false
     - name: pull_request_base
       value: REPLACED
     - name: git_url
       value: git@github.com:ingrammicro/cio.git
-    - name: PLACEHOLDER_1
-      value: REPLACED
-    - name: PLACEHOLDER_2
-      value: REPLACED
-    - name: PLACEHOLDER_3
-      value: REPLACED
-    - name: PLACEHOLDER_4
-      value: REPLACED
-    - name: PLACEHOLDER_5
-      value: REPLACED
   volumes:
     - name: github-keypair
       secret:
-        secretName: github-keypair # name of an existing k8s secret
+        secretName: github-keypair
         defaultMode: 256
     - name: kaniko-acr-secret
       secret:
@@ -44,12 +34,21 @@ spec:
       secret:
         secretName: git-known-hosts
   templates:
-  - name: build-pipeline
+
+  ################################################################################
+  ##                                                                            ##
+  ##                                                                            ##
+  ##                            TEMPLATE DEFINITIONS                            ##
+  ##                                                                            ##
+  ##                                                                            ##
+  ################################################################################
+
+  - name: cio-ci
     dag:
       tasks:
       - name: dependencies
         templateRef:
-          name: workflow-template-common-template-1.2
+          name: workflow-template-build-template-1.0
           template: get-src
         arguments:
           parameters:
@@ -58,16 +57,9 @@ spec:
           - name: branch
             value: "{{workflow.parameters.branch}}"
 
-      - name: dependency-track
+      - name: cio-build
         dependencies: [dependencies]
-        templateRef:
-          name: workflow-template-sonar-template-1.1
-          template: go-dependency-track
-        when: "('{{workflow.parameters.branch}}' =~ '^v[0-9\\.]+$') || ('{{workflow.parameters.branch}}' == 'develop')"
-
-      - name: go-build
-        dependencies: [dependencies]
-        template: go-build
+        template: cio-build
         arguments:
           parameters:
           - name: notifiable_commits
@@ -76,27 +68,34 @@ spec:
           - name: src
             from: "{{tasks.dependencies.outputs.artifacts.src}}"
 
-      - name: go-tests
-        dependencies: [go-build]
+      - name: cio-tests
+        dependencies: [dependencies]
         templateRef:
-          name: workflow-template-common-template-1.2
+          name: workflow-template-test-template-1.0
           template: go-tests
         arguments:
           parameters:
+          - name: go-image
+            value: golang:1.18.5
           - name: notifiable_commits
             value: "{{tasks.dependencies.outputs.parameters.notifiable_commits}}"
           - name: repo
             value: "{{workflow.parameters.repo}}"
           - name: test_path
             value: .
-          - name: go-image
-            value: golang:1.18.3
         when: "{{workflow.parameters.skip_tests}} == false"
 
-      - name: sonar-branch-analysis
-        dependencies: [go-tests]
+      - name: dependency-track
+        dependencies: [dependencies]
         templateRef:
-          name: workflow-template-sonar-template-1.1
+          name: workflow-template-vulnerability-template-1.0
+          template: go-dependency-track
+        when: "('{{workflow.parameters.branch}}' =~ '^v[0-9\\.]+$') || ('{{workflow.parameters.branch}}' == 'develop')"
+
+      - name: sonar-branch-analysis
+        dependencies: [cio-tests]
+        templateRef:
+          name: workflow-template-test-template-1.0
           template: sonar-branch-analysis
         arguments:
           parameters:
@@ -110,14 +109,14 @@ spec:
             value: "{{workflow.parameters.branch}}"
           artifacts:
           - name: coverage
-            from: "{{tasks.go-tests.outputs.artifacts.coverage}}"
+            from: "{{tasks.cio-tests.outputs.artifacts.coverage}}"
             optional: true
         when: "!('{{workflow.parameters.pull_request}}' =~ '^[0-9]+$')"
 
       - name: sonar-pr-analysis
-        dependencies: [go-tests]
+        dependencies: [cio-tests]
         templateRef:
-          name: workflow-template-sonar-template-1.1
+          name: workflow-template-test-template-1.0
           template: sonar-pr-analysis
         arguments:
           parameters:
@@ -135,24 +134,32 @@ spec:
             value: "{{workflow.parameters.pull_request_base}}"
           artifacts:
           - name: coverage
-            from: "{{tasks.go-tests.outputs.artifacts.coverage}}"
+            from: "{{tasks.cio-tests.outputs.artifacts.coverage}}"
             optional: true
         when: "('{{workflow.parameters.pull_request}}' =~ '^[0-9]+$')"
 
-      - name: goreleaser
-        dependencies: [go-build]
-        template: goreleaser
+      - name: cio-releaser
+        dependencies: [cio-tests]
+        template: cio-releaser
         arguments:
           artifacts:
           - name: src
             from: "{{tasks.dependencies.outputs.artifacts.src}}"
         when: "'{{workflow.parameters.branch}}' =~ '^v[0-9\\.]+'"
 
-  - name: go-build
+  ################################################################################
+  ##                                                                            ##
+  ##                                                                            ##
+  ##                          TEMPLATE IMPLEMENTATIONS                          ##
+  ##                                                                            ##
+  ##                                                                            ##
+  ################################################################################
+
+  - name: cio-build
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.18.3
+        value: golang:1.18.5
       - name: notifiable_commits
       - name: source_mountpath
         value: /usr/src
@@ -181,12 +188,11 @@ spec:
       - name: NOTIFIABLE_COMMITS
         value: "{{inputs.parameters.notifiable_commits}}"
       - name: COMMIT_STATUS_CONTEXT
-        value: "go-build in argo"
+        value: "CIO Build"
       - name: REPO
         value: "{{workflow.parameters.repo}}"
       command: [bash]
       source: |
-        #!/bin/bash
         cd {{inputs.parameters.source_mountpath}}
         if echo "{{workflow.parameters.branch}}" | grep -P '^v[0123456789]+' >/dev/null; then
           export COMMIT_STATUS_CONTEXT="${COMMIT_STATUS_CONTEXT} for {{workflow.parameters.branch}}"
@@ -204,14 +210,10 @@ spec:
         EOS
         chmod +x /notify.sh
         echo $NOTIFIABLE_COMMITS | sed "s/,/\n/g" | awk '{print "/notify.sh "$1" "$2" \"$COMMIT_STATUS_CONTEXT\" pending \"Starting go build\""}' | bash
-
         ssh-keyscan github.com >> /root/.ssh/known_hosts
         git config --global url.git@github.com:.insteadOf https://github.com/
-
-
         echo "Running go build ..."
         export FAILURE_DESCRIPTION="Go build failed"
-        
         export GOPROXY="http://athens-proxy:3000"
         export GOSUMDB=off
         go build
@@ -232,11 +234,11 @@ spec:
         limits:
           cpu: 900m
 
-  - name: goreleaser
+  - name: cio-releaser
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.18.3
+        value: golang:1.18.5
       artifacts:
       - name: src
         path: "/src"
@@ -252,17 +254,16 @@ spec:
             name: s3-credentials-generated-by-kustomize
             key: S3_SECRET_ACCESS_KEY
     script:
-      image: "{{inputs.parameters.go-image}}"      
+      image: "{{inputs.parameters.go-image}}"
       env:
       - name: GITHUB_TOKEN
         valueFrom:
           secretKeyRef:
             name: github-token
             key: token
-      command: [sh]
+      command: [bash]
       source: |
         cd /src
-        apk add --no-cache git
         go install github.com/goreleaser/goreleaser@v1.9.2
         export GITHUB_TOKEN="${GITHUB_TOKEN}"
         goreleaser
