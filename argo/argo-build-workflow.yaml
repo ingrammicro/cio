@@ -188,7 +188,7 @@ spec:
       - name: NOTIFIABLE_COMMITS
         value: "{{inputs.parameters.notifiable_commits}}"
       - name: COMMIT_STATUS_CONTEXT
-        value: "🏭 Building CIO"
+        value: "CIO Build"
       - name: REPO
         value: "{{workflow.parameters.repo}}"
       command: [bash]
