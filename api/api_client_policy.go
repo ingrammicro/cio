@@ -3,17 +3,17 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // ListPolicyDefinitions returns the list of policy definitions as an array of PolicyDefinition
 func (imco *ClientAPI) ListPolicyDefinitions(ctx context.Context) (definitions []*types.PolicyDefinition, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathPolicyDefinitions, true, &definitions)
+	_, err = imco.GetAndCheck(ctx, PathPolicyDefinitions, true, &definitions)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func (imco *ClientAPI) GetPolicyDefinition(ctx context.Context, definitionID str
 ) (definition *types.PolicyDefinition, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathPolicyDefinition, definitionID), true, &definition)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathPolicyDefinition, definitionID), true, &definition)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (imco *ClientAPI) CreatePolicyDefinition(ctx context.Context, definitionPar
 ) (definition *types.PolicyDefinition, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathPolicyDefinitions, definitionParams, true, &definition)
+	_, err = imco.PostAndCheck(ctx, PathPolicyDefinitions, definitionParams, true, &definition)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (imco *ClientAPI) UpdatePolicyDefinition(ctx context.Context, definitionID 
 ) (definition *types.PolicyDefinition, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathPolicyDefinition, definitionID), definitionParams, true, &definition)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathPolicyDefinition, definitionID), definitionParams, true, &definition)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (imco *ClientAPI) UpdatePolicyDefinition(ctx context.Context, definitionID 
 func (imco *ClientAPI) DeletePolicyDefinition(ctx context.Context, definitionID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathPolicyDefinition, definitionID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathPolicyDefinition, definitionID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func (imco *ClientAPI) ListPolicyDefinitionAssignments(ctx context.Context, defi
 ) (assignments []*types.PolicyAssignment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathPolicyDefinitionAssignments, definitionID), true, &assignments)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathPolicyDefinitionAssignments, definitionID), true, &assignments)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (imco *ClientAPI) GetPolicyAssignment(ctx context.Context, assignmentID str
 ) (assignment *types.PolicyAssignment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathPolicyAssignment, assignmentID), true, &assignment)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathPolicyAssignment, assignmentID), true, &assignment)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (imco *ClientAPI) CreatePolicyAssignment(ctx context.Context, definitionID 
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathPolicyDefinitionAssignments, definitionID),
+		fmt.Sprintf(PathPolicyDefinitionAssignments, definitionID),
 		assignmentParams,
 		true,
 		&assignment,
@@ -117,7 +117,7 @@ func (imco *ClientAPI) UpdatePolicyAssignment(ctx context.Context, assignmentID 
 ) (assignment *types.PolicyAssignment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathPolicyAssignment, assignmentID), assignmentParams, true, &assignment)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathPolicyAssignment, assignmentID), assignmentParams, true, &assignment)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func (imco *ClientAPI) DeletePolicyAssignment(ctx context.Context, assignmentID 
 ) (assignment *types.PolicyAssignment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathPolicyAssignment, assignmentID), true, &assignment)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathPolicyAssignment, assignmentID), true, &assignment)
 	if err != nil {
 		return nil, err
 	}

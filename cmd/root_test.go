@@ -12,22 +12,15 @@ func TestRootCmd(t *testing.T) {
 		"if running as Client": {
 			mode: configuration.Client,
 		},
-		//"if running as Agent": {
-		//	mode: configuration.Server,
-		//},
+		"if running as Agent": {
+			mode: configuration.Server,
+		},
 	}
 
 	for title, test := range tests {
-		rootCmd := NewCommand(nil, &CommandContext{
-			Use:     "cio",
-			Short:   "Manages communication between Host and " + configuration.CloudOrchestratorPlatformName + " Platform",
-			Version: configuration.VERSION,
-			//Ctx:     context.Background(),
-		})
-		rootCmd.PersistentPreRun = persistencePreRun
-		// To tell Cobra not to provide the default completion command
-		rootCmd.CompletionOptions.DisableDefaultCmd = true
 		t.Run(title, func(t *testing.T) {
+			globalFlags = nil
+			RootCmd.ResetFlags()
 			Execute(test.mode)
 		})
 	}

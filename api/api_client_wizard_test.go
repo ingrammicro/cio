@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
 	"net/http"
 	"net/http/httptest"
@@ -13,12 +14,12 @@ import (
 
 func TestListApps(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.WizardApp{},
-			server:   NewServer(http.StatusOK, []*types.WizardApp{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.WizardApp{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -53,12 +54,12 @@ func TestListApps(t *testing.T) {
 
 func TestDeployApp(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Server),
-			server:   NewServer(http.StatusOK, new(types.Server)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Server)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -80,7 +81,7 @@ func TestDeployApp(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			server, err := svc.DeployApp(context.Background(), TEST, new(map[string]interface{}))
+			server, err := svc.DeployApp(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -93,12 +94,12 @@ func TestDeployApp(t *testing.T) {
 
 func TestListLocations(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.Location{},
-			server:   NewServer(http.StatusOK, []*types.Location{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.Location{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -133,12 +134,12 @@ func TestListLocations(t *testing.T) {
 
 func TestListWizardCloudProviders(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.CloudProvider{},
-			server:   NewServer(http.StatusOK, []*types.CloudProvider{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.CloudProvider{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -160,7 +161,7 @@ func TestListWizardCloudProviders(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			cloudProviders, err := svc.ListWizardCloudProviders(context.Background(), TEST, TEST)
+			cloudProviders, err := svc.ListWizardCloudProviders(context.Background(), testutils.TEST, testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -173,12 +174,12 @@ func TestListWizardCloudProviders(t *testing.T) {
 
 func TestListWizardServerPlans(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.ServerPlan{},
-			server:   NewServer(http.StatusOK, []*types.ServerPlan{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.ServerPlan{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -200,7 +201,7 @@ func TestListWizardServerPlans(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			serverPlans, err := svc.ListWizardServerPlans(context.Background(), TEST, TEST, TEST)
+			serverPlans, err := svc.ListWizardServerPlans(context.Background(), testutils.TEST, testutils.TEST, testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}

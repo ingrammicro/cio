@@ -42,7 +42,8 @@ func WizServerPlanList() error {
 		viper.GetString(cmd.CloudProviderId),
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive serverPlan data", err)
+		formatter.PrintError("Couldn't receive serverPlan data", err)
+		return err
 	}
 	if err = cloud.FormatServerPlansResponse(serverPlans, formatter); err != nil {
 		return err

@@ -114,7 +114,8 @@ func VolumeList() error {
 
 	volumes, err := svc.ListStorageVolumes(cmd.GetContext(), viper.GetString(cmd.ServerId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive volumes data", err)
+		formatter.PrintError("Couldn't receive volumes data", err)
+		return err
 	}
 	if err = cloud.FormatVolumesResponse(volumes, formatter); err != nil {
 		return err
@@ -129,12 +130,17 @@ func VolumeShow() error {
 
 	volume, err := svc.GetStorageVolume(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive volume data", err)
+		formatter.PrintError("Couldn't receive volume data", err)
+		return err
 	}
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	volume.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*volume); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -151,20 +157,31 @@ func VolumeCreate() error {
 		"storage_plan_id":  viper.GetString(cmd.StoragePlanId),
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 
 	if viper.IsSet(cmd.Labels) {
-		volumeIn["label_ids"] = labels.LabelResolution(viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
+		volumeIn["label_ids"], err = labels.LabelResolution(
+			viper.GetString(cmd.Labels),
+			&labelNamesByID,
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	volume, err := svc.CreateStorageVolume(cmd.GetContext(), &volumeIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create volume", err)
+		formatter.PrintError("Couldn't create volume", err)
+		return err
 	}
 
 	volume.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*volume); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -180,13 +197,18 @@ func VolumeUpdate() error {
 
 	volume, err := svc.UpdateStorageVolume(cmd.GetContext(), viper.GetString(cmd.Id), &volumeIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update volume", err)
+		formatter.PrintError("Couldn't update volume", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	volume.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*volume); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -202,13 +224,18 @@ func VolumeAttach() error {
 
 	server, err := svc.AttachStorageVolume(cmd.GetContext(), viper.GetString(cmd.Id), &volumeIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't attach volume", err)
+		formatter.PrintError("Couldn't attach volume", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -220,7 +247,8 @@ func VolumeDetach() error {
 
 	err := svc.DetachStorageVolume(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't detach volume", err)
+		formatter.PrintError("Couldn't detach volume", err)
+		return err
 	}
 	return nil
 }
@@ -232,7 +260,8 @@ func VolumeDelete() error {
 
 	err := svc.DeleteStorageVolume(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete volume", err)
+		formatter.PrintError("Couldn't delete volume", err)
+		return err
 	}
 	return nil
 }
@@ -244,7 +273,8 @@ func VolumeDiscard() error {
 
 	err := svc.DiscardStorageVolume(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't discard volume", err)
+		formatter.PrintError("Couldn't discard volume", err)
+		return err
 	}
 	return nil
 }

@@ -81,28 +81,37 @@ func CookbookVersionList() error {
 
 	cookbookVersions, err := svc.ListCookbookVersions(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cookbook versions data", err)
+		formatter.PrintError("Couldn't receive cookbook versions data", err)
+		return err
 	}
 
 	labelables := make([]types.Labelable, len(cookbookVersions))
 	for i := 0; i < len(cookbookVersions); i++ {
 		labelables[i] = types.Labelable(cookbookVersions[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 	cookbookVersions = make([]*types.CookbookVersion, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		cb, ok := labelable.(*types.CookbookVersion)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.CookbookVersion, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.CookbookVersion, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		cookbookVersions[i] = cb
 	}
 
 	if err = formatter.PrintList(cookbookVersions); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -114,13 +123,18 @@ func CookbookVersionShow() error {
 
 	cookbookVersion, err := svc.GetCookbookVersion(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cookbook version data", err)
+		formatter.PrintError("Couldn't receive cookbook version data", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	cookbookVersion.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cookbookVersion); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -133,26 +147,35 @@ func CookbookVersionUpload() error {
 	sourceFilePath := viper.GetString(cmd.Filepath)
 
 	if !utils.FileExists(sourceFilePath) {
-		formatter.PrintFatal("Invalid file path", fmt.Errorf("no such file or directory: %s", sourceFilePath))
+		formatter.PrintError("Invalid file path", fmt.Errorf("no such file or directory: %s", sourceFilePath))
+		return nil
 	}
 
 	cbIn := map[string]interface{}{}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	if viper.IsSet(cmd.Labels) {
-		cbIn["label_ids"] = labels.LabelResolution(viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
+		cbIn["label_ids"], err = labels.LabelResolution(viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	// creates new cookbook_version
 	cookbookVersion, err := svc.CreateCookbookVersion(cmd.GetContext(), &cbIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create cookbook version data", err)
+		formatter.PrintError("Couldn't create cookbook version data", err)
+		return err
 	}
 
 	// uploads new cookbook_version file
 	err = svc.UploadFile(cmd.GetContext(), sourceFilePath, cookbookVersion.UploadURL)
 	if err != nil {
 		cleanCookbookVersion(cookbookVersion.ID)
-		formatter.PrintFatal("Couldn't upload cookbook version data", err)
+		formatter.PrintError("Couldn't upload cookbook version data", err)
+		return err
 	}
 
 	// processes the new cookbook_version
@@ -161,23 +184,27 @@ func CookbookVersionUpload() error {
 	cookbookVersion, err = svc.ProcessCookbookVersion(cmd.GetContext(), cookbookVersion.ID, cookbookVersionParams)
 	if err != nil {
 		cleanCookbookVersion(cookbookVersionID)
-		formatter.PrintFatal("Couldn't process cookbook version", err)
+		formatter.PrintError("Couldn't process cookbook version", err)
+		return err
 	}
 
 	cookbookVersion.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cookbookVersion); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 
 	return nil
 }
 
 // cleanCookbookVersion deletes CookbookVersion. Ideally for cleaning at uploading error cases
-func cleanCookbookVersion(cookbookVersionID string) {
+func cleanCookbookVersion(cookbookVersionID string) error {
 	svc, _, formatter := cli.WireUpAPIClient()
 	if err := svc.DeleteCookbookVersion(cmd.GetContext(), cookbookVersionID); err != nil {
 		formatter.PrintError("Couldn't clean failed cookbook version", err)
+		return err
 	}
+	return nil
 }
 
 // CookbookVersionDelete subcommand function
@@ -187,7 +214,8 @@ func CookbookVersionDelete() error {
 
 	err := svc.DeleteCookbookVersion(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete cookbook version", err)
+		formatter.PrintError("Couldn't delete cookbook version", err)
+		return err
 	}
 	return nil
 }

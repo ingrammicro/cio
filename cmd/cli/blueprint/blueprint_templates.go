@@ -214,29 +214,38 @@ func TemplateList() error {
 
 	templates, err := svc.ListTemplates(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive template data", err)
+		formatter.PrintError("Couldn't receive template data", err)
+		return err
 	}
 
 	labelables := make([]types.Labelable, len(templates))
 	for i := 0; i < len(templates); i++ {
 		labelables[i] = types.Labelable(templates[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	templates = make([]*types.Template, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		tpl, ok := labelable.(*types.Template)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.Template, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.Template, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		templates[i] = tpl
 	}
 
 	if err = formatter.PrintList(templates); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -248,17 +257,23 @@ func TemplateShow() error {
 
 	template, err := svc.GetTemplate(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive template data", err)
+		formatter.PrintError("Couldn't receive template data", err)
+		return err
 	}
 
 	if err = resolveCookbookVersions(template); err != nil {
-		formatter.PrintFatal(CannotResolveCookbookVersionsData, err)
+		formatter.PrintError(CannotResolveCookbookVersionsData, err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	template.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*template); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -309,24 +324,36 @@ func TemplateCreate() error {
 	}
 	setTemplateParams(formatter, templateIn)
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 
 	if viper.IsSet("labels") {
-		templateIn["label_ids"] = labels.LabelResolution(viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
+		templateIn["label_ids"], err = labels.LabelResolution(
+			viper.GetString(cmd.Labels),
+			&labelNamesByID,
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	template, err := svc.CreateTemplate(cmd.GetContext(), &templateIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create template", err)
+		formatter.PrintError("Couldn't create template", err)
+		return err
 	}
 
 	if err = resolveCookbookVersions(template); err != nil {
-		formatter.PrintFatal(CannotResolveCookbookVersionsData, err)
+		formatter.PrintError(CannotResolveCookbookVersionsData, err)
+		return err
 	}
 
 	template.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*template); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -349,17 +376,23 @@ func TemplateUpdate() error {
 
 	template, err := svc.UpdateTemplate(cmd.GetContext(), viper.GetString(cmd.Id), &templateIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update template", err)
+		formatter.PrintError("Couldn't update template", err)
+		return err
 	}
 
 	if err = resolveCookbookVersions(template); err != nil {
-		formatter.PrintFatal(CannotResolveCookbookVersionsData, err)
+		formatter.PrintError(CannotResolveCookbookVersionsData, err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	template.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*template); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -372,17 +405,23 @@ func TemplateCompile() error {
 	templateIn := map[string]interface{}{}
 	template, err := svc.CompileTemplate(cmd.GetContext(), viper.GetString(cmd.Id), &templateIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't compile template", err)
+		formatter.PrintError("Couldn't compile template", err)
+		return err
 	}
 
 	if err = resolveCookbookVersions(template); err != nil {
-		formatter.PrintFatal(CannotResolveCookbookVersionsData, err)
+		formatter.PrintError(CannotResolveCookbookVersionsData, err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	template.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*template); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -394,7 +433,8 @@ func TemplateDelete() error {
 
 	err := svc.DeleteTemplate(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete template", err)
+		formatter.PrintError("Couldn't delete template", err)
+		return err
 	}
 	return nil
 }
@@ -412,10 +452,12 @@ func TemplateScriptList() error {
 		viper.GetString(cmd.Type),
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive templateScript data", err)
+		formatter.PrintError("Couldn't receive templateScript data", err)
+		return err
 	}
 	if err = formatter.PrintList(templateScripts); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -431,10 +473,12 @@ func TemplateScriptShow() error {
 		viper.GetString(cmd.Id),
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive templateScript data", err)
+		formatter.PrintError("Couldn't receive templateScript data", err)
+		return err
 	}
 	if err = formatter.PrintItem(*templateScript); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -457,14 +501,16 @@ func TemplateScriptCreate() error {
 	if viper.IsSet(cmd.ParameterValuesFromFile) {
 		pvIn, err := cmd.ConvertFlagParamsJsonFromFileOrStdin(viper.GetString(cmd.ParameterValuesFromFile))
 		if err != nil {
-			formatter.PrintFatal(CannotParseInputParameterValues, err)
+			formatter.PrintError(CannotParseInputParameterValues, err)
+			return err
 		}
 		templateScriptIn["parameter_values"] = pvIn
 	}
 	if viper.IsSet(cmd.ParameterValues) {
 		params, err := cmd.FlagConvertParamsJSON(cmd.ParameterValues)
 		if err != nil {
-			formatter.PrintFatal(CannotParseInputParameterValues, err)
+			formatter.PrintError(CannotParseInputParameterValues, err)
+			return err
 		}
 		templateScriptIn["parameter_values"] = (*params)[cmd.ParameterValues]
 	}
@@ -475,10 +521,12 @@ func TemplateScriptCreate() error {
 		&templateScriptIn,
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create templateScript", err)
+		formatter.PrintError("Couldn't create templateScript", err)
+		return err
 	}
 	if err = formatter.PrintItem(*templateScript); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -499,14 +547,16 @@ func TemplateScriptUpdate() error {
 	if viper.IsSet(cmd.ParameterValuesFromFile) {
 		pvIn, err := cmd.ConvertFlagParamsJsonFromFileOrStdin(viper.GetString(cmd.ParameterValuesFromFile))
 		if err != nil {
-			formatter.PrintFatal(CannotParseInputParameterValues, err)
+			formatter.PrintError(CannotParseInputParameterValues, err)
+			return err
 		}
 		templateScriptIn["parameter_values"] = pvIn
 	}
 	if viper.IsSet(cmd.ParameterValues) {
 		params, err := cmd.FlagConvertParamsJSON(cmd.ParameterValues)
 		if err != nil {
-			formatter.PrintFatal(CannotParseInputParameterValues, err)
+			formatter.PrintError(CannotParseInputParameterValues, err)
+			return err
 		}
 		templateScriptIn["parameter_values"] = (*params)[cmd.ParameterValues]
 	}
@@ -517,10 +567,12 @@ func TemplateScriptUpdate() error {
 		&templateScriptIn,
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update templateScript", err)
+		formatter.PrintError("Couldn't update templateScript", err)
+		return err
 	}
 	if err = formatter.PrintItem(*templateScript); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -532,7 +584,8 @@ func TemplateScriptDelete() error {
 
 	err := svc.DeleteTemplateScript(cmd.GetContext(), viper.GetString(cmd.TemplateId), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete templateScript", err)
+		formatter.PrintError("Couldn't delete templateScript", err)
+		return err
 	}
 	return nil
 }
@@ -553,10 +606,12 @@ func TemplateScriptReorder() error {
 		&templateScriptIn,
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't reorder templateScript", err)
+		formatter.PrintError("Couldn't reorder templateScript", err)
+		return err
 	}
 	if err = formatter.PrintList(templateScript); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -570,10 +625,12 @@ func TemplateServersList() error {
 
 	templateServers, err := svc.ListTemplateServers(cmd.GetContext(), viper.GetString(cmd.TemplateId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive template servers data", err)
+		formatter.PrintError("Couldn't receive template servers data", err)
+		return err
 	}
 	if err = formatter.PrintList(templateServers); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -593,7 +650,8 @@ func processCookbookVersionItem(
 			svc, _, formatter := cli.WireUpAPIClient()
 			cbvs, err := svc.ListCookbookVersions(cmd.GetContext())
 			if err != nil {
-				formatter.PrintFatal("cannot receive uploaded cookbook versions data", err)
+				formatter.PrintError("cannot receive uploaded cookbook versions data", err)
+				return err
 			}
 			cookbookVersions = cbvs
 		}
@@ -618,7 +676,7 @@ func processCookbookVersionItem(
 }
 
 // convertFlagParamsToCookbookVersions returns the json representation for the given friendly input format f cookbook
-//versions assignation
+// versions assignation
 // i.e: "wordpress:0.1.0,nano=2.0.1,1password~>1.3.0"
 func convertFlagParamsToCookbookVersions(cbvsIn string) (map[string]interface{}, error) {
 	result := map[string]interface{}{}

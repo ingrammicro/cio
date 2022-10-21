@@ -178,7 +178,8 @@ func ServerList() error {
 
 	servers, err := svc.ListServers(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive server data", err)
+		formatter.PrintError("Couldn't receive server data", err)
+		return err
 	}
 	if err = formatServersResponse(servers, formatter); err != nil {
 		return err
@@ -193,21 +194,29 @@ func formatServersResponse(servers []*types.Server, formatter format.Formatter) 
 	for i := 0; i < len(servers); i++ {
 		labelables[i] = types.Labelable(servers[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	servers = make([]*types.Server, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		s, ok := labelable.(*types.Server)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.server, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.server, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		servers[i] = s
 	}
 	if err := formatter.PrintList(servers); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -219,13 +228,18 @@ func ServerShow() error {
 
 	server, err := svc.GetServer(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive server data", err)
+		formatter.PrintError("Couldn't receive server data", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -249,20 +263,31 @@ func ServerCreate() error {
 		serverIn["ssh_profile_ids"] = strings.Split(viper.GetString(cmd.SSHProfileIds), ",")
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 
 	if viper.IsSet(cmd.Labels) {
-		serverIn["label_ids"] = labels.LabelResolution(viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
+		serverIn["label_ids"], err = labels.LabelResolution(
+			viper.GetString(cmd.Labels),
+			&labelNamesByID,
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	server, err := svc.CreateServer(cmd.GetContext(), &serverIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create server", err)
+		formatter.PrintError("Couldn't create server", err)
+		return err
 	}
 
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -278,13 +303,18 @@ func ServerUpdate() error {
 	}
 	server, err := svc.UpdateServer(cmd.GetContext(), viper.GetString(cmd.Id), &serverIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update server", err)
+		formatter.PrintError("Couldn't update server", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -297,13 +327,18 @@ func ServerBoot() error {
 	serverIn := map[string]interface{}{}
 	server, err := svc.BootServer(cmd.GetContext(), viper.GetString(cmd.Id), &serverIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't boot server", err)
+		formatter.PrintError("Couldn't boot server", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -316,13 +351,18 @@ func ServerReboot() error {
 	serverIn := map[string]interface{}{}
 	server, err := svc.RebootServer(cmd.GetContext(), viper.GetString(cmd.Id), &serverIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't reboot server", err)
+		formatter.PrintError("Couldn't reboot server", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -335,13 +375,18 @@ func ServerShutdown() error {
 	serverIn := map[string]interface{}{}
 	server, err := svc.ShutdownServer(cmd.GetContext(), viper.GetString(cmd.Id), &serverIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't shutdown server", err)
+		formatter.PrintError("Couldn't shutdown server", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -354,13 +399,18 @@ func ServerOverride() error {
 	serverIn := map[string]interface{}{}
 	server, err := svc.OverrideServer(cmd.GetContext(), viper.GetString(cmd.Id), &serverIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't override server", err)
+		formatter.PrintError("Couldn't override server", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -372,7 +422,8 @@ func ServerDelete() error {
 
 	err := svc.DeleteServer(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete server", err)
+		formatter.PrintError("Couldn't delete server", err)
+		return err
 	}
 	return nil
 }
@@ -384,7 +435,8 @@ func ServerFloatingIPList() error {
 
 	floatingIPs, err := svc.ListServerFloatingIPs(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive floating IPs data", err)
+		formatter.PrintError("Couldn't receive floating IPs data", err)
+		return err
 	}
 	if err = network.FormatFloatingIPsResponse(floatingIPs, formatter); err != nil {
 		return err
@@ -399,7 +451,8 @@ func ServerVolumesList() error {
 
 	volumes, err := svc.ListServerVolumes(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive volumes data", err)
+		formatter.PrintError("Couldn't receive volumes data", err)
+		return err
 	}
 	if err = FormatVolumesResponse(volumes, formatter); err != nil {
 		return err
@@ -412,21 +465,29 @@ func FormatVolumesResponse(volumes []*types.Volume, formatter format.Formatter) 
 	for i := 0; i < len(volumes); i++ {
 		labelables[i] = types.Labelable(volumes[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	volumes = make([]*types.Volume, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.Volume)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.Volume, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.Volume, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		volumes[i] = v
 	}
 	if err := formatter.PrintList(volumes); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -440,10 +501,12 @@ func EventsList() error {
 
 	events, err := svc.ListServerEvents(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive event data", err)
+		formatter.PrintError("Couldn't receive event data", err)
+		return err
 	}
 	if err = formatter.PrintList(events); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -457,10 +520,12 @@ func OperationalScriptsList() error {
 
 	scripts, err := svc.ListOperationalScripts(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive script data", err)
+		formatter.PrintError("Couldn't receive script data", err)
+		return err
 	}
 	if err = formatter.PrintList(scripts); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -478,10 +543,12 @@ func OperationalScriptExecute() error {
 		in,
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't execute operational script", err)
+		formatter.PrintError("Couldn't execute operational script", err)
+		return err
 	}
 	if err = formatter.PrintItem(*scriptOut); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

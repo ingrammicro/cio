@@ -36,24 +36,29 @@ func LabelList() error {
 
 	labels, err := svc.ListLabels(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive labels data", err)
+		formatter.PrintError("Couldn't receive labels data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(labels); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
 
 // LabelFiltering subcommand function receives a collection of references to labelable objects
 // Evaluates the matching of assigned labels with the labels requested for filtering.
-func LabelFiltering(items []types.Labelable, labelIDsByName map[string]string) []types.Labelable {
+func LabelFiltering(items []types.Labelable, labelIDsByName map[string]string) ([]types.Labelable, error) {
 	logger.DebugFuncInfo()
 
 	labels := viper.GetString(cmd.Labels)
 	if labels != "" {
 		_, _, formatter := cli.WireUpAPIClient()
-		labelNamesIn := LabelsUnifyInputNames(labels, formatter)
+		labelNamesIn, err := LabelsUnifyInputNames(labels, formatter)
+		if err != nil {
+			return nil, err
+		}
 		var filteringLabelIDs []string
 		for _, name := range labelNamesIn {
 			id := labelIDsByName[name]
@@ -65,14 +70,14 @@ func LabelFiltering(items []types.Labelable, labelIDsByName map[string]string) [
 				result = append(result, item)
 			}
 		}
-		return result
+		return result, nil
 	}
 
-	return items
+	return items, nil
 }
 
 // LabelAssignNamesForIDs subcommand function receives a collection of references to labelables objects
-// Resolves the Labels names associated to a each resource from given Labels ids, loading object with respective labels
+// Resolves the Labels names associated to each resource from given Labels ids, loading object with respective labels
 // names
 func LabelAssignNamesForIDs(items []types.Labelable, labelNamesByID map[string]string) {
 	logger.DebugFuncInfo()
@@ -83,13 +88,14 @@ func LabelAssignNamesForIDs(items []types.Labelable, labelNamesByID map[string]s
 
 // LabelLoadsMapping subcommand function retrieves the current label list in IMCO; then prepares two mapping structures
 // (Name <-> ID and ID <-> Name)
-func LabelLoadsMapping() (map[string]string, map[string]string) {
+func LabelLoadsMapping() (map[string]string, map[string]string, error) {
 	logger.DebugFuncInfo()
 
 	svc, _, formatter := cli.WireUpAPIClient()
 	labels, err := svc.ListLabels(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive labels data", err)
+		formatter.PrintError("Couldn't receive labels data", err)
+		return nil, nil, err
 	}
 
 	labelIDsByName := make(map[string]string)
@@ -99,28 +105,27 @@ func LabelLoadsMapping() (map[string]string, map[string]string) {
 		labelIDsByName[label.Name] = label.ID
 		labelNamesByID[label.ID] = label.Name
 	}
-	return labelIDsByName, labelNamesByID
+	return labelIDsByName, labelNamesByID, nil
 }
 
 // LabelsUnifyInputNames subcommand function evaluates the received labels names (comma separated string).
 // Validates, remove duplicates and resolves a slice with unique label names.
-func LabelsUnifyInputNames(labelsNames string, formatter format.Formatter) []string {
+func LabelsUnifyInputNames(labelsNames string, formatter format.Formatter) ([]string, error) {
 	labelNamesIn := utils.RemoveDuplicates(strings.Split(labelsNames, ","))
 	for _, c := range labelNamesIn {
 		matched := regexp.MustCompile(`^[A-Za-z0-9 .\s_-]+$`).MatchString(c)
 		if !matched {
-			formatter.PrintFatal(
-				"Invalid label name ",
-				fmt.Errorf(
-					"invalid label format: %v (Labels would be indicated with their name, "+
-						"which must satisfy to be composed of spaces, underscores, dots, dashes "+
-						"and/or lower/upper -case alphanumeric characters-)",
-					c,
-				),
+			e := fmt.Errorf(
+				"invalid label format: %v (Labels would be indicated with their name, "+
+					"which must satisfy to be composed of spaces, underscores, dots, dashes "+
+					"and/or lower/upper -case alphanumeric characters-)",
+				c,
 			)
+			formatter.PrintError("Invalid label name ", e)
+			return nil, e
 		}
 	}
-	return labelNamesIn
+	return labelNamesIn, nil
 }
 
 // LabelResolution subcommand function retrieves a labels map(Name<->ID) based on label names received to be processed.
@@ -132,11 +137,14 @@ func LabelResolution(
 	labelsNames string,
 	labelNamesByID *map[string]string,
 	labelIDsByName *map[string]string,
-) []string {
+) ([]string, error) {
 	logger.DebugFuncInfo()
 
 	svc, _, formatter := cli.WireUpAPIClient()
-	labelNamesIn := LabelsUnifyInputNames(labelsNames, formatter)
+	labelNamesIn, err := LabelsUnifyInputNames(labelsNames, formatter)
+	if err != nil {
+		return nil, err
+	}
 
 	// Obtain output mapped labels Name<->ID; currently in IMCO platform as well as if creation is required
 	labelsOutMap := make(map[string]string)
@@ -147,7 +155,8 @@ func LabelResolution(
 			labelPayload["name"] = name
 			newLabel, err := svc.CreateLabel(cmd.GetContext(), &labelPayload)
 			if err != nil {
-				formatter.PrintFatal("Couldn't create label", err)
+				formatter.PrintError("Couldn't create label", err)
+				return nil, err
 			}
 			labelsOutMap[name] = newLabel.ID
 			// updates the mapping!
@@ -161,7 +170,7 @@ func LabelResolution(
 	for _, mp := range labelsOutMap {
 		labelIds = append(labelIds, mp)
 	}
-	return labelIds
+	return labelIds, nil
 }
 
 // LabelAdd subcommand function assigns a single label from a single labelable resource
@@ -170,13 +179,18 @@ func LabelAdd() error {
 
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	labelIDsByName, labelNamesByID := LabelLoadsMapping()
-	labelIds := LabelResolution(viper.GetString(cmd.Label), &labelNamesByID, &labelIDsByName)
+	labelIDsByName, labelNamesByID, err := LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	labelIds, err := LabelResolution(viper.GetString(cmd.Label), &labelNamesByID, &labelIDsByName)
+	if err != nil {
+		return err
+	}
 	if len(labelIds) > 1 {
-		formatter.PrintFatal(
-			"Too many label names. Please, Use only one label name",
-			fmt.Errorf("invalid parameter: %v - %v", viper.GetString(cmd.Label), labelIds),
-		)
+		e := fmt.Errorf("invalid parameter: %v - %v", viper.GetString(cmd.Label), labelIds)
+		formatter.PrintError("Too many label names. Please, Use only one label name", e)
+		return e
 	}
 	labelID := labelIds[0]
 
@@ -192,10 +206,12 @@ func LabelAdd() error {
 
 	labeledResources, err := svc.AddLabel(cmd.GetContext(), labelID, &labelIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't add label data", err)
+		formatter.PrintError("Couldn't add label data", err)
+		return err
 	}
 	if err = formatter.PrintList(labeledResources); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -206,12 +222,16 @@ func LabelRemove() error {
 
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	labelsMapNameToID, _ := LabelLoadsMapping()
+	labelsMapNameToID, _, err := LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	labelID := labelsMapNameToID[viper.GetString(cmd.Label)]
 
-	err := svc.RemoveLabel(cmd.GetContext(), labelID, viper.GetString(cmd.ResourceType), viper.GetString(cmd.Id))
+	err = svc.RemoveLabel(cmd.GetContext(), labelID, viper.GetString(cmd.ResourceType), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't remove label", err)
+		formatter.PrintError("Couldn't remove label", err)
+		return err
 	}
 	return nil
 }

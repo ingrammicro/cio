@@ -3,10 +3,10 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // GetStoragePlan returns a storage plan by its ID
@@ -14,7 +14,7 @@ func (imco *ClientAPI) GetStoragePlan(ctx context.Context, storagePlanID string,
 ) (storagePlan *types.StoragePlan, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathStoragePlan, storagePlanID), true, &storagePlan)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathStoragePlan, storagePlanID), true, &storagePlan)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func (imco *ClientAPI) GetStoragePlan(ctx context.Context, storagePlanID string,
 func (imco *ClientAPI) GetStorageVolume(ctx context.Context, volumeID string) (volume *types.Volume, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathStorageVolume, volumeID), true, &volume)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathStorageVolume, volumeID), true, &volume)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (imco *ClientAPI) CreateStorageVolume(ctx context.Context, volumeParams *ma
 ) (volume *types.Volume, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathStorageVolumes, volumeParams, true, &volume)
+	_, err = imco.PostAndCheck(ctx, PathStorageVolumes, volumeParams, true, &volume)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (imco *ClientAPI) UpdateStorageVolume(ctx context.Context, volumeID string,
 ) (volume *types.Volume, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathStorageVolume, volumeID), volumeParams, true, &volume)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathStorageVolume, volumeID), volumeParams, true, &volume)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (imco *ClientAPI) AttachStorageVolume(ctx context.Context, volumeID string,
 ) (server *types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(pathStorageVolumeAttachedServer, volumeID), volumeParams, true, &server)
+	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(PathStorageVolumeAttachedServer, volumeID), volumeParams, true, &server)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (imco *ClientAPI) AttachStorageVolume(ctx context.Context, volumeID string,
 func (imco *ClientAPI) DetachStorageVolume(ctx context.Context, volumeID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathStorageVolumeAttachedServer, volumeID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathStorageVolumeAttachedServer, volumeID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func (imco *ClientAPI) DetachStorageVolume(ctx context.Context, volumeID string)
 func (imco *ClientAPI) DeleteStorageVolume(ctx context.Context, volumeID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathStorageVolume, volumeID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathStorageVolume, volumeID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func (imco *ClientAPI) DeleteStorageVolume(ctx context.Context, volumeID string)
 func (imco *ClientAPI) DiscardStorageVolume(ctx context.Context, volumeID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathStorageVolumeDiscard, volumeID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathStorageVolumeDiscard, volumeID), true, nil)
 	if err != nil {
 		return err
 	}

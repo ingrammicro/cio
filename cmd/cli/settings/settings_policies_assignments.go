@@ -86,11 +86,13 @@ func PolicyAssignmentList() error {
 
 	assignments, err := svc.ListPolicyAssignments(cmd.GetContext(), viper.GetString(cmd.CloudAccountId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive policy assignments data", err)
+		formatter.PrintError("Couldn't receive policy assignments data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(assignments); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -102,11 +104,13 @@ func PolicyAssignmentShow() error {
 
 	assignment, err := svc.GetPolicyAssignment(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive policy assignment data", err)
+		formatter.PrintError("Couldn't receive policy assignment data", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*assignment); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -130,25 +134,29 @@ func PolicyAssignmentCreate() error {
 	if viper.IsSet(cmd.ParametersFromFile) {
 		defIn, err := cmd.ConvertFlagParamsJsonFromFileOrStdin(viper.GetString(cmd.ParametersFromFile))
 		if err != nil {
-			formatter.PrintFatal("Cannot parse parameters", err)
+			formatter.PrintError("Cannot parse parameters", err)
+			return err
 		}
 		assignmentIn["parameter_values"] = defIn
 	}
 	if viper.IsSet(cmd.Parameters) {
 		params, err := cmd.FlagConvertParamsJSON(cmd.Parameters)
 		if err != nil {
-			formatter.PrintFatal("Cannot parse parameters", err)
+			formatter.PrintError("Cannot parse parameters", err)
+			return err
 		}
 		assignmentIn["parameter_values"] = (*params)[cmd.Parameters]
 	}
 
 	assignment, err := svc.CreatePolicyAssignment(cmd.GetContext(), viper.GetString(cmd.DefinitionId), &assignmentIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create policy assignment", err)
+		formatter.PrintError("Couldn't create policy assignment", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*assignment); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -168,11 +176,13 @@ func PolicyAssignmentUpdate() error {
 
 	assignment, err := svc.UpdatePolicyAssignment(cmd.GetContext(), viper.GetString(cmd.Id), &assignmentIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update policy assignment", err)
+		formatter.PrintError("Couldn't update policy assignment", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*assignment); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -184,11 +194,13 @@ func PolicyAssignmentDelete() error {
 
 	assignment, err := svc.DeletePolicyAssignment(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete policy assignment", err)
+		formatter.PrintError("Couldn't delete policy assignment", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*assignment); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

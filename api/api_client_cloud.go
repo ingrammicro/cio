@@ -3,19 +3,19 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // ListStorageVolumes returns the list of Volumes as an array of Volume
 func (imco *ClientAPI) ListStorageVolumes(ctx context.Context, serverID string) (volumes []*types.Volume, err error) {
 	logger.DebugFuncInfo()
 
-	path := pathStorageVolumes
+	path := PathStorageVolumes
 	if serverID != "" {
-		path = fmt.Sprintf(pathCloudServerVolumes, serverID)
+		path = fmt.Sprintf(PathCloudServerVolumes, serverID)
 	}
 	_, err = imco.GetAndCheck(ctx, path, true, &volumes)
 	if err != nil {
@@ -28,7 +28,7 @@ func (imco *ClientAPI) ListStorageVolumes(ctx context.Context, serverID string) 
 func (imco *ClientAPI) ListCloudProviders(ctx context.Context) (cloudProviders []*types.CloudProvider, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathCloudCloudProviders, true, &cloudProviders)
+	_, err = imco.GetAndCheck(ctx, PathCloudCloudProviders, true, &cloudProviders)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (imco *ClientAPI) ListServerStoragePlans(ctx context.Context, providerID st
 ) (storagePlans []*types.StoragePlan, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudCloudProviderStoragePlans, providerID), true, &storagePlans)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudCloudProviderStoragePlans, providerID), true, &storagePlans)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (imco *ClientAPI) ListLoadBalancerPlans(ctx context.Context, providerID str
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathCloudCloudProviderLoadBalancerPlans, providerID),
+		fmt.Sprintf(PathCloudCloudProviderLoadBalancerPlans, providerID),
 		true,
 		&loadBalancerPlans,
 	)
@@ -68,7 +68,7 @@ func (imco *ClientAPI) ListClusterPlans(ctx context.Context, providerID string,
 ) (clusterPlans []*types.ClusterPlan, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudCloudProviderClusterPlans, providerID), true, &clusterPlans)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudCloudProviderClusterPlans, providerID), true, &clusterPlans)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (imco *ClientAPI) ListClusterPlans(ctx context.Context, providerID string,
 func (imco *ClientAPI) ListGenericImages(ctx context.Context) (genericImages []*types.GenericImage, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathCloudGenericImages, true, &genericImages)
+	_, err = imco.GetAndCheck(ctx, PathCloudGenericImages, true, &genericImages)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (imco *ClientAPI) ListGenericImages(ctx context.Context) (genericImages []*
 func (imco *ClientAPI) ListServerArrays(ctx context.Context) (serverArrays []*types.ServerArray, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathCloudServerArrays, true, &serverArrays)
+	_, err = imco.GetAndCheck(ctx, PathCloudServerArrays, true, &serverArrays)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (imco *ClientAPI) GetServerArray(ctx context.Context, serverArrayID string,
 ) (serverArray *types.ServerArray, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudServerArray, serverArrayID), true, &serverArray)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudServerArray, serverArrayID), true, &serverArray)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (imco *ClientAPI) CreateServerArray(ctx context.Context, serverArrayParams 
 ) (serverArray *types.ServerArray, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathCloudServerArrays, serverArrayParams, true, &serverArray)
+	_, err = imco.PostAndCheck(ctx, PathCloudServerArrays, serverArrayParams, true, &serverArray)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func (imco *ClientAPI) UpdateServerArray(ctx context.Context, serverArrayID stri
 
 	_, err = imco.PutAndCheck(
 		ctx,
-		fmt.Sprintf(pathCloudServerArray, serverArrayID),
+		fmt.Sprintf(PathCloudServerArray, serverArrayID),
 		serverArrayParams,
 		true,
 		&serverArray,
@@ -148,7 +148,7 @@ func (imco *ClientAPI) BootServerArray(ctx context.Context, serverArrayID string
 	serverArrayIn := map[string]interface{}{}
 	_, err = imco.PutAndCheck(
 		ctx,
-		fmt.Sprintf(pathCloudServerArrayBoot, serverArrayID),
+		fmt.Sprintf(PathCloudServerArrayBoot, serverArrayID),
 		&serverArrayIn,
 		true,
 		&serverArray,
@@ -166,7 +166,7 @@ func (imco *ClientAPI) ShutdownServerArray(ctx context.Context, serverArrayID st
 
 	serverArrayIn := map[string]interface{}{}
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathCloudServerArrayShutdown, serverArrayID),
+		fmt.Sprintf(PathCloudServerArrayShutdown, serverArrayID),
 		&serverArrayIn,
 		true,
 		&serverArray,
@@ -185,7 +185,7 @@ func (imco *ClientAPI) EmptyServerArray(ctx context.Context, serverArrayID strin
 	serverArrayIn := map[string]interface{}{}
 	_, err = imco.PutAndCheck(
 		ctx,
-		fmt.Sprintf(pathCloudServerArrayEmpty, serverArrayID),
+		fmt.Sprintf(PathCloudServerArrayEmpty, serverArrayID),
 		&serverArrayIn,
 		true,
 		&serverArray,
@@ -203,7 +203,7 @@ func (imco *ClientAPI) EnlargeServerArray(ctx context.Context, serverArrayID str
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathCloudServerArrayServers, serverArrayID),
+		fmt.Sprintf(PathCloudServerArrayServers, serverArrayID),
 		serverArrayParams,
 		true,
 		&serverArray,
@@ -219,7 +219,7 @@ func (imco *ClientAPI) ListServerArrayServers(ctx context.Context, serverArrayID
 ) (servers []*types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudServerArrayServers, serverArrayID), true, &servers)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudServerArrayServers, serverArrayID), true, &servers)
 	if err != nil {
 		return nil, err
 	}
@@ -230,7 +230,7 @@ func (imco *ClientAPI) ListServerArrayServers(ctx context.Context, serverArrayID
 func (imco *ClientAPI) DeleteServerArray(ctx context.Context, serverArrayID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathCloudServerArray, serverArrayID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathCloudServerArray, serverArrayID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -243,7 +243,7 @@ func (imco *ClientAPI) ListServerPlans(ctx context.Context, providerID string, r
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathCloudCloudProviderServerPlansByRealm, providerID, realmID),
+		fmt.Sprintf(PathCloudCloudProviderServerPlansByRealm, providerID, realmID),
 		true,
 		&serverPlans)
 	if err != nil {
@@ -256,7 +256,7 @@ func (imco *ClientAPI) ListServerPlans(ctx context.Context, providerID string, r
 func (imco *ClientAPI) GetServerPlan(ctx context.Context, planID string) (serverPlan *types.ServerPlan, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudServerPlan, planID), true, &serverPlan)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudServerPlan, planID), true, &serverPlan)
 	if err != nil {
 		return nil, err
 	}
@@ -267,7 +267,7 @@ func (imco *ClientAPI) GetServerPlan(ctx context.Context, planID string) (server
 func (imco *ClientAPI) ListServers(ctx context.Context) (servers []*types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathCloudServers, true, &servers)
+	_, err = imco.GetAndCheck(ctx, PathCloudServers, true, &servers)
 	if err != nil {
 		return nil, err
 	}
@@ -278,7 +278,7 @@ func (imco *ClientAPI) ListServers(ctx context.Context) (servers []*types.Server
 func (imco *ClientAPI) GetServer(ctx context.Context, serverID string) (server *types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudServer, serverID), true, &server)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudServer, serverID), true, &server)
 	if err != nil {
 		return nil, err
 	}
@@ -290,7 +290,7 @@ func (imco *ClientAPI) CreateServer(ctx context.Context, serverParams *map[strin
 ) (server *types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathCloudServers, serverParams, true, &server)
+	_, err = imco.PostAndCheck(ctx, PathCloudServers, serverParams, true, &server)
 	if err != nil {
 		return nil, err
 	}
@@ -302,7 +302,7 @@ func (imco *ClientAPI) UpdateServer(ctx context.Context, serverID string, server
 ) (server *types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathCloudServer, serverID), serverParams, true, &server)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathCloudServer, serverID), serverParams, true, &server)
 	if err != nil {
 		return nil, err
 	}
@@ -314,7 +314,7 @@ func (imco *ClientAPI) BootServer(ctx context.Context, serverID string, serverPa
 ) (server *types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathCloudServerBoot, serverID), serverParams, true, &server)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathCloudServerBoot, serverID), serverParams, true, &server)
 	if err != nil {
 		return nil, err
 	}
@@ -326,7 +326,7 @@ func (imco *ClientAPI) RebootServer(ctx context.Context, serverID string, server
 ) (server *types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathCloudServerReboot, serverID), serverParams, true, &server)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathCloudServerReboot, serverID), serverParams, true, &server)
 	if err != nil {
 		return nil, err
 	}
@@ -338,7 +338,7 @@ func (imco *ClientAPI) ShutdownServer(ctx context.Context, serverID string, serv
 ) (server *types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathCloudServerShutdown, serverID), serverParams, true, &server)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathCloudServerShutdown, serverID), serverParams, true, &server)
 	if err != nil {
 		return nil, err
 	}
@@ -350,7 +350,7 @@ func (imco *ClientAPI) OverrideServer(ctx context.Context, serverID string, serv
 ) (server *types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathCloudServerOverride, serverID), serverParams, true, &server)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathCloudServerOverride, serverID), serverParams, true, &server)
 	if err != nil {
 		return nil, err
 	}
@@ -361,7 +361,7 @@ func (imco *ClientAPI) OverrideServer(ctx context.Context, serverID string, serv
 func (imco *ClientAPI) DeleteServer(ctx context.Context, serverID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathCloudServer, serverID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathCloudServer, serverID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -373,7 +373,7 @@ func (imco *ClientAPI) ListServerFloatingIPs(ctx context.Context, serverID strin
 ) (floatingIPs []*types.FloatingIP, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudServerFloatingIps, serverID), true, &floatingIPs)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudServerFloatingIps, serverID), true, &floatingIPs)
 	if err != nil {
 		return nil, err
 	}
@@ -384,7 +384,7 @@ func (imco *ClientAPI) ListServerFloatingIPs(ctx context.Context, serverID strin
 func (imco *ClientAPI) ListServerVolumes(ctx context.Context, serverID string) (volumes []*types.Volume, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudServerVolumes, serverID), true, &volumes)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudServerVolumes, serverID), true, &volumes)
 	if err != nil {
 		return nil, err
 	}
@@ -395,7 +395,7 @@ func (imco *ClientAPI) ListServerVolumes(ctx context.Context, serverID string) (
 func (imco *ClientAPI) ListServerEvents(ctx context.Context, serverID string) (events []*types.Event, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudServerEvents, serverID), true, &events)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudServerEvents, serverID), true, &events)
 	if err != nil {
 		return nil, err
 	}
@@ -407,7 +407,7 @@ func (imco *ClientAPI) ListOperationalScripts(ctx context.Context, serverID stri
 ) (scripts []*types.ScriptChar, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudServerOperationalScripts, serverID), true, &scripts)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudServerOperationalScripts, serverID), true, &scripts)
 	if err != nil {
 		return nil, err
 	}
@@ -421,7 +421,7 @@ func (imco *ClientAPI) ExecuteOperationalScript(ctx context.Context, serverID st
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathCloudServerOperationalScriptExecute, serverID, scriptID),
+		fmt.Sprintf(PathCloudServerOperationalScriptExecute, serverID, scriptID),
 		serverParams,
 		true,
 		&event,
@@ -436,7 +436,7 @@ func (imco *ClientAPI) ExecuteOperationalScript(ctx context.Context, serverID st
 func (imco *ClientAPI) ListSSHProfiles(ctx context.Context) (sshProfiles []*types.SSHProfile, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathCloudSshProfiles, true, &sshProfiles)
+	_, err = imco.GetAndCheck(ctx, PathCloudSshProfiles, true, &sshProfiles)
 	if err != nil {
 		return nil, err
 	}
@@ -448,7 +448,7 @@ func (imco *ClientAPI) GetSSHProfile(ctx context.Context, sshProfileID string,
 ) (sshProfile *types.SSHProfile, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudSshProfile, sshProfileID), true, &sshProfile)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudSshProfile, sshProfileID), true, &sshProfile)
 	if err != nil {
 		return nil, err
 	}
@@ -460,7 +460,7 @@ func (imco *ClientAPI) CreateSSHProfile(ctx context.Context, sshProfileParams *m
 ) (sshProfile *types.SSHProfile, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathCloudSshProfiles, sshProfileParams, true, &sshProfile)
+	_, err = imco.PostAndCheck(ctx, PathCloudSshProfiles, sshProfileParams, true, &sshProfile)
 	if err != nil {
 		return nil, err
 	}
@@ -473,7 +473,7 @@ func (imco *ClientAPI) UpdateSSHProfile(ctx context.Context, sshProfileID string
 ) (sshProfile *types.SSHProfile, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathCloudSshProfile, sshProfileID), sshProfileParams, true, &sshProfile)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathCloudSshProfile, sshProfileID), sshProfileParams, true, &sshProfile)
 	if err != nil {
 		return nil, err
 	}
@@ -484,7 +484,7 @@ func (imco *ClientAPI) UpdateSSHProfile(ctx context.Context, sshProfileID string
 func (imco *ClientAPI) DeleteSSHProfile(ctx context.Context, sshProfileID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathCloudSshProfile, sshProfileID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathCloudSshProfile, sshProfileID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -496,9 +496,9 @@ func (imco *ClientAPI) ListFloatingIPs(ctx context.Context, serverID string,
 ) (floatingIPs []*types.FloatingIP, err error) {
 	logger.DebugFuncInfo()
 
-	path := pathNetworkFloatingIps
+	path := PathNetworkFloatingIps
 	if serverID != "" {
-		path = fmt.Sprintf(pathCloudServerFloatingIps, serverID)
+		path = fmt.Sprintf(PathCloudServerFloatingIps, serverID)
 	}
 	_, err = imco.GetAndCheck(ctx, path, true, &floatingIPs)
 	if err != nil {
@@ -511,7 +511,7 @@ func (imco *ClientAPI) ListFloatingIPs(ctx context.Context, serverID string,
 func (imco *ClientAPI) ListRealms(ctx context.Context, providerID string) (realms []*types.Realm, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudProviderRealms, providerID), true, &realms)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudProviderRealms, providerID), true, &realms)
 	if err != nil {
 		return nil, err
 	}
@@ -522,7 +522,7 @@ func (imco *ClientAPI) ListRealms(ctx context.Context, providerID string) (realm
 func (imco *ClientAPI) GetRealm(ctx context.Context, realmID string) (realm *types.Realm, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudRealm, realmID), true, &realm)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudRealm, realmID), true, &realm)
 	if err != nil {
 		return nil, err
 	}
@@ -534,7 +534,7 @@ func (imco *ClientAPI) ListRealmNodePoolPlans(ctx context.Context, realmID strin
 ) (nodePoolPlans []*types.NodePoolPlan, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCloudRealmNodePoolPlans, realmID), true, &nodePoolPlans)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCloudRealmNodePoolPlans, realmID), true, &nodePoolPlans)
 	if err != nil {
 		return nil, err
 	}

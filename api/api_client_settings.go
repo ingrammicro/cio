@@ -3,17 +3,17 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // ListCloudAccounts returns the list of cloudAccounts as an array of CloudAccount
 func (imco *ClientAPI) ListCloudAccounts(ctx context.Context) (cloudAccounts []*types.CloudAccount, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathSettingsCloudAccounts, true, &cloudAccounts)
+	_, err = imco.GetAndCheck(ctx, PathSettingsCloudAccounts, true, &cloudAccounts)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func (imco *ClientAPI) GetCloudAccount(ctx context.Context, cloudAccountID strin
 ) (cloudAccount *types.CloudAccount, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathSettingsCloudAccount, cloudAccountID), true, &cloudAccount)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathSettingsCloudAccount, cloudAccountID), true, &cloudAccount)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (imco *ClientAPI) ListPolicyAssignments(ctx context.Context, cloudAccountID
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathSettingsCloudAccountPolicyAssignments, cloudAccountID),
+		fmt.Sprintf(PathSettingsCloudAccountPolicyAssignments, cloudAccountID),
 		true,
 		&assignments,
 	)

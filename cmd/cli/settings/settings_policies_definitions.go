@@ -81,11 +81,13 @@ func PolicyDefinitionList() error {
 
 	definitions, err := svc.ListPolicyDefinitions(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive policy definitions data", err)
+		formatter.PrintError("Couldn't receive policy definitions data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(definitions); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -97,11 +99,13 @@ func PolicyDefinitionShow() error {
 
 	definition, err := svc.GetPolicyDefinition(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive policy definition data", err)
+		formatter.PrintError("Couldn't receive policy definition data", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*definition); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -124,7 +128,8 @@ func PolicyDefinitionCreate() error {
 	if viper.IsSet(cmd.DefinitionFromFile) {
 		defIn, err := cmd.ConvertFlagParamsJsonStringFromFileOrStdin(viper.GetString(cmd.DefinitionFromFile))
 		if err != nil {
-			formatter.PrintFatal("Cannot parse definition", err)
+			formatter.PrintError("Cannot parse definition", err)
+			return err
 		}
 		definitionIn["definition"] = defIn
 	}
@@ -134,11 +139,13 @@ func PolicyDefinitionCreate() error {
 
 	definition, err := svc.CreatePolicyDefinition(cmd.GetContext(), &definitionIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create policy definition", err)
+		formatter.PrintError("Couldn't create policy definition", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*definition); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -157,11 +164,13 @@ func PolicyDefinitionUpdate() error {
 
 	definition, err := svc.UpdatePolicyDefinition(cmd.GetContext(), viper.GetString(cmd.Id), &definitionIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update policy definition", err)
+		formatter.PrintError("Couldn't update policy definition", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*definition); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -173,7 +182,8 @@ func PolicyDefinitionDelete() error {
 
 	err := svc.DeletePolicyDefinition(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete policy definition", err)
+		formatter.PrintError("Couldn't delete policy definition", err)
+		return err
 	}
 	return nil
 }
@@ -185,11 +195,13 @@ func PolicyDefinitionListAssignments() error {
 
 	assignments, err := svc.ListPolicyDefinitionAssignments(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive policy assignments data", err)
+		formatter.PrintError("Couldn't receive policy assignments data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(assignments); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

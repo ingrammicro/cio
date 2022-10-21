@@ -64,10 +64,12 @@ func CertificateList() error {
 
 	certificates, err := svc.ListCertificates(cmd.GetContext(), viper.GetString(cmd.LoadBalancerId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive load balancer certificates data", err)
+		formatter.PrintError("Couldn't receive load balancer certificates data", err)
+		return err
 	}
 	if err = formatter.PrintList(certificates); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -83,10 +85,12 @@ func CertificateShow() error {
 		viper.GetString(cmd.Id),
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive load balancer certificate data", err)
+		formatter.PrintError("Couldn't receive load balancer certificate data", err)
+		return err
 	}
 	if err = formatter.PrintItem(*certificate); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -105,11 +109,13 @@ func CertificateCreate() error {
 
 	certificate, err := svc.CreateCertificate(cmd.GetContext(), viper.GetString(cmd.LoadBalancerId), &certificateIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create load balancer certificate", err)
+		formatter.PrintError("Couldn't create load balancer certificate", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*certificate); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -129,11 +135,13 @@ func CertificateUpdate() error {
 		&certificateIn,
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update load balancer certificate", err)
+		formatter.PrintError("Couldn't update load balancer certificate", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*certificate); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -145,7 +153,8 @@ func CertificateDelete() error {
 
 	err := svc.DeleteCertificate(cmd.GetContext(), viper.GetString(cmd.LoadBalancerId), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete load balancer certificate", err)
+		formatter.PrintError("Couldn't delete load balancer certificate", err)
+		return err
 	}
 	return nil
 }

@@ -47,10 +47,12 @@ func AppList() error {
 
 	apps, err := svc.ListApps(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive app data", err)
+		formatter.PrintError("Couldn't receive app data", err)
+		return err
 	}
 	if err = formatter.PrintList(apps); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -71,10 +73,12 @@ func AppDeploy() error {
 
 	server, err := svc.DeployApp(cmd.GetContext(), viper.GetString(cmd.Id), &appIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't deploy app", err)
+		formatter.PrintError("Couldn't deploy app", err)
+		return err
 	}
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

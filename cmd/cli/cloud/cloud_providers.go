@@ -49,10 +49,12 @@ func CloudProviderList() error {
 
 	cloudProviders, err := svc.ListCloudProviders(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloudProvider data", err)
+		formatter.PrintError("Couldn't receive cloudProvider data", err)
+		return err
 	}
 	if err = formatter.PrintList(cloudProviders); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -64,11 +66,18 @@ func CloudProviderStoragePlansList() error {
 
 	storagePlans, err := svc.ListServerStoragePlans(cmd.GetContext(), viper.GetString(cmd.CloudProviderId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive storage plans data", err)
+		formatter.PrintError("Couldn't receive storage plans data", err)
+		return err
 	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
-	locationsMap := cli.LoadLocationsMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
+	locationsMap, err := cli.LoadLocationsMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 
 	for id, sp := range storagePlans {
 		storagePlans[id].CloudProviderName = cloudProvidersMap[sp.CloudProviderID]
@@ -76,7 +85,8 @@ func CloudProviderStoragePlansList() error {
 	}
 
 	if err = formatter.PrintList(storagePlans); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -88,16 +98,21 @@ func CloudProviderLoadBalancerPlansList() error {
 
 	loadBalancerPlans, err := svc.ListLoadBalancerPlans(cmd.GetContext(), viper.GetString(cmd.CloudProviderId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive load balancer plans data", err)
+		formatter.PrintError("Couldn't receive load balancer plans data", err)
+		return err
 	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	for id, sp := range loadBalancerPlans {
 		loadBalancerPlans[id].CloudProviderName = cloudProvidersMap[sp.CloudProviderID]
 	}
 
 	if err = formatter.PrintList(loadBalancerPlans); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -109,16 +124,21 @@ func CloudProviderClusterPlansList() error {
 
 	loadBalancerPlans, err := svc.ListClusterPlans(cmd.GetContext(), viper.GetString(cmd.CloudProviderId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cluster plans data", err)
+		formatter.PrintError("Couldn't receive cluster plans data", err)
+		return err
 	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	for id, sp := range loadBalancerPlans {
 		loadBalancerPlans[id].CloudProviderName = cloudProvidersMap[sp.CloudProviderID]
 	}
 
 	if err = formatter.PrintList(loadBalancerPlans); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

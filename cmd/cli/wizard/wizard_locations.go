@@ -27,10 +27,12 @@ func LocationList() error {
 
 	locations, err := svc.ListLocations(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive location data", err)
+		formatter.PrintError("Couldn't receive location data", err)
+		return err
 	}
 	if err = formatter.PrintList(locations); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

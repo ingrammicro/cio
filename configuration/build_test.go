@@ -15,10 +15,10 @@ import (
 	"time"
 )
 
-//TODO COMMON
+// TODO COMMON
 const TEST = "test"
 
-//TODO COMMON
+// TODO COMMON
 func InitConfig() *Config {
 	config := new(Config)
 	config.XMLName = xml.Name{
@@ -94,7 +94,7 @@ func TestReloadConfig(t *testing.T) {
 	tests := map[string]struct {
 		confFile             string
 		confFileLastLoadedAt time.Time
-		expected             interface{}
+		expected             any
 	}{
 		"if ConfFile is accessible": {
 			confFile:             cachedConfig.ConfFile,
@@ -330,9 +330,9 @@ func TestReadConfig(t *testing.T) {
 	cachedConfig = InitConfig()
 
 	tests := map[string]struct {
-		confFile    string
-		EnvVar      string
-		expected    interface{}
+		confFile string
+		EnvVar   string
+		expected any
 		permissions []uint32
 	}{
 		"if config file does no exists": {

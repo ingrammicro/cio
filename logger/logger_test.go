@@ -31,8 +31,9 @@ func TestDebugFuncInfo(t *testing.T) {
 			log.SetLevel(test.logLevel)
 			DebugFuncInfo()
 
-			if !strings.Contains(buf.String(), "func logger.TestDebugFuncInfo") {
-				t.Error("Invalid debug message")
+			message := buf.String()
+			if !strings.Contains(message, "func logger.TestDebugFuncInfo") {
+				t.Errorf("Invalid debug message: %v\n", message)
 			}
 		})
 	}

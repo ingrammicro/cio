@@ -45,11 +45,13 @@ func RealmList() error {
 
 	realms, err := svc.ListRealms(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive realms data", err)
+		formatter.PrintError("Couldn't receive realms data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(realms); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -61,11 +63,13 @@ func RealmShow() error {
 
 	realm, err := svc.GetRealm(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive realm data", err)
+		formatter.PrintError("Couldn't receive realm data", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*realm); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -77,11 +81,13 @@ func RealmNodePoolPlansList() error {
 
 	realms, err := svc.ListRealmNodePoolPlans(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive realms data", err)
+		formatter.PrintError("Couldn't receive realms data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(realms); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

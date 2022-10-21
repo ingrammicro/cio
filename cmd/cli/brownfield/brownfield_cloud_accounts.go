@@ -28,16 +28,21 @@ func BrownfieldCloudAccountList() error {
 
 	cloudAccounts, err := svc.ListBrownfieldCloudAccounts(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloud accounts data", err)
+		formatter.PrintError("Couldn't receive cloud accounts data", err)
+		return err
 	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	for id, ca := range cloudAccounts {
 		cloudAccounts[id].CloudProviderName = cloudProvidersMap[ca.CloudProviderID]
 	}
 
 	if err = formatter.PrintList(cloudAccounts); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

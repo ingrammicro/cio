@@ -10,10 +10,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"context"
 	"github.com/ingrammicro/cio/configuration"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/net/context"
 )
 
 var RootCmd *cobra.Command
@@ -152,7 +152,10 @@ func persistencePreRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Formatter
-	EvaluateFormatter()
+	err = EvaluateFormatter()
+	if err != nil {
+		log.Fatalf("Error evaluating formatter: %s", err)
+	}
 }
 
 // GetContext returns the current context assigned to RootCmd

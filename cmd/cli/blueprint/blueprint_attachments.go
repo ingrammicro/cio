@@ -49,11 +49,13 @@ func AttachmentShow() error {
 
 	attachment, err := svc.GetAttachment(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive attachment data", err)
+		formatter.PrintError("Couldn't receive attachment data", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*attachment); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -65,7 +67,8 @@ func AttachmentDownload() error {
 
 	attachment, err := svc.GetAttachment(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive attachment data", err)
+		formatter.PrintError("Couldn't receive attachment data", err)
+		return err
 	}
 
 	realFileName, status, err := svc.DownloadFile(
@@ -78,7 +81,8 @@ func AttachmentDownload() error {
 		err = fmt.Errorf("obtained non-ok response when downloading attachment %s", attachment.DownloadURL)
 	}
 	if err != nil {
-		formatter.PrintFatal("Couldn't download attachment", err)
+		formatter.PrintError("Couldn't download attachment", err)
+		return err
 	}
 	log.Info("Available at:", realFileName)
 	return nil
@@ -91,7 +95,8 @@ func AttachmentDelete() error {
 
 	err := svc.DeleteAttachment(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete attachment", err)
+		formatter.PrintError("Couldn't delete attachment", err)
+		return err
 	}
 	return nil
 }

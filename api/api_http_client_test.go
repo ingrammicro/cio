@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/ingrammicro/cio/configuration"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -14,10 +15,7 @@ import (
 	"time"
 )
 
-//TODO COMMON
-const TEST = "test"
-
-//TODO COMMON
+// TODO COMMON
 func InitConfig() *configuration.Config {
 	config := new(configuration.Config)
 	config.XMLName = xml.Name{
@@ -38,15 +36,15 @@ func InitConfig() *configuration.Config {
 		ApplyAfterIterations: 4,
 		RunOnce:              false,
 	}
-	config.ConfLocation = TEST
+	config.ConfLocation = testutils.TEST
 	config.ConfFile = "testdata/client.xml"
 	config.ConfFileLastLoadedAt = time.Now()
 	config.IsHost = false
-	config.ConcertoURL = TEST
+	config.ConcertoURL = testutils.TEST
 	config.BrownfieldToken = ""
 	config.CommandPollingToken = ""
-	config.ServerID = TEST
-	config.CurrentUserName = TEST
+	config.ServerID = testutils.TEST
+	config.CurrentUserName = testutils.TEST
 	config.CurrentUserIsAdmin = false
 	return config
 }
@@ -63,7 +61,7 @@ func InitNewHTTPClient() (*HTTPClient, *configuration.Config, error) {
 
 func InitConfigAndClientAPI() (*configuration.Config, *ClientAPI, error) {
 	config := InitConfig()
-	//config := new(configuration.Config) // para forzar error de config
+	//config := new(configuration.Config) // TODO to force a config error
 	ds, err := NewHTTPClient(config)
 	if err != nil {
 		return nil, nil, err
@@ -74,21 +72,6 @@ func InitConfigAndClientAPI() (*configuration.Config, *ClientAPI, error) {
 	return config, svc, nil
 }
 
-func NewServer(returnStatus int, returnData interface{}) *httptest.Server {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//if r.URL.Path != "/storage/volumes" {
-		//	t.Errorf("Expected to request '/storage/volumes', got: %s", r.URL.Path)
-		//}
-		//if r.Header.Get("Accept") != "application/json" {
-		//	t.Errorf("Expected Accept: application/json header, got: %s", r.Header.Get("Accept"))
-		//}
-		w.WriteHeader(returnStatus)
-		d, _ := json.Marshal(returnData)
-		w.Write(d)
-	}))
-	return server
-}
-
 type TestData struct {
 	ID          string    `json:"id"          header:"ID"`
 	Timestamp   time.Time `json:"timestamp"   header:"TIMESTAMP"`
@@ -97,14 +80,14 @@ type TestData struct {
 }
 
 type APIError struct {
-	Error  string                 `json:"error"       header:"ERROR"`
-	Errors map[string]interface{} `json:"errors"       header:"ERRORS"`
+	Error  string         `json:"error"       header:"ERROR"`
+	Errors map[string]any `json:"errors"      header:"ERRORS"`
 }
 
 func TestNewHTTPClient(t *testing.T) {
 	tests := map[string]struct {
 		config   *configuration.Config
-		expected interface{}
+		expected any
 	}{
 		"if config not initialized": {
 			config:   nil,
@@ -138,17 +121,16 @@ func TestNewHTTPClient(t *testing.T) {
 					test.config.Certificate.Ca = ""
 				}
 				if test.expected == "cannot read IMCO CA cert" {
-					test.config.Certificate.Ca = TEST
+					test.config.Certificate.Ca = testutils.TEST
 				}
 				if test.expected == "cannot read IMCO API key" {
-					test.config.Certificate.Key = TEST
+					test.config.Certificate.Key = testutils.TEST
 				}
 			}
 			svc, err := NewHTTPClient(test.config)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
-			//if err == nil && fmt.Sprintf("%T", svc) != "*api.HTTPClient" {
 			if err == nil && reflect.TypeOf(svc) != reflect.TypeOf(test.expected) {
 				t.Errorf("Unexpected response: %v. Expected: %v\n", svc, test.expected)
 			}
@@ -163,15 +145,15 @@ func TestGetAndCheck(t *testing.T) {
 	}{
 		"if get method resolves with no issues": {
 			expected: http.StatusOK,
-			server:   NewServer(http.StatusOK, TestData{ID: TEST}),
+			server:   testutils.NewServer(http.StatusOK, TestData{ID: testutils.TEST}),
 		},
 		"if get method ends with error": {
 			expected: http.StatusBadRequest,
-			server:   NewServer(http.StatusBadRequest, APIError{Error: "Invalid request"}),
+			server:   testutils.NewServer(http.StatusBadRequest, APIError{Error: "Invalid request"}),
 		},
 		"if get method ends with errors": {
 			expected: http.StatusBadRequest,
-			server:   NewServer(http.StatusBadRequest, APIError{Errors: map[string]interface{}{"name": []string{"is already taken"}}}),
+			server:   testutils.NewServer(http.StatusBadRequest, APIError{Errors: map[string]any{"name": []string{"is already taken"}}}),
 		},
 		"if get method ends with invalid url": {
 			expected: 0,
@@ -194,7 +176,7 @@ func TestGetAndCheck(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			status, err := svc.GetAndCheck(context.Background(), pathStorageVolumes, true, &TestData{ID: TEST})
+			status, err := svc.GetAndCheck(context.Background(), PathStorageVolumes, true, &TestData{ID: testutils.TEST})
 			if err != nil && status != test.expected {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -212,15 +194,15 @@ func TestPutAndCheck(t *testing.T) {
 	}{
 		"if put method resolves with no issues": {
 			expected: http.StatusOK,
-			server:   NewServer(http.StatusOK, TestData{ID: TEST}),
+			server:   testutils.NewServer(http.StatusOK, TestData{ID: testutils.TEST}),
 		},
 		"if put method ends with error": {
 			expected: http.StatusBadRequest,
-			server:   NewServer(http.StatusBadRequest, APIError{Error: "Invalid request"}),
+			server:   testutils.NewServer(http.StatusBadRequest, APIError{Error: "Invalid request"}),
 		},
 		"if put method ends with errors": {
 			expected: http.StatusBadRequest,
-			server:   NewServer(http.StatusBadRequest, APIError{Errors: map[string]interface{}{"name": []string{"is already taken"}}}),
+			server:   testutils.NewServer(http.StatusBadRequest, APIError{Errors: map[string]any{"name": []string{"is already taken"}}}),
 		},
 		"if put method ends with invalid url": {
 			expected: 0,
@@ -243,10 +225,10 @@ func TestPutAndCheck(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			payload := map[string]interface{}{
-				"name": TEST,
+			payload := map[string]any{
+				"name": testutils.TEST,
 			}
-			status, err := svc.PutAndCheck(context.Background(), pathStorageVolumes, &payload, true, &TestData{ID: TEST})
+			status, err := svc.PutAndCheck(context.Background(), PathStorageVolumes, &payload, true, &TestData{ID: testutils.TEST})
 			if err != nil && status != test.expected {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -264,15 +246,15 @@ func TestPostAndCheck(t *testing.T) {
 	}{
 		"if post method resolves with no issues": {
 			expected: http.StatusOK,
-			server:   NewServer(http.StatusOK, TestData{ID: TEST}),
+			server:   testutils.NewServer(http.StatusOK, TestData{ID: testutils.TEST}),
 		},
 		"if post method ends with error": {
 			expected: http.StatusBadRequest,
-			server:   NewServer(http.StatusBadRequest, APIError{Error: "Invalid request"}),
+			server:   testutils.NewServer(http.StatusBadRequest, APIError{Error: "Invalid request"}),
 		},
 		"if post method ends with errors": {
 			expected: http.StatusBadRequest,
-			server:   NewServer(http.StatusBadRequest, APIError{Errors: map[string]interface{}{"name": []string{"is already taken"}}}),
+			server:   testutils.NewServer(http.StatusBadRequest, APIError{Errors: map[string]any{"name": []string{"is already taken"}}}),
 		},
 		"if post method ends with invalid url": {
 			expected: 0,
@@ -295,10 +277,10 @@ func TestPostAndCheck(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			payload := map[string]interface{}{
-				"name": TEST,
+			payload := map[string]any{
+				"name": testutils.TEST,
 			}
-			status, err := svc.PostAndCheck(context.Background(), pathStorageVolumes, &payload, true, &TestData{ID: TEST})
+			status, err := svc.PostAndCheck(context.Background(), PathStorageVolumes, &payload, true, &TestData{ID: testutils.TEST})
 			if err != nil && status != test.expected {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -316,15 +298,15 @@ func TestDeleteAndCheck(t *testing.T) {
 	}{
 		"if delete method resolves with no issues": {
 			expected: http.StatusOK,
-			server:   NewServer(http.StatusOK, TestData{ID: TEST}),
+			server:   testutils.NewServer(http.StatusOK, TestData{ID: testutils.TEST}),
 		},
 		"if delete method ends with error": {
 			expected: http.StatusBadRequest,
-			server:   NewServer(http.StatusBadRequest, APIError{Error: "Invalid request"}),
+			server:   testutils.NewServer(http.StatusBadRequest, APIError{Error: "Invalid request"}),
 		},
 		"if delete method ends with errors": {
 			expected: http.StatusBadRequest,
-			server:   NewServer(http.StatusBadRequest, APIError{Errors: map[string]interface{}{"name": []string{"is already taken"}}}),
+			server:   testutils.NewServer(http.StatusBadRequest, APIError{Errors: map[string]any{"name": []string{"is already taken"}}}),
 		},
 		"if delete method ends with invalid url": {
 			expected: 0,
@@ -347,7 +329,7 @@ func TestDeleteAndCheck(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			status, err := svc.DeleteAndCheck(context.Background(), pathStorageVolumes, true, &TestData{ID: TEST})
+			status, err := svc.DeleteAndCheck(context.Background(), PathStorageVolumes, true, &TestData{ID: testutils.TEST})
 			if err != nil && status != test.expected {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -378,17 +360,17 @@ func TestDownloadFile(t *testing.T) {
 		},
 		"if HTTP request failed with status": {
 			expected: http.StatusBadRequest,
-			server:   NewServer(http.StatusBadRequest, TestData{ID: TEST}),
+			server:   testutils.NewServer(http.StatusBadRequest, TestData{ID: testutils.TEST}),
 			filePath: "testdata/test_utils.txt",
 		},
 		"if cannot create file": {
 			expected: http.StatusOK,
-			server:   NewServer(http.StatusOK, TestData{ID: TEST}),
+			server:   testutils.NewServer(http.StatusOK, TestData{ID: testutils.TEST}),
 			filePath: "testdata//",
 		},
 		"if no discovery": {
 			expected: http.StatusOK,
-			server:   NewServer(http.StatusOK, TestData{ID: TEST}),
+			server:   testutils.NewServer(http.StatusOK, TestData{ID: testutils.TEST}),
 			filePath: "testdata/test_utils.txt",
 		},
 	}
@@ -430,9 +412,9 @@ func TestUploadFile(t *testing.T) {
 		server         *httptest.Server
 	}{
 		"if completed successfully": {
-			targetURL:      TEST,
+			targetURL:      testutils.TEST,
 			sourceFilePath: "testdata/test_utils.txt",
-			server:         NewServer(http.StatusOK, TestData{ID: TEST}),
+			server:         testutils.NewServer(http.StatusOK, TestData{ID: testutils.TEST}),
 		},
 		"if cannot open source file path": {
 			targetURL:      "",
@@ -442,7 +424,7 @@ func TestUploadFile(t *testing.T) {
 		"if cannot upload file": {
 			targetURL:      "",
 			sourceFilePath: "testdata/test_utils.txt",
-			server:         NewServer(http.StatusBadRequest, TestData{ID: TEST}),
+			server:         testutils.NewServer(http.StatusBadRequest, TestData{ID: testutils.TEST}),
 		},
 	}
 
@@ -474,8 +456,8 @@ func TestUploadFile(t *testing.T) {
 }
 
 func TestCheckAndUnmarshal(t *testing.T) {
-	var v interface{}
-	v = TestData{ID: TEST}
+	var v any
+	v = TestData{ID: testutils.TEST}
 	data, err := json.Marshal(v)
 
 	tests := map[string]struct {
@@ -483,27 +465,27 @@ func TestCheckAndUnmarshal(t *testing.T) {
 		data     []byte
 		check    bool
 		v        any
-		expected interface{}
+		expected any
 	}{
 		"if status and data are correct": {
 			status:   http.StatusOK,
 			data:     data,
 			check:    true,
-			v:        TestData{ID: TEST},
+			v:        TestData{ID: testutils.TEST},
 			expected: http.StatusOK,
 		},
 		"if HTTP request failed": {
 			status:   http.StatusBadRequest,
 			data:     data,
 			check:    true,
-			v:        TestData{ID: TEST},
+			v:        TestData{ID: testutils.TEST},
 			expected: "HTTP request failed",
 		},
 		"if invalid JSON data": {
 			status:   http.StatusOK,
 			data:     nil,
 			check:    false,
-			v:        TestData{ID: TEST},
+			v:        TestData{ID: testutils.TEST},
 			expected: "unexpected end of JSON input",
 		},
 	}

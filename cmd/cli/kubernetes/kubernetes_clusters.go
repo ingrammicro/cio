@@ -136,28 +136,37 @@ func ClusterList() error {
 
 	clusters, err := svc.ListClusters(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cluster data", err)
+		formatter.PrintError("Couldn't receive cluster data", err)
+		return err
 	}
 
 	labelables := make([]types.Labelable, len(clusters))
 	for i := 0; i < len(clusters); i++ {
 		labelables[i] = types.Labelable(clusters[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	clusters = make([]*types.Cluster, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.Cluster)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.Cluster, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.Cluster, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		clusters[i] = v
 	}
 	if err = formatter.PrintList(clusters); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -169,12 +178,17 @@ func ClusterShow() error {
 
 	cluster, err := svc.GetCluster(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cluster data", err)
+		formatter.PrintError("Couldn't receive cluster data", err)
+		return err
 	}
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	cluster.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cluster); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -210,20 +224,31 @@ func ClusterCreate() error {
 		clusterIn["public_access_ip_addresses"] = strings.Split(viper.GetString(cmd.PublicAccessIpAddresses), ",")
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 
 	if viper.IsSet(cmd.Labels) {
-		clusterIn["label_ids"] = labels.LabelResolution(viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
+		clusterIn["label_ids"], err = labels.LabelResolution(
+			viper.GetString(cmd.Labels),
+			&labelNamesByID,
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	cluster, err := svc.CreateCluster(cmd.GetContext(), &clusterIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create cluster", err)
+		formatter.PrintError("Couldn't create cluster", err)
+		return err
 	}
 
 	cluster.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cluster); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -246,13 +271,18 @@ func ClusterUpdate() error {
 
 	cluster, err := svc.UpdateCluster(cmd.GetContext(), viper.GetString(cmd.Id), &clusterIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update cluster", err)
+		formatter.PrintError("Couldn't update cluster", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	cluster.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cluster); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -264,13 +294,18 @@ func ClusterDelete() error {
 
 	cluster, err := svc.DeleteCluster(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete cluster", err)
+		formatter.PrintError("Couldn't delete cluster", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	cluster.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cluster); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -282,13 +317,18 @@ func ClusterRetry() error {
 
 	cluster, err := svc.RetryCluster(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
-		formatter.PrintFatal("Couldn't retry cluster", err)
+		formatter.PrintError("Couldn't retry cluster", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	cluster.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cluster); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -300,7 +340,8 @@ func ClusterDiscard() error {
 
 	err := svc.DiscardCluster(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't discard cluster", err)
+		formatter.PrintError("Couldn't discard cluster", err)
+		return err
 	}
 	return nil
 }
@@ -312,11 +353,13 @@ func ClusterPlanShow() error {
 
 	clusterPlan, err := svc.GetClusterPlan(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't show cluster plan", err)
+		formatter.PrintError("Couldn't show cluster plan", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*clusterPlan); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

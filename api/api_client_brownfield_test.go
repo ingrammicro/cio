@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
 	"net/http"
 	"net/http/httptest"
@@ -13,12 +14,12 @@ import (
 
 func TestListBrownfieldCloudAccounts(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.CloudAccount{},
-			server:   NewServer(http.StatusOK, []*types.CloudAccount{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.CloudAccount{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -53,12 +54,12 @@ func TestListBrownfieldCloudAccounts(t *testing.T) {
 
 func TestGetBrownfieldCloudAccount(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudAccount),
-			server:   NewServer(http.StatusOK, new(types.CloudAccount)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudAccount)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -80,7 +81,7 @@ func TestGetBrownfieldCloudAccount(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			cloudAccount, err := svc.GetBrownfieldCloudAccount(context.Background(), TEST)
+			cloudAccount, err := svc.GetBrownfieldCloudAccount(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -93,12 +94,12 @@ func TestGetBrownfieldCloudAccount(t *testing.T) {
 
 func TestImportServers(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudAccount),
-			server:   NewServer(http.StatusOK, new(types.CloudAccount)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudAccount)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -120,7 +121,7 @@ func TestImportServers(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			cloudAccount, err := svc.ImportServers(context.Background(), TEST, new(map[string]interface{}))
+			cloudAccount, err := svc.ImportServers(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -133,12 +134,12 @@ func TestImportServers(t *testing.T) {
 
 func TestImportVPCs(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudAccount),
-			server:   NewServer(http.StatusOK, new(types.CloudAccount)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudAccount)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -160,7 +161,7 @@ func TestImportVPCs(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			cloudAccount, err := svc.ImportVPCs(context.Background(), TEST, new(map[string]interface{}))
+			cloudAccount, err := svc.ImportVPCs(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -173,12 +174,12 @@ func TestImportVPCs(t *testing.T) {
 
 func TestImportFloatingIPs(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudAccount),
-			server:   NewServer(http.StatusOK, new(types.CloudAccount)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudAccount)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -200,7 +201,7 @@ func TestImportFloatingIPs(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			cloudAccount, err := svc.ImportFloatingIPs(context.Background(), TEST, new(map[string]interface{}))
+			cloudAccount, err := svc.ImportFloatingIPs(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -213,12 +214,12 @@ func TestImportFloatingIPs(t *testing.T) {
 
 func TestImportVolumes(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudAccount),
-			server:   NewServer(http.StatusOK, new(types.CloudAccount)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudAccount)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -240,7 +241,7 @@ func TestImportVolumes(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			cloudAccount, err := svc.ImportVolumes(context.Background(), TEST, new(map[string]interface{}))
+			cloudAccount, err := svc.ImportVolumes(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -253,12 +254,12 @@ func TestImportVolumes(t *testing.T) {
 
 func TestImportKubernetesClusters(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudAccount),
-			server:   NewServer(http.StatusOK, new(types.CloudAccount)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudAccount)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -280,7 +281,7 @@ func TestImportKubernetesClusters(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			cloudAccount, err := svc.ImportKubernetesClusters(context.Background(), TEST, new(map[string]interface{}))
+			cloudAccount, err := svc.ImportKubernetesClusters(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -293,12 +294,12 @@ func TestImportKubernetesClusters(t *testing.T) {
 
 func TestImportPolicies(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudAccount),
-			server:   NewServer(http.StatusOK, new(types.CloudAccount)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudAccount)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -320,7 +321,7 @@ func TestImportPolicies(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			cloudAccount, err := svc.ImportPolicies(context.Background(), TEST, new(map[string]interface{}))
+			cloudAccount, err := svc.ImportPolicies(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}

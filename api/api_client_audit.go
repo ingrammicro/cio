@@ -3,16 +3,16 @@
 package api
 
 import (
+	"context"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // ListEvents returns the list of events as an array of Event
 func (imco *ClientAPI) ListEvents(ctx context.Context) (events []*types.Event, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathAuditEvents, true, &events)
+	_, err = imco.GetAndCheck(ctx, PathAuditEvents, true, &events)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (imco *ClientAPI) ListEvents(ctx context.Context) (events []*types.Event, e
 func (imco *ClientAPI) ListSysEvents(ctx context.Context) (events []*types.Event, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathAuditSystemEvents, true, &events)
+	_, err = imco.GetAndCheck(ctx, PathAuditSystemEvents, true, &events)
 	if err != nil {
 		return nil, err
 	}

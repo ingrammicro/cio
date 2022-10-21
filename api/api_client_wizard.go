@@ -3,17 +3,17 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // ListApps returns the list of apps as an array of App
 func (imco *ClientAPI) ListApps(ctx context.Context) (apps []*types.WizardApp, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathWizardApps, true, &apps)
+	_, err = imco.GetAndCheck(ctx, PathWizardApps, true, &apps)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func (imco *ClientAPI) DeployApp(ctx context.Context, appID string, appParams *m
 ) (server *types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(pathWizardAppDeploy, appID), appParams, true, &server)
+	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(PathWizardAppDeploy, appID), appParams, true, &server)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (imco *ClientAPI) DeployApp(ctx context.Context, appID string, appParams *m
 func (imco *ClientAPI) ListLocations(ctx context.Context) (locations []*types.Location, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathWizardLocations, true, &locations)
+	_, err = imco.GetAndCheck(ctx, PathWizardLocations, true, &locations)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (imco *ClientAPI) ListWizardCloudProviders(ctx context.Context, appID strin
 ) (cloudProviders []*types.CloudProvider, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathWizardCloudProviders, appID, locationID), true, &cloudProviders)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathWizardCloudProviders, appID, locationID), true, &cloudProviders)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (imco *ClientAPI) ListWizardServerPlans(ctx context.Context, appID string, 
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathWizardServerPlans, appID, locationID, cloudProviderID),
+		fmt.Sprintf(PathWizardServerPlans, appID, locationID, cloudProviderID),
 		true,
 		&serverPlans,
 	)

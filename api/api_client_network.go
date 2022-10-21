@@ -3,10 +3,10 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // ListCertificates returns the list of certificates in a load balancer by its ID, as an array of Certificate
@@ -15,7 +15,7 @@ func (imco *ClientAPI) ListCertificates(ctx context.Context, loadBalancerID stri
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancerCertificates, loadBalancerID),
+		fmt.Sprintf(PathNetworkLoadBalancerCertificates, loadBalancerID),
 		true,
 		&certificates,
 	)
@@ -31,7 +31,7 @@ func (imco *ClientAPI) GetCertificate(ctx context.Context, loadBalancerID string
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancerCertificate, loadBalancerID, certificateID),
+		fmt.Sprintf(PathNetworkLoadBalancerCertificate, loadBalancerID, certificateID),
 		true,
 		&certificate,
 	)
@@ -48,7 +48,7 @@ func (imco *ClientAPI) CreateCertificate(ctx context.Context, loadBalancerID str
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancerCertificates, loadBalancerID),
+		fmt.Sprintf(PathNetworkLoadBalancerCertificates, loadBalancerID),
 		certificateParams,
 		true,
 		&certificate,
@@ -66,7 +66,7 @@ func (imco *ClientAPI) UpdateCertificate(ctx context.Context, loadBalancerID str
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancerCertificate, loadBalancerID, certificateID),
+		fmt.Sprintf(PathNetworkLoadBalancerCertificate, loadBalancerID, certificateID),
 		certificateParams,
 		true,
 		&certificate,
@@ -83,7 +83,7 @@ func (imco *ClientAPI) DeleteCertificate(ctx context.Context, loadBalancerID str
 	logger.DebugFuncInfo()
 
 	_, err = imco.DeleteAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancerCertificate, loadBalancerID, certificateID),
+		fmt.Sprintf(PathNetworkLoadBalancerCertificate, loadBalancerID, certificateID),
 		true,
 		nil,
 	)
@@ -98,7 +98,7 @@ func (imco *ClientAPI) ListFirewallProfiles(ctx context.Context,
 ) (firewallProfiles []*types.FirewallProfile, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathNetworkFirewallProfiles, true, &firewallProfiles)
+	_, err = imco.GetAndCheck(ctx, PathNetworkFirewallProfiles, true, &firewallProfiles)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (imco *ClientAPI) GetFirewallProfile(ctx context.Context, firewallProfileID
 ) (firewallProfile *types.FirewallProfile, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkFirewallProfile, firewallProfileID), true, &firewallProfile)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkFirewallProfile, firewallProfileID), true, &firewallProfile)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (imco *ClientAPI) CreateFirewallProfile(ctx context.Context, firewallProfil
 ) (firewallProfile *types.FirewallProfile, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathNetworkFirewallProfiles, firewallProfileParams, true, &firewallProfile)
+	_, err = imco.PostAndCheck(ctx, PathNetworkFirewallProfiles, firewallProfileParams, true, &firewallProfile)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func (imco *ClientAPI) UpdateFirewallProfile(ctx context.Context, firewallProfil
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathNetworkFirewallProfile, firewallProfileID),
+		fmt.Sprintf(PathNetworkFirewallProfile, firewallProfileID),
 		firewallProfileParams,
 		true,
 		&firewallProfile,
@@ -151,7 +151,7 @@ func (imco *ClientAPI) UpdateFirewallProfile(ctx context.Context, firewallProfil
 func (imco *ClientAPI) DeleteFirewallProfile(ctx context.Context, firewallProfileID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkFirewallProfile, firewallProfileID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkFirewallProfile, firewallProfileID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -163,7 +163,7 @@ func (imco *ClientAPI) GetFloatingIP(ctx context.Context, floatingIPID string,
 ) (floatingIP *types.FloatingIP, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkFloatingIp, floatingIPID), true, &floatingIP)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkFloatingIp, floatingIPID), true, &floatingIP)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +175,7 @@ func (imco *ClientAPI) CreateFloatingIP(ctx context.Context, floatingIPParams *m
 ) (floatingIP *types.FloatingIP, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathNetworkFloatingIps, floatingIPParams, true, &floatingIP)
+	_, err = imco.PostAndCheck(ctx, PathNetworkFloatingIps, floatingIPParams, true, &floatingIP)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +189,7 @@ func (imco *ClientAPI) UpdateFloatingIP(ctx context.Context, floatingIPID string
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathNetworkFloatingIp, floatingIPID),
+		fmt.Sprintf(PathNetworkFloatingIp, floatingIPID),
 		floatingIPParams,
 		true,
 		&floatingIP,
@@ -207,7 +207,7 @@ func (imco *ClientAPI) AttachFloatingIP(ctx context.Context, floatingIPID string
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathNetworkFloatingIpAttachedServer, floatingIPID),
+		fmt.Sprintf(PathNetworkFloatingIpAttachedServer, floatingIPID),
 		floatingIPParams,
 		true,
 		&server,
@@ -222,7 +222,7 @@ func (imco *ClientAPI) AttachFloatingIP(ctx context.Context, floatingIPID string
 func (imco *ClientAPI) DetachFloatingIP(ctx context.Context, floatingIPID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkFloatingIpAttachedServer, floatingIPID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkFloatingIpAttachedServer, floatingIPID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -233,7 +233,7 @@ func (imco *ClientAPI) DetachFloatingIP(ctx context.Context, floatingIPID string
 func (imco *ClientAPI) DeleteFloatingIP(ctx context.Context, floatingIPID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkFloatingIp, floatingIPID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkFloatingIp, floatingIPID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -244,7 +244,7 @@ func (imco *ClientAPI) DeleteFloatingIP(ctx context.Context, floatingIPID string
 func (imco *ClientAPI) DiscardFloatingIP(ctx context.Context, floatingIPID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkFloatingIpDiscard, floatingIPID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkFloatingIpDiscard, floatingIPID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -256,7 +256,7 @@ func (imco *ClientAPI) ListListeners(ctx context.Context, loadBalancerID string,
 ) (listeners []*types.Listener, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkLoadBalancerListeners, loadBalancerID), true, &listeners)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkLoadBalancerListeners, loadBalancerID), true, &listeners)
 	if err != nil {
 		return nil, err
 	}
@@ -267,7 +267,7 @@ func (imco *ClientAPI) ListListeners(ctx context.Context, loadBalancerID string,
 func (imco *ClientAPI) GetListener(ctx context.Context, listenerID string) (listener *types.Listener, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkListener, listenerID), true, &listener)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkListener, listenerID), true, &listener)
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +281,7 @@ func (imco *ClientAPI) CreateListener(ctx context.Context, loadBalancerID string
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancerListeners, loadBalancerID),
+		fmt.Sprintf(PathNetworkLoadBalancerListeners, loadBalancerID),
 		listenerParams,
 		true,
 		&listener,
@@ -297,7 +297,7 @@ func (imco *ClientAPI) UpdateListener(ctx context.Context, listenerID string, li
 ) (listener *types.Listener, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathNetworkListener, listenerID), listenerParams, true, &listener)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathNetworkListener, listenerID), listenerParams, true, &listener)
 	if err != nil {
 		return nil, err
 	}
@@ -308,7 +308,7 @@ func (imco *ClientAPI) UpdateListener(ctx context.Context, listenerID string, li
 func (imco *ClientAPI) DeleteListener(ctx context.Context, listenerID string) (listener *types.Listener, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkListener, listenerID), true, &listener)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkListener, listenerID), true, &listener)
 	if err != nil {
 		return nil, err
 	}
@@ -320,7 +320,7 @@ func (imco *ClientAPI) RetryListener(ctx context.Context, listenerID string, lis
 ) (listener *types.Listener, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathNetworkListenerRetry, listenerID), listenerParams, true, &listener)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathNetworkListenerRetry, listenerID), listenerParams, true, &listener)
 	if err != nil {
 		return nil, err
 	}
@@ -332,7 +332,7 @@ func (imco *ClientAPI) ListRules(ctx context.Context, listenerID string,
 ) (listenerRules []*types.ListenerRule, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkListenerRules, listenerID), true, &listenerRules)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkListenerRules, listenerID), true, &listenerRules)
 	if err != nil {
 		return nil, err
 	}
@@ -345,7 +345,7 @@ func (imco *ClientAPI) CreateRule(ctx context.Context, listenerID string, listen
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathNetworkListenerRules, listenerID),
+		fmt.Sprintf(PathNetworkListenerRules, listenerID),
 		listenerRuleParams,
 		true,
 		&listenerRule,
@@ -363,7 +363,7 @@ func (imco *ClientAPI) UpdateRule(ctx context.Context, listenerID string, listen
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathNetworkListenerRule, listenerID, listenerRuleID),
+		fmt.Sprintf(PathNetworkListenerRule, listenerID, listenerRuleID),
 		listenerRuleParams,
 		true,
 		&listenerRule,
@@ -378,7 +378,7 @@ func (imco *ClientAPI) UpdateRule(ctx context.Context, listenerID string, listen
 func (imco *ClientAPI) DeleteRule(ctx context.Context, listenerID string, listenerRuleID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkListenerRule, listenerID, listenerRuleID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkListenerRule, listenerID, listenerRuleID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -389,7 +389,7 @@ func (imco *ClientAPI) DeleteRule(ctx context.Context, listenerID string, listen
 func (imco *ClientAPI) ListLoadBalancers(ctx context.Context) (loadBalancers []*types.LoadBalancer, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathNetworkLoadBalancers, true, &loadBalancers)
+	_, err = imco.GetAndCheck(ctx, PathNetworkLoadBalancers, true, &loadBalancers)
 	if err != nil {
 		return nil, err
 	}
@@ -401,7 +401,7 @@ func (imco *ClientAPI) GetLoadBalancer(ctx context.Context, loadBalancerID strin
 ) (loadBalancer *types.LoadBalancer, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkLoadBalancer, loadBalancerID), true, &loadBalancer)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkLoadBalancer, loadBalancerID), true, &loadBalancer)
 	if err != nil {
 		return nil, err
 	}
@@ -413,7 +413,7 @@ func (imco *ClientAPI) CreateLoadBalancer(ctx context.Context, loadBalancerParam
 ) (loadBalancer *types.LoadBalancer, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathNetworkLoadBalancers, loadBalancerParams, true, &loadBalancer)
+	_, err = imco.PostAndCheck(ctx, PathNetworkLoadBalancers, loadBalancerParams, true, &loadBalancer)
 	if err != nil {
 		return nil, err
 	}
@@ -427,7 +427,7 @@ func (imco *ClientAPI) UpdateLoadBalancer(ctx context.Context, loadBalancerID st
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancer, loadBalancerID),
+		fmt.Sprintf(PathNetworkLoadBalancer, loadBalancerID),
 		loadBalancerParams,
 		true,
 		&loadBalancer,
@@ -443,7 +443,7 @@ func (imco *ClientAPI) DeleteLoadBalancer(ctx context.Context, loadBalancerID st
 ) (loadBalancer *types.LoadBalancer, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkLoadBalancer, loadBalancerID), true, &loadBalancer)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkLoadBalancer, loadBalancerID), true, &loadBalancer)
 	if err != nil {
 		return nil, err
 	}
@@ -457,7 +457,7 @@ func (imco *ClientAPI) RetryLoadBalancer(ctx context.Context, loadBalancerID str
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancerRetry, loadBalancerID),
+		fmt.Sprintf(PathNetworkLoadBalancerRetry, loadBalancerID),
 		loadBalancerParams,
 		true,
 		&loadBalancer,
@@ -474,7 +474,7 @@ func (imco *ClientAPI) GetLoadBalancerPlan(ctx context.Context, loadBalancerPlan
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancerPlan, loadBalancerPlanID),
+		fmt.Sprintf(PathNetworkLoadBalancerPlan, loadBalancerPlanID),
 		true,
 		&loadBalancerPlan,
 	)
@@ -488,7 +488,7 @@ func (imco *ClientAPI) GetLoadBalancerPlan(ctx context.Context, loadBalancerPlan
 func (imco *ClientAPI) ListSubnets(ctx context.Context, vpcID string) (subnets []*types.Subnet, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkVpcSubnets, vpcID), true, &subnets)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkVpcSubnets, vpcID), true, &subnets)
 	if err != nil {
 		return nil, err
 	}
@@ -499,7 +499,7 @@ func (imco *ClientAPI) ListSubnets(ctx context.Context, vpcID string) (subnets [
 func (imco *ClientAPI) GetSubnet(ctx context.Context, subnetID string) (subnet *types.Subnet, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkSubnet, subnetID), true, &subnet)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkSubnet, subnetID), true, &subnet)
 	if err != nil {
 		return nil, err
 	}
@@ -511,7 +511,7 @@ func (imco *ClientAPI) CreateSubnet(ctx context.Context, vpcID string, subnetPar
 ) (subnet *types.Subnet, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(pathNetworkVpcSubnets, vpcID), subnetParams, true, &subnet)
+	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(PathNetworkVpcSubnets, vpcID), subnetParams, true, &subnet)
 	if err != nil {
 		return nil, err
 	}
@@ -523,7 +523,7 @@ func (imco *ClientAPI) UpdateSubnet(ctx context.Context, subnetID string, subnet
 ) (subnet *types.Subnet, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathNetworkSubnet, subnetID), subnetParams, true, &subnet)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathNetworkSubnet, subnetID), subnetParams, true, &subnet)
 	if err != nil {
 		return nil, err
 	}
@@ -534,7 +534,7 @@ func (imco *ClientAPI) UpdateSubnet(ctx context.Context, subnetID string, subnet
 func (imco *ClientAPI) DeleteSubnet(ctx context.Context, subnetID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkSubnet, subnetID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkSubnet, subnetID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -545,7 +545,7 @@ func (imco *ClientAPI) DeleteSubnet(ctx context.Context, subnetID string) (err e
 func (imco *ClientAPI) ListSubnetServers(ctx context.Context, subnetID string) (servers []*types.Server, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkSubnetServers, subnetID), true, &servers)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkSubnetServers, subnetID), true, &servers)
 	if err != nil {
 		return nil, err
 	}
@@ -557,7 +557,7 @@ func (imco *ClientAPI) ListSubnetServerArrays(ctx context.Context, subnetID stri
 ) (serverArrays []*types.ServerArray, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkSubnetServerArrays, subnetID), true, &serverArrays)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkSubnetServerArrays, subnetID), true, &serverArrays)
 	if err != nil {
 		return nil, err
 	}
@@ -570,7 +570,7 @@ func (imco *ClientAPI) ListTargetGroups(ctx context.Context, loadBalancerID stri
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancerTargetGroups, loadBalancerID),
+		fmt.Sprintf(PathNetworkLoadBalancerTargetGroups, loadBalancerID),
 		true,
 		&targetGroups,
 	)
@@ -585,7 +585,7 @@ func (imco *ClientAPI) GetTargetGroup(ctx context.Context, targetGroupID string,
 ) (targetGroup *types.TargetGroup, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkTargetGroup, targetGroupID), true, &targetGroup)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkTargetGroup, targetGroupID), true, &targetGroup)
 	if err != nil {
 		return nil, err
 	}
@@ -599,7 +599,7 @@ func (imco *ClientAPI) CreateTargetGroup(ctx context.Context, loadBalancerID str
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathNetworkLoadBalancerTargetGroups, loadBalancerID),
+		fmt.Sprintf(PathNetworkLoadBalancerTargetGroups, loadBalancerID),
 		targetGroupParams,
 		true,
 		&targetGroup,
@@ -617,7 +617,7 @@ func (imco *ClientAPI) UpdateTargetGroup(ctx context.Context, targetGroupID stri
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathNetworkTargetGroup, targetGroupID),
+		fmt.Sprintf(PathNetworkTargetGroup, targetGroupID),
 		targetGroupParams,
 		true,
 		&targetGroup,
@@ -633,7 +633,7 @@ func (imco *ClientAPI) DeleteTargetGroup(ctx context.Context, targetGroupID stri
 ) (targetGroup *types.TargetGroup, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkTargetGroup, targetGroupID), true, &targetGroup)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkTargetGroup, targetGroupID), true, &targetGroup)
 	if err != nil {
 		return nil, err
 	}
@@ -647,7 +647,7 @@ func (imco *ClientAPI) RetryTargetGroup(ctx context.Context, targetGroupID strin
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathNetworkTargetGroupRetry, targetGroupID),
+		fmt.Sprintf(PathNetworkTargetGroupRetry, targetGroupID),
 		targetGroupParams,
 		true,
 		&targetGroup,
@@ -662,7 +662,7 @@ func (imco *ClientAPI) RetryTargetGroup(ctx context.Context, targetGroupID strin
 func (imco *ClientAPI) ListTargets(ctx context.Context, targetGroupID string) (targets []*types.Target, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkTargetGroupTargets, targetGroupID), true, &targets)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkTargetGroupTargets, targetGroupID), true, &targets)
 	if err != nil {
 		return nil, err
 	}
@@ -675,7 +675,7 @@ func (imco *ClientAPI) CreateTarget(ctx context.Context, targetGroupID string, t
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathNetworkTargetGroupTargets, targetGroupID),
+		fmt.Sprintf(PathNetworkTargetGroupTargets, targetGroupID),
 		targetParams,
 		true,
 		&target,
@@ -693,7 +693,7 @@ func (imco *ClientAPI) DeleteTarget(ctx context.Context, targetGroupID string, t
 	logger.DebugFuncInfo()
 
 	_, err = imco.DeleteAndCheck(ctx,
-		fmt.Sprintf(pathNetworkTargetGroupTarget, targetGroupID, targetResourceType, targetResourceID),
+		fmt.Sprintf(PathNetworkTargetGroupTarget, targetGroupID, targetResourceType, targetResourceID),
 		true,
 		nil,
 	)
@@ -707,7 +707,7 @@ func (imco *ClientAPI) DeleteTarget(ctx context.Context, targetGroupID string, t
 func (imco *ClientAPI) ListVPCs(ctx context.Context) (vpcs []*types.Vpc, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathNetworkVpcs, true, &vpcs)
+	_, err = imco.GetAndCheck(ctx, PathNetworkVpcs, true, &vpcs)
 	if err != nil {
 		return nil, err
 	}
@@ -718,7 +718,7 @@ func (imco *ClientAPI) ListVPCs(ctx context.Context) (vpcs []*types.Vpc, err err
 func (imco *ClientAPI) GetVPC(ctx context.Context, vpcID string) (vpc *types.Vpc, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkVpc, vpcID), true, &vpc)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkVpc, vpcID), true, &vpc)
 	if err != nil {
 		return nil, err
 	}
@@ -729,7 +729,7 @@ func (imco *ClientAPI) GetVPC(ctx context.Context, vpcID string) (vpc *types.Vpc
 func (imco *ClientAPI) CreateVPC(ctx context.Context, vpcParams *map[string]interface{}) (vpc *types.Vpc, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathNetworkVpcs, vpcParams, true, &vpc)
+	_, err = imco.PostAndCheck(ctx, PathNetworkVpcs, vpcParams, true, &vpc)
 	if err != nil {
 		return nil, err
 	}
@@ -742,7 +742,7 @@ func (imco *ClientAPI) UpdateVPC(ctx context.Context, vpcID string,
 ) (vpc *types.Vpc, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathNetworkVpc, vpcID), vpcParams, true, &vpc)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathNetworkVpc, vpcID), vpcParams, true, &vpc)
 	if err != nil {
 		return nil, err
 	}
@@ -753,7 +753,7 @@ func (imco *ClientAPI) UpdateVPC(ctx context.Context, vpcID string,
 func (imco *ClientAPI) DeleteVPC(ctx context.Context, vpcID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkVpc, vpcID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkVpc, vpcID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -764,7 +764,7 @@ func (imco *ClientAPI) DeleteVPC(ctx context.Context, vpcID string) (err error) 
 func (imco *ClientAPI) DiscardVPC(ctx context.Context, vpcID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkVpcDiscard, vpcID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkVpcDiscard, vpcID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -775,7 +775,7 @@ func (imco *ClientAPI) DiscardVPC(ctx context.Context, vpcID string) (err error)
 func (imco *ClientAPI) GetVPN(ctx context.Context, vpcID string) (vpn *types.Vpn, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkVpcVpn, vpcID), true, &vpn)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkVpcVpn, vpcID), true, &vpn)
 	if err != nil {
 		return nil, err
 	}
@@ -788,7 +788,7 @@ func (imco *ClientAPI) CreateVPN(ctx context.Context, vpcID string,
 ) (vpn *types.Vpn, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(pathNetworkVpcVpn, vpcID), vpnParams, true, &vpn)
+	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(PathNetworkVpcVpn, vpcID), vpnParams, true, &vpn)
 	if err != nil {
 		return nil, err
 	}
@@ -799,7 +799,7 @@ func (imco *ClientAPI) CreateVPN(ctx context.Context, vpcID string,
 func (imco *ClientAPI) DeleteVPN(ctx context.Context, vpcID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkVpcVpn, vpcID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkVpcVpn, vpcID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -810,7 +810,7 @@ func (imco *ClientAPI) DeleteVPN(ctx context.Context, vpcID string) (err error) 
 func (imco *ClientAPI) ListVPNPlans(ctx context.Context, vpcID string) (vpnPlans []*types.VpnPlan, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkVpcVpnPlans, vpcID), true, &vpnPlans)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkVpcVpnPlans, vpcID), true, &vpnPlans)
 	if err != nil {
 		return nil, err
 	}
@@ -821,7 +821,7 @@ func (imco *ClientAPI) ListVPNPlans(ctx context.Context, vpcID string) (vpnPlans
 func (imco *ClientAPI) ListDomains(ctx context.Context) (domains []*types.Domain, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathNetworkDnsDomains, true, &domains)
+	_, err = imco.GetAndCheck(ctx, PathNetworkDnsDomains, true, &domains)
 	if err != nil {
 		return nil, err
 	}
@@ -832,7 +832,7 @@ func (imco *ClientAPI) ListDomains(ctx context.Context) (domains []*types.Domain
 func (imco *ClientAPI) GetDomain(ctx context.Context, domainID string) (domain *types.Domain, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkDnsDomain, domainID), true, &domain)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkDnsDomain, domainID), true, &domain)
 	if err != nil {
 		return nil, err
 	}
@@ -844,7 +844,7 @@ func (imco *ClientAPI) CreateDomain(ctx context.Context, domainParams *map[strin
 ) (domain *types.Domain, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathNetworkDnsDomains, domainParams, true, &domain)
+	_, err = imco.PostAndCheck(ctx, PathNetworkDnsDomains, domainParams, true, &domain)
 	if err != nil {
 		return nil, err
 	}
@@ -855,7 +855,7 @@ func (imco *ClientAPI) CreateDomain(ctx context.Context, domainParams *map[strin
 func (imco *ClientAPI) DeleteDomain(ctx context.Context, domainID string) (domain *types.Domain, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkDnsDomain, domainID), true, &domain)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkDnsDomain, domainID), true, &domain)
 	if err != nil {
 		return nil, err
 	}
@@ -867,7 +867,7 @@ func (imco *ClientAPI) RetryDomain(ctx context.Context, domainID string) (domain
 	logger.DebugFuncInfo()
 
 	domainParams := new(map[string]interface{})
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathNetworkDnsDomainRetry, domainID), domainParams, true, &domain)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathNetworkDnsDomainRetry, domainID), domainParams, true, &domain)
 	if err != nil {
 		return nil, err
 	}
@@ -878,7 +878,7 @@ func (imco *ClientAPI) RetryDomain(ctx context.Context, domainID string) (domain
 func (imco *ClientAPI) ListRecords(ctx context.Context, domainID string) (records []*types.Record, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkDnsDomainRecords, domainID), true, &records)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkDnsDomainRecords, domainID), true, &records)
 	if err != nil {
 		return nil, err
 	}
@@ -889,7 +889,7 @@ func (imco *ClientAPI) ListRecords(ctx context.Context, domainID string) (record
 func (imco *ClientAPI) GetRecord(ctx context.Context, recordID string) (record *types.Record, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathNetworkDnsRecord, recordID), true, &record)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathNetworkDnsRecord, recordID), true, &record)
 	if err != nil {
 		return nil, err
 	}
@@ -901,7 +901,7 @@ func (imco *ClientAPI) CreateRecord(ctx context.Context, domainID string, record
 ) (record *types.Record, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(pathNetworkDnsDomainRecords, domainID), recordParams, true, &record)
+	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(PathNetworkDnsDomainRecords, domainID), recordParams, true, &record)
 	if err != nil {
 		return nil, err
 	}
@@ -913,7 +913,7 @@ func (imco *ClientAPI) UpdateRecord(ctx context.Context, recordID string, record
 ) (record *types.Record, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathNetworkDnsRecord, recordID), recordParams, true, &record)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathNetworkDnsRecord, recordID), recordParams, true, &record)
 	if err != nil {
 		return nil, err
 	}
@@ -924,7 +924,7 @@ func (imco *ClientAPI) UpdateRecord(ctx context.Context, recordID string, record
 func (imco *ClientAPI) DeleteRecord(ctx context.Context, recordID string) (record *types.Record, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathNetworkDnsRecord, recordID), true, &record)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathNetworkDnsRecord, recordID), true, &record)
 	if err != nil {
 		return nil, err
 	}
@@ -936,7 +936,7 @@ func (imco *ClientAPI) RetryRecord(ctx context.Context, recordID string) (record
 	logger.DebugFuncInfo()
 
 	recordParams := new(map[string]interface{})
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathNetworkDnsRecordRetry, recordID), recordParams, true, &record)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathNetworkDnsRecordRetry, recordID), recordParams, true, &record)
 	if err != nil {
 		return nil, err
 	}

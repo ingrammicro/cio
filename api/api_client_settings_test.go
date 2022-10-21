@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
 	"net/http"
 	"net/http/httptest"
@@ -13,12 +14,12 @@ import (
 
 func TestListCloudAccounts(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.CloudAccount{},
-			server:   NewServer(http.StatusOK, []*types.CloudAccount{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.CloudAccount{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -53,12 +54,12 @@ func TestListCloudAccounts(t *testing.T) {
 
 func TestGetCloudAccount(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudAccount),
-			server:   NewServer(http.StatusOK, new(types.CloudAccount)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudAccount)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -80,7 +81,7 @@ func TestGetCloudAccount(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			cloudAccount, err := svc.GetCloudAccount(context.Background(), TEST)
+			cloudAccount, err := svc.GetCloudAccount(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -93,12 +94,12 @@ func TestGetCloudAccount(t *testing.T) {
 
 func TestListPolicyAssignments(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.PolicyAssignment{},
-			server:   NewServer(http.StatusOK, []*types.PolicyAssignment{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.PolicyAssignment{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -120,7 +121,7 @@ func TestListPolicyAssignments(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			assignments, err := svc.ListPolicyAssignments(context.Background(), TEST)
+			assignments, err := svc.ListPolicyAssignments(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}

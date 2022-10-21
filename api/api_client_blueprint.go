@@ -3,10 +3,10 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // GetAttachment returns a attachment by its ID
@@ -14,7 +14,7 @@ func (imco *ClientAPI) GetAttachment(ctx context.Context, attachmentID string,
 ) (attachment *types.Attachment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathBlueprintAttachment, attachmentID), true, &attachment)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathBlueprintAttachment, attachmentID), true, &attachment)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func (imco *ClientAPI) GetAttachment(ctx context.Context, attachmentID string,
 func (imco *ClientAPI) DeleteAttachment(ctx context.Context, attachmentID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathBlueprintAttachment, attachmentID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathBlueprintAttachment, attachmentID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -37,7 +37,7 @@ func (imco *ClientAPI) ListCookbookVersions(ctx context.Context,
 ) (cookbookVersions []*types.CookbookVersion, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathBlueprintCookbookVersions, true, &cookbookVersions)
+	_, err = imco.GetAndCheck(ctx, PathBlueprintCookbookVersions, true, &cookbookVersions)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (imco *ClientAPI) GetCookbookVersion(ctx context.Context, cookbookVersionID
 ) (cookbookVersion *types.CookbookVersion, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathBlueprintCookbookVersion, cookbookVersionID), true, &cookbookVersion)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathBlueprintCookbookVersion, cookbookVersionID), true, &cookbookVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (imco *ClientAPI) CreateCookbookVersion(ctx context.Context, cookbookVersio
 ) (cookbookVersion *types.CookbookVersion, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathBlueprintCookbookVersions, cookbookVersionParams, true, &cookbookVersion)
+	_, err = imco.PostAndCheck(ctx, PathBlueprintCookbookVersions, cookbookVersionParams, true, &cookbookVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (imco *ClientAPI) ProcessCookbookVersion(ctx context.Context, cookbookVersi
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathBlueprintCookbookVersionProcess, cookbookVersionID),
+		fmt.Sprintf(PathBlueprintCookbookVersionProcess, cookbookVersionID),
 		cookbookVersionParams,
 		true,
 		&cookbookVersion,
@@ -90,7 +90,7 @@ func (imco *ClientAPI) ProcessCookbookVersion(ctx context.Context, cookbookVersi
 func (imco *ClientAPI) DeleteCookbookVersion(ctx context.Context, cookbookVersionID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathBlueprintCookbookVersion, cookbookVersionID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathBlueprintCookbookVersion, cookbookVersionID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func (imco *ClientAPI) DeleteCookbookVersion(ctx context.Context, cookbookVersio
 func (imco *ClientAPI) ListScripts(ctx context.Context) (scripts []*types.Script, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathBlueprintScripts, true, &scripts)
+	_, err = imco.GetAndCheck(ctx, PathBlueprintScripts, true, &scripts)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func (imco *ClientAPI) ListScripts(ctx context.Context) (scripts []*types.Script
 func (imco *ClientAPI) GetScript(ctx context.Context, scriptID string) (script *types.Script, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathBlueprintScript, scriptID), true, &script)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathBlueprintScript, scriptID), true, &script)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +124,7 @@ func (imco *ClientAPI) CreateScript(ctx context.Context, scriptParams *map[strin
 ) (script *types.Script, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathBlueprintScripts, scriptParams, true, &script)
+	_, err = imco.PostAndCheck(ctx, PathBlueprintScripts, scriptParams, true, &script)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func (imco *ClientAPI) UpdateScript(ctx context.Context, scriptID string, script
 ) (script *types.Script, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathBlueprintScript, scriptID), scriptParams, true, &script)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathBlueprintScript, scriptID), scriptParams, true, &script)
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func (imco *ClientAPI) UpdateScript(ctx context.Context, scriptID string, script
 func (imco *ClientAPI) DeleteScript(ctx context.Context, scriptID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathBlueprintScript, scriptID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathBlueprintScript, scriptID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -159,7 +159,7 @@ func (imco *ClientAPI) AddScriptAttachment(ctx context.Context, scriptID string,
 ) (attachment *types.Attachment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(pathBlueprintScriptAttachments, scriptID), attachmentIn, true, &attachment)
+	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(PathBlueprintScriptAttachments, scriptID), attachmentIn, true, &attachment)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +173,7 @@ func (imco *ClientAPI) UploadedScriptAttachment(ctx context.Context, attachmentI
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathBlueprintAttachmentUploaded, attachmentID),
+		fmt.Sprintf(PathBlueprintAttachmentUploaded, attachmentID),
 		attachmentParams,
 		true,
 		&attachment,
@@ -189,7 +189,7 @@ func (imco *ClientAPI) ListScriptAttachments(ctx context.Context, scriptID strin
 ) (attachments []*types.Attachment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathBlueprintScriptAttachments, scriptID), true, &attachments)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathBlueprintScriptAttachments, scriptID), true, &attachments)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +200,7 @@ func (imco *ClientAPI) ListScriptAttachments(ctx context.Context, scriptID strin
 func (imco *ClientAPI) ListTemplates(ctx context.Context) (templates []*types.Template, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathBlueprintTemplates, true, &templates)
+	_, err = imco.GetAndCheck(ctx, PathBlueprintTemplates, true, &templates)
 	if err != nil {
 		return nil, err
 	}
@@ -211,7 +211,7 @@ func (imco *ClientAPI) ListTemplates(ctx context.Context) (templates []*types.Te
 func (imco *ClientAPI) GetTemplate(ctx context.Context, templateID string) (template *types.Template, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathBlueprintTemplate, templateID), true, &template)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathBlueprintTemplate, templateID), true, &template)
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +223,7 @@ func (imco *ClientAPI) CreateTemplate(ctx context.Context, templateParams *map[s
 ) (template *types.Template, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathBlueprintTemplates, templateParams, true, &template)
+	_, err = imco.PostAndCheck(ctx, PathBlueprintTemplates, templateParams, true, &template)
 	if err != nil {
 		return nil, err
 	}
@@ -235,7 +235,7 @@ func (imco *ClientAPI) UpdateTemplate(ctx context.Context, templateID string, te
 ) (template *types.Template, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathBlueprintTemplate, templateID), templateParams, true, &template)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathBlueprintTemplate, templateID), templateParams, true, &template)
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +247,7 @@ func (imco *ClientAPI) CompileTemplate(ctx context.Context, templateID string, p
 ) (template *types.Template, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathBlueprintTemplateCompile, templateID), payload, true, &template)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathBlueprintTemplateCompile, templateID), payload, true, &template)
 	if err != nil {
 		return nil, err
 	}
@@ -258,7 +258,7 @@ func (imco *ClientAPI) CompileTemplate(ctx context.Context, templateID string, p
 func (imco *ClientAPI) DeleteTemplate(ctx context.Context, templateID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathBlueprintTemplate, templateID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathBlueprintTemplate, templateID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -267,18 +267,18 @@ func (imco *ClientAPI) DeleteTemplate(ctx context.Context, templateID string) (e
 
 // ListTemplateScripts returns a list of templateScript by template ID
 func (imco *ClientAPI) ListTemplateScripts(ctx context.Context, templateID string, scriptType string,
-) (templateScript []*types.TemplateScript, err error) {
+) (templateScripts []*types.TemplateScript, err error) {
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathBlueprintTemplateScriptsType, templateID, scriptType),
+		fmt.Sprintf(PathBlueprintTemplateScriptsType, templateID, scriptType),
 		true,
-		&templateScript,
+		&templateScripts,
 	)
 	if err != nil {
 		return nil, err
 	}
-	return templateScript, nil
+	return templateScripts, nil
 }
 
 // GetTemplateScript returns a templateScript
@@ -287,7 +287,7 @@ func (imco *ClientAPI) GetTemplateScript(ctx context.Context, templateID string,
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathBlueprintTemplateScript, templateID, templateScriptID),
+		fmt.Sprintf(PathBlueprintTemplateScript, templateID, templateScriptID),
 		true,
 		&templateScript,
 	)
@@ -304,7 +304,7 @@ func (imco *ClientAPI) CreateTemplateScript(ctx context.Context, templateID stri
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathBlueprintTemplateScripts, templateID),
+		fmt.Sprintf(PathBlueprintTemplateScripts, templateID),
 		templateScriptParams,
 		true,
 		&templateScript,
@@ -322,7 +322,7 @@ func (imco *ClientAPI) UpdateTemplateScript(ctx context.Context, templateID stri
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathBlueprintTemplateScript, templateID, templateScriptID),
+		fmt.Sprintf(PathBlueprintTemplateScript, templateID, templateScriptID),
 		templateScriptParams,
 		true,
 		&templateScript,
@@ -338,7 +338,7 @@ func (imco *ClientAPI) DeleteTemplateScript(ctx context.Context, templateID stri
 ) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathBlueprintTemplateScript, templateID, templateScriptID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathBlueprintTemplateScript, templateID, templateScriptID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -348,29 +348,29 @@ func (imco *ClientAPI) DeleteTemplateScript(ctx context.Context, templateID stri
 // ReorderTemplateScript returns a list of templateScript
 func (imco *ClientAPI) ReorderTemplateScript(ctx context.Context, templateID string,
 	templateScriptParams *map[string]interface{},
-) (templateScript []*types.TemplateScript, err error) {
+) (templateScripts []*types.TemplateScript, err error) {
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathBlueprintTemplateScriptsReorder, templateID),
+		fmt.Sprintf(PathBlueprintTemplateScriptsReorder, templateID),
 		templateScriptParams,
 		true,
-		&templateScript,
+		&templateScripts,
 	)
 	if err != nil {
 		return nil, err
 	}
-	return templateScript, nil
+	return templateScripts, nil
 }
 
 // ListTemplateServers returns a list of templateServers by template ID
 func (imco *ClientAPI) ListTemplateServers(ctx context.Context, templateID string,
-) (templateServer []*types.TemplateServer, err error) {
+) (templateServers []*types.TemplateServer, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathBlueprintTemplateServers, templateID), true, &templateServer)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathBlueprintTemplateServers, templateID), true, &templateServers)
 	if err != nil {
 		return nil, err
 	}
-	return templateServer, nil
+	return templateServers, nil
 }

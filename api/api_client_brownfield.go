@@ -3,10 +3,10 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // ListBrownfieldCloudAccounts returns the list of Brownfield Cloud Accounts as an array of CloudAccount
@@ -14,7 +14,7 @@ func (imco *ClientAPI) ListBrownfieldCloudAccounts(ctx context.Context,
 ) (cloudAccounts []*types.CloudAccount, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathBrownfieldCloudAccounts, true, &cloudAccounts)
+	_, err = imco.GetAndCheck(ctx, PathBrownfieldCloudAccounts, true, &cloudAccounts)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (imco *ClientAPI) GetBrownfieldCloudAccount(ctx context.Context, cloudAccou
 ) (cloudAccount *types.CloudAccount, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathBrownfieldCloudAccount, cloudAccountID), true, &cloudAccount)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathBrownfieldCloudAccount, cloudAccountID), true, &cloudAccount)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (imco *ClientAPI) ImportServers(ctx context.Context, cloudAccountID string,
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathBrownfieldCloudAccountImportServers, cloudAccountID),
+		fmt.Sprintf(PathBrownfieldCloudAccountImportServers, cloudAccountID),
 		params,
 		true,
 		&cloudAccount,
@@ -56,7 +56,7 @@ func (imco *ClientAPI) ImportVPCs(ctx context.Context, cloudAccountID string, pa
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathBrownfieldCloudAccountImportVpcs, cloudAccountID),
+		fmt.Sprintf(PathBrownfieldCloudAccountImportVpcs, cloudAccountID),
 		params,
 		true,
 		&cloudAccount,
@@ -73,7 +73,7 @@ func (imco *ClientAPI) ImportFloatingIPs(ctx context.Context, cloudAccountID str
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathBrownfieldCloudAccountImportFloatingIPs, cloudAccountID),
+		fmt.Sprintf(PathBrownfieldCloudAccountImportFloatingIPs, cloudAccountID),
 		params,
 		true,
 		&cloudAccount,
@@ -90,7 +90,7 @@ func (imco *ClientAPI) ImportVolumes(ctx context.Context, cloudAccountID string,
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathBrownfieldCloudAccountImportVolumes, cloudAccountID),
+		fmt.Sprintf(PathBrownfieldCloudAccountImportVolumes, cloudAccountID),
 		params,
 		true,
 		&cloudAccount,
@@ -108,7 +108,7 @@ func (imco *ClientAPI) ImportKubernetesClusters(ctx context.Context, cloudAccoun
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathBrownfieldCloudAccountImportKubernetesClusters, cloudAccountID),
+		fmt.Sprintf(PathBrownfieldCloudAccountImportKubernetesClusters, cloudAccountID),
 		params,
 		true,
 		&cloudAccount,
@@ -125,7 +125,7 @@ func (imco *ClientAPI) ImportPolicies(ctx context.Context, cloudAccountID string
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathBrownfieldCloudAccountImportPolicies, cloudAccountID),
+		fmt.Sprintf(PathBrownfieldCloudAccountImportPolicies, cloudAccountID),
 		params,
 		true,
 		&cloudAccount,

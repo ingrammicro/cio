@@ -29,7 +29,9 @@ func ContinuousReportRun(cmdArgs []string) error {
 
 	// Workaround, receiving as argument
 	if cmdArgs[0] == "" {
-		formatter.PrintFatal("argument missing", errors.New("a script or command is required"))
+		e := errors.New("a script or command is required")
+		formatter.PrintError("argument missing", e)
+		return e
 	}
 	cmdArg := cmdArgs[0]
 
@@ -72,7 +74,8 @@ func ContinuousReportRun(cmdArgs []string) error {
 
 	exitCode, err := agent.RunContinuousCmd(fn, cmdArg, thresholdTime, -1)
 	if err != nil {
-		formatter.PrintFatal("cannot process continuous report command", err)
+		formatter.PrintError("cannot process continuous report command", err)
+		return err
 	}
 
 	log.Info("completed: ", exitCode)

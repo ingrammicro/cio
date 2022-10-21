@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
 	"net/http"
 	"net/http/httptest"
@@ -13,12 +14,12 @@ import (
 
 func TestGetStoragePlan(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.StoragePlan),
-			server:   NewServer(http.StatusOK, new(types.StoragePlan)),
+			server:   testutils.NewServer(http.StatusOK, new(types.StoragePlan)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -40,7 +41,7 @@ func TestGetStoragePlan(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			storagePlan, err := svc.GetStoragePlan(context.Background(), TEST)
+			storagePlan, err := svc.GetStoragePlan(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -53,12 +54,12 @@ func TestGetStoragePlan(t *testing.T) {
 
 func TestGetStorageVolume(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Volume),
-			server:   NewServer(http.StatusOK, new(types.Volume)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Volume)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -80,7 +81,7 @@ func TestGetStorageVolume(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			volume, err := svc.GetStorageVolume(context.Background(), TEST)
+			volume, err := svc.GetStorageVolume(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -93,12 +94,12 @@ func TestGetStorageVolume(t *testing.T) {
 
 func TestCreateStorageVolume(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Volume),
-			server:   NewServer(http.StatusOK, new(types.Volume)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Volume)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -120,7 +121,7 @@ func TestCreateStorageVolume(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			volume, err := svc.CreateStorageVolume(context.Background(), new(map[string]interface{}))
+			volume, err := svc.CreateStorageVolume(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -133,12 +134,12 @@ func TestCreateStorageVolume(t *testing.T) {
 
 func TestUpdateStorageVolume(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Volume),
-			server:   NewServer(http.StatusOK, new(types.Volume)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Volume)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -160,7 +161,7 @@ func TestUpdateStorageVolume(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			volume, err := svc.UpdateStorageVolume(context.Background(), TEST, new(map[string]interface{}))
+			volume, err := svc.UpdateStorageVolume(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -173,12 +174,12 @@ func TestUpdateStorageVolume(t *testing.T) {
 
 func TestAttachStorageVolume(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Server),
-			server:   NewServer(http.StatusOK, new(types.Server)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Server)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -200,7 +201,7 @@ func TestAttachStorageVolume(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			server, err := svc.AttachStorageVolume(context.Background(), TEST, new(map[string]interface{}))
+			server, err := svc.AttachStorageVolume(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -213,12 +214,12 @@ func TestAttachStorageVolume(t *testing.T) {
 
 func TestDetachStorageVolume(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: nil,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -240,7 +241,7 @@ func TestDetachStorageVolume(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.DetachStorageVolume(context.Background(), TEST)
+			err := svc.DetachStorageVolume(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -250,12 +251,12 @@ func TestDetachStorageVolume(t *testing.T) {
 
 func TestDeleteStorageVolume(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: nil,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -277,7 +278,7 @@ func TestDeleteStorageVolume(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.DeleteStorageVolume(context.Background(), TEST)
+			err := svc.DeleteStorageVolume(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -287,12 +288,12 @@ func TestDeleteStorageVolume(t *testing.T) {
 
 func TestDiscardStorageVolume(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: nil,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -314,7 +315,7 @@ func TestDiscardStorageVolume(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.DiscardStorageVolume(context.Background(), TEST)
+			err := svc.DiscardStorageVolume(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}

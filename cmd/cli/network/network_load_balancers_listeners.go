@@ -105,10 +105,12 @@ func ListenerList() error {
 
 	listeners, err := svc.ListListeners(cmd.GetContext(), viper.GetString(cmd.LoadBalancerId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive load balancer listeners data", err)
+		formatter.PrintError("Couldn't receive load balancer listeners data", err)
+		return err
 	}
 	if err = formatter.PrintList(listeners); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -120,10 +122,12 @@ func ListenerShow() error {
 
 	listener, err := svc.GetListener(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive load balancer listener data", err)
+		formatter.PrintError("Couldn't receive load balancer listener data", err)
+		return err
 	}
 	if err = formatter.PrintItem(*listener); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -141,11 +145,13 @@ func ListenerCreate() error {
 
 	listener, err := svc.CreateListener(cmd.GetContext(), viper.GetString(cmd.LoadBalancerId), &listenerIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create load balancer listener", err)
+		formatter.PrintError("Couldn't create load balancer listener", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*listener); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -161,11 +167,13 @@ func ListenerUpdate() error {
 
 	listener, err := svc.UpdateListener(cmd.GetContext(), viper.GetString(cmd.Id), &listenerIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update load balancer listener", err)
+		formatter.PrintError("Couldn't update load balancer listener", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*listener); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -177,11 +185,13 @@ func ListenerDelete() error {
 
 	listener, err := svc.DeleteListener(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete load balancer listener", err)
+		formatter.PrintError("Couldn't delete load balancer listener", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*listener); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -194,11 +204,13 @@ func ListenerRetry() error {
 	listenerIn := map[string]interface{}{}
 	listener, err := svc.RetryListener(cmd.GetContext(), viper.GetString(cmd.Id), &listenerIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't retry load balancer listener", err)
+		formatter.PrintError("Couldn't retry load balancer listener", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*listener); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -210,10 +222,12 @@ func ListenerListRules() error {
 
 	rules, err := svc.ListRules(cmd.GetContext(), viper.GetString(cmd.ListenerId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive listener rules data", err)
+		formatter.PrintError("Couldn't receive listener rules data", err)
+		return err
 	}
 	if err = formatter.PrintList(rules); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -231,11 +245,13 @@ func ListenerCreateRule() error {
 
 	rule, err := svc.CreateRule(cmd.GetContext(), viper.GetString(cmd.ListenerId), &ruleIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create listener rule", err)
+		formatter.PrintError("Couldn't create listener rule", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*rule); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -252,11 +268,13 @@ func ListenerUpdateRule() error {
 
 	rule, err := svc.UpdateRule(cmd.GetContext(), viper.GetString(cmd.ListenerId), viper.GetString(cmd.Id), &ruleIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update listener rule", err)
+		formatter.PrintError("Couldn't update listener rule", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*rule); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -268,7 +286,8 @@ func ListenerDeleteRule() error {
 
 	err := svc.DeleteRule(cmd.GetContext(), viper.GetString(cmd.ListenerId), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete listener rule", err)
+		formatter.PrintError("Couldn't delete listener rule", err)
+		return err
 	}
 	return nil
 }

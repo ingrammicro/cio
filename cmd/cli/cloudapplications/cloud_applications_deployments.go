@@ -81,11 +81,13 @@ func CloudApplicationDeploymentList() error {
 
 	deps, err := svc.ListCloudApplicationDeployments(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloud application deployments data", err)
+		formatter.PrintError("Couldn't receive cloud application deployments data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(deps); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -97,33 +99,37 @@ func CloudApplicationDeploymentShow() error {
 
 	dep, _, err := svc.GetCloudApplicationDeployment(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloud application deployment data", err)
+		formatter.PrintError("Couldn't receive cloud application deployment data", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*dep); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
 
-func fillDeploymentInputs(formatter format.Formatter) map[string]interface{} {
+func fillDeploymentInputs(formatter format.Formatter) (map[string]interface{}, error) {
 	deploymentIn := map[string]interface{}{}
 	deploymentIn["label_name"] = viper.GetString(cmd.Name)
 	if viper.IsSet(cmd.InputsFromFile) {
 		caIn, err := cmd.ConvertFlagParamsJsonFromFileOrStdin(viper.GetString(cmd.InputsFromFile))
 		if err != nil {
-			formatter.PrintFatal("Cannot parse input attributes", err)
+			formatter.PrintError("Cannot parse input attributes from file", err)
+			return nil, err
 		}
 		deploymentIn["inputs"] = caIn
 	}
 	if viper.IsSet(cmd.Inputs) {
 		params, err := cmd.FlagConvertParamsJSON(cmd.Inputs)
 		if err != nil {
-			formatter.PrintFatal("Cannot parse input attributes", err)
+			formatter.PrintError("Cannot parse input attributes", err)
+			return nil, err
 		}
 		deploymentIn["inputs"] = (*params)["inputs"]
 	}
-	return deploymentIn
+	return deploymentIn, nil
 }
 
 // CloudApplicationDeploymentDeploy subcommand function
@@ -135,7 +141,10 @@ func CloudApplicationDeploymentDeploy() error {
 		return fmt.Errorf("invalid parameters detected. Please provide only one: 'inputs' or 'inputs-from-file'")
 	}
 
-	deploymentIn := fillDeploymentInputs(formatter)
+	deploymentIn, err := fillDeploymentInputs(formatter)
+	if err != nil {
+		return err
+	}
 
 	timeLapseDeploymentStatusCheck := viper.GetInt64(cmd.Time)
 	if timeLapseDeploymentStatusCheck <= 0 {
@@ -149,7 +158,8 @@ func CloudApplicationDeploymentDeploy() error {
 		&deploymentIn,
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create cloud application deployment data", err)
+		formatter.PrintError("Couldn't create cloud application deployment data", err)
+		return err
 	}
 
 	log.Info("Task ID... ", deploymentTask.ID)
@@ -162,13 +172,15 @@ func CloudApplicationDeploymentDeploy() error {
 			deploymentTask.ID,
 		)
 		if err != nil {
-			formatter.PrintFatal("Couldn't get cloud application deployment data", err)
+			formatter.PrintError("Couldn't get cloud application deployment data", err)
+			return err
 		}
 		log.Info("State: ", deploymentTask.State)
 
 		if deploymentTask.State != "pending" {
 			if err = formatter.PrintItem(*deploymentTask); err != nil {
-				formatter.PrintFatal(cmd.PrintFormatError, err)
+				formatter.PrintError(cmd.PrintFormatError, err)
+				return err
 			}
 			break
 		}
@@ -190,7 +202,8 @@ func CloudApplicationDeploymentDelete() error {
 
 	deployment, err := svc.DeleteCloudApplicationDeployment(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete cloud application deployment", err)
+		formatter.PrintError("Couldn't delete cloud application deployment", err)
+		return err
 	}
 	deploymentID := deployment.ID
 	deploymentName := deployment.Name
@@ -203,7 +216,8 @@ func CloudApplicationDeploymentDelete() error {
 				log.Info(fmt.Sprintf("Deployment: %s - %s undeployed.", deploymentID, deploymentName))
 				break
 			} else {
-				formatter.PrintFatal("Couldn't check cloud application deployment data", err)
+				formatter.PrintError("Couldn't check cloud application deployment data", err)
+				return err
 			}
 		}
 		log.Info("State: ", deployment.Value)
@@ -211,7 +225,8 @@ func CloudApplicationDeploymentDelete() error {
 		// stops if something fails while undeploying
 		if deployment.Value != "undeploying" {
 			if err = formatter.PrintItem(*deployment); err != nil {
-				formatter.PrintFatal(cmd.PrintFormatError, err)
+				formatter.PrintError(cmd.PrintFormatError, err)
+				return err
 			}
 			break
 		}

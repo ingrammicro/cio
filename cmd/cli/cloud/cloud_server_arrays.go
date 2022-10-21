@@ -165,28 +165,37 @@ func ServerArrayList() error {
 
 	serverArrays, err := svc.ListServerArrays(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive server array data", err)
+		formatter.PrintError("Couldn't receive server array data", err)
+		return err
 	}
 
 	labelables := make([]types.Labelable, len(serverArrays))
 	for i := 0; i < len(serverArrays); i++ {
 		labelables[i] = types.Labelable(serverArrays[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	serverArrays = make([]*types.ServerArray, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		sa, ok := labelable.(*types.ServerArray)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.ServerArray, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.ServerArray, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		serverArrays[i] = sa
 	}
 	if err = formatter.PrintList(serverArrays); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -198,13 +207,18 @@ func ServerArrayShow() error {
 
 	serverArray, err := svc.GetServerArray(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive server array data", err)
+		formatter.PrintError("Couldn't receive server array data", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -237,24 +251,31 @@ func ServerArrayCreate() error {
 		serverArrayIn["privateness"] = viper.GetBool(cmd.Privateness)
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 
 	if viper.IsSet(cmd.Labels) {
-		serverArrayIn["label_ids"] = labels.LabelResolution(
+		serverArrayIn["label_ids"], err = labels.LabelResolution(
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
-			&labelIDsByName,
-		)
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	serverArray, err := svc.CreateServerArray(cmd.GetContext(), &serverArrayIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create server array", err)
+		formatter.PrintError("Couldn't create server array", err)
+		return err
 	}
 
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -270,13 +291,18 @@ func ServerArrayUpdate() error {
 	}
 	serverArray, err := svc.UpdateServerArray(cmd.GetContext(), viper.GetString(cmd.Id), &serverArrayIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update server array", err)
+		formatter.PrintError("Couldn't update server array", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -288,13 +314,18 @@ func ServerArrayBoot() error {
 
 	serverArray, err := svc.BootServerArray(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't boot server array", err)
+		formatter.PrintError("Couldn't boot server array", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -306,13 +337,18 @@ func ServerArrayShutdown() error {
 
 	serverArray, err := svc.ShutdownServerArray(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't shutdown server array", err)
+		formatter.PrintError("Couldn't shutdown server array", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -324,13 +360,18 @@ func ServerArrayEmpty() error {
 
 	serverArray, err := svc.EmptyServerArray(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't empty server array", err)
+		formatter.PrintError("Couldn't empty server array", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -345,13 +386,18 @@ func ServerArrayEnlarge() error {
 	}
 	serverArray, err := svc.EnlargeServerArray(cmd.GetContext(), viper.GetString(cmd.Id), &serverArrayIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't enlarge server array", err)
+		formatter.PrintError("Couldn't enlarge server array", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	serverArray.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*serverArray); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -363,7 +409,8 @@ func ServerArrayServerList() error {
 
 	servers, err := svc.ListServerArrayServers(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive server data", err)
+		formatter.PrintError("Couldn't receive server data", err)
+		return err
 	}
 	if err = formatServersResponse(servers, formatter); err != nil {
 		return err
@@ -378,7 +425,8 @@ func ServerArrayDelete() error {
 
 	err := svc.DeleteServerArray(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete server array", err)
+		formatter.PrintError("Couldn't delete server array", err)
+		return err
 	}
 	return nil
 }

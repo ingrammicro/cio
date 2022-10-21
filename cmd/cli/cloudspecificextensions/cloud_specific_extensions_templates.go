@@ -86,28 +86,37 @@ func CloudSpecificExtensionTemplateList() error {
 
 	csets, err := svc.ListCloudSpecificExtensionTemplates(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive CSE template data", err)
+		formatter.PrintError("Couldn't receive CSE template data", err)
+		return err
 	}
 
 	labelables := make([]types.Labelable, len(csets))
 	for i := 0; i < len(csets); i++ {
 		labelables[i] = types.Labelable(csets[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	csets = make([]*types.CloudSpecificExtensionTemplate, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.CloudSpecificExtensionTemplate)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.CloudSpecificExtensionTemplate, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.CloudSpecificExtensionTemplate, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		csets[i] = v
 	}
 	if err = formatter.PrintList(csets); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -119,12 +128,17 @@ func CloudSpecificExtensionTemplateShow() error {
 
 	cset, err := svc.GetCloudSpecificExtensionTemplate(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive CSE template data", err)
+		formatter.PrintError("Couldn't receive CSE template data", err)
+		return err
 	}
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	cset.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cset); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -147,7 +161,8 @@ func CloudSpecificExtensionTemplateImport() error {
 	if viper.IsSet(cmd.DefinitionFromFile) {
 		defIn, err := cmd.ConvertFlagParamsJsonStringFromFileOrStdin(viper.GetString(cmd.DefinitionFromFile))
 		if err != nil {
-			formatter.PrintFatal("Cannot parse definition", err)
+			formatter.PrintError("Cannot parse definition", err)
+			return err
 		}
 		cseTemplateIn["definition"] = defIn
 	}
@@ -155,23 +170,30 @@ func CloudSpecificExtensionTemplateImport() error {
 		cseTemplateIn["definition"] = viper.GetString(cmd.Definition)
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	if viper.IsSet(cmd.Labels) {
-		cseTemplateIn["label_ids"] = labels.LabelResolution(
+		cseTemplateIn["label_ids"], err = labels.LabelResolution(
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
-			&labelIDsByName,
-		)
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	cseTemplate, err := svc.CreateCloudSpecificExtensionTemplate(cmd.GetContext(), &cseTemplateIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't import CSE template", err)
+		formatter.PrintError("Couldn't import CSE template", err)
+		return err
 	}
 
 	cseTemplate.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cseTemplate); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -191,13 +213,18 @@ func CloudSpecificExtensionTemplateUpdate() error {
 		&cseTemplateIn,
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update CSE template", err)
+		formatter.PrintError("Couldn't update CSE template", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	cseTemplate.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cseTemplate); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -209,7 +236,8 @@ func CloudSpecificExtensionTemplateListDeployments() error {
 
 	cseds, err := svc.ListCloudSpecificExtensionTemplateDeployments(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive CSE template deployments data", err)
+		formatter.PrintError("Couldn't receive CSE template deployments data", err)
+		return err
 	}
 	if err = formatDeploymentsResponse(cseds, formatter); err != nil {
 		return err
@@ -222,21 +250,29 @@ func formatDeploymentsResponse(cseds []*types.CloudSpecificExtensionDeployment, 
 	for i := 0; i < len(cseds); i++ {
 		labelables[i] = types.Labelable(cseds[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	cseds = make([]*types.CloudSpecificExtensionDeployment, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.CloudSpecificExtensionDeployment)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.CloudSpecificExtensionDeployment, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.CloudSpecificExtensionDeployment, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		cseds[i] = v
 	}
 	if err := formatter.PrintList(cseds); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -248,7 +284,8 @@ func CloudSpecificExtensionTemplateDelete() error {
 
 	err := svc.DeleteCloudSpecificExtensionTemplate(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete CSE template", err)
+		formatter.PrintError("Couldn't delete CSE template", err)
+		return err
 	}
 	return nil
 }

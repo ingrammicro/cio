@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
 	"net/http"
 	"net/http/httptest"
@@ -13,12 +14,12 @@ import (
 
 func TestListPolicyDefinitions(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.PolicyDefinition{},
-			server:   NewServer(http.StatusOK, []*types.PolicyDefinition{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.PolicyDefinition{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -53,12 +54,12 @@ func TestListPolicyDefinitions(t *testing.T) {
 
 func TestGetPolicyDefinition(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.PolicyDefinition),
-			server:   NewServer(http.StatusOK, new(types.PolicyDefinition)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PolicyDefinition)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -80,7 +81,7 @@ func TestGetPolicyDefinition(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			definition, err := svc.GetPolicyDefinition(context.Background(), TEST)
+			definition, err := svc.GetPolicyDefinition(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -93,12 +94,12 @@ func TestGetPolicyDefinition(t *testing.T) {
 
 func TestCreatePolicyDefinition(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.PolicyDefinition),
-			server:   NewServer(http.StatusOK, new(types.PolicyDefinition)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PolicyDefinition)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -120,7 +121,7 @@ func TestCreatePolicyDefinition(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			definition, err := svc.CreatePolicyDefinition(context.Background(), new(map[string]interface{}))
+			definition, err := svc.CreatePolicyDefinition(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -133,12 +134,12 @@ func TestCreatePolicyDefinition(t *testing.T) {
 
 func TestUpdatePolicyDefinition(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.PolicyDefinition),
-			server:   NewServer(http.StatusOK, new(types.PolicyDefinition)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PolicyDefinition)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -160,7 +161,7 @@ func TestUpdatePolicyDefinition(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			definition, err := svc.UpdatePolicyDefinition(context.Background(), TEST, new(map[string]interface{}))
+			definition, err := svc.UpdatePolicyDefinition(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -173,12 +174,12 @@ func TestUpdatePolicyDefinition(t *testing.T) {
 
 func TestDeletePolicyDefinition(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: nil,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -200,7 +201,7 @@ func TestDeletePolicyDefinition(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.DeletePolicyDefinition(context.Background(), TEST)
+			err := svc.DeletePolicyDefinition(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -210,12 +211,12 @@ func TestDeletePolicyDefinition(t *testing.T) {
 
 func TestListPolicyDefinitionAssignments(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.PolicyAssignment{},
-			server:   NewServer(http.StatusOK, []*types.PolicyAssignment{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.PolicyAssignment{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -237,7 +238,7 @@ func TestListPolicyDefinitionAssignments(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			assignments, err := svc.ListPolicyDefinitionAssignments(context.Background(), TEST)
+			assignments, err := svc.ListPolicyDefinitionAssignments(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -250,12 +251,12 @@ func TestListPolicyDefinitionAssignments(t *testing.T) {
 
 func TestGetPolicyAssignment(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.PolicyAssignment),
-			server:   NewServer(http.StatusOK, new(types.PolicyAssignment)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PolicyAssignment)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -277,7 +278,7 @@ func TestGetPolicyAssignment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			assignment, err := svc.GetPolicyAssignment(context.Background(), TEST)
+			assignment, err := svc.GetPolicyAssignment(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -290,12 +291,12 @@ func TestGetPolicyAssignment(t *testing.T) {
 
 func TestCreatePolicyAssignment(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.PolicyAssignment),
-			server:   NewServer(http.StatusOK, new(types.PolicyAssignment)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PolicyAssignment)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -317,7 +318,7 @@ func TestCreatePolicyAssignment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			assignment, err := svc.CreatePolicyAssignment(context.Background(), TEST, new(map[string]interface{}))
+			assignment, err := svc.CreatePolicyAssignment(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -330,12 +331,12 @@ func TestCreatePolicyAssignment(t *testing.T) {
 
 func TestUpdatePolicyAssignment(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.PolicyAssignment),
-			server:   NewServer(http.StatusOK, new(types.PolicyAssignment)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PolicyAssignment)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -357,7 +358,7 @@ func TestUpdatePolicyAssignment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			assignment, err := svc.UpdatePolicyAssignment(context.Background(), TEST, new(map[string]interface{}))
+			assignment, err := svc.UpdatePolicyAssignment(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -370,12 +371,12 @@ func TestUpdatePolicyAssignment(t *testing.T) {
 
 func TestDeletePolicyAssignment(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.PolicyAssignment),
-			server:   NewServer(http.StatusOK, new(types.PolicyAssignment)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PolicyAssignment)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -397,7 +398,7 @@ func TestDeletePolicyAssignment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			assignment, err := svc.DeletePolicyAssignment(context.Background(), TEST)
+			assignment, err := svc.DeletePolicyAssignment(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}

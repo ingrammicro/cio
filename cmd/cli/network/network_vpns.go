@@ -62,10 +62,12 @@ func VPNShow() error {
 
 	vpn, err := svc.GetVPN(cmd.GetContext(), viper.GetString(cmd.VpcId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive VPN data", err)
+		formatter.PrintError("Couldn't receive VPN data", err)
+		return err
 	}
 	if err = formatter.PrintItem(*vpn); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -84,11 +86,13 @@ func VPNCreate() error {
 
 	vpn, err := svc.CreateVPN(cmd.GetContext(), viper.GetString(cmd.VpcId), &vpnIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create VPN", err)
+		formatter.PrintError("Couldn't create VPN", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*vpn); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -100,7 +104,8 @@ func VPNDelete() error {
 
 	err := svc.DeleteVPN(cmd.GetContext(), viper.GetString(cmd.VpcId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete VPN", err)
+		formatter.PrintError("Couldn't delete VPN", err)
+		return err
 	}
 	return nil
 }
@@ -112,11 +117,13 @@ func VPNPlanList() error {
 
 	vpns, err := svc.ListVPNPlans(cmd.GetContext(), viper.GetString(cmd.VpcId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive VPN data", err)
+		formatter.PrintError("Couldn't receive VPN data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(vpns); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

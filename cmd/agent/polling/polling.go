@@ -92,7 +92,8 @@ func Start() error {
 
 	formatter := format.GetFormatter()
 	if err := agent.SetProcessIdToFile(getProcessIdFilePath()); err != nil {
-		formatter.PrintFatal("cannot create the pid file", err)
+		formatter.PrintError("cannot create the pid file", err)
+		return err
 	}
 
 	pollingPingTimingIntervalLong := viper.GetInt64(cmd.LongTime)
@@ -123,7 +124,8 @@ func Stop() error {
 
 	formatter := format.GetFormatter()
 	if err := agent.StopProcess(getProcessIdFilePath()); err != nil {
-		formatter.PrintFatal("cannot stop the polling process", err)
+		formatter.PrintError("cannot stop the polling process", err)
+		return err
 	}
 
 	log.Info("CIO polling successfully stopped")

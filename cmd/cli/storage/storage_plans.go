@@ -31,14 +31,19 @@ func StoragePlanShow() error {
 
 	storagePlans, err := svc.GetStoragePlan(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive storage plan data", err)
+		formatter.PrintError("Couldn't receive storage plan data", err)
+		return err
 	}
 
-	locationsMap := cli.LoadLocationsMapping(cmd.GetContext())
+	locationsMap, err := cli.LoadLocationsMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	storagePlans.LocationName = locationsMap[storagePlans.LocationID]
 
 	if err = formatter.PrintItem(*storagePlans); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

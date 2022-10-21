@@ -132,10 +132,12 @@ func TargetGroupList() error {
 
 	targetGroups, err := svc.ListTargetGroups(cmd.GetContext(), viper.GetString(cmd.LoadBalancerId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive load balancer target groups data", err)
+		formatter.PrintError("Couldn't receive load balancer target groups data", err)
+		return err
 	}
 	if err = formatter.PrintList(targetGroups); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -147,10 +149,12 @@ func TargetGroupShow() error {
 
 	lb, err := svc.GetTargetGroup(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive load balancer target group data", err)
+		formatter.PrintError("Couldn't receive load balancer target group data", err)
+		return err
 	}
 	if err = formatter.PrintItem(*lb); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -180,11 +184,13 @@ func TargetGroupCreate() error {
 	targetGroupIn := getTargetGroupIn()
 	targetGroup, err := svc.CreateTargetGroup(cmd.GetContext(), viper.GetString(cmd.LoadBalancerId), &targetGroupIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create load balancer target group", err)
+		formatter.PrintError("Couldn't create load balancer target group", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*targetGroup); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -197,11 +203,13 @@ func TargetGroupUpdate() error {
 	targetGroupIn := getTargetGroupIn()
 	targetGroup, err := svc.UpdateTargetGroup(cmd.GetContext(), viper.GetString(cmd.Id), &targetGroupIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update load balancer target group", err)
+		formatter.PrintError("Couldn't update load balancer target group", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*targetGroup); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -213,11 +221,13 @@ func TargetGroupDelete() error {
 
 	targetGroup, err := svc.DeleteTargetGroup(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete load balancer target group", err)
+		formatter.PrintError("Couldn't delete load balancer target group", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*targetGroup); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -230,11 +240,13 @@ func TargetGroupRetry() error {
 	targetGroupIn := map[string]interface{}{}
 	targetGroup, err := svc.RetryTargetGroup(cmd.GetContext(), viper.GetString(cmd.Id), &targetGroupIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't retry load balancer target group", err)
+		formatter.PrintError("Couldn't retry load balancer target group", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*targetGroup); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -246,10 +258,12 @@ func TargetGroupListTargets() error {
 
 	targets, err := svc.ListTargets(cmd.GetContext(), viper.GetString(cmd.TargetGroupId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive targets data", err)
+		formatter.PrintError("Couldn't receive targets data", err)
+		return err
 	}
 	if err = formatter.PrintList(targets); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -266,11 +280,13 @@ func TargetGroupCreateTarget() error {
 
 	target, err := svc.CreateTarget(cmd.GetContext(), viper.GetString(cmd.TargetGroupId), &targetIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create target", err)
+		formatter.PrintError("Couldn't create target", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*target); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -286,7 +302,8 @@ func TargetGroupDeleteTarget() error {
 		viper.GetString(cmd.ResourceId),
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete target", err)
+		formatter.PrintError("Couldn't delete target", err)
+		return err
 	}
 	return nil
 }

@@ -47,7 +47,8 @@ func ServerPlanList() error {
 		viper.GetString(cmd.CloudProviderId),
 		viper.GetString(cmd.RealmId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive serverPlan data", err)
+		formatter.PrintError("Couldn't receive serverPlan data", err)
+		return err
 	}
 	if err = FormatServerPlansResponse(serverPlans, formatter); err != nil {
 		return err
@@ -59,8 +60,14 @@ func ServerPlanList() error {
 func FormatServerPlansResponse(serverPlans []*types.ServerPlan, formatter format.Formatter) error {
 	logger.DebugFuncInfo()
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
-	locationsMap := cli.LoadLocationsMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
+	locationsMap, err := cli.LoadLocationsMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 
 	for id, sp := range serverPlans {
 		serverPlans[id].CloudProviderName = cloudProvidersMap[sp.CloudProviderID]
@@ -68,7 +75,8 @@ func FormatServerPlansResponse(serverPlans []*types.ServerPlan, formatter format
 	}
 
 	if err := formatter.PrintList(serverPlans); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -80,14 +88,19 @@ func ServerPlanShow() error {
 
 	serverPlan, err := svc.GetServerPlan(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive serverPlan data", err)
+		formatter.PrintError("Couldn't receive serverPlan data", err)
+		return err
 	}
 
-	locationsMap := cli.LoadLocationsMapping(cmd.GetContext())
+	locationsMap, err := cli.LoadLocationsMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	serverPlan.LocationName = locationsMap[serverPlan.LocationID]
 
 	if err = formatter.PrintItem(*serverPlan); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

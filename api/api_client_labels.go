@@ -3,17 +3,17 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // ListLabels returns the list of labels as an array of Label
 func (imco *ClientAPI) ListLabels(ctx context.Context) (labels []*types.Label, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathLabels, true, &labels)
+	_, err = imco.GetAndCheck(ctx, PathLabels, true, &labels)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (imco *ClientAPI) CreateLabel(ctx context.Context, labelParams *map[string]
 ) (label *types.Label, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathLabels, labelParams, true, &label)
+	_, err = imco.PostAndCheck(ctx, PathLabels, labelParams, true, &label)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (imco *ClientAPI) AddLabel(ctx context.Context, labelID string, labelParams
 ) (labeledResources []*types.LabeledResource, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(pathLabelResources, labelID), labelParams, true, &labeledResources)
+	_, err = imco.PostAndCheck(ctx, fmt.Sprintf(PathLabelResources, labelID), labelParams, true, &labeledResources)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (imco *ClientAPI) RemoveLabel(ctx context.Context, labelID string, resource
 ) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathLabelResource, labelID, resourceType, resourceID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathLabelResource, labelID, resourceType, resourceID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (imco *ClientAPI) ListCloudApplicationDeployments(ctx context.Context,
 ) (deployments []*types.CloudApplicationDeployment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathLabels, true, &deployments)
+	_, err = imco.GetAndCheck(ctx, PathLabels, true, &deployments)
 	if err != nil {
 		return nil, err
 	}

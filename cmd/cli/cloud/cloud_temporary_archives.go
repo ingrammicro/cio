@@ -118,7 +118,8 @@ func TemporaryArchiveExport() error {
 
 	temporaryArchiveExport, err := svc.CreateTemporaryArchiveExport(cmd.GetContext(), &temporaryArchiveIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create temporary archive", err)
+		formatter.PrintError("Couldn't create temporary archive", err)
+		return err
 	}
 
 	log.Info("ID: ", temporaryArchiveExport.ID)
@@ -128,19 +129,20 @@ func TemporaryArchiveExport() error {
 	for {
 		temporaryArchiveExportTask, err = svc.GetTemporaryArchiveExportTask(cmd.GetContext(), temporaryArchiveExport.ID)
 		if err != nil {
-			formatter.PrintFatal("Couldn't get temporary archive", err)
+			formatter.PrintError("Couldn't get temporary archive", err)
+			return err
 		}
 		log.Info("State: ", temporaryArchiveExportTask.State)
 
 		if temporaryArchiveExportTask.State == "finished" {
 			if err = formatter.PrintItem(*temporaryArchiveExportTask); err != nil {
-				formatter.PrintFatal(cmd.PrintFormatError, err)
+				formatter.PrintError(cmd.PrintFormatError, err)
+				return err
 			}
 			if temporaryArchiveExportTask.ErrorMessage != "" {
-				formatter.PrintFatal(
-					"Couldn't export infrastructure file",
-					fmt.Errorf("%s", temporaryArchiveExportTask.ErrorMessage),
-				)
+				e := fmt.Errorf("%s", temporaryArchiveExportTask.ErrorMessage)
+				formatter.PrintError("Couldn't export infrastructure file", e)
+				return e
 			}
 			break
 		}
@@ -168,7 +170,9 @@ func TemporaryArchiveImport() error {
 
 	sourceFilePath := viper.GetString(cmd.Filepath)
 	if !utils.FileExists(sourceFilePath) {
-		formatter.PrintFatal("Invalid file path", fmt.Errorf("no such file or directory: %s", sourceFilePath))
+		e := fmt.Errorf("no such file or directory: %s", sourceFilePath)
+		formatter.PrintError("Invalid file path", e)
+		return e
 	}
 	temporaryArchiveIn := map[string]interface{}{
 		"is_mock":    false,
@@ -179,12 +183,14 @@ func TemporaryArchiveImport() error {
 
 	temporaryArchive, err := svc.CreateTemporaryArchive(cmd.GetContext(), &temporaryArchiveIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create temporary archive", err)
+		formatter.PrintError("Couldn't create temporary archive", err)
+		return err
 	}
 
 	err = svc.UploadFile(cmd.GetContext(), sourceFilePath, temporaryArchive.UploadURL)
 	if err != nil {
-		formatter.PrintFatal("Couldn't upload temporary archive", err)
+		formatter.PrintError("Couldn't upload temporary archive", err)
+		return err
 	}
 
 	temporaryArchiveImport, err := svc.CreateTemporaryArchiveImport(
@@ -193,7 +199,8 @@ func TemporaryArchiveImport() error {
 		&temporaryArchiveIn,
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create temporary archive import", err)
+		formatter.PrintError("Couldn't create temporary archive import", err)
+		return err
 	}
 
 	log.Info("ID: ", temporaryArchiveImport.ID)
@@ -203,19 +210,20 @@ func TemporaryArchiveImport() error {
 	for {
 		temporaryArchiveImport, err = svc.GetTemporaryArchiveImport(cmd.GetContext(), temporaryArchive.ID)
 		if err != nil {
-			formatter.PrintFatal("Couldn't get temporary archive import", err)
+			formatter.PrintError("Couldn't get temporary archive import", err)
+			return err
 		}
 		log.Info("State: ", temporaryArchiveImport.State)
 
 		if temporaryArchiveImport.State == "finished" {
 			if err = formatter.PrintItem(*temporaryArchiveImport); err != nil {
-				formatter.PrintFatal(cmd.PrintFormatError, err)
+				formatter.PrintError(cmd.PrintFormatError, err)
+				return err
 			}
 			if temporaryArchiveImport.ErrorMessage != "" {
-				formatter.PrintFatal(
-					"Couldn't import infrastructure file",
-					fmt.Errorf("%s", temporaryArchiveImport.ErrorMessage),
-				)
+				e := fmt.Errorf("%s", temporaryArchiveImport.ErrorMessage)
+				formatter.PrintError("Couldn't import infrastructure file", e)
+				return e
 			}
 			break
 		}

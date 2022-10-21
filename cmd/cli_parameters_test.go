@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
-	"io/ioutil"
 	"os"
 	"reflect"
 	"strings"
@@ -14,18 +13,18 @@ import (
 func TestFlagConvertParamsJSON(t *testing.T) {
 	tests := map[string]struct {
 		name     string
-		data     interface{}
-		expected interface{}
+		data     any
+		expected any
 	}{
 		"if flag is undefined": {
 			name:     "",
 			data:     nil,
-			expected: new(map[string]interface{}),
+			expected: new(map[string]any),
 		},
 		"if flag is defined and with a valid value": {
 			name:     "valid param",
 			data:     map[string]int{"a": 1, "b": 2, "c": 3},
-			expected: new(map[string]interface{}),
+			expected: new(map[string]any),
 		},
 		"if flag is defined but with an invalid value": {
 			name:     "invalid param",
@@ -58,11 +57,11 @@ func TestFlagConvertParamsJSON(t *testing.T) {
 func TestConvertFlagParamsJsonFromFileOrStdin(t *testing.T) {
 	tests := map[string]struct {
 		param    string
-		expected interface{}
+		expected any
 	}{
 		"if defined input with valid data": {
 			param:    "testdata/input_sample.txt",
-			expected: map[string]interface{}{"a": "1", "b": "2", "c": "3"},
+			expected: map[string]any{"a": "1", "b": "2", "c": "3"},
 		},
 		"if defined invalid input": {
 			param:    "testdata/input_sample_whatever.txt",
@@ -74,7 +73,7 @@ func TestConvertFlagParamsJsonFromFileOrStdin(t *testing.T) {
 		},
 		"if defined input as STDIN": {
 			param:    "-",
-			expected: map[string]interface{}{"a": "1", "b": "2", "c": "3"},
+			expected: map[string]any{"a": "1", "b": "2", "c": "3"},
 		},
 	}
 
@@ -82,7 +81,7 @@ func TestConvertFlagParamsJsonFromFileOrStdin(t *testing.T) {
 		t.Run(title, func(t *testing.T) {
 			if test.param == "-" {
 				content := []byte("{\"a\": \"1\", \"b\": \"2\", \"c\": \"3\"}")
-				tmpfile, err := ioutil.TempFile("", "example")
+				tmpfile, err := os.CreateTemp("", "example")
 				if err != nil {
 					t.Errorf("Unexpected error: %v\n", err)
 				}
@@ -133,7 +132,7 @@ func TestConvertFlagParamsJsonStringFromFileOrStdin(t *testing.T) {
 		t.Run(title, func(t *testing.T) {
 			if test.param == "-" {
 				content := []byte("{\"a\": \"1\", \"b\": \"2\", \"c\": \"3\"}")
-				tmpfile, err := ioutil.TempFile("", "example")
+				tmpfile, err := os.CreateTemp("", "example")
 				if err != nil {
 					t.Errorf("Unexpected error: %v\n", err)
 				}

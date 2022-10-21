@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/configuration"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
 	"net/http"
 	"net/http/httptest"
@@ -12,17 +13,17 @@ import (
 	"testing"
 )
 
-//TODO COMMON
+// TODO COMMON
 func initConfigAndServerAPI(context configuration.Context) (*configuration.Config, *ServerAPI, error) {
 	config := new(configuration.Config)
 	if context == configuration.Brownfield {
-		config.APIEndpoint = TEST
-		config.BrownfieldToken = TEST
+		config.APIEndpoint = testutils.TEST
+		config.BrownfieldToken = testutils.TEST
 	}
 	if context == configuration.Polling {
-		config.APIEndpoint = TEST
-		config.CommandPollingToken = TEST
-		config.ServerID = TEST
+		config.APIEndpoint = testutils.TEST
+		config.CommandPollingToken = testutils.TEST
+		config.ServerID = testutils.TEST
 	}
 
 	svc, err := NewIMCOServerWithToken(config, context)
@@ -68,13 +69,13 @@ func TestNewIMCOServerWithToken(t *testing.T) {
 	for title, test := range tests {
 		t.Run(title, func(t *testing.T) {
 			if test.context == configuration.Brownfield && test.setConfig {
-				test.config.APIEndpoint = TEST
-				test.config.BrownfieldToken = TEST
+				test.config.APIEndpoint = testutils.TEST
+				test.config.BrownfieldToken = testutils.TEST
 			}
 			if test.context == configuration.Polling && test.setConfig {
-				test.config.APIEndpoint = TEST
-				test.config.CommandPollingToken = TEST
-				test.config.ServerID = TEST
+				test.config.APIEndpoint = testutils.TEST
+				test.config.CommandPollingToken = testutils.TEST
+				test.config.ServerID = testutils.TEST
 			}
 
 			svc, err := NewIMCOServerWithToken(test.config, test.context)
@@ -90,12 +91,12 @@ func TestNewIMCOServerWithToken(t *testing.T) {
 
 func TestGetDispatcherScriptCharacterizationsByType(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a ScriptCharacterization type is returned successfully": {
 			expected: []*types.ScriptCharacterization{},
-			server:   NewServer(http.StatusOK, []*types.ScriptCharacterization{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.ScriptCharacterization{}),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -130,12 +131,12 @@ func TestGetDispatcherScriptCharacterizationsByType(t *testing.T) {
 
 func TestGetDispatcherScriptCharacterizationByUUID(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a ScriptCharacterization type is returned successfully": {
 			expected: new(types.ScriptCharacterization),
-			server:   NewServer(http.StatusOK, new(types.ScriptCharacterization)),
+			server:   testutils.NewServer(http.StatusOK, new(types.ScriptCharacterization)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -157,7 +158,7 @@ func TestGetDispatcherScriptCharacterizationByUUID(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			scriptCharacterization, err := svc.GetDispatcherScriptCharacterizationByUUID(context.Background(), TEST)
+			scriptCharacterization, err := svc.GetDispatcherScriptCharacterizationByUUID(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -170,12 +171,12 @@ func TestGetDispatcherScriptCharacterizationByUUID(t *testing.T) {
 
 func TestReportScriptConclusions(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a ScriptConclusion type is returned successfully": {
 			expected: new(types.ScriptConclusion),
-			server:   NewServer(http.StatusOK, new(types.ScriptConclusion)),
+			server:   testutils.NewServer(http.StatusOK, new(types.ScriptConclusion)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -197,7 +198,7 @@ func TestReportScriptConclusions(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			scriptConclusion, status, err := svc.ReportScriptConclusions(context.Background(), new(map[string]interface{}))
+			scriptConclusion, status, err := svc.ReportScriptConclusions(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -211,12 +212,12 @@ func TestReportScriptConclusions(t *testing.T) {
 
 func TestGetBootstrappingConfiguration(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a BootstrappingConfiguration type is returned successfully": {
 			expected: new(types.BootstrappingConfiguration),
-			server:   NewServer(http.StatusOK, new(types.BootstrappingConfiguration)),
+			server:   testutils.NewServer(http.StatusOK, new(types.BootstrappingConfiguration)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -252,12 +253,12 @@ func TestGetBootstrappingConfiguration(t *testing.T) {
 
 func TestReportBootstrappingAppliedConfiguration(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a BootstrappingConfiguration type is returned successfully": {
 			expected: new(types.BootstrappingConfiguration),
-			server:   NewServer(http.StatusOK, new(types.BootstrappingConfiguration)),
+			server:   testutils.NewServer(http.StatusOK, new(types.BootstrappingConfiguration)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -279,7 +280,7 @@ func TestReportBootstrappingAppliedConfiguration(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.ReportBootstrappingAppliedConfiguration(context.Background(), new(map[string]interface{}))
+			err := svc.ReportBootstrappingAppliedConfiguration(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -289,12 +290,12 @@ func TestReportBootstrappingAppliedConfiguration(t *testing.T) {
 
 func TestReportBootstrappingLog(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a BootstrappingContinuousReport type is returned successfully": {
 			expected: new(types.BootstrappingContinuousReport),
-			server:   NewServer(http.StatusOK, new(types.BootstrappingContinuousReport)),
+			server:   testutils.NewServer(http.StatusOK, new(types.BootstrappingContinuousReport)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -316,7 +317,7 @@ func TestReportBootstrappingLog(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			bootstrappingContinuousReport, status, err := svc.ReportBootstrappingLog(context.Background(), new(map[string]interface{}))
+			bootstrappingContinuousReport, status, err := svc.ReportBootstrappingLog(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -330,12 +331,12 @@ func TestReportBootstrappingLog(t *testing.T) {
 
 func TestGetPolicy(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a Policy type is returned successfully": {
 			expected: new(types.Policy),
-			server:   NewServer(http.StatusOK, new(types.Policy)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Policy)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -370,12 +371,12 @@ func TestGetPolicy(t *testing.T) {
 
 func TestAddPolicyRule(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a PolicyRule is added successfully": {
 			expected: new(types.PolicyRule),
-			server:   NewServer(http.StatusOK, new(types.PolicyRule)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PolicyRule)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -397,7 +398,7 @@ func TestAddPolicyRule(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			policyRule, err := svc.AddPolicyRule(context.Background(), new(map[string]interface{}))
+			policyRule, err := svc.AddPolicyRule(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -410,12 +411,12 @@ func TestAddPolicyRule(t *testing.T) {
 
 func TestUpdatePolicy(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a Policy type is returned successfully": {
 			expected: new(types.Policy),
-			server:   NewServer(http.StatusOK, new(types.Policy)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Policy)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -437,7 +438,7 @@ func TestUpdatePolicy(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			policy, err := svc.UpdatePolicy(context.Background(), new(map[string]interface{}))
+			policy, err := svc.UpdatePolicy(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -450,12 +451,12 @@ func TestUpdatePolicy(t *testing.T) {
 
 func TestPing(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a PollingPing type is returned successfully": {
 			expected: new(types.PollingPing),
-			server:   NewServer(http.StatusOK, new(types.PollingPing)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PollingPing)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -491,12 +492,12 @@ func TestPing(t *testing.T) {
 
 func TestGetNextCommand(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a PollingCommand type is returned successfully": {
 			expected: new(types.PollingCommand),
-			server:   NewServer(http.StatusOK, new(types.PollingCommand)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PollingCommand)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -532,12 +533,12 @@ func TestGetNextCommand(t *testing.T) {
 
 func TestUpdateCommand(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a PollingCommand type is returned successfully": {
 			expected: new(types.PollingCommand),
-			server:   NewServer(http.StatusOK, new(types.PollingCommand)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PollingCommand)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -559,7 +560,7 @@ func TestUpdateCommand(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			command, status, err := svc.UpdateCommand(context.Background(), TEST, new(map[string]interface{}))
+			command, status, err := svc.UpdateCommand(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -573,12 +574,12 @@ func TestUpdateCommand(t *testing.T) {
 
 func TestReportBootstrapLog(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a PollingContinuousReport type is returned successfully": {
 			expected: new(types.PollingContinuousReport),
-			server:   NewServer(http.StatusOK, new(types.PollingContinuousReport)),
+			server:   testutils.NewServer(http.StatusOK, new(types.PollingContinuousReport)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -600,7 +601,7 @@ func TestReportBootstrapLog(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			command, status, err := svc.ReportBootstrapLog(context.Background(), new(map[string]interface{}))
+			command, status, err := svc.ReportBootstrapLog(context.Background(), new(map[string]any))
 			t.Logf("command: %v status: %v err: %v\n", command, status, err)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
@@ -615,12 +616,12 @@ func TestReportBootstrapLog(t *testing.T) {
 
 func TestObtainBrownfieldSslProfile(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a BrownfieldSslProfile type is returned successfully": {
-			expected: make(map[string]interface{}),
-			server:   NewServer(http.StatusOK, make(map[string]interface{})),
+			expected: make(map[string]any),
+			server:   testutils.NewServer(http.StatusOK, make(map[string]any)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -642,7 +643,7 @@ func TestObtainBrownfieldSslProfile(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			response, status, err := svc.ObtainBrownfieldSslProfile(context.Background(), new(map[string]interface{}))
+			response, status, err := svc.ObtainBrownfieldSslProfile(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -656,12 +657,12 @@ func TestObtainBrownfieldSslProfile(t *testing.T) {
 
 func TestObtainPollingApiKey(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a PollingApiKey type is returned successfully": {
-			expected: make(map[string]interface{}),
-			server:   NewServer(http.StatusOK, make(map[string]interface{})),
+			expected: make(map[string]any),
+			server:   testutils.NewServer(http.StatusOK, make(map[string]any)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -683,7 +684,7 @@ func TestObtainPollingApiKey(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			response, status, err := svc.ObtainPollingApiKey(context.Background(), new(map[string]interface{}))
+			response, status, err := svc.ObtainPollingApiKey(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -697,12 +698,12 @@ func TestObtainPollingApiKey(t *testing.T) {
 
 func TestSetFirewallProfile(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a Firewall type is returned successfully": {
 			expected: new(types.Firewall),
-			server:   NewServer(http.StatusOK, new(types.Firewall)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Firewall)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -724,7 +725,7 @@ func TestSetFirewallProfile(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			firewall, status, err := svc.SetFirewallProfile(context.Background(), new(map[string]interface{}))
+			firewall, status, err := svc.SetFirewallProfile(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -738,12 +739,12 @@ func TestSetFirewallProfile(t *testing.T) {
 
 func TestGetBrownfieldSettings(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a Settings type is returned successfully": {
 			expected: new(types.Settings),
-			server:   NewServer(http.StatusOK, new(types.Settings)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Settings)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -779,12 +780,12 @@ func TestGetBrownfieldSettings(t *testing.T) {
 
 func TestSetBrownfieldSettings(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a Settings type type is returned successfully": {
 			expected: new(types.Settings),
-			server:   NewServer(http.StatusOK, new(types.Settings)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Settings)),
 		},
 		"if returns an error": {
 			expected: "Cannot execute request",
@@ -806,7 +807,7 @@ func TestSetBrownfieldSettings(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			settings, status, err := svc.SetBrownfieldSettings(context.Background(), new(map[string]interface{}))
+			settings, status, err := svc.SetBrownfieldSettings(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -820,12 +821,12 @@ func TestSetBrownfieldSettings(t *testing.T) {
 
 func TestRetrieveSecretVersion(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if a secret type is downloaded successfully": {
 			expected: http.StatusOK,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if returns an error": {
 			expected: "Cannot download file",

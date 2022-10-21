@@ -525,7 +525,6 @@ func (config *Config) evaluateAPIEndpointURL() error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("cURL.Path: %v\n", cURL.Path)
 		if cURL.Path == "" {
 			config.APIEndpoint = strings.Join([]string{config.APIEndpoint, VERSION_API_USER_MODE}, "/")
 			log.Warnf(

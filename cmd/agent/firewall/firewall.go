@@ -138,7 +138,8 @@ func RuleList() error {
 		formatter.PrintFatal("Couldn't receive firewall policy data", err)
 	}
 	if err = formatter.PrintList(policy.ActualRules); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

@@ -98,28 +98,37 @@ func SSHProfileList() error {
 
 	sshProfiles, err := svc.ListSSHProfiles(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive sshProfile data", err)
+		formatter.PrintError("Couldn't receive sshProfile data", err)
+		return err
 	}
 
 	labelables := make([]types.Labelable, len(sshProfiles))
 	for i := 0; i < len(sshProfiles); i++ {
 		labelables[i] = types.Labelable(sshProfiles[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 	sshProfiles = make([]*types.SSHProfile, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		sshP, ok := labelable.(*types.SSHProfile)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.SSHProfile, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.SSHProfile, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		sshProfiles[i] = sshP
 	}
 
 	if err = formatter.PrintList(sshProfiles); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -131,12 +140,17 @@ func SSHProfileShow() error {
 
 	sshProfile, err := svc.GetSSHProfile(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive sshProfile data", err)
+		formatter.PrintError("Couldn't receive sshProfile data", err)
+		return err
 	}
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	sshProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*sshProfile); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -154,24 +168,31 @@ func SSHProfileCreate() error {
 		sshProfileIn["private_key"] = viper.GetString(cmd.PrivateKey)
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 
 	if viper.IsSet(cmd.Labels) {
-		sshProfileIn["label_ids"] = labels.LabelResolution(
+		sshProfileIn["label_ids"], err = labels.LabelResolution(
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
-			&labelIDsByName,
-		)
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	sshProfile, err := svc.CreateSSHProfile(cmd.GetContext(), &sshProfileIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create sshProfile", err)
+		formatter.PrintError("Couldn't create sshProfile", err)
+		return err
 	}
 
 	sshProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*sshProfile); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -193,13 +214,18 @@ func SSHProfileUpdate() error {
 	}
 	sshProfile, err := svc.UpdateSSHProfile(cmd.GetContext(), viper.GetString(cmd.Id), &sshProfileIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update sshProfile", err)
+		formatter.PrintError("Couldn't update sshProfile", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	sshProfile.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*sshProfile); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -211,7 +237,8 @@ func SSHProfileDelete() error {
 
 	err := svc.DeleteSSHProfile(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete sshProfile", err)
+		formatter.PrintError("Couldn't delete sshProfile", err)
+		return err
 	}
 	return nil
 }

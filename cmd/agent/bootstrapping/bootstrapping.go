@@ -197,7 +197,8 @@ func Stop() error {
 
 	formatter := format.GetFormatter()
 	if err := agent.StopProcess(lockFilePath()); err != nil {
-		formatter.PrintFatal("cannot Stop the bootstrapping process", err)
+		formatter.PrintError("cannot Stop the bootstrapping process", err)
+		return err
 	}
 
 	log.Info("Bootstrapping routine successfully stopped")
@@ -207,7 +208,8 @@ func Stop() error {
 func runBootstrapPeriodically(ctx context.Context, formatter format.Formatter) error {
 	config, err := configuration.GetConfig()
 	if err != nil {
-		formatter.PrintFatal("Couldn't wire up config", err)
+		formatter.PrintError("Couldn't wire up config", err)
+		return err
 	}
 	if config.BootstrapConfig.RunOnce {
 		return runBootstrapOnce(ctx, config, formatter)

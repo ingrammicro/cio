@@ -3,10 +3,10 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // ListCloudSpecificExtensionDeployments returns the list of cloud specific extension deployments as an array of
@@ -15,7 +15,7 @@ func (imco *ClientAPI) ListCloudSpecificExtensionDeployments(ctx context.Context
 	deployments []*types.CloudSpecificExtensionDeployment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathCseDeployments, true, &deployments)
+	_, err = imco.GetAndCheck(ctx, PathCseDeployments, true, &deployments)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func (imco *ClientAPI) GetCloudSpecificExtensionDeployment(ctx context.Context, 
 ) (deployment *types.CloudSpecificExtensionDeployment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCseDeployment, deploymentID), true, &deployment)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCseDeployment, deploymentID), true, &deployment)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (imco *ClientAPI) CreateCloudSpecificExtensionDeployment(ctx context.Contex
 
 	_, err = imco.PostAndCheck(
 		ctx,
-		fmt.Sprintf(pathCseTemplateDeployments, templateID),
+		fmt.Sprintf(PathCseTemplateDeployments, templateID),
 		deploymentParams,
 		true,
 		&deployment,
@@ -59,7 +59,7 @@ func (imco *ClientAPI) UpdateCloudSpecificExtensionDeployment(ctx context.Contex
 ) (deployment *types.CloudSpecificExtensionDeployment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathCseDeployment, deploymentID), deploymentParams, true, &deployment)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathCseDeployment, deploymentID), deploymentParams, true, &deployment)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (imco *ClientAPI) DeleteCloudSpecificExtensionDeployment(ctx context.Contex
 ) (deployment *types.CloudSpecificExtensionDeployment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathCseDeployment, deploymentID), true, &deployment)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathCseDeployment, deploymentID), true, &deployment)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (imco *ClientAPI) ListCloudSpecificExtensionTemplates(ctx context.Context) 
 ) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathCseTemplates, true, &templates)
+	_, err = imco.GetAndCheck(ctx, PathCseTemplates, true, &templates)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (imco *ClientAPI) GetCloudSpecificExtensionTemplate(ctx context.Context, te
 ) (template *types.CloudSpecificExtensionTemplate, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCseTemplate, templateID), true, &template)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCseTemplate, templateID), true, &template)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (imco *ClientAPI) CreateCloudSpecificExtensionTemplate(ctx context.Context,
 ) (template *types.CloudSpecificExtensionTemplate, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathCseTemplates, templateParams, true, &template)
+	_, err = imco.PostAndCheck(ctx, PathCseTemplates, templateParams, true, &template)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (imco *ClientAPI) UpdateCloudSpecificExtensionTemplate(ctx context.Context,
 ) (template *types.CloudSpecificExtensionTemplate, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathCseTemplate, templateID), templateParams, true, &template)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathCseTemplate, templateID), templateParams, true, &template)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func (imco *ClientAPI) ListCloudSpecificExtensionTemplateDeployments(ctx context
 ) (deployments []*types.CloudSpecificExtensionDeployment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathCseTemplateDeployments, templateID), true, &deployments)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathCseTemplateDeployments, templateID), true, &deployments)
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func (imco *ClientAPI) ListCloudSpecificExtensionTemplateDeployments(ctx context
 func (imco *ClientAPI) DeleteCloudSpecificExtensionTemplate(ctx context.Context, templateID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathCseTemplate, templateID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathCseTemplate, templateID), true, nil)
 	if err != nil {
 		return err
 	}

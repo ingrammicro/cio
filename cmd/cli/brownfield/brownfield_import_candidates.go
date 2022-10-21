@@ -57,7 +57,7 @@ func init() {
 func checkCloudAccountImportingState(
 	cloudAccount *types.CloudAccount,
 	state string,
-) *types.CloudAccount {
+) (*types.CloudAccount, error) {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
@@ -66,7 +66,8 @@ func checkCloudAccountImportingState(
 	for {
 		ca, err := svc.GetBrownfieldCloudAccount(cmd.GetContext(), viper.GetString(cmd.Id))
 		if err != nil {
-			formatter.PrintFatal("Couldn't get cloud account data", err)
+			formatter.PrintError("Couldn't get cloud account data", err)
+			return nil, err
 		}
 		if (cloudAccount.State != ca.State) || (ca.State != state) {
 			if ca.State == "idle" && ca.ErrorEventID != "" {
@@ -74,7 +75,7 @@ func checkCloudAccountImportingState(
 			} else {
 				log.Info("Done!")
 			}
-			return ca
+			return ca, nil
 		}
 		time.Sleep(5 * time.Second)
 	}
@@ -87,16 +88,24 @@ func ImportServers() error {
 
 	cloudAccount, err := svc.ImportServers(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
-		formatter.PrintFatal("Couldn't import servers", err)
+		formatter.PrintError("Couldn't import servers", err)
+		return err
 	}
 
-	cloudAccount = checkCloudAccountImportingState(cloudAccount, "importing_servers")
+	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_servers")
+	if err != nil {
+		return err
+	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -108,16 +117,24 @@ func ImportVPCs() error {
 
 	cloudAccount, err := svc.ImportVPCs(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
-		formatter.PrintFatal("Couldn't import vpcs", err)
+		formatter.PrintError("Couldn't import vpcs", err)
+		return err
 	}
 
-	cloudAccount = checkCloudAccountImportingState(cloudAccount, "importing_vpcs")
+	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_vpcs")
+	if err != nil {
+		return err
+	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -129,16 +146,24 @@ func ImportFloatingIPs() error {
 
 	cloudAccount, err := svc.ImportFloatingIPs(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
-		formatter.PrintFatal("Couldn't import floating IPs", err)
+		formatter.PrintError("Couldn't import floating IPs", err)
+		return err
 	}
 
-	cloudAccount = checkCloudAccountImportingState(cloudAccount, "importing_floating_ips")
+	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_floating_ips")
+	if err != nil {
+		return err
+	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -150,16 +175,24 @@ func ImportVolumes() error {
 
 	cloudAccount, err := svc.ImportVolumes(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
-		formatter.PrintFatal("Couldn't import volumes", err)
+		formatter.PrintError("Couldn't import volumes", err)
+		return err
 	}
 
-	cloudAccount = checkCloudAccountImportingState(cloudAccount, "importing_volumes")
+	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_volumes")
+	if err != nil {
+		return err
+	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -171,16 +204,24 @@ func ImportPolicies() error {
 
 	cloudAccount, err := svc.ImportPolicies(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
-		formatter.PrintFatal("Couldn't import policies", err)
+		formatter.PrintError("Couldn't import policies", err)
+		return err
 	}
 
-	cloudAccount = checkCloudAccountImportingState(cloudAccount, "importing_policies")
+	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_policies")
+	if err != nil {
+		return err
+	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -196,16 +237,24 @@ func ImportKubernetesClusters() error {
 		&map[string]interface{}{},
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't import kubernetes clusters", err)
+		formatter.PrintError("Couldn't import kubernetes clusters", err)
+		return err
 	}
 
-	cloudAccount = checkCloudAccountImportingState(cloudAccount, "importing_kubernetes_clusters")
+	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_kubernetes_clusters")
+	if err != nil {
+		return err
+	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

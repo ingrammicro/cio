@@ -37,10 +37,12 @@ func WizCloudProviderList() error {
 		viper.GetString(cmd.LocationId),
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloudProvider data", err)
+		formatter.PrintError("Couldn't receive cloudProvider data", err)
+		return err
 	}
 	if err = formatter.PrintList(cloudProviders); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

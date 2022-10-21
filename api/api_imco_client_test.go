@@ -14,7 +14,7 @@ package api
 //}
 
 //func TestClientAPI(t *testing.T) {
-//	events := pathAuditEvents
+//	events := PathAuditEvents
 //	svc, config, err := InitConfigAndClientAPI()
 //	if err != nil && svc == nil && config == nil {
 //		t.Errorf("Unexpected error: %v\n", err)

@@ -3,10 +3,10 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	"golang.org/x/net/context"
 )
 
 // GetCloudApplicationDeployment returns a cloud application deployment by its ID
@@ -14,7 +14,7 @@ func (imco *ClientAPI) GetCloudApplicationDeployment(ctx context.Context, deploy
 ) (deployment *types.CloudApplicationDeployment, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathPluginsToscaDeployment, deploymentID), true, &deployment)
+	status, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathPluginsToscaDeployment, deploymentID), true, &deployment)
 	if err != nil {
 		return nil, status, err
 	}
@@ -26,7 +26,7 @@ func (imco *ClientAPI) DeleteCloudApplicationDeployment(ctx context.Context, dep
 ) (deployment *types.CloudApplicationDeployment, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathPluginsToscaDeployment, deploymentID), true, &deployment)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathPluginsToscaDeployment, deploymentID), true, &deployment)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (imco *ClientAPI) CreateCloudApplicationDeploymentTask(ctx context.Context,
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathPluginsToscaCatDeploymentTasks, catID),
+		fmt.Sprintf(PathPluginsToscaCatDeploymentTasks, catID),
 		deploymentParams,
 		true,
 		&deploymentTask,
@@ -57,7 +57,7 @@ func (imco *ClientAPI) GetCloudApplicationDeploymentTask(ctx context.Context, ca
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathPluginsToscaCatDeploymentTask, catID, deploymentTaskID),
+		fmt.Sprintf(PathPluginsToscaCatDeploymentTask, catID, deploymentTaskID),
 		true,
 		&deploymentTask,
 	)
@@ -72,7 +72,7 @@ func (imco *ClientAPI) ListCloudApplicationTemplates(ctx context.Context,
 ) (templates []*types.CloudApplicationTemplate, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathPluginsToscaCats, true, &templates)
+	_, err = imco.GetAndCheck(ctx, PathPluginsToscaCats, true, &templates)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (imco *ClientAPI) GetCloudApplicationTemplate(ctx context.Context, template
 ) (template *types.CloudApplicationTemplate, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(pathPluginsToscaCat, templateID), true, &template)
+	_, err = imco.GetAndCheck(ctx, fmt.Sprintf(PathPluginsToscaCat, templateID), true, &template)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (imco *ClientAPI) CreateCloudApplicationTemplate(ctx context.Context, catPa
 ) (template *types.CloudApplicationTemplate, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathPluginsToscaCats, catParams, true, &template)
+	_, err = imco.PostAndCheck(ctx, PathPluginsToscaCats, catParams, true, &template)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (imco *ClientAPI) ParseMetadataCloudApplicationTemplate(ctx context.Context
 	logger.DebugFuncInfo()
 
 	catIn := map[string]interface{}{}
-	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(pathPluginsToscaCatParseMetadata, templateID), &catIn, true, &template)
+	_, err = imco.PutAndCheck(ctx, fmt.Sprintf(PathPluginsToscaCatParseMetadata, templateID), &catIn, true, &template)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +120,7 @@ func (imco *ClientAPI) ParseMetadataCloudApplicationTemplate(ctx context.Context
 func (imco *ClientAPI) DeleteCloudApplicationTemplate(ctx context.Context, templateID string) (err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(pathPluginsToscaCat, templateID), true, nil)
+	_, err = imco.DeleteAndCheck(ctx, fmt.Sprintf(PathPluginsToscaCat, templateID), true, nil)
 	if err != nil {
 		return err
 	}
@@ -132,7 +132,7 @@ func (imco *ClientAPI) CreateTemporaryArchive(ctx context.Context, temporaryArch
 ) (temporaryArchive *types.TemporaryArchive, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathPluginsToscaTemporaryArchives, temporaryArchiveParams, true, &temporaryArchive)
+	_, err = imco.PostAndCheck(ctx, PathPluginsToscaTemporaryArchives, temporaryArchiveParams, true, &temporaryArchive)
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (imco *ClientAPI) CreateTemporaryArchiveImport(ctx context.Context, tempora
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		fmt.Sprintf(pathPluginsToscaTemporaryArchiveImport, temporaryArchiveID),
+		fmt.Sprintf(PathPluginsToscaTemporaryArchiveImport, temporaryArchiveID),
 		temporaryArchiveImportParams,
 		true,
 		&temporaryArchiveImport,
@@ -163,7 +163,7 @@ func (imco *ClientAPI) GetTemporaryArchiveImport(ctx context.Context, temporaryA
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathPluginsToscaTemporaryArchiveImport, temporaryArchiveImportID),
+		fmt.Sprintf(PathPluginsToscaTemporaryArchiveImport, temporaryArchiveImportID),
 		true,
 		&temporaryArchiveImport,
 	)
@@ -180,7 +180,7 @@ func (imco *ClientAPI) CreateTemporaryArchiveExport(ctx context.Context,
 	logger.DebugFuncInfo()
 
 	_, err = imco.PostAndCheck(ctx,
-		pathPluginsToscaTemporaryArchivesExport,
+		PathPluginsToscaTemporaryArchivesExport,
 		temporaryArchiveExportParams,
 		true,
 		&temporaryArchiveExport,
@@ -197,7 +197,7 @@ func (imco *ClientAPI) GetTemporaryArchiveExportTask(ctx context.Context, tempor
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathPluginsToscaTemporaryArchiveExport, temporaryArchiveID),
+		fmt.Sprintf(PathPluginsToscaTemporaryArchiveExport, temporaryArchiveID),
 		true,
 		&temporaryArchiveExportTask,
 	)

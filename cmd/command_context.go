@@ -27,10 +27,10 @@ type CommandContext struct {
 	//Ctx                    context.Context
 }
 
-func (c *CommandContext) AddFlag(f FlagContext) {
-	f.cmd = c
-	c.FlagContexts = append(c.FlagContexts, f)
-}
+//func (c *CommandContext) AddFlag(f FlagContext) {
+//	f.cmd = c
+//	c.FlagContexts = append(c.FlagContexts, f)
+//}
 
 func createCommand(commandContext *CommandContext) *cobra.Command {
 	return &cobra.Command{

@@ -114,11 +114,13 @@ func NodePoolList() error {
 
 	nodePools, err := svc.ListNodePools(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive node pool data", err)
+		formatter.PrintError("Couldn't receive node pool data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(nodePools); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -130,11 +132,13 @@ func NodePoolShow() error {
 
 	nodePool, err := svc.GetNodePool(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive node pool data", err)
+		formatter.PrintError("Couldn't receive node pool data", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*nodePool); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -173,11 +177,13 @@ func NodePoolCreate() error {
 
 	nodePool, err := svc.CreateNodePool(cmd.GetContext(), viper.GetString(cmd.Id), &nodePoolIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create node pool", err)
+		formatter.PrintError("Couldn't create node pool", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*nodePool); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -203,11 +209,13 @@ func NodePoolUpdate() error {
 
 	nodePool, err := svc.UpdateNodePool(cmd.GetContext(), viper.GetString(cmd.Id), &nodePoolIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update node pool", err)
+		formatter.PrintError("Couldn't update node pool", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*nodePool); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -219,11 +227,13 @@ func NodePoolDelete() error {
 
 	nodePool, err := svc.DeleteNodePool(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete node pool", err)
+		formatter.PrintError("Couldn't delete node pool", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*nodePool); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -235,11 +245,13 @@ func NodePoolRetry() error {
 
 	nodePool, err := svc.RetryNodePool(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
-		formatter.PrintFatal("Couldn't retry node pool", err)
+		formatter.PrintError("Couldn't retry node pool", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*nodePool); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -251,11 +263,13 @@ func NodePoolPlanShow() error {
 
 	nodePoolPlan, err := svc.GetNodePoolPlan(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't show node pool plan", err)
+		formatter.PrintError("Couldn't show node pool plan", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*nodePoolPlan); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

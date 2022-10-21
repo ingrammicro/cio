@@ -55,11 +55,13 @@ func CloudApplicationTemplateList() error {
 
 	cats, err := svc.ListCloudApplicationTemplates(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloud application templates data", err)
+		formatter.PrintError("Couldn't receive cloud application templates data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(cats); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -71,11 +73,13 @@ func CloudApplicationTemplateShow() error {
 
 	cat, err := svc.GetCloudApplicationTemplate(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloud application template data", err)
+		formatter.PrintError("Couldn't receive cloud application template data", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*cat); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -87,7 +91,9 @@ func CloudApplicationTemplateUpload() error {
 
 	sourceFilePath := viper.GetString(cmd.Filepath)
 	if !utils.FileExists(sourceFilePath) {
-		formatter.PrintFatal("Invalid file path", fmt.Errorf("no such file or directory: %s", sourceFilePath))
+		e := fmt.Errorf("no such file or directory: %s", sourceFilePath)
+		formatter.PrintError("Invalid file path", e)
+		return e
 	}
 
 	catIn := map[string]interface{}{
@@ -95,24 +101,28 @@ func CloudApplicationTemplateUpload() error {
 	}
 	cat, err := svc.CreateCloudApplicationTemplate(cmd.GetContext(), &catIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloud application template data", err)
+		formatter.PrintError("Couldn't receive cloud application template data", err)
+		return err
 	}
 
 	catID := cat.ID
 	err = svc.UploadFile(cmd.GetContext(), sourceFilePath, cat.UploadURL)
 	if err != nil {
 		cleanTemplate(catID)
-		formatter.PrintFatal("Couldn't upload cloud application template data", err)
+		formatter.PrintError("Couldn't upload cloud application template data", err)
+		return err
 	}
 
 	cat, err = svc.ParseMetadataCloudApplicationTemplate(cmd.GetContext(), catID)
 	if err != nil {
 		cleanTemplate(catID)
-		formatter.PrintFatal("Couldn't parse cloud application template metadata", err)
+		formatter.PrintError("Couldn't parse cloud application template metadata", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*cat); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -132,7 +142,8 @@ func CloudApplicationTemplateDelete() error {
 
 	err := svc.DeleteCloudApplicationTemplate(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete cloud application template", err)
+		formatter.PrintError("Couldn't delete cloud application template", err)
+		return err
 	}
 	return nil
 }

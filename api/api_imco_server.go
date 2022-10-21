@@ -3,6 +3,7 @@
 package api
 
 import (
+	"context"
 	"crypto/md5"
 	"crypto/tls"
 	"encoding/json"
@@ -11,7 +12,6 @@ import (
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/net/context"
 	"net/http"
 	"time"
 )

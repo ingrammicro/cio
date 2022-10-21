@@ -100,28 +100,37 @@ func VPCList() error {
 
 	vpcs, err := svc.ListVPCs(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive VPC data", err)
+		formatter.PrintError("Couldn't receive VPC data", err)
+		return err
 	}
 
 	labelables := make([]types.Labelable, len(vpcs))
 	for i := 0; i < len(vpcs); i++ {
 		labelables[i] = types.Labelable(vpcs[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	vpcs = make([]*types.Vpc, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.Vpc)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.Vpc, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.Vpc, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		vpcs[i] = v
 	}
 	if err = formatter.PrintList(vpcs); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -133,12 +142,17 @@ func VPCShow() error {
 
 	vpc, err := svc.GetVPC(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive VPC data", err)
+		formatter.PrintError("Couldn't receive VPC data", err)
+		return err
 	}
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	vpc.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*vpc); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -155,20 +169,31 @@ func VPCCreate() error {
 		"realm_provider_name": viper.GetString(cmd.RealmProviderName),
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 
 	if viper.IsSet(cmd.Labels) {
-		vpcIn["label_ids"] = labels.LabelResolution(viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
+		vpcIn["label_ids"], err = labels.LabelResolution(
+			viper.GetString(cmd.Labels),
+			&labelNamesByID,
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	vpc, err := svc.CreateVPC(cmd.GetContext(), &vpcIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create VPC", err)
+		formatter.PrintError("Couldn't create VPC", err)
+		return err
 	}
 
 	vpc.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*vpc); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -184,13 +209,18 @@ func VPCUpdate() error {
 
 	vpc, err := svc.UpdateVPC(cmd.GetContext(), viper.GetString(cmd.Id), &vpcIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update VPC", err)
+		formatter.PrintError("Couldn't update VPC", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	vpc.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*vpc); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -202,7 +232,8 @@ func VPCDelete() error {
 
 	err := svc.DeleteVPC(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete VPC", err)
+		formatter.PrintError("Couldn't delete VPC", err)
+		return err
 	}
 	return nil
 }
@@ -214,7 +245,8 @@ func VPCDiscard() error {
 
 	err := svc.DiscardVPC(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't discard VPC", err)
+		formatter.PrintError("Couldn't discard VPC", err)
+		return err
 	}
 	return nil
 }

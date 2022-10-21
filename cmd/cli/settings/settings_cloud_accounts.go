@@ -36,17 +36,22 @@ func CloudAccountList() error {
 
 	cloudAccounts, err := svc.ListCloudAccounts(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloudAccount data", err)
+		formatter.PrintError("Couldn't receive cloudAccount data", err)
+		return err
 	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 
 	for id, ca := range cloudAccounts {
 		cloudAccounts[id].CloudProviderName = cloudProvidersMap[ca.CloudProviderID]
 	}
 
 	if err = formatter.PrintList(cloudAccounts); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -58,15 +63,20 @@ func CloudAccountShow() error {
 
 	cloudAccount, err := svc.GetCloudAccount(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive cloudAccount data", err)
+		formatter.PrintError("Couldn't receive cloudAccount data", err)
+		return err
 	}
 
-	cloudProvidersMap := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	if err != nil {
+		return err
+	}
 
 	cloudAccount.CloudProviderName = cloudProvidersMap[cloudAccount.CloudProviderID]
 
 	if err = formatter.PrintItem(*cloudAccount); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

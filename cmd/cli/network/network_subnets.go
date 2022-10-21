@@ -77,11 +77,13 @@ func SubnetList() error {
 
 	subnets, err := svc.ListSubnets(cmd.GetContext(), viper.GetString(cmd.VpcId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive Subnet data", err)
+		formatter.PrintError("Couldn't receive Subnet data", err)
+		return err
 	}
 
 	if err = formatter.PrintList(subnets); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -93,11 +95,13 @@ func SubnetShow() error {
 
 	subnet, err := svc.GetSubnet(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive Subnet data", err)
+		formatter.PrintError("Couldn't receive Subnet data", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*subnet); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -116,11 +120,13 @@ func SubnetCreate() error {
 
 	subnet, err := svc.CreateSubnet(cmd.GetContext(), viper.GetString(cmd.VpcId), &subnetIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create Subnet", err)
+		formatter.PrintError("Couldn't create Subnet", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*subnet); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -136,11 +142,13 @@ func SubnetUpdate() error {
 
 	subnet, err := svc.UpdateSubnet(cmd.GetContext(), viper.GetString(cmd.Id), &subnetIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update Subnet", err)
+		formatter.PrintError("Couldn't update Subnet", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*subnet); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -152,7 +160,8 @@ func SubnetDelete() error {
 
 	err := svc.DeleteSubnet(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete Subnet", err)
+		formatter.PrintError("Couldn't delete Subnet", err)
+		return err
 	}
 	return nil
 }
@@ -164,16 +173,21 @@ func SubnetServerList() error {
 
 	servers, err := svc.ListSubnetServers(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive servers data", err)
+		formatter.PrintError("Couldn't receive servers data", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	for _, server := range servers {
 		server.FillInLabelNames(labelNamesByID)
 	}
 
 	if err = formatter.PrintList(servers); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -185,16 +199,21 @@ func SubnetServerArrayList() error {
 
 	serverArrays, err := svc.ListSubnetServerArrays(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive server arrays data", err)
+		formatter.PrintError("Couldn't receive server arrays data", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	for _, serverArray := range serverArrays {
 		serverArray.FillInLabelNames(labelNamesByID)
 	}
 
 	if err = formatter.PrintList(serverArrays); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

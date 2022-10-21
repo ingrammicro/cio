@@ -87,7 +87,8 @@ func CloudSpecificExtensionDeploymentList() error {
 
 	cseds, err := svc.ListCloudSpecificExtensionDeployments(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive CSE deployments data", err)
+		formatter.PrintError("Couldn't receive CSE deployments data", err)
+		return err
 	}
 	if err = formatDeploymentsResponse(cseds, formatter); err != nil {
 		return err
@@ -102,12 +103,17 @@ func CloudSpecificExtensionDeploymentShow() error {
 
 	csed, err := svc.GetCloudSpecificExtensionDeployment(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive CSE deployment data", err)
+		formatter.PrintError("Couldn't receive CSE deployment data", err)
+		return err
 	}
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	csed.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*csed); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -132,25 +138,32 @@ func CloudSpecificExtensionDeploymentCreate() error {
 	if viper.IsSet(cmd.ParametersFromFile) {
 		defIn, err := cmd.ConvertFlagParamsJsonFromFileOrStdin(viper.GetString(cmd.ParametersFromFile))
 		if err != nil {
-			formatter.PrintFatal("Cannot parse parameters", err)
+			formatter.PrintError("Cannot parse parameters", err)
+			return err
 		}
 		cseDeploymentIn["parameter_values"] = defIn
 	}
 	if viper.IsSet(cmd.Parameters) {
 		params, err := cmd.FlagConvertParamsJSON(cmd.Parameters)
 		if err != nil {
-			formatter.PrintFatal("Cannot parse parameters", err)
+			formatter.PrintError("Cannot parse parameters", err)
+			return err
 		}
 		cseDeploymentIn["parameter_values"] = (*params)["parameters"]
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	if viper.IsSet(cmd.Labels) {
-		cseDeploymentIn["label_ids"] = labels.LabelResolution(
+		cseDeploymentIn["label_ids"], err = labels.LabelResolution(
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
-			&labelIDsByName,
-		)
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	cseDeployment, err := svc.CreateCloudSpecificExtensionDeployment(
@@ -159,12 +172,14 @@ func CloudSpecificExtensionDeploymentCreate() error {
 		&cseDeploymentIn,
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't import CSE deployment", err)
+		formatter.PrintError("Couldn't import CSE deployment", err)
+		return err
 	}
 
 	cseDeployment.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cseDeployment); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -184,13 +199,18 @@ func CloudSpecificExtensionDeploymentUpdate() error {
 		&cseDeploymentIn,
 	)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update CSE deployment", err)
+		formatter.PrintError("Couldn't update CSE deployment", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	cseDeployment.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cseDeployment); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -202,13 +222,18 @@ func CloudSpecificExtensionDeploymentDelete() error {
 
 	cseDeployment, err := svc.DeleteCloudSpecificExtensionDeployment(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete CSE deployment", err)
+		formatter.PrintError("Couldn't delete CSE deployment", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	cseDeployment.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*cseDeployment); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 
 	return nil

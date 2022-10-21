@@ -3,6 +3,8 @@
 package cmd
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"strings"
 
@@ -63,14 +65,15 @@ func EvaluateDebug() {
 	}
 }
 
-func EvaluateFormatter() {
+func EvaluateFormatter() error {
 	formatter := viper.GetString(configuration.Formatter)
 	if formatter != "" {
 		if formatter != "text" && formatter != "json" {
-			log.Fatalf("Unrecognized formatter %s. Please, use one of [ text | json ]", formatter)
+			return errors.New(fmt.Sprintf("Unrecognized formatter %s. Please, use one of [ text | json ]", formatter))
 		}
 		format.InitializeFormatter(formatter, os.Stdout)
 	}
+	return nil
 }
 
 func SetParamString(name string, flag string, paramsIn map[string]interface{}) {

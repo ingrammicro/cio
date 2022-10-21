@@ -161,29 +161,38 @@ func DomainList() error {
 
 	domains, err := svc.ListDomains(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive dns domains data", err)
+		formatter.PrintError("Couldn't receive dns domains data", err)
+		return err
 	}
 
 	labelables := make([]types.Labelable, len(domains))
 	for i := 0; i < len(domains); i++ {
 		labelables[i] = types.Labelable(domains[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	domains = make([]*types.Domain, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		s, ok := labelable.(*types.Domain)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.Domain, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.Domain, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		domains[i] = s
 	}
 
 	if err = formatter.PrintList(domains); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -195,13 +204,18 @@ func DomainShow() error {
 
 	domain, err := svc.GetDomain(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive dns domain data", err)
+		formatter.PrintError("Couldn't receive dns domain data", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	domain.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*domain); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -216,19 +230,30 @@ func DomainCreate() error {
 		"cloud_account_id": viper.GetString(cmd.CloudAccountId),
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	if viper.IsSet(cmd.Labels) {
-		domainIn["label_ids"] = labels.LabelResolution(viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
+		domainIn["label_ids"], err = labels.LabelResolution(
+			viper.GetString(cmd.Labels),
+			&labelNamesByID,
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	domain, err := svc.CreateDomain(cmd.GetContext(), &domainIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create dns domain", err)
+		formatter.PrintError("Couldn't create dns domain", err)
+		return err
 	}
 
 	domain.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*domain); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -240,13 +265,18 @@ func DomainDelete() error {
 
 	domain, err := svc.DeleteDomain(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete dns domain", err)
+		formatter.PrintError("Couldn't delete dns domain", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	domain.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*domain); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -258,13 +288,18 @@ func DomainRetry() error {
 
 	domain, err := svc.RetryDomain(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't retry dns domain", err)
+		formatter.PrintError("Couldn't retry dns domain", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	domain.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*domain); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -276,10 +311,12 @@ func DomainListRecords() error {
 
 	records, err := svc.ListRecords(cmd.GetContext(), viper.GetString(cmd.DomainId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive dns records data", err)
+		formatter.PrintError("Couldn't receive dns records data", err)
+		return err
 	}
 	if err = formatter.PrintList(records); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -291,10 +328,12 @@ func DomainShowRecord() error {
 
 	record, err := svc.GetRecord(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive dns record data", err)
+		formatter.PrintError("Couldn't receive dns record data", err)
+		return err
 	}
 	if err = formatter.PrintItem(*record); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -370,16 +409,19 @@ func DomainCreateRecord() error {
 
 	// If provided, only include in adequate context
 	if err := setRecordInByType(recordType, recordIn); err != nil {
-		formatter.PrintFatal("Couldn't create dns record", err)
+		formatter.PrintError("Couldn't create dns record", err)
+		return err
 	}
 
 	record, err := svc.CreateRecord(cmd.GetContext(), viper.GetString(cmd.DomainId), &recordIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create dns record", err)
+		formatter.PrintError("Couldn't create dns record", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*record); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -409,11 +451,13 @@ func DomainUpdateRecord() error {
 
 	record, err := svc.UpdateRecord(cmd.GetContext(), viper.GetString(cmd.Id), &recordIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update dns record", err)
+		formatter.PrintError("Couldn't update dns record", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*record); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -425,11 +469,13 @@ func DomainDeleteRecord() error {
 
 	record, err := svc.DeleteRecord(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete dns record", err)
+		formatter.PrintError("Couldn't delete dns record", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*record); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -441,11 +487,13 @@ func DomainRetryRecord() error {
 
 	record, err := svc.RetryRecord(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't retry dns record", err)
+		formatter.PrintError("Couldn't retry dns record", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*record); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

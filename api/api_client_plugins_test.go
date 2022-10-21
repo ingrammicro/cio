@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
 	"net/http"
 	"net/http/httptest"
@@ -13,12 +14,12 @@ import (
 
 func TestGetCloudApplicationDeployment(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudApplicationDeployment),
-			server:   NewServer(http.StatusOK, new(types.CloudApplicationDeployment)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudApplicationDeployment)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -40,7 +41,7 @@ func TestGetCloudApplicationDeployment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			deployment, status, err := svc.GetCloudApplicationDeployment(context.Background(), TEST)
+			deployment, status, err := svc.GetCloudApplicationDeployment(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -54,12 +55,12 @@ func TestGetCloudApplicationDeployment(t *testing.T) {
 
 func TestDeleteCloudApplicationDeployment(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudApplicationDeployment),
-			server:   NewServer(http.StatusOK, new(types.CloudApplicationDeployment)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudApplicationDeployment)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -81,7 +82,7 @@ func TestDeleteCloudApplicationDeployment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			deployment, err := svc.DeleteCloudApplicationDeployment(context.Background(), TEST)
+			deployment, err := svc.DeleteCloudApplicationDeployment(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -94,12 +95,12 @@ func TestDeleteCloudApplicationDeployment(t *testing.T) {
 
 func TestCreateCloudApplicationDeploymentTask(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudApplicationDeploymentTask),
-			server:   NewServer(http.StatusOK, new(types.CloudApplicationDeploymentTask)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudApplicationDeploymentTask)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -121,7 +122,7 @@ func TestCreateCloudApplicationDeploymentTask(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			deploymentTask, err := svc.CreateCloudApplicationDeploymentTask(context.Background(), TEST, new(map[string]interface{}))
+			deploymentTask, err := svc.CreateCloudApplicationDeploymentTask(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -134,12 +135,12 @@ func TestCreateCloudApplicationDeploymentTask(t *testing.T) {
 
 func TestGetCloudApplicationDeploymentTask(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudApplicationDeploymentTask),
-			server:   NewServer(http.StatusOK, new(types.CloudApplicationDeploymentTask)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudApplicationDeploymentTask)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -161,7 +162,7 @@ func TestGetCloudApplicationDeploymentTask(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			deploymentTask, err := svc.GetCloudApplicationDeploymentTask(context.Background(), TEST, TEST)
+			deploymentTask, err := svc.GetCloudApplicationDeploymentTask(context.Background(), testutils.TEST, testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -174,12 +175,12 @@ func TestGetCloudApplicationDeploymentTask(t *testing.T) {
 
 func TestListCloudApplicationTemplates(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.CloudApplicationTemplate{},
-			server:   NewServer(http.StatusOK, []*types.CloudApplicationTemplate{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.CloudApplicationTemplate{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -214,12 +215,12 @@ func TestListCloudApplicationTemplates(t *testing.T) {
 
 func TestGetCloudApplicationTemplate(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudApplicationTemplate),
-			server:   NewServer(http.StatusOK, new(types.CloudApplicationTemplate)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudApplicationTemplate)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -241,7 +242,7 @@ func TestGetCloudApplicationTemplate(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			template, err := svc.GetCloudApplicationTemplate(context.Background(), TEST)
+			template, err := svc.GetCloudApplicationTemplate(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -254,12 +255,12 @@ func TestGetCloudApplicationTemplate(t *testing.T) {
 
 func TestCreateCloudApplicationTemplate(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudApplicationTemplate),
-			server:   NewServer(http.StatusOK, new(types.CloudApplicationTemplate)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudApplicationTemplate)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -281,7 +282,7 @@ func TestCreateCloudApplicationTemplate(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			template, err := svc.CreateCloudApplicationTemplate(context.Background(), new(map[string]interface{}))
+			template, err := svc.CreateCloudApplicationTemplate(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -294,12 +295,12 @@ func TestCreateCloudApplicationTemplate(t *testing.T) {
 
 func TestParseMetadataCloudApplicationTemplate(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudApplicationTemplate),
-			server:   NewServer(http.StatusOK, new(types.CloudApplicationTemplate)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudApplicationTemplate)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -321,7 +322,7 @@ func TestParseMetadataCloudApplicationTemplate(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			template, err := svc.ParseMetadataCloudApplicationTemplate(context.Background(), TEST)
+			template, err := svc.ParseMetadataCloudApplicationTemplate(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -334,12 +335,12 @@ func TestParseMetadataCloudApplicationTemplate(t *testing.T) {
 
 func TestDeleteCloudApplicationTemplate(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: nil,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -361,7 +362,7 @@ func TestDeleteCloudApplicationTemplate(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.DeleteCloudApplicationTemplate(context.Background(), TEST)
+			err := svc.DeleteCloudApplicationTemplate(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -371,12 +372,12 @@ func TestDeleteCloudApplicationTemplate(t *testing.T) {
 
 func TestCreateTemporaryArchive(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.TemporaryArchive),
-			server:   NewServer(http.StatusOK, new(types.TemporaryArchive)),
+			server:   testutils.NewServer(http.StatusOK, new(types.TemporaryArchive)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -398,7 +399,7 @@ func TestCreateTemporaryArchive(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			temporaryArchive, err := svc.CreateTemporaryArchive(context.Background(), new(map[string]interface{}))
+			temporaryArchive, err := svc.CreateTemporaryArchive(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -411,12 +412,12 @@ func TestCreateTemporaryArchive(t *testing.T) {
 
 func TestCreateTemporaryArchiveImport(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.TemporaryArchiveImport),
-			server:   NewServer(http.StatusOK, new(types.TemporaryArchiveImport)),
+			server:   testutils.NewServer(http.StatusOK, new(types.TemporaryArchiveImport)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -438,7 +439,7 @@ func TestCreateTemporaryArchiveImport(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			temporaryArchiveImport, err := svc.CreateTemporaryArchiveImport(context.Background(), TEST, new(map[string]interface{}))
+			temporaryArchiveImport, err := svc.CreateTemporaryArchiveImport(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -451,12 +452,12 @@ func TestCreateTemporaryArchiveImport(t *testing.T) {
 
 func TestGetTemporaryArchiveImport(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.TemporaryArchiveImport),
-			server:   NewServer(http.StatusOK, new(types.TemporaryArchiveImport)),
+			server:   testutils.NewServer(http.StatusOK, new(types.TemporaryArchiveImport)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -478,7 +479,7 @@ func TestGetTemporaryArchiveImport(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			temporaryArchiveImport, err := svc.GetTemporaryArchiveImport(context.Background(), TEST)
+			temporaryArchiveImport, err := svc.GetTemporaryArchiveImport(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -491,12 +492,12 @@ func TestGetTemporaryArchiveImport(t *testing.T) {
 
 func TestCreateTemporaryArchiveExport(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.TemporaryArchiveExport),
-			server:   NewServer(http.StatusOK, new(types.TemporaryArchiveExport)),
+			server:   testutils.NewServer(http.StatusOK, new(types.TemporaryArchiveExport)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -518,7 +519,7 @@ func TestCreateTemporaryArchiveExport(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			temporaryArchiveExport, err := svc.CreateTemporaryArchiveExport(context.Background(), new(map[string]interface{}))
+			temporaryArchiveExport, err := svc.CreateTemporaryArchiveExport(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -531,12 +532,12 @@ func TestCreateTemporaryArchiveExport(t *testing.T) {
 
 func TestGetTemporaryArchiveExportTask(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.TemporaryArchiveExportTask),
-			server:   NewServer(http.StatusOK, new(types.TemporaryArchiveExportTask)),
+			server:   testutils.NewServer(http.StatusOK, new(types.TemporaryArchiveExportTask)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -558,7 +559,7 @@ func TestGetTemporaryArchiveExportTask(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			temporaryArchiveExportTask, err := svc.GetTemporaryArchiveExportTask(context.Background(), TEST)
+			temporaryArchiveExportTask, err := svc.GetTemporaryArchiveExportTask(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}

@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
 	"net/http"
 	"net/http/httptest"
@@ -13,12 +14,12 @@ import (
 
 func TestListStorageVolumes(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.Volume{},
-			server:   NewServer(http.StatusOK, []*types.Volume{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.Volume{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -40,7 +41,7 @@ func TestListStorageVolumes(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			volumes, err := svc.ListStorageVolumes(context.Background(), TEST)
+			volumes, err := svc.ListStorageVolumes(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -53,12 +54,12 @@ func TestListStorageVolumes(t *testing.T) {
 
 func TestListCloudProviders(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.CloudProvider{},
-			server:   NewServer(http.StatusOK, []*types.CloudProvider{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.CloudProvider{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -93,12 +94,12 @@ func TestListCloudProviders(t *testing.T) {
 
 func TestListServerStoragePlans(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.StoragePlan{},
-			server:   NewServer(http.StatusOK, []*types.StoragePlan{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.StoragePlan{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -120,7 +121,7 @@ func TestListServerStoragePlans(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			storagePlans, err := svc.ListServerStoragePlans(context.Background(), TEST)
+			storagePlans, err := svc.ListServerStoragePlans(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -133,12 +134,12 @@ func TestListServerStoragePlans(t *testing.T) {
 
 func TestListLoadBalancerPlans(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.LoadBalancerPlan{},
-			server:   NewServer(http.StatusOK, []*types.LoadBalancerPlan{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.LoadBalancerPlan{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -160,7 +161,7 @@ func TestListLoadBalancerPlans(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			loadBalancerPlans, err := svc.ListLoadBalancerPlans(context.Background(), TEST)
+			loadBalancerPlans, err := svc.ListLoadBalancerPlans(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -173,12 +174,12 @@ func TestListLoadBalancerPlans(t *testing.T) {
 
 func TestListClusterPlans(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.ClusterPlan{},
-			server:   NewServer(http.StatusOK, []*types.ClusterPlan{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.ClusterPlan{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -200,7 +201,7 @@ func TestListClusterPlans(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			clusterPlans, err := svc.ListClusterPlans(context.Background(), TEST)
+			clusterPlans, err := svc.ListClusterPlans(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -213,12 +214,12 @@ func TestListClusterPlans(t *testing.T) {
 
 func TestListGenericImages(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.GenericImage{},
-			server:   NewServer(http.StatusOK, []*types.GenericImage{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.GenericImage{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -253,12 +254,12 @@ func TestListGenericImages(t *testing.T) {
 
 func TestListServerArrays(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.ServerArray{},
-			server:   NewServer(http.StatusOK, []*types.ServerArray{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.ServerArray{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -293,12 +294,12 @@ func TestListServerArrays(t *testing.T) {
 
 func TestGetServerArray(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.ServerArray),
-			server:   NewServer(http.StatusOK, new(types.ServerArray)),
+			server:   testutils.NewServer(http.StatusOK, new(types.ServerArray)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -320,7 +321,7 @@ func TestGetServerArray(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			serverArray, err := svc.GetServerArray(context.Background(), TEST)
+			serverArray, err := svc.GetServerArray(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -333,12 +334,12 @@ func TestGetServerArray(t *testing.T) {
 
 func TestCreateServerArray(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.ServerArray),
-			server:   NewServer(http.StatusOK, new(types.ServerArray)),
+			server:   testutils.NewServer(http.StatusOK, new(types.ServerArray)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -360,7 +361,7 @@ func TestCreateServerArray(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			serverArray, err := svc.CreateServerArray(context.Background(), new(map[string]interface{}))
+			serverArray, err := svc.CreateServerArray(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -373,12 +374,12 @@ func TestCreateServerArray(t *testing.T) {
 
 func TestUpdateServerArray(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.ServerArray),
-			server:   NewServer(http.StatusOK, new(types.ServerArray)),
+			server:   testutils.NewServer(http.StatusOK, new(types.ServerArray)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -400,7 +401,7 @@ func TestUpdateServerArray(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			serverArray, err := svc.UpdateServerArray(context.Background(), TEST, new(map[string]interface{}))
+			serverArray, err := svc.UpdateServerArray(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -413,12 +414,12 @@ func TestUpdateServerArray(t *testing.T) {
 
 func TestBootServerArray(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.ServerArray),
-			server:   NewServer(http.StatusOK, new(types.ServerArray)),
+			server:   testutils.NewServer(http.StatusOK, new(types.ServerArray)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -440,7 +441,7 @@ func TestBootServerArray(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			serverArray, err := svc.BootServerArray(context.Background(), TEST)
+			serverArray, err := svc.BootServerArray(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -453,12 +454,12 @@ func TestBootServerArray(t *testing.T) {
 
 func TestShutdownServerArray(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.ServerArray),
-			server:   NewServer(http.StatusOK, new(types.ServerArray)),
+			server:   testutils.NewServer(http.StatusOK, new(types.ServerArray)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -480,7 +481,7 @@ func TestShutdownServerArray(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			serverArray, err := svc.ShutdownServerArray(context.Background(), TEST)
+			serverArray, err := svc.ShutdownServerArray(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -493,12 +494,12 @@ func TestShutdownServerArray(t *testing.T) {
 
 func TestEmptyServerArray(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.ServerArray),
-			server:   NewServer(http.StatusOK, new(types.ServerArray)),
+			server:   testutils.NewServer(http.StatusOK, new(types.ServerArray)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -520,7 +521,7 @@ func TestEmptyServerArray(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			serverArray, err := svc.EmptyServerArray(context.Background(), TEST)
+			serverArray, err := svc.EmptyServerArray(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -533,12 +534,12 @@ func TestEmptyServerArray(t *testing.T) {
 
 func TestEnlargeServerArray(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.ServerArray),
-			server:   NewServer(http.StatusOK, new(types.ServerArray)),
+			server:   testutils.NewServer(http.StatusOK, new(types.ServerArray)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -560,7 +561,7 @@ func TestEnlargeServerArray(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			serverArray, err := svc.EnlargeServerArray(context.Background(), TEST, new(map[string]interface{}))
+			serverArray, err := svc.EnlargeServerArray(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -573,12 +574,12 @@ func TestEnlargeServerArray(t *testing.T) {
 
 func TestListServerArrayServers(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.Server{},
-			server:   NewServer(http.StatusOK, []*types.Server{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.Server{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -600,7 +601,7 @@ func TestListServerArrayServers(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			servers, err := svc.ListServerArrayServers(context.Background(), TEST)
+			servers, err := svc.ListServerArrayServers(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -613,12 +614,12 @@ func TestListServerArrayServers(t *testing.T) {
 
 func TestDeleteServerArray(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: nil,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -640,7 +641,7 @@ func TestDeleteServerArray(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.DeleteServerArray(context.Background(), TEST)
+			err := svc.DeleteServerArray(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -650,12 +651,12 @@ func TestDeleteServerArray(t *testing.T) {
 
 func TestListServerPlans(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.ServerPlan{},
-			server:   NewServer(http.StatusOK, []*types.ServerPlan{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.ServerPlan{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -677,7 +678,7 @@ func TestListServerPlans(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			serverPlans, err := svc.ListServerPlans(context.Background(), TEST, TEST)
+			serverPlans, err := svc.ListServerPlans(context.Background(), testutils.TEST, testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -690,12 +691,12 @@ func TestListServerPlans(t *testing.T) {
 
 func TestGetServerPlan(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.ServerPlan),
-			server:   NewServer(http.StatusOK, new(types.ServerPlan)),
+			server:   testutils.NewServer(http.StatusOK, new(types.ServerPlan)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -717,7 +718,7 @@ func TestGetServerPlan(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			serverPlan, err := svc.GetServerPlan(context.Background(), TEST)
+			serverPlan, err := svc.GetServerPlan(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -730,12 +731,12 @@ func TestGetServerPlan(t *testing.T) {
 
 func TestListServers(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.Server{},
-			server:   NewServer(http.StatusOK, []*types.Server{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.Server{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -770,12 +771,12 @@ func TestListServers(t *testing.T) {
 
 func TestGetServer(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Server),
-			server:   NewServer(http.StatusOK, new(types.Server)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Server)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -797,7 +798,7 @@ func TestGetServer(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			server, err := svc.GetServer(context.Background(), TEST)
+			server, err := svc.GetServer(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -810,12 +811,12 @@ func TestGetServer(t *testing.T) {
 
 func TestCreateServer(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Server),
-			server:   NewServer(http.StatusOK, new(types.Server)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Server)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -837,7 +838,7 @@ func TestCreateServer(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			server, err := svc.CreateServer(context.Background(), new(map[string]interface{}))
+			server, err := svc.CreateServer(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -850,12 +851,12 @@ func TestCreateServer(t *testing.T) {
 
 func TestUpdateServer(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Server),
-			server:   NewServer(http.StatusOK, new(types.Server)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Server)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -877,7 +878,7 @@ func TestUpdateServer(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			server, err := svc.UpdateServer(context.Background(), TEST, new(map[string]interface{}))
+			server, err := svc.UpdateServer(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -890,12 +891,12 @@ func TestUpdateServer(t *testing.T) {
 
 func TestBootServer(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Server),
-			server:   NewServer(http.StatusOK, new(types.Server)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Server)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -917,7 +918,7 @@ func TestBootServer(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			server, err := svc.BootServer(context.Background(), TEST, new(map[string]interface{}))
+			server, err := svc.BootServer(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -930,12 +931,12 @@ func TestBootServer(t *testing.T) {
 
 func TestRebootServer(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Server),
-			server:   NewServer(http.StatusOK, new(types.Server)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Server)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -957,7 +958,7 @@ func TestRebootServer(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			server, err := svc.RebootServer(context.Background(), TEST, new(map[string]interface{}))
+			server, err := svc.RebootServer(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -970,12 +971,12 @@ func TestRebootServer(t *testing.T) {
 
 func TestShutdownServer(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Server),
-			server:   NewServer(http.StatusOK, new(types.Server)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Server)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -997,7 +998,7 @@ func TestShutdownServer(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			server, err := svc.ShutdownServer(context.Background(), TEST, new(map[string]interface{}))
+			server, err := svc.ShutdownServer(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1010,12 +1011,12 @@ func TestShutdownServer(t *testing.T) {
 
 func TestOverrideServer(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Server),
-			server:   NewServer(http.StatusOK, new(types.Server)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Server)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1037,7 +1038,7 @@ func TestOverrideServer(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			server, err := svc.OverrideServer(context.Background(), TEST, new(map[string]interface{}))
+			server, err := svc.OverrideServer(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1050,12 +1051,12 @@ func TestOverrideServer(t *testing.T) {
 
 func TestDeleteServer(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: nil,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1077,7 +1078,7 @@ func TestDeleteServer(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.DeleteServer(context.Background(), TEST)
+			err := svc.DeleteServer(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1087,12 +1088,12 @@ func TestDeleteServer(t *testing.T) {
 
 func TestListServerFloatingIPs(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.FloatingIP{},
-			server:   NewServer(http.StatusOK, []*types.FloatingIP{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.FloatingIP{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1114,7 +1115,7 @@ func TestListServerFloatingIPs(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			floatingIPs, err := svc.ListServerFloatingIPs(context.Background(), TEST)
+			floatingIPs, err := svc.ListServerFloatingIPs(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1127,12 +1128,12 @@ func TestListServerFloatingIPs(t *testing.T) {
 
 func TestListServerVolumes(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.Volume{},
-			server:   NewServer(http.StatusOK, []*types.Volume{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.Volume{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1154,7 +1155,7 @@ func TestListServerVolumes(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			volumes, err := svc.ListServerVolumes(context.Background(), TEST)
+			volumes, err := svc.ListServerVolumes(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1167,12 +1168,12 @@ func TestListServerVolumes(t *testing.T) {
 
 func TestListServerEvents(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.Event{},
-			server:   NewServer(http.StatusOK, []*types.Event{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.Event{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1194,7 +1195,7 @@ func TestListServerEvents(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			events, err := svc.ListServerEvents(context.Background(), TEST)
+			events, err := svc.ListServerEvents(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1207,12 +1208,12 @@ func TestListServerEvents(t *testing.T) {
 
 func TestListOperationalScripts(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.ScriptChar{},
-			server:   NewServer(http.StatusOK, []*types.ScriptChar{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.ScriptChar{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1234,7 +1235,7 @@ func TestListOperationalScripts(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			scripts, err := svc.ListOperationalScripts(context.Background(), TEST)
+			scripts, err := svc.ListOperationalScripts(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1247,12 +1248,12 @@ func TestListOperationalScripts(t *testing.T) {
 
 func TestExecuteOperationalScript(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Event),
-			server:   NewServer(http.StatusOK, new(types.Event)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Event)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1274,7 +1275,7 @@ func TestExecuteOperationalScript(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			event, err := svc.ExecuteOperationalScript(context.Background(), TEST, TEST, new(map[string]interface{}))
+			event, err := svc.ExecuteOperationalScript(context.Background(), testutils.TEST, testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1287,12 +1288,12 @@ func TestExecuteOperationalScript(t *testing.T) {
 
 func TestListSSHProfiles(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.SSHProfile{},
-			server:   NewServer(http.StatusOK, []*types.SSHProfile{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.SSHProfile{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1327,12 +1328,12 @@ func TestListSSHProfiles(t *testing.T) {
 
 func TestGetSSHProfile(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.SSHProfile),
-			server:   NewServer(http.StatusOK, new(types.SSHProfile)),
+			server:   testutils.NewServer(http.StatusOK, new(types.SSHProfile)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1354,7 +1355,7 @@ func TestGetSSHProfile(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			sshProfile, err := svc.GetSSHProfile(context.Background(), TEST)
+			sshProfile, err := svc.GetSSHProfile(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1367,12 +1368,12 @@ func TestGetSSHProfile(t *testing.T) {
 
 func TestCreateSSHProfile(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.SSHProfile),
-			server:   NewServer(http.StatusOK, new(types.SSHProfile)),
+			server:   testutils.NewServer(http.StatusOK, new(types.SSHProfile)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1394,7 +1395,7 @@ func TestCreateSSHProfile(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			sshProfile, err := svc.CreateSSHProfile(context.Background(), new(map[string]interface{}))
+			sshProfile, err := svc.CreateSSHProfile(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1407,12 +1408,12 @@ func TestCreateSSHProfile(t *testing.T) {
 
 func TestUpdateSSHProfile(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.SSHProfile),
-			server:   NewServer(http.StatusOK, new(types.SSHProfile)),
+			server:   testutils.NewServer(http.StatusOK, new(types.SSHProfile)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1434,7 +1435,7 @@ func TestUpdateSSHProfile(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			sshProfile, err := svc.UpdateSSHProfile(context.Background(), TEST, new(map[string]interface{}))
+			sshProfile, err := svc.UpdateSSHProfile(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1447,12 +1448,12 @@ func TestUpdateSSHProfile(t *testing.T) {
 
 func TestDeleteSSHProfile(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: nil,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1474,7 +1475,7 @@ func TestDeleteSSHProfile(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.DeleteSSHProfile(context.Background(), TEST)
+			err := svc.DeleteSSHProfile(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1484,12 +1485,12 @@ func TestDeleteSSHProfile(t *testing.T) {
 
 func TestListFloatingIPs(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.FloatingIP{},
-			server:   NewServer(http.StatusOK, []*types.FloatingIP{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.FloatingIP{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1511,7 +1512,7 @@ func TestListFloatingIPs(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			floatingIPs, err := svc.ListFloatingIPs(context.Background(), TEST)
+			floatingIPs, err := svc.ListFloatingIPs(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1524,12 +1525,12 @@ func TestListFloatingIPs(t *testing.T) {
 
 func TestListRealms(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.Realm{},
-			server:   NewServer(http.StatusOK, []*types.Realm{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.Realm{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1551,7 +1552,7 @@ func TestListRealms(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			realms, err := svc.ListRealms(context.Background(), TEST)
+			realms, err := svc.ListRealms(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1564,12 +1565,12 @@ func TestListRealms(t *testing.T) {
 
 func TestGetRealm(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Realm),
-			server:   NewServer(http.StatusOK, new(types.Realm)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Realm)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1591,7 +1592,7 @@ func TestGetRealm(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			realm, err := svc.GetRealm(context.Background(), TEST)
+			realm, err := svc.GetRealm(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -1604,12 +1605,12 @@ func TestGetRealm(t *testing.T) {
 
 func TestListRealmNodePoolPlans(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.NodePoolPlan{},
-			server:   NewServer(http.StatusOK, []*types.NodePoolPlan{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.NodePoolPlan{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -1631,7 +1632,7 @@ func TestListRealmNodePoolPlans(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			nodePoolPlans, err := svc.ListRealmNodePoolPlans(context.Background(), TEST)
+			nodePoolPlans, err := svc.ListRealmNodePoolPlans(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}

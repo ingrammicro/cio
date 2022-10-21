@@ -23,7 +23,16 @@ func TestWireUpAPI(t *testing.T) {
 	for title, test := range tests {
 		t.Run(title, func(t *testing.T) {
 			if test.config != nil {
-				test.config, _ = configuration.InitializeConfig()
+				c, err := configuration.InitializeConfig()
+				if err != nil {
+					t.Errorf("Unexpected error: %v\n", err)
+				}
+				c.APIEndpoint = "https://clients.test.imco.io/v3"
+				c.Certificate.Cert = "../configuration/testdata/ssl/cert.crt"
+				c.Certificate.Key = "../configuration/testdata/ssl/private/cert.key"
+				c.Certificate.Ca = "../configuration/testdata/ssl/ca_cert.pem"
+
+				test.config = c
 			}
 			configuration.SetConfig(test.config)
 			svc, config, f := WireUpAPI()
@@ -53,6 +62,7 @@ func TestShowCommand(t *testing.T) {
 			if test.parent != nil {
 				test.parent.AddCommand(cmdChild)
 			}
+
 			ShowCommand(cmdChild, []string{})
 		})
 	}
@@ -82,7 +92,6 @@ func TestEvaluateDebug(t *testing.T) {
 	}
 }
 
-// TODO FatalError/osExit
 func TestEvaluateFormatter(t *testing.T) {
 	tests := map[string]struct {
 		expected string
@@ -92,6 +101,9 @@ func TestEvaluateFormatter(t *testing.T) {
 		},
 		"if formatter is defined": {
 			expected: "json",
+		},
+		"if formatter is defined but unexpected": {
+			expected: "Unrecognized formatter test. Please, use one of [ text | json ]",
 		},
 	}
 
@@ -122,7 +134,7 @@ func TestSetParamString(t *testing.T) {
 		t.Run(title, func(t *testing.T) {
 			viper.Set(configuration.Formatter, test.expected)
 
-			paramsIn := map[string]interface{}{}
+			paramsIn := map[string]any{}
 			SetParamString(configuration.Formatter, configuration.Formatter, paramsIn)
 			if paramsIn[configuration.Formatter] != test.expected {
 				t.Errorf("Unexpected response: %v. Expected: %v\n", paramsIn[configuration.Formatter], test.expected)
@@ -147,7 +159,7 @@ func TestSetParamInt(t *testing.T) {
 		t.Run(title, func(t *testing.T) {
 			viper.Set(Port, test.expected)
 
-			paramsIn := map[string]interface{}{}
+			paramsIn := map[string]any{}
 			SetParamInt(Port, Port, paramsIn)
 			if paramsIn[Port] != test.expected {
 				t.Errorf("Unexpected response: %v. Expected: %v\n", paramsIn[Port], test.expected)

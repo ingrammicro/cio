@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
 	"net/http"
 	"net/http/httptest"
@@ -13,12 +14,12 @@ import (
 
 func TestListCloudSpecificExtensionDeployments(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.CloudSpecificExtensionDeployment{},
-			server:   NewServer(http.StatusOK, []*types.CloudSpecificExtensionDeployment{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.CloudSpecificExtensionDeployment{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -53,12 +54,12 @@ func TestListCloudSpecificExtensionDeployments(t *testing.T) {
 
 func TestGetCloudSpecificExtensionDeployment(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudSpecificExtensionDeployment),
-			server:   NewServer(http.StatusOK, new(types.CloudSpecificExtensionDeployment)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudSpecificExtensionDeployment)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -80,7 +81,7 @@ func TestGetCloudSpecificExtensionDeployment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			deployment, err := svc.GetCloudSpecificExtensionDeployment(context.Background(), TEST)
+			deployment, err := svc.GetCloudSpecificExtensionDeployment(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -93,12 +94,12 @@ func TestGetCloudSpecificExtensionDeployment(t *testing.T) {
 
 func TestCreateCloudSpecificExtensionDeployment(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudSpecificExtensionDeployment),
-			server:   NewServer(http.StatusOK, new(types.CloudSpecificExtensionDeployment)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudSpecificExtensionDeployment)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -120,7 +121,7 @@ func TestCreateCloudSpecificExtensionDeployment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			deployment, err := svc.CreateCloudSpecificExtensionDeployment(context.Background(), TEST, new(map[string]interface{}))
+			deployment, err := svc.CreateCloudSpecificExtensionDeployment(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -133,12 +134,12 @@ func TestCreateCloudSpecificExtensionDeployment(t *testing.T) {
 
 func TestUpdateCloudSpecificExtensionDeployment(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudSpecificExtensionDeployment),
-			server:   NewServer(http.StatusOK, new(types.CloudSpecificExtensionDeployment)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudSpecificExtensionDeployment)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -160,7 +161,7 @@ func TestUpdateCloudSpecificExtensionDeployment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			deployment, err := svc.UpdateCloudSpecificExtensionDeployment(context.Background(), TEST, new(map[string]interface{}))
+			deployment, err := svc.UpdateCloudSpecificExtensionDeployment(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -173,12 +174,12 @@ func TestUpdateCloudSpecificExtensionDeployment(t *testing.T) {
 
 func TestDeleteCloudSpecificExtensionDeployment(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudSpecificExtensionDeployment),
-			server:   NewServer(http.StatusOK, new(types.CloudSpecificExtensionDeployment)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudSpecificExtensionDeployment)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -200,7 +201,7 @@ func TestDeleteCloudSpecificExtensionDeployment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			deployment, err := svc.DeleteCloudSpecificExtensionDeployment(context.Background(), TEST)
+			deployment, err := svc.DeleteCloudSpecificExtensionDeployment(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -213,12 +214,12 @@ func TestDeleteCloudSpecificExtensionDeployment(t *testing.T) {
 
 func TestListCloudSpecificExtensionTemplates(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.CloudSpecificExtensionTemplate{},
-			server:   NewServer(http.StatusOK, []*types.CloudSpecificExtensionTemplate{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.CloudSpecificExtensionTemplate{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -253,12 +254,12 @@ func TestListCloudSpecificExtensionTemplates(t *testing.T) {
 
 func TestGetCloudSpecificExtensionTemplate(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudSpecificExtensionTemplate),
-			server:   NewServer(http.StatusOK, new(types.CloudSpecificExtensionTemplate)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudSpecificExtensionTemplate)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -280,7 +281,7 @@ func TestGetCloudSpecificExtensionTemplate(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			template, err := svc.GetCloudSpecificExtensionTemplate(context.Background(), TEST)
+			template, err := svc.GetCloudSpecificExtensionTemplate(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -293,12 +294,12 @@ func TestGetCloudSpecificExtensionTemplate(t *testing.T) {
 
 func TestCreateCloudSpecificExtensionTemplate(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudSpecificExtensionTemplate),
-			server:   NewServer(http.StatusOK, new(types.CloudSpecificExtensionTemplate)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudSpecificExtensionTemplate)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -320,7 +321,7 @@ func TestCreateCloudSpecificExtensionTemplate(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			template, err := svc.CreateCloudSpecificExtensionTemplate(context.Background(), new(map[string]interface{}))
+			template, err := svc.CreateCloudSpecificExtensionTemplate(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -333,12 +334,12 @@ func TestCreateCloudSpecificExtensionTemplate(t *testing.T) {
 
 func TestUpdateCloudSpecificExtensionTemplate(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.CloudSpecificExtensionTemplate),
-			server:   NewServer(http.StatusOK, new(types.CloudSpecificExtensionTemplate)),
+			server:   testutils.NewServer(http.StatusOK, new(types.CloudSpecificExtensionTemplate)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -360,7 +361,7 @@ func TestUpdateCloudSpecificExtensionTemplate(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			template, err := svc.UpdateCloudSpecificExtensionTemplate(context.Background(), TEST, new(map[string]interface{}))
+			template, err := svc.UpdateCloudSpecificExtensionTemplate(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -373,12 +374,12 @@ func TestUpdateCloudSpecificExtensionTemplate(t *testing.T) {
 
 func TestListCloudSpecificExtensionTemplateDeployments(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.CloudSpecificExtensionDeployment{},
-			server:   NewServer(http.StatusOK, []*types.CloudSpecificExtensionDeployment{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.CloudSpecificExtensionDeployment{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -400,7 +401,7 @@ func TestListCloudSpecificExtensionTemplateDeployments(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			deployments, err := svc.ListCloudSpecificExtensionTemplateDeployments(context.Background(), TEST)
+			deployments, err := svc.ListCloudSpecificExtensionTemplateDeployments(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -413,12 +414,12 @@ func TestListCloudSpecificExtensionTemplateDeployments(t *testing.T) {
 
 func TestDeleteCloudSpecificExtensionTemplate(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: nil,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -440,7 +441,7 @@ func TestDeleteCloudSpecificExtensionTemplate(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.DeleteCloudSpecificExtensionTemplate(context.Background(), TEST)
+			err := svc.DeleteCloudSpecificExtensionTemplate(context.Background(), testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}

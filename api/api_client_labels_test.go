@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
 	"net/http"
 	"net/http/httptest"
@@ -13,12 +14,12 @@ import (
 
 func TestListLabels(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.Label{new(types.Label)},
-			server:   NewServer(http.StatusOK, []*types.Label{new(types.Label)}),
+			server:   testutils.NewServer(http.StatusOK, []*types.Label{new(types.Label)}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -53,12 +54,12 @@ func TestListLabels(t *testing.T) {
 
 func TestCreateLabel(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: new(types.Label),
-			server:   NewServer(http.StatusOK, new(types.Label)),
+			server:   testutils.NewServer(http.StatusOK, new(types.Label)),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -80,7 +81,7 @@ func TestCreateLabel(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			label, err := svc.CreateLabel(context.Background(), new(map[string]interface{}))
+			label, err := svc.CreateLabel(context.Background(), new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -93,12 +94,12 @@ func TestCreateLabel(t *testing.T) {
 
 func TestAddLabel(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.LabeledResource{},
-			server:   NewServer(http.StatusOK, []*types.LabeledResource{}),
+			server:   testutils.NewServer(http.StatusOK, []*types.LabeledResource{}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -120,7 +121,7 @@ func TestAddLabel(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			labeledResources, err := svc.AddLabel(context.Background(), TEST, new(map[string]interface{}))
+			labeledResources, err := svc.AddLabel(context.Background(), testutils.TEST, new(map[string]any))
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -133,12 +134,12 @@ func TestAddLabel(t *testing.T) {
 
 func TestRemoveLabel(t *testing.T) {
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: nil,
-			server:   NewServer(http.StatusOK, nil),
+			server:   testutils.NewServer(http.StatusOK, nil),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",
@@ -160,7 +161,7 @@ func TestRemoveLabel(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := svc.RemoveLabel(context.Background(), TEST, TEST, TEST)
+			err := svc.RemoveLabel(context.Background(), testutils.TEST, testutils.TEST, testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}
@@ -172,12 +173,12 @@ func TestListCloudApplicationDeployments(t *testing.T) {
 	cad := new(types.CloudApplicationDeployment)
 	cad.Namespace = "cat:deployment"
 	tests := map[string]struct {
-		expected interface{}
+		expected any
 		server   *httptest.Server
 	}{
 		"if defined endpoint for API service is resolving properly": {
 			expected: []*types.CloudApplicationDeployment{cad},
-			server:   NewServer(http.StatusOK, []*types.CloudApplicationDeployment{cad}),
+			server:   testutils.NewServer(http.StatusOK, []*types.CloudApplicationDeployment{cad}),
 		},
 		"if defined endpoint for API service is invalid or cannot be reached": {
 			expected: "Cannot execute request",

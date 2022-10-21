@@ -120,7 +120,8 @@ func ScriptsList() error {
 
 	scripts, err := svc.ListScripts(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive script data", err)
+		formatter.PrintError("Couldn't receive script data", err)
+		return err
 	}
 
 	labelables := make([]types.Labelable, len(scripts))
@@ -128,22 +129,30 @@ func ScriptsList() error {
 		labelables[i] = types.Labelable(scripts[i])
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	scripts = make([]*types.Script, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		s, ok := labelable.(*types.Script)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.Script, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.Script, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		scripts[i] = s
 	}
 
 	if err = formatter.PrintList(scripts); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -155,13 +164,18 @@ func ScriptShow() error {
 
 	script, err := svc.GetScript(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive script data", err)
+		formatter.PrintError("Couldn't receive script data", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	script.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*script); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -180,20 +194,31 @@ func ScriptCreate() error {
 		scriptIn[cmd.Parameters] = strings.Split(viper.GetString(cmd.Parameters), ",")
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 
 	if viper.IsSet(cmd.Labels) {
-		scriptIn["label_ids"] = labels.LabelResolution(viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
+		scriptIn["label_ids"], err = labels.LabelResolution(
+			viper.GetString(cmd.Labels),
+			&labelNamesByID,
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	script, err := svc.CreateScript(cmd.GetContext(), &scriptIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create script", err)
+		formatter.PrintError("Couldn't create script", err)
+		return err
 	}
 
 	script.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*script); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -219,13 +244,18 @@ func ScriptUpdate() error {
 
 	script, err := svc.UpdateScript(cmd.GetContext(), viper.GetString(cmd.Id), &scriptIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update script", err)
+		formatter.PrintError("Couldn't update script", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	script.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*script); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -237,7 +267,8 @@ func ScriptDelete() error {
 
 	err := svc.DeleteScript(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete script", err)
+		formatter.PrintError("Couldn't delete script", err)
+		return err
 	}
 	return nil
 }
@@ -249,7 +280,9 @@ func ScriptAttachmentAdd() error {
 
 	sourceFilePath := viper.GetString(cmd.Filepath)
 	if !utils.FileExists(sourceFilePath) {
-		formatter.PrintFatal("Invalid file path", fmt.Errorf("no such file or directory: %s", sourceFilePath))
+		e := fmt.Errorf("no such file or directory: %s", sourceFilePath)
+		formatter.PrintError("Invalid file path", e)
+		return e
 	}
 
 	attachmentIn := map[string]interface{}{
@@ -259,14 +292,16 @@ func ScriptAttachmentAdd() error {
 	// adds new attachment
 	attachment, err := svc.AddScriptAttachment(cmd.GetContext(), viper.GetString(cmd.Id), &attachmentIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't add attachment to script", err)
+		formatter.PrintError("Couldn't add attachment to script", err)
+		return err
 	}
 
 	// uploads new attachment file
 	err = svc.UploadFile(cmd.GetContext(), sourceFilePath, attachment.UploadURL)
 	if err != nil {
 		cleanAttachment(attachment.ID)
-		formatter.PrintFatal("Couldn't upload attachment data", err)
+		formatter.PrintError("Couldn't upload attachment data", err)
+		return err
 	}
 
 	// marks the attachment as "uploaded"
@@ -274,21 +309,25 @@ func ScriptAttachmentAdd() error {
 	attachment, err = svc.UploadedScriptAttachment(cmd.GetContext(), attachment.ID, &attachmentIn)
 	if err != nil {
 		cleanAttachment(attachmentID)
-		formatter.PrintFatal("Couldn't set attachment as uploaded", err)
+		formatter.PrintError("Couldn't set attachment as uploaded", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*attachment); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
 
 // cleanAttachment deletes Attachment. Ideally for cleaning at uploading error cases
-func cleanAttachment(attachmentID string) {
+func cleanAttachment(attachmentID string) error {
 	svc, _, formatter := cli.WireUpAPIClient()
 	if err := svc.DeleteAttachment(cmd.GetContext(), attachmentID); err != nil {
 		formatter.PrintError("Couldn't clean failed attachment", err)
+		return err
 	}
+	return nil
 }
 
 // ScriptAttachmentList subcommand function
@@ -298,11 +337,13 @@ func ScriptAttachmentList() error {
 
 	attachments, err := svc.ListScriptAttachments(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't list attachments script", err)
+		formatter.PrintError("Couldn't list attachments script", err)
+		return err
 	}
 
 	if err = formatter.PrintList(attachments); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }

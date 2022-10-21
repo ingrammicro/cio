@@ -122,7 +122,8 @@ func FloatingIPList() error {
 
 	floatingIPs, err := svc.ListFloatingIPs(cmd.GetContext(), viper.GetString(cmd.ServerId))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive floating IPs data", err)
+		formatter.PrintError("Couldn't receive floating IPs data", err)
+		return err
 	}
 	if err = FormatFloatingIPsResponse(floatingIPs, formatter); err != nil {
 		return err
@@ -135,21 +136,29 @@ func FormatFloatingIPsResponse(floatingIPs []*types.FloatingIP, formatter format
 	for i := 0; i < len(floatingIPs); i++ {
 		labelables[i] = types.Labelable(floatingIPs[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	floatingIPs = make([]*types.FloatingIP, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		fIP, ok := labelable.(*types.FloatingIP)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.FloatingIP, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.FloatingIP, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		floatingIPs[i] = fIP
 	}
 	if err := formatter.PrintList(floatingIPs); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -161,12 +170,17 @@ func FloatingIPShow() error {
 
 	floatingIP, err := svc.GetFloatingIP(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive floating IP data", err)
+		formatter.PrintError("Couldn't receive floating IP data", err)
+		return err
 	}
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	floatingIP.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*floatingIP); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -182,24 +196,31 @@ func FloatingIPCreate() error {
 		"realm_id":         viper.GetString(cmd.RealmId),
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 
 	if viper.IsSet(cmd.Labels) {
-		floatingIPIn["label_ids"] = labels.LabelResolution(
+		floatingIPIn["label_ids"], err = labels.LabelResolution(
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
-			&labelIDsByName,
-		)
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	floatingIP, err := svc.CreateFloatingIP(cmd.GetContext(), &floatingIPIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create floating IP", err)
+		formatter.PrintError("Couldn't create floating IP", err)
+		return err
 	}
 
 	floatingIP.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*floatingIP); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -215,13 +236,18 @@ func FloatingIPUpdate() error {
 
 	floatingIP, err := svc.UpdateFloatingIP(cmd.GetContext(), viper.GetString(cmd.Id), &floatingIPIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update floating IP", err)
+		formatter.PrintError("Couldn't update floating IP", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	floatingIP.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*floatingIP); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -237,13 +263,18 @@ func FloatingIPAttach() error {
 
 	server, err := svc.AttachFloatingIP(cmd.GetContext(), viper.GetString(cmd.Id), &floatingIPIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't attach floating IP", err)
+		formatter.PrintError("Couldn't attach floating IP", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	server.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*server); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -255,7 +286,8 @@ func FloatingIPDetach() error {
 
 	err := svc.DetachFloatingIP(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't detach floating IP", err)
+		formatter.PrintError("Couldn't detach floating IP", err)
+		return err
 	}
 	return nil
 }
@@ -267,7 +299,8 @@ func FloatingIPDelete() error {
 
 	err := svc.DeleteFloatingIP(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete floating IP", err)
+		formatter.PrintError("Couldn't delete floating IP", err)
+		return err
 	}
 	return nil
 }
@@ -279,7 +312,8 @@ func FloatingIPDiscard() error {
 
 	err := svc.DiscardFloatingIP(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't discard floating IP", err)
+		formatter.PrintError("Couldn't discard floating IP", err)
+		return err
 	}
 	return nil
 }

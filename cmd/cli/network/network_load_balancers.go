@@ -130,28 +130,37 @@ func LoadBalancerList() error {
 
 	loadBalancers, err := svc.ListLoadBalancers(cmd.GetContext())
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive load balancers data", err)
+		formatter.PrintError("Couldn't receive load balancers data", err)
+		return err
 	}
 
 	labelables := make([]types.Labelable, len(loadBalancers))
 	for i := 0; i < len(loadBalancers); i++ {
 		labelables[i] = types.Labelable(loadBalancers[i])
 	}
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
-	filteredLabelables := labels.LabelFiltering(labelables, labelIDsByName)
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
+	filteredLabelables, err := labels.LabelFiltering(labelables, labelIDsByName)
+	if err != nil {
+		return err
+	}
 	labels.LabelAssignNamesForIDs(filteredLabelables, labelNamesByID)
 
 	loadBalancers = make([]*types.LoadBalancer, len(filteredLabelables))
 	for i, labelable := range filteredLabelables {
 		v, ok := labelable.(*types.LoadBalancer)
 		if !ok {
-			formatter.PrintFatal(cmd.LabelFilteringUnexpected,
-				fmt.Errorf("expected labelable to be a *types.LoadBalancer, got a %T", labelable))
+			e := fmt.Errorf("expected labelable to be a *types.LoadBalancer, got a %T", labelable)
+			formatter.PrintError(cmd.LabelFilteringUnexpected, e)
+			return e
 		}
 		loadBalancers[i] = v
 	}
 	if err = formatter.PrintList(loadBalancers); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -163,12 +172,17 @@ func LoadBalancerShow() error {
 
 	loadBalancer, err := svc.GetLoadBalancer(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive load balancer data", err)
+		formatter.PrintError("Couldn't receive load balancer data", err)
+		return err
 	}
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	loadBalancer.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -186,23 +200,30 @@ func LoadBalancerCreate() error {
 		"realm_id":              viper.GetString(cmd.RealmId),
 	}
 
-	labelIDsByName, labelNamesByID := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	if viper.IsSet(cmd.Labels) {
-		loadBalancerIn["label_ids"] = labels.LabelResolution(
+		loadBalancerIn["label_ids"], err = labels.LabelResolution(
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
-			&labelIDsByName,
-		)
+			&labelIDsByName)
+		if err != nil {
+			return err
+		}
 	}
 
 	loadBalancer, err := svc.CreateLoadBalancer(cmd.GetContext(), &loadBalancerIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't create load balancer", err)
+		formatter.PrintError("Couldn't create load balancer", err)
+		return err
 	}
 
 	loadBalancer.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -218,13 +239,18 @@ func LoadBalancerUpdate() error {
 
 	loadBalancer, err := svc.UpdateLoadBalancer(cmd.GetContext(), viper.GetString(cmd.Id), &loadBalancerIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't update load balancer", err)
+		formatter.PrintError("Couldn't update load balancer", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	loadBalancer.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -236,13 +262,18 @@ func LoadBalancerDelete() error {
 
 	loadBalancer, err := svc.DeleteLoadBalancer(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't delete load balancer", err)
+		formatter.PrintError("Couldn't delete load balancer", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	loadBalancer.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -256,13 +287,18 @@ func LoadBalancerRetry() error {
 
 	loadBalancer, err := svc.RetryLoadBalancer(cmd.GetContext(), viper.GetString(cmd.Id), &loadBalancerIn)
 	if err != nil {
-		formatter.PrintFatal("Couldn't retry load balancer", err)
+		formatter.PrintError("Couldn't retry load balancer", err)
+		return err
 	}
 
-	_, labelNamesByID := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	if err != nil {
+		return err
+	}
 	loadBalancer.FillInLabelNames(labelNamesByID)
 	if err = formatter.PrintItem(*loadBalancer); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
@@ -274,11 +310,13 @@ func LoadBalancerPlanShow() error {
 
 	lbp, err := svc.GetLoadBalancerPlan(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive load balancer plan data", err)
+		formatter.PrintError("Couldn't receive load balancer plan data", err)
+		return err
 	}
 
 	if err = formatter.PrintItem(*lbp); err != nil {
-		formatter.PrintFatal(cmd.PrintFormatError, err)
+		formatter.PrintError(cmd.PrintFormatError, err)
+		return err
 	}
 	return nil
 }
