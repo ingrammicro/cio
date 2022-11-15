@@ -5,7 +5,6 @@ package agent
 import (
 	"errors"
 	"github.com/ingrammicro/cio/logger"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"strconv"
@@ -20,7 +19,7 @@ func SetProcessIdToFile(pidFileName string) error {
 
 	pidValue := os.Getpid()
 	log.Debug("current pid:", pidValue)
-	if err := ioutil.WriteFile(pidFileName, []byte(strconv.Itoa(pidValue)), 0600); err != nil {
+	if err := os.WriteFile(pidFileName, []byte(strconv.Itoa(pidValue)), 0600); err != nil {
 		return err
 	}
 	return nil
@@ -31,7 +30,7 @@ func GetProcessIdFromFile(pidFileName string) (int, error) {
 	logger.DebugFuncInfo()
 
 	var pid int64
-	if bytes, err := ioutil.ReadFile(pidFileName); err != nil {
+	if bytes, err := os.ReadFile(pidFileName); err != nil {
 		return 0, err
 	} else {
 		pid, err = strconv.ParseInt(string(bytes), 10, 32)

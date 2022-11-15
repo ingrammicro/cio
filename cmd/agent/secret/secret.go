@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/cmd/agent"
+	"github.com/ingrammicro/cio/logger"
 )
 
 func init() {
@@ -18,6 +19,8 @@ func init() {
 }
 
 func RetrieveSecret(params []string) error {
+	logger.DebugFuncInfo()
+
 	svID := params[0]
 	filePath := params[1]
 	svc, _, formatter := agent.WireUpAPIServer()

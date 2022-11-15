@@ -6,7 +6,6 @@ package brownfield
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -28,7 +27,7 @@ func applySettings(svc *api.ServerAPI, f format.Formatter, username, password st
 	if err != nil {
 		f.PrintFatal("Cannot send server credentials", err)
 	}
-	dir, err := ioutil.TempDir("", "brownfield-configure")
+	dir, err := os.MkdirTemp("", "brownfield-configure")
 	if err != nil {
 		f.PrintFatal("Cannot create temp dir", err)
 	}
@@ -37,7 +36,7 @@ func applySettings(svc *api.ServerAPI, f format.Formatter, username, password st
 	scriptFilePath := fmt.Sprintf("%s\\configure.bat", dir)
 
 	// Writes content to file
-	if err := ioutil.WriteFile(scriptFilePath, []byte(scriptTemplate(settings)), 0600); err != nil {
+	if err := os.WriteFile(scriptFilePath, []byte(scriptTemplate(settings)), 0600); err != nil {
 		log.Fatalf("Error creating temp file: %v", err)
 	}
 
@@ -85,11 +84,11 @@ func sendUsernamePassword(svc *api.ServerAPI, username, password string) error {
 	return nil
 }
 
-func scriptTemplate(settings *types.Settings) (string){
+func scriptTemplate(settings *types.Settings) string {
 	return strings.Join([]string{
 		`powershell -command "Set-Service -Name sshd -StartupType Automatic"`,
 		`powershell -command "Start-Service sshd"`,
-		`powershell -command "Set-Content -path C:\ProgramData\ssh\administrators_authorized_keys '`+settings.SSHPublicKeys[0]+`'"`,
+		`powershell -command "Set-Content -path C:\ProgramData\ssh\administrators_authorized_keys '` + settings.SSHPublicKeys[0] + `'"`,
 		`powershell -command "icacls C:\ProgramData\ssh\administrators_authorized_keys /inheritance:d"`,
 		`powershell -command "icacls C:\ProgramData\ssh\administrators_authorized_keys /remove 'NT AUTHORITY\Authenticated Users'"`,
 		`powershell -command "Restart-Service sshd"`,

@@ -4,20 +4,17 @@ package agent
 
 import (
 	"fmt"
-	"io/ioutil"
+	"github.com/ingrammicro/cio/logger"
 	"os"
 	"path/filepath"
 	"runtime"
 
 	"github.com/ingrammicro/cio/api"
 	"github.com/ingrammicro/cio/cmd"
-	"github.com/ingrammicro/cio/utils/format"
-	log "github.com/sirupsen/logrus"
-
 	"github.com/ingrammicro/cio/configuration"
+	"github.com/ingrammicro/cio/utils/format"
 
 	"text/template"
-
 	//_ "github.com/ingrammicro/cio/cmd/agent/bootstrapping"
 	//_ "github.com/ingrammicro/cio/cmd/agent/brownfield"
 	//_ "github.com/ingrammicro/cio/cmd/agent/converge"
@@ -45,7 +42,8 @@ func RegisterPolling() {
 
 // Register registers the brownfield/polling process
 func Register(context configuration.Context) {
-	log.Info("Register")
+	logger.DebugFuncInfo()
+
 	f := format.GetFormatter()
 	config, err := configuration.GetConfig()
 	if err != nil {
@@ -162,7 +160,7 @@ func configureServerKeys(config *configuration.Config, rootCACert, cert, key str
 	if err != nil {
 		return fmt.Errorf("cannot create directory to place root CA cert: %v", err)
 	}
-	err = ioutil.WriteFile(configFileData.CaCertPath, []byte(rootCACert), 0644)
+	err = os.WriteFile(configFileData.CaCertPath, []byte(rootCACert), 0644)
 	if err != nil {
 		return fmt.Errorf("cannot write root CA cert: %v", err)
 	}
@@ -170,7 +168,7 @@ func configureServerKeys(config *configuration.Config, rootCACert, cert, key str
 	if err != nil {
 		return fmt.Errorf("cannot create directory to place server cert: %v", err)
 	}
-	err = ioutil.WriteFile(configFileData.CertPath, []byte(cert), 0644)
+	err = os.WriteFile(configFileData.CertPath, []byte(cert), 0644)
 	if err != nil {
 		return fmt.Errorf("cannot write server cert: %v", err)
 	}
@@ -178,7 +176,7 @@ func configureServerKeys(config *configuration.Config, rootCACert, cert, key str
 	if err != nil {
 		return fmt.Errorf("cannot create directory to place server key: %v", err)
 	}
-	err = ioutil.WriteFile(configFileData.KeyPath, []byte(key), 0600)
+	err = os.WriteFile(configFileData.KeyPath, []byte(key), 0600)
 	if err != nil {
 		return fmt.Errorf("cannot write server key: %v", err)
 	}

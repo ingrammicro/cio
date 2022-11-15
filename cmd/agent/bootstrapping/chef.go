@@ -1,52 +1,57 @@
+// Copyright (c) 2017-2022 Ingram Micro Inc.
+
 package bootstrapping
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"github.com/ingrammicro/cio/api"
+	"github.com/ingrammicro/cio/cmd/agent"
+	"github.com/ingrammicro/cio/logger"
+	"github.com/ingrammicro/cio/types"
+	"github.com/ingrammicro/cio/utils/format"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
 	"runtime"
-
-	"github.com/ingrammicro/cio/api/blueprint"
-	"github.com/ingrammicro/cio/api/types"
-	"github.com/ingrammicro/cio/utils"
-	"github.com/ingrammicro/cio/utils/format"
-	log "github.com/sirupsen/logrus"
 )
 
 // Subsidiary routine for commands processing
 func applyChefPolicyfiles(
 	ctx context.Context,
 	blueprintConfig *types.BootstrappingConfiguration,
-	bootstrappingSvc *blueprint.BootstrappingService,
+	svc *api.ServerAPI,
 	bsProcess *bootstrappingProcess,
 	formatter format.Formatter,
 ) error {
+	logger.DebugFuncInfo()
+
 	// Process tarballs policies
-	return processChefPolicyfiles(blueprintConfig, bootstrappingSvc, bsProcess)
+	return processChefPolicyfiles(ctx, blueprintConfig, svc, bsProcess)
 
 }
 
 // saveAttributes stores the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
 func saveAttributes(bsProcess *bootstrappingProcess, policyfileName string) error {
-	log.Debug("saveAttributes")
+	logger.DebugFuncInfo()
+
 	bsProcess.attributes.rawData["policy_group"] = "local"
 	bsProcess.attributes.rawData["policy_name"] = policyfileName
 	attrs, err := json.Marshal(bsProcess.attributes.rawData)
 	if err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(bsProcess.attributes.FilePath(bsProcess.directoryPath), attrs, 0600); err != nil {
+	if err := os.WriteFile(bsProcess.attributes.FilePath(bsProcess.directoryPath), attrs, 0600); err != nil {
 		return err
 	}
 	return nil
 }
 
 func runCommand(fn func(chunk string) error, command string, thresholdLines int) error {
-	log.Debug("runCommand")
-	exitCode, err := utils.RunContinuousCmd(fn, command, -1, thresholdLines)
+	logger.DebugFuncInfo()
+
+	exitCode, err := agent.RunContinuousCmd(fn, command, -1, thresholdLines)
 	if err == nil && exitCode != 0 {
 		err = fmt.Errorf("policyfile application exited with %d code", exitCode)
 	}
@@ -58,8 +63,14 @@ func runCommand(fn func(chunk string) error, command string, thresholdLines int)
 }
 
 // processChefPolicyfiles applies for each policy the required chef commands, reporting in bunches of N lines
-func processChefPolicyfiles(blueprintConfig *types.BootstrappingConfiguration, bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) error {
-	log.Debug("processChefPolicyfiles")
+func processChefPolicyfiles(
+	ctx context.Context,
+	blueprintConfig *types.BootstrappingConfiguration,
+	svc *api.ServerAPI,
+	bsProcess *bootstrappingProcess,
+) error {
+	logger.DebugFuncInfo()
+
 	for _, bsPolicyfile := range bsProcess.policyfiles {
 		command, renamedPolicyfileDir, policyfileDir, err := preparePolicyfileCommand(bsProcess, bsPolicyfile)
 		if err != nil {
@@ -68,7 +79,7 @@ func processChefPolicyfiles(blueprintConfig *types.BootstrappingConfiguration, b
 		log.Debug(command)
 		bsProcess.cmsVersion = ""
 		// Custom method for chunks processing
-		fn := getBootstrapLogReporter(bootstrappingSvc, bsProcess, blueprintConfig)
+		fn := getBootstrapLogReporter(ctx, svc, bsProcess, blueprintConfig)
 		if err = runCommand(fn, command, bsProcess.thresholdLines); err != nil {
 			return err
 		}
@@ -88,7 +99,8 @@ func processChefPolicyfiles(blueprintConfig *types.BootstrappingConfiguration, b
 func preparePolicyfileCommand(bsProcess *bootstrappingProcess, bsPolicyfile policyfile) (
 	string, string, string, error,
 ) {
-	log.Debug("preparePolicyfileCommand")
+	logger.DebugFuncInfo()
+
 	// Store the attributes as JSON in a file with name `attrs-<attribute_revision_id>.json`
 	err := saveAttributes(bsProcess, bsPolicyfile.ID)
 	if err != nil {

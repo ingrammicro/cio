@@ -9,7 +9,6 @@ import (
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/utils"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"runtime"
@@ -164,7 +163,7 @@ func createCommandWithFilename(command string) (cmd *exec.Cmd, cmdFileName strin
 	}
 
 	// Writes content to file
-	if err := ioutil.WriteFile(cmdFileName, []byte(command), 0600); err != nil {
+	if err := os.WriteFile(cmdFileName, []byte(command), 0600); err != nil {
 		log.Fatalf("Error creating temp file: %v", err)
 	}
 
@@ -256,9 +255,9 @@ func RunContinuousCmd(
 	report func(chunk string) error,
 	command string,
 	thresholdTime int,
-	thresholdLines int) (int, error) {
-
-	log.Debug("RunContinuousCmd")
+	thresholdLines int,
+) (int, error) {
+	logger.DebugFuncInfo()
 
 	// Saves script/command in a temp file
 	var cmd, cmdFileName = createCommandWithFilename(command)

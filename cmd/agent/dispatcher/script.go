@@ -5,7 +5,6 @@ package dispatcher
 import (
 	"fmt"
 	"github.com/ingrammicro/cio/cmd/agent"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -121,7 +120,7 @@ func execute(phase string, scriptCharacterizationUUID string) {
 
 	for _, sc := range scriptChars {
 		log.Infof("------------------------------------------------------------------------------------------------")
-		path, err := ioutil.TempDir("", "cio")
+		path, err := os.MkdirTemp("", "cio")
 		if err != nil {
 			formatter.PrintFatal("Couldn't create temporary directory", err)
 		}

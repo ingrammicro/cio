@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/ingrammicro/cio/cmd/agent"
 
-	"io/ioutil"
 	"math/rand"
 	"net/url"
 	"os"
@@ -316,12 +315,13 @@ func runBootstrapOnce(ctx context.Context, config *configuration.Config, formatt
 // Subsidiary routine for commands processing
 func applyPolicyfiles(
 	ctx context.Context,
-	bootstrappingSvc *blueprint.BootstrappingService,
+	svc *api.ServerAPI,
 	blueprintConfig *types.BootstrappingConfiguration,
 	formatter format.Formatter,
 	thresholdLines int,
 ) error {
-	log.Debug("applyPolicyfiles")
+	logger.DebugFuncInfo()
+
 	err := generateWorkspaceDir()
 	if err != nil {
 		formatter.PrintError("couldn't generated workspace directory", err)
@@ -341,7 +341,7 @@ func applyPolicyfiles(
 	}
 	// For every policyfile, ensure its tarball (downloadable through their download_url) has been downloaded to the
 	// server ...
-	err = downloadPolicyfiles(ctx, bootstrappingSvc, bsProcess)
+	err = downloadPolicyfiles(ctx, svc, bsProcess)
 	if err != nil {
 		formatter.PrintError("couldn't download policy files", err)
 		return err
@@ -353,9 +353,9 @@ func applyPolicyfiles(
 		return err
 	}
 	if blueprintConfig.ConfigurationManagementSystem == CMSChef {
-		err = applyChefPolicyfiles(ctx, blueprintConfig, bootstrappingSvc, bsProcess, formatter)
+		err = applyChefPolicyfiles(ctx, blueprintConfig, svc, bsProcess, formatter)
 	} else if blueprintConfig.ConfigurationManagementSystem == CMSAnsible {
-		err = applyAnsiblePolicyfiles(ctx, blueprintConfig, bootstrappingSvc, bsProcess, formatter)
+		err = applyAnsiblePolicyfiles(ctx, blueprintConfig, svc, bsProcess, formatter)
 	} else {
 		return fmt.Errorf("unknown configuration management system %q, expected %q or %q", blueprintConfig.ConfigurationManagementSystem, CMSChef, CMSAnsible)
 	}
@@ -365,7 +365,7 @@ func applyPolicyfiles(
 	// Inform the platform of applied changes via a `PUT /blueprint/applied_configuration` request with a JSON payload
 	// similar to
 	log.Debug("reporting applied policy files")
-	reportErr := reportAppliedConfiguration(bootstrappingSvc, bsProcess)
+	reportErr := reportAppliedConfiguration(ctx, svc, bsProcess)
 	if reportErr != nil {
 		formatter.PrintError("couldn't report applied status for policy files", err)
 		return err
@@ -405,6 +405,7 @@ func getBlueprintConfig(
 	formatter format.Formatter,
 ) (*types.BootstrappingConfiguration, bool, error) {
 	logger.DebugFuncInfo()
+
 	// Inquire about desired configuration changes to be applied by querying the `GET /blueprint/configuration`
 	// endpoint. This will provide a JSON response with the desired configuration changes
 	blueprintConfig, status, err := svc.GetBootstrappingConfiguration(cmd.GetContext())
@@ -433,12 +434,16 @@ func getBlueprintConfig(
 }
 
 func getBootstrapLogReporter(
-	bootstrappingSvc *blueprint.BootstrappingService,
+	ctx context.Context,
+	svc *api.ServerAPI,
 	bsProcess *bootstrappingProcess,
-	blueprintConfig *types.BootstrappingConfiguration) func(chunk string) error {
+	blueprintConfig *types.BootstrappingConfiguration,
+) func(chunk string) error {
+	logger.DebugFuncInfo()
+
 	fn := func(chunk string) error {
 		log.Debug("sendChunks")
-		err := utils.Retry(retriesNumber, time.Second, func() error {
+		err := agent.Retry(retriesNumber, time.Second, func() error {
 			log.Debug("Sending: ", chunk)
 			bsProcess.parseCMSVersion(blueprintConfig, chunk)
 
@@ -446,7 +451,7 @@ func getBootstrapLogReporter(
 				"stdout": chunk,
 			}
 
-			_, statusCode, err := bootstrappingSvc.ReportBootstrappingLog(&commandIn)
+			_, statusCode, err := svc.ReportBootstrappingLog(ctx, &commandIn)
 			switch {
 			// 0<100 error cases??
 			case statusCode == 0:
@@ -470,25 +475,28 @@ func getBootstrapLogReporter(
 
 // reportAppliedConfiguration Inform the platform of applied changes
 func reportAppliedConfiguration(
-	bootstrappingSvc *blueprint.BootstrappingService,
+	ctx context.Context,
+	svc *api.ServerAPI,
 	bsProcess *bootstrappingProcess,
 ) error {
-	log.Debug("reportAppliedConfiguration")
+	logger.DebugFuncInfo()
 
 	payload := map[string]interface{}{
 		"started_at":              bsProcess.startedAt,
 		"finished_at":             bsProcess.finishedAt,
 		"policyfile_revision_ids": bsProcess.appliedPolicyfileRevisionIDs,
 		"attribute_revision_id":   bsProcess.attributes.revisionID,
-		"agent_version":           utils.VERSION,
+		"agent_version":           configuration.VERSION,
 	}
 	if bsProcess.cmsVersion != "" {
 		payload["cms_version"] = bsProcess.cmsVersion
 	}
-	return bootstrappingSvc.ReportBootstrappingAppliedConfiguration(&payload)
+	return svc.ReportBootstrappingAppliedConfiguration(ctx, &payload)
 }
 
 func (bsProcess *bootstrappingProcess) parseCMSVersion(blueprintConfig *types.BootstrappingConfiguration, chunk string) {
+	logger.DebugFuncInfo()
+
 	if bsProcess.cmsVersion != "" {
 		return
 	}
@@ -550,7 +558,7 @@ func cleanObsoletePolicyfiles(bsProcess *bootstrappingProcess) error {
 	logger.DebugFuncInfo()
 
 	// evaluates working folder
-	deletableFiles, err := ioutil.ReadDir(bsProcess.directoryPath)
+	deletableFiles, err := os.ReadDir(bsProcess.directoryPath)
 	if err != nil {
 		return err
 	}

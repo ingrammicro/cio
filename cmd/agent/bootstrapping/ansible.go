@@ -1,13 +1,16 @@
+// Copyright (c) 2017-2022 Ingram Micro Inc.
+
 package bootstrapping
 
 import (
 	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/api"
+	"github.com/ingrammicro/cio/logger"
+	"github.com/ingrammicro/cio/types"
 	"os"
 	"path/filepath"
 
-	"github.com/ingrammicro/cio/api/blueprint"
-	"github.com/ingrammicro/cio/api/types"
 	"github.com/ingrammicro/cio/utils/format"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
@@ -23,10 +26,12 @@ const (
 func applyAnsiblePolicyfiles(
 	ctx context.Context,
 	blueprintConfig *types.BootstrappingConfiguration,
-	bootstrappingSvc *blueprint.BootstrappingService,
+	svc *api.ServerAPI,
 	bsProcess *bootstrappingProcess,
 	formatter format.Formatter,
 ) error {
+	logger.DebugFuncInfo()
+
 	err := prepareAnsibleInventory(ctx, bsProcess)
 	if err != nil {
 		formatter.PrintError("couldn't prepare inventory:", err)
@@ -37,7 +42,7 @@ func applyAnsiblePolicyfiles(
 		formatter.PrintError("couldn't prepare variables:", err)
 		return err
 	}
-	err = processAnsiblePolicyfiles(blueprintConfig, bootstrappingSvc, bsProcess)
+	err = processAnsiblePolicyfiles(ctx, blueprintConfig, svc, bsProcess)
 	if err != nil {
 		formatter.PrintError("couldn't process policyfiles:", err)
 		return err
@@ -46,7 +51,8 @@ func applyAnsiblePolicyfiles(
 }
 
 func prepareAnsibleInventory(ctx context.Context, bsProcess *bootstrappingProcess) error {
-	log.Debug("prepareAnsibleInventory")
+	logger.DebugFuncInfo()
+
 	file, err := os.Create(inventoryFilePath(bsProcess.directoryPath))
 	if err != nil {
 		return fmt.Errorf("opening inventory file to write: %w", err)
@@ -71,7 +77,8 @@ func prepareAnsibleInventory(ctx context.Context, bsProcess *bootstrappingProces
 }
 
 func prepareAnsibleVariables(ctx context.Context, bsProcess *bootstrappingProcess) error {
-	log.Debug("prepareAnsibleVariables")
+	logger.DebugFuncInfo()
+
 	file, err := os.Create(variableFilePath(bsProcess.directoryPath))
 	if err != nil {
 		return fmt.Errorf("opening variable file to write: %w", err)
@@ -95,8 +102,14 @@ func variableFilePath(dir string) string {
 }
 
 // processAnsiblePolicyfiles applies for each policy the required ansible-galaxy and ansible-playbook commands, reporting in bunches of N lines
-func processAnsiblePolicyfiles(blueprintConfig *types.BootstrappingConfiguration, bootstrappingSvc *blueprint.BootstrappingService, bsProcess *bootstrappingProcess) error {
-	log.Debug("processAnsiblePolicyfiles")
+func processAnsiblePolicyfiles(
+	ctx context.Context,
+	blueprintConfig *types.BootstrappingConfiguration,
+	svc *api.ServerAPI,
+	bsProcess *bootstrappingProcess,
+) error {
+	logger.DebugFuncInfo()
+
 	for _, bsPolicyfile := range bsProcess.policyfiles {
 		policyfileDir := bsPolicyfile.Path(bsProcess.directoryPath)
 		command := fmt.Sprintf(
@@ -106,7 +119,7 @@ func processAnsiblePolicyfiles(blueprintConfig *types.BootstrappingConfiguration
 		log.Debug(command)
 		bsProcess.cmsVersion = ""
 		// Custom method for chunks processing
-		fn := getBootstrapLogReporter(bootstrappingSvc, bsProcess, blueprintConfig)
+		fn := getBootstrapLogReporter(ctx, svc, bsProcess, blueprintConfig)
 		if err := runCommand(fn, command, bsProcess.thresholdLines); err != nil {
 			return err
 		}

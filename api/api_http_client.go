@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"github.com/ingrammicro/cio/configuration"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"regexp"
@@ -53,7 +52,7 @@ func NewHTTPClient(config *configuration.Config) (svc *HTTPClient, err error) {
 	}
 
 	// Loads CA Certificate
-	caCert, err := ioutil.ReadFile(svc.config.Certificate.Ca)
+	caCert, err := os.ReadFile(svc.config.Certificate.Ca)
 	if err != nil {
 		return nil, fmt.Errorf("cannot read IMCO CA cert: %v", err)
 	}
@@ -154,7 +153,7 @@ func (imco *HTTPClient) DownloadFile(ctx context.Context, url string, filepath s
 		return "", httpResponse.StatusCode, fmt.Errorf("HTTP request failed with status %s", httpResponse.Status)
 	}
 
-	buf, err := ioutil.ReadAll(httpResponse.Body)
+	buf, err := io.ReadAll(httpResponse.Body)
 	if err != nil {
 		return "", httpResponse.StatusCode, errors.Wrap(err, CannotReadHttpResponseBody)
 	}
@@ -205,7 +204,7 @@ func (imco *HTTPClient) UploadFile(ctx context.Context, sourceFilePath, targetUR
 		return errors.Wrap(err, "Cannot upload file")
 	}
 	defer httpResponse.Body.Close()
-	buf, err := ioutil.ReadAll(httpResponse.Body)
+	buf, err := io.ReadAll(httpResponse.Body)
 	if err != nil {
 		return errors.Wrap(err, CannotReadHttpResponseBody)
 	}
@@ -270,7 +269,7 @@ func (imco *HTTPClient) request(ctx context.Context, method string, path string,
 	}
 	defer httpResponse.Body.Close()
 
-	buf, err := ioutil.ReadAll(httpResponse.Body)
+	buf, err := io.ReadAll(httpResponse.Body)
 	if err != nil {
 		return nil, httpResponse.StatusCode, errors.Wrap(err, CannotReadHttpResponseBody)
 	}

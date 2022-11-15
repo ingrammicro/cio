@@ -13,7 +13,7 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"io/ioutil"
+	"io"
 	"net/url"
 	"os"
 	"os/user"
@@ -235,7 +235,7 @@ func (config *Config) readConfig() error {
 		}
 		defer xmlFile.Close()
 		readingTime := time.Now()
-		b, err := ioutil.ReadAll(xmlFile)
+		b, err := io.ReadAll(xmlFile)
 		if err != nil {
 			return errors.Wrapf(err, "configuration File %s couldn't be read", config.ConfFile)
 		}
@@ -487,7 +487,7 @@ func (config *Config) readCommandPollingConfig() {
 // evaluateCertificate determines if a certificate has been issued for a host
 func (config *Config) evaluateCertificate() error {
 	if utils.FileExists(config.Certificate.Cert) {
-		data, err := ioutil.ReadFile(config.Certificate.Cert)
+		data, err := os.ReadFile(config.Certificate.Cert)
 		if err != nil {
 			return err
 		}
@@ -512,7 +512,7 @@ func (config *Config) evaluateCertificate() error {
 }
 
 // evaluateAPIEndpointURL evaluates if API endpoint url is valid,
-//advising if invalid version defined, and adapting if required
+// advising if invalid version defined, and adapting if required
 func (config *Config) evaluateAPIEndpointURL() error {
 	logger.DebugFuncInfo()
 

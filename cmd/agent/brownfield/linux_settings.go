@@ -12,7 +12,6 @@ import (
 
 	"github.com/ingrammicro/cio/api"
 
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"text/template"
@@ -27,7 +26,7 @@ func applySettings(svc *api.ServerAPI, f format.Formatter, _, _ string) {
 	}
 
 	var tmpFileName string
-	tmpFile, err := ioutil.TempFile("", "concerto-setup")
+	tmpFile, err := os.CreateTemp("", "concerto-setup")
 	if err != nil {
 		f.PrintFatal("Cannot not open temp file to write setup script", err)
 	}
