@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-// TODO remove after migration
-
 var tarBinary string
 
 func init() {

@@ -3,8 +3,11 @@
 package cloudapplications
 
 import (
+	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/api"
 	"github.com/ingrammicro/cio/cmd/cli"
+	"github.com/ingrammicro/cio/utils/format"
 
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/logger"
@@ -86,6 +89,7 @@ func CloudApplicationTemplateShow() error {
 
 // CloudApplicationTemplateUpload subcommand function
 func CloudApplicationTemplateUpload() error {
+	// TODO "name"!?
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
@@ -99,23 +103,24 @@ func CloudApplicationTemplateUpload() error {
 	catIn := map[string]interface{}{
 		"is_mock": false,
 	}
-	cat, err := svc.CreateCloudApplicationTemplate(cmd.GetContext(), &catIn)
+	ctx := cmd.GetContext()
+	cat, err := svc.CreateCloudApplicationTemplate(ctx, &catIn)
 	if err != nil {
-		formatter.PrintError("Couldn't receive cloud application template data", err)
+		formatter.PrintError("Couldn't create cloud application template data", err)
 		return err
 	}
 
 	catID := cat.ID
-	err = svc.UploadFile(cmd.GetContext(), sourceFilePath, cat.UploadURL)
+	err = svc.UploadFile(ctx, sourceFilePath, cat.UploadURL)
 	if err != nil {
-		cleanTemplate(catID)
+		cleanTemplate(ctx, svc, formatter, catID)
 		formatter.PrintError("Couldn't upload cloud application template data", err)
 		return err
 	}
 
-	cat, err = svc.ParseMetadataCloudApplicationTemplate(cmd.GetContext(), catID)
+	cat, err = svc.ParseMetadataCloudApplicationTemplate(ctx, catID)
 	if err != nil {
-		cleanTemplate(catID)
+		cleanTemplate(ctx, svc, formatter, catID)
 		formatter.PrintError("Couldn't parse cloud application template metadata", err)
 		return err
 	}
@@ -128,11 +133,12 @@ func CloudApplicationTemplateUpload() error {
 }
 
 // cleanTemplate deletes cloud application template. Ideally for cleaning at uploading error cases
-func cleanTemplate(catID string) {
-	svc, _, formatter := cli.WireUpAPIClient()
-	if err := svc.DeleteCloudApplicationTemplate(cmd.GetContext(), catID); err != nil {
+func cleanTemplate(ctx context.Context, svc *api.ClientAPI, formatter format.Formatter, catID string) error {
+	if err := svc.DeleteCloudApplicationTemplate(ctx, catID); err != nil {
 		formatter.PrintError("Couldn't clean failed cloud application template", err)
+		return err
 	}
+	return nil
 }
 
 // CloudApplicationTemplateDelete subcommand function

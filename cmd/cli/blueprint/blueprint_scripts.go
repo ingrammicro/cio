@@ -3,8 +3,11 @@
 package blueprint
 
 import (
+	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/api"
 	"github.com/ingrammicro/cio/cmd/cli"
+	"github.com/ingrammicro/cio/utils/format"
 	"strings"
 
 	"github.com/ingrammicro/cio/cmd"
@@ -118,9 +121,10 @@ func ScriptsList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	scripts, err := svc.ListScripts(cmd.GetContext())
+	ctx := cmd.GetContext()
+	scripts, err := svc.ListScripts(ctx)
 	if err != nil {
-		formatter.PrintError("Couldn't receive script data", err)
+		formatter.PrintError("Couldn't receive scripts data", err)
 		return err
 	}
 
@@ -129,7 +133,7 @@ func ScriptsList() error {
 		labelables[i] = types.Labelable(scripts[i])
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -162,13 +166,14 @@ func ScriptShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	script, err := svc.GetScript(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	script, err := svc.GetScript(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive script data", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -194,13 +199,15 @@ func ScriptCreate() error {
 		scriptIn[cmd.Parameters] = strings.Split(viper.GetString(cmd.Parameters), ",")
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 
 	if viper.IsSet(cmd.Labels) {
 		scriptIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -209,7 +216,7 @@ func ScriptCreate() error {
 		}
 	}
 
-	script, err := svc.CreateScript(cmd.GetContext(), &scriptIn)
+	script, err := svc.CreateScript(ctx, &scriptIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create script", err)
 		return err
@@ -242,13 +249,14 @@ func ScriptUpdate() error {
 		scriptIn[cmd.Parameters] = strings.Split(viper.GetString(cmd.Parameters), ",")
 	}
 
-	script, err := svc.UpdateScript(cmd.GetContext(), viper.GetString(cmd.Id), &scriptIn)
+	ctx := cmd.GetContext()
+	script, err := svc.UpdateScript(ctx, viper.GetString(cmd.Id), &scriptIn)
 	if err != nil {
 		formatter.PrintError("Couldn't update script", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -289,26 +297,27 @@ func ScriptAttachmentAdd() error {
 		cmd.Name: viper.GetString(cmd.Name),
 	}
 
+	ctx := cmd.GetContext()
 	// adds new attachment
-	attachment, err := svc.AddScriptAttachment(cmd.GetContext(), viper.GetString(cmd.Id), &attachmentIn)
+	attachment, err := svc.AddScriptAttachment(ctx, viper.GetString(cmd.Id), &attachmentIn)
 	if err != nil {
 		formatter.PrintError("Couldn't add attachment to script", err)
 		return err
 	}
 
 	// uploads new attachment file
-	err = svc.UploadFile(cmd.GetContext(), sourceFilePath, attachment.UploadURL)
+	err = svc.UploadFile(ctx, sourceFilePath, attachment.UploadURL)
 	if err != nil {
-		cleanAttachment(attachment.ID)
+		cleanAttachment(ctx, svc, formatter, attachment.ID)
 		formatter.PrintError("Couldn't upload attachment data", err)
 		return err
 	}
 
 	// marks the attachment as "uploaded"
 	attachmentID := attachment.ID
-	attachment, err = svc.UploadedScriptAttachment(cmd.GetContext(), attachment.ID, &attachmentIn)
+	attachment, err = svc.UploadedScriptAttachment(ctx, attachment.ID, &attachmentIn)
 	if err != nil {
-		cleanAttachment(attachmentID)
+		cleanAttachment(ctx, svc, formatter, attachmentID)
 		formatter.PrintError("Couldn't set attachment as uploaded", err)
 		return err
 	}
@@ -321,9 +330,8 @@ func ScriptAttachmentAdd() error {
 }
 
 // cleanAttachment deletes Attachment. Ideally for cleaning at uploading error cases
-func cleanAttachment(attachmentID string) error {
-	svc, _, formatter := cli.WireUpAPIClient()
-	if err := svc.DeleteAttachment(cmd.GetContext(), attachmentID); err != nil {
+func cleanAttachment(ctx context.Context, svc *api.ClientAPI, formatter format.Formatter, attachmentID string) error {
+	if err := svc.DeleteAttachment(ctx, attachmentID); err != nil {
 		formatter.PrintError("Couldn't clean failed attachment", err)
 		return err
 	}
@@ -337,7 +345,7 @@ func ScriptAttachmentList() error {
 
 	attachments, err := svc.ListScriptAttachments(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't list attachments script", err)
+		formatter.PrintError("Couldn't receive script attachments data", err)
 		return err
 	}
 

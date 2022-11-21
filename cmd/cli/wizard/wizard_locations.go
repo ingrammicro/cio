@@ -15,7 +15,7 @@ func init() {
 	)
 	cmd.NewCommand(locationsCmd, &cmd.CommandContext{
 		Use:       "list",
-		Short:     "Lists the available Locations",
+		Short:     "Lists the available locations",
 		RunMethod: LocationList},
 	)
 }
@@ -27,7 +27,7 @@ func LocationList() error {
 
 	locations, err := svc.ListLocations(cmd.GetContext())
 	if err != nil {
-		formatter.PrintError("Couldn't receive location data", err)
+		formatter.PrintError("Couldn't receive locations data", err)
 		return err
 	}
 	if err = formatter.PrintList(locations); err != nil {

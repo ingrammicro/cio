@@ -3,6 +3,7 @@
 package blueprint
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/cmd/cli"
 	"regexp"
@@ -212,9 +213,10 @@ func TemplateList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	templates, err := svc.ListTemplates(cmd.GetContext())
+	ctx := cmd.GetContext()
+	templates, err := svc.ListTemplates(ctx)
 	if err != nil {
-		formatter.PrintError("Couldn't receive template data", err)
+		formatter.PrintError("Couldn't receive templates data", err)
 		return err
 	}
 
@@ -222,7 +224,7 @@ func TemplateList() error {
 	for i := 0; i < len(templates); i++ {
 		labelables[i] = types.Labelable(templates[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -255,7 +257,8 @@ func TemplateShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	template, err := svc.GetTemplate(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	template, err := svc.GetTemplate(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive template data", err)
 		return err
@@ -266,7 +269,7 @@ func TemplateShow() error {
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -278,7 +281,7 @@ func TemplateShow() error {
 	return nil
 }
 
-func setTemplateParams(formatter format.Formatter, templateIn map[string]interface{}) {
+func setTemplateParams(ctx context.Context, formatter format.Formatter, templateIn map[string]interface{}) {
 	logger.DebugFuncInfo()
 	if viper.IsSet(cmd.ConfigurationAttributesFromFile) {
 		caIn, err := cmd.ConvertFlagParamsJsonFromFileOrStdin(viper.GetString(cmd.ConfigurationAttributesFromFile))
@@ -298,7 +301,7 @@ func setTemplateParams(formatter format.Formatter, templateIn map[string]interfa
 		templateIn["run_list"] = utils.RemoveDuplicates(strings.Split(viper.GetString(cmd.RunList), ","))
 	}
 	if viper.IsSet(cmd.CookbookVersions) {
-		cbIn, err := convertFlagParamsToCookbookVersions(viper.GetString(cmd.CookbookVersions))
+		cbIn, err := convertFlagParamsToCookbookVersions(ctx, viper.GetString(cmd.CookbookVersions))
 		if err != nil {
 			formatter.PrintFatal("Cannot parse input cookbook versions", err)
 		}
@@ -318,19 +321,21 @@ func TemplateCreate() error {
 		)
 	}
 
+	ctx := cmd.GetContext()
 	templateIn := map[string]interface{}{
 		"name":             viper.GetString(cmd.Name),
 		"generic_image_id": viper.GetString(cmd.GenericImageId),
 	}
-	setTemplateParams(formatter, templateIn)
+	setTemplateParams(ctx, formatter, templateIn)
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 
-	if viper.IsSet("labels") {
+	if viper.IsSet(cmd.Labels) {
 		templateIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -339,7 +344,7 @@ func TemplateCreate() error {
 		}
 	}
 
-	template, err := svc.CreateTemplate(cmd.GetContext(), &templateIn)
+	template, err := svc.CreateTemplate(ctx, &templateIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create template", err)
 		return err
@@ -370,11 +375,12 @@ func TemplateUpdate() error {
 		)
 	}
 
+	ctx := cmd.GetContext()
 	templateIn := map[string]interface{}{}
 	cmd.SetParamString("name", cmd.Name, templateIn)
-	setTemplateParams(formatter, templateIn)
+	setTemplateParams(ctx, formatter, templateIn)
 
-	template, err := svc.UpdateTemplate(cmd.GetContext(), viper.GetString(cmd.Id), &templateIn)
+	template, err := svc.UpdateTemplate(ctx, viper.GetString(cmd.Id), &templateIn)
 	if err != nil {
 		formatter.PrintError("Couldn't update template", err)
 		return err
@@ -385,7 +391,7 @@ func TemplateUpdate() error {
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -402,8 +408,9 @@ func TemplateCompile() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
+	ctx := cmd.GetContext()
 	templateIn := map[string]interface{}{}
-	template, err := svc.CompileTemplate(cmd.GetContext(), viper.GetString(cmd.Id), &templateIn)
+	template, err := svc.CompileTemplate(ctx, viper.GetString(cmd.Id), &templateIn)
 	if err != nil {
 		formatter.PrintError("Couldn't compile template", err)
 		return err
@@ -414,7 +421,7 @@ func TemplateCompile() error {
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -452,7 +459,7 @@ func TemplateScriptList() error {
 		viper.GetString(cmd.Type),
 	)
 	if err != nil {
-		formatter.PrintError("Couldn't receive templateScript data", err)
+		formatter.PrintError("Couldn't receive template scripts data", err)
 		return err
 	}
 	if err = formatter.PrintList(templateScripts); err != nil {
@@ -473,7 +480,7 @@ func TemplateScriptShow() error {
 		viper.GetString(cmd.Id),
 	)
 	if err != nil {
-		formatter.PrintError("Couldn't receive templateScript data", err)
+		formatter.PrintError("Couldn't receive template script data", err)
 		return err
 	}
 	if err = formatter.PrintItem(*templateScript); err != nil {
@@ -521,7 +528,7 @@ func TemplateScriptCreate() error {
 		&templateScriptIn,
 	)
 	if err != nil {
-		formatter.PrintError("Couldn't create templateScript", err)
+		formatter.PrintError("Couldn't create template script", err)
 		return err
 	}
 	if err = formatter.PrintItem(*templateScript); err != nil {
@@ -561,13 +568,14 @@ func TemplateScriptUpdate() error {
 		templateScriptIn["parameter_values"] = (*params)[cmd.ParameterValues]
 	}
 
-	templateScript, err := svc.UpdateTemplateScript(cmd.GetContext(),
+	templateScript, err := svc.UpdateTemplateScript(
+		cmd.GetContext(),
 		viper.GetString(cmd.TemplateId),
 		viper.GetString(cmd.Id),
 		&templateScriptIn,
 	)
 	if err != nil {
-		formatter.PrintError("Couldn't update templateScript", err)
+		formatter.PrintError("Couldn't update template script", err)
 		return err
 	}
 	if err = formatter.PrintItem(*templateScript); err != nil {
@@ -584,7 +592,7 @@ func TemplateScriptDelete() error {
 
 	err := svc.DeleteTemplateScript(cmd.GetContext(), viper.GetString(cmd.TemplateId), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't delete templateScript", err)
+		formatter.PrintError("Couldn't delete template script", err)
 		return err
 	}
 	return nil
@@ -606,7 +614,7 @@ func TemplateScriptReorder() error {
 		&templateScriptIn,
 	)
 	if err != nil {
-		formatter.PrintError("Couldn't reorder templateScript", err)
+		formatter.PrintError("Couldn't reorder template script", err)
 		return err
 	}
 	if err = formatter.PrintList(templateScript); err != nil {
@@ -638,6 +646,7 @@ func TemplateServersList() error {
 // =========== Template helpers =============
 
 func processCookbookVersionItem(
+	ctx context.Context,
 	cbvIn string,
 	cookbookVersions []*types.CookbookVersion,
 	name, operator, version string,
@@ -648,7 +657,7 @@ func processCookbookVersionItem(
 		if len(cookbookVersions) == 0 {
 			// data is loaded only once
 			svc, _, formatter := cli.WireUpAPIClient()
-			cbvs, err := svc.ListCookbookVersions(cmd.GetContext())
+			cbvs, err := svc.ListCookbookVersions(ctx)
 			if err != nil {
 				formatter.PrintError("cannot receive uploaded cookbook versions data", err)
 				return err
@@ -678,7 +687,7 @@ func processCookbookVersionItem(
 // convertFlagParamsToCookbookVersions returns the json representation for the given friendly input format f cookbook
 // versions assignation
 // i.e: "wordpress:0.1.0,nano=2.0.1,1password~>1.3.0"
-func convertFlagParamsToCookbookVersions(cbvsIn string) (map[string]interface{}, error) {
+func convertFlagParamsToCookbookVersions(ctx context.Context, cbvsIn string) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
 	cookbookVersions := make([]*types.CookbookVersion, 0)
 	for _, cbvIn := range strings.Split(cbvsIn, ",") {
@@ -690,7 +699,7 @@ func convertFlagParamsToCookbookVersions(cbvsIn string) (map[string]interface{},
 		if _, found := result[name]; found {
 			return nil, fmt.Errorf("detected duplicated cookbook version name: %s", name)
 		}
-		if err := processCookbookVersionItem(cbvIn, cookbookVersions, name, operator, version, result); err != nil {
+		if err := processCookbookVersionItem(ctx, cbvIn, cookbookVersions, name, operator, version, result); err != nil {
 			return nil, err
 		}
 	}

@@ -24,35 +24,35 @@ func init() {
 
 	subnetsCmd := cmd.NewCommand(networkCmd, &cmd.CommandContext{
 		Use:   "subnets",
-		Short: "Provides information about VPC Subnets"},
+		Short: "Provides information about VPC subnets"},
 	)
 	cmd.NewCommand(subnetsCmd, &cmd.CommandContext{
 		Use:          "list",
-		Short:        "Lists all Subnets of a VPC",
+		Short:        "Lists all subnets of a VPC",
 		RunMethod:    SubnetList,
 		FlagContexts: []cmd.FlagContext{fVpcId}},
 	)
 	cmd.NewCommand(subnetsCmd, &cmd.CommandContext{
 		Use:          "show",
-		Short:        "Shows information about the Subnet identified by the given id",
+		Short:        "Shows information about the subnet identified by the given id",
 		RunMethod:    SubnetShow,
 		FlagContexts: []cmd.FlagContext{fId}},
 	)
 	cmd.NewCommand(subnetsCmd, &cmd.CommandContext{
 		Use:          "create",
-		Short:        "Creates a new Subnet inside the specified VPC",
+		Short:        "Creates a new subnet inside the specified VPC",
 		RunMethod:    SubnetCreate,
 		FlagContexts: []cmd.FlagContext{fVpcId, fName, fCidr, fType}},
 	)
 	cmd.NewCommand(subnetsCmd, &cmd.CommandContext{
 		Use:          "update",
-		Short:        "Updates an existing Subnet identified by the given id",
+		Short:        "Updates an existing subnet identified by the given id",
 		RunMethod:    SubnetUpdate,
 		FlagContexts: []cmd.FlagContext{fId, fName}},
 	)
 	cmd.NewCommand(subnetsCmd, &cmd.CommandContext{
 		Use:          "delete",
-		Short:        "Deletes a Subnet",
+		Short:        "Deletes a subnet",
 		RunMethod:    SubnetDelete,
 		FlagContexts: []cmd.FlagContext{fId}},
 	)
@@ -77,7 +77,7 @@ func SubnetList() error {
 
 	subnets, err := svc.ListSubnets(cmd.GetContext(), viper.GetString(cmd.VpcId))
 	if err != nil {
-		formatter.PrintError("Couldn't receive Subnet data", err)
+		formatter.PrintError("Couldn't receive subnets data", err)
 		return err
 	}
 
@@ -95,7 +95,7 @@ func SubnetShow() error {
 
 	subnet, err := svc.GetSubnet(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't receive Subnet data", err)
+		formatter.PrintError("Couldn't receive subnet data", err)
 		return err
 	}
 
@@ -120,7 +120,7 @@ func SubnetCreate() error {
 
 	subnet, err := svc.CreateSubnet(cmd.GetContext(), viper.GetString(cmd.VpcId), &subnetIn)
 	if err != nil {
-		formatter.PrintError("Couldn't create Subnet", err)
+		formatter.PrintError("Couldn't create subnet", err)
 		return err
 	}
 
@@ -142,7 +142,7 @@ func SubnetUpdate() error {
 
 	subnet, err := svc.UpdateSubnet(cmd.GetContext(), viper.GetString(cmd.Id), &subnetIn)
 	if err != nil {
-		formatter.PrintError("Couldn't update Subnet", err)
+		formatter.PrintError("Couldn't update subnet", err)
 		return err
 	}
 
@@ -160,7 +160,7 @@ func SubnetDelete() error {
 
 	err := svc.DeleteSubnet(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't delete Subnet", err)
+		formatter.PrintError("Couldn't delete subnet", err)
 		return err
 	}
 	return nil
@@ -171,13 +171,14 @@ func SubnetServerList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	servers, err := svc.ListSubnetServers(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	servers, err := svc.ListSubnetServers(ctx, viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't receive servers data", err)
+		formatter.PrintError("Couldn't receive subnet servers data", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -197,13 +198,14 @@ func SubnetServerArrayList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	serverArrays, err := svc.ListSubnetServerArrays(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	serverArrays, err := svc.ListSubnetServerArrays(ctx, viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't receive server arrays data", err)
+		formatter.PrintError("Couldn't receive subnet server arrays data", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}

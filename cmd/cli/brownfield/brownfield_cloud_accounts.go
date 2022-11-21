@@ -5,6 +5,7 @@ package brownfield
 import (
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/cmd/cli"
+	"github.com/ingrammicro/cio/configuration"
 	"github.com/ingrammicro/cio/logger"
 )
 
@@ -12,7 +13,7 @@ func init() {
 	cloudAccountsCmd := cmd.NewCommand(brownfieldCmd, &cmd.CommandContext{
 		Use: "cloud-accounts",
 		Short: "Provides information about brownfield cloud accounts. " +
-			"Allows querying cloud accounts to import resources from IMCO"},
+			"Allows querying cloud accounts to import resources from " + configuration.CloudOrchestratorPlatformName},
 	)
 	cmd.NewCommand(cloudAccountsCmd, &cmd.CommandContext{
 		Use:       "list",
@@ -26,13 +27,14 @@ func BrownfieldCloudAccountList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cloudAccounts, err := svc.ListBrownfieldCloudAccounts(cmd.GetContext())
+	ctx := cmd.GetContext()
+	cloudAccounts, err := svc.ListBrownfieldCloudAccounts(ctx)
 	if err != nil {
 		formatter.PrintError("Couldn't receive cloud accounts data", err)
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}

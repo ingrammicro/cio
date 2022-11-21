@@ -20,16 +20,16 @@ func init() {
 
 	brownfieldCmd := cmd.NewCommand(cmd.RootCmd, &cmd.CommandContext{
 		Use:   "brownfield",
-		Short: "Manages registration and configuration within an imported brownfield Host"},
+		Short: "Manages registration and configuration within an imported brownfield host"},
 	)
 	cmd.NewCommand(brownfieldCmd, &cmd.CommandContext{
 		Use:       "register",
-		Short:     "Register orchestrator agent within an imported brownfield Host",
+		Short:     "Register orchestrator agent within an imported brownfield host",
 		RunMethod: agent.RegisterBrownfield},
 	)
 	cmd.NewCommand(brownfieldCmd, &cmd.CommandContext{
 		Use:          "configure",
-		Short:        "Configures an imported brownfield Host's FQDN, SSH access, agent services and firewall",
+		Short:        "Configures an imported brownfield host's FQDN, SSH access, agent services and firewall",
 		RunMethod:    Configure,
 		FlagContexts: flagContexts},
 	)

@@ -85,12 +85,13 @@ func CloudSpecificExtensionDeploymentList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cseds, err := svc.ListCloudSpecificExtensionDeployments(cmd.GetContext())
+	ctx := cmd.GetContext()
+	cseds, err := svc.ListCloudSpecificExtensionDeployments(ctx)
 	if err != nil {
 		formatter.PrintError("Couldn't receive CSE deployments data", err)
 		return err
 	}
-	if err = formatDeploymentsResponse(cseds, formatter); err != nil {
+	if err = formatDeploymentsResponse(ctx, cseds, formatter); err != nil {
 		return err
 	}
 	return nil
@@ -101,12 +102,13 @@ func CloudSpecificExtensionDeploymentShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	csed, err := svc.GetCloudSpecificExtensionDeployment(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	csed, err := svc.GetCloudSpecificExtensionDeployment(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive CSE deployment data", err)
 		return err
 	}
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -152,12 +154,14 @@ func CloudSpecificExtensionDeploymentCreate() error {
 		cseDeploymentIn["parameter_values"] = (*params)["parameters"]
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 	if viper.IsSet(cmd.Labels) {
 		cseDeploymentIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -167,7 +171,7 @@ func CloudSpecificExtensionDeploymentCreate() error {
 	}
 
 	cseDeployment, err := svc.CreateCloudSpecificExtensionDeployment(
-		cmd.GetContext(),
+		ctx,
 		viper.GetString(cmd.Id),
 		&cseDeploymentIn,
 	)
@@ -193,8 +197,9 @@ func CloudSpecificExtensionDeploymentUpdate() error {
 		"name": viper.GetString(cmd.Name),
 	}
 
+	ctx := cmd.GetContext()
 	cseDeployment, err := svc.UpdateCloudSpecificExtensionDeployment(
-		cmd.GetContext(),
+		ctx,
 		viper.GetString(cmd.Id),
 		&cseDeploymentIn,
 	)
@@ -203,7 +208,7 @@ func CloudSpecificExtensionDeploymentUpdate() error {
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -220,13 +225,14 @@ func CloudSpecificExtensionDeploymentDelete() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cseDeployment, err := svc.DeleteCloudSpecificExtensionDeployment(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	cseDeployment, err := svc.DeleteCloudSpecificExtensionDeployment(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't delete CSE deployment", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}

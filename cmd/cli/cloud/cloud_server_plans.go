@@ -3,6 +3,7 @@
 package cloud
 
 import (
+	"context"
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/cmd/cli"
 	"github.com/ingrammicro/cio/logger"
@@ -31,7 +32,7 @@ func init() {
 	)
 	cmd.NewCommand(serverPlansCmd, &cmd.CommandContext{
 		Use:          "show",
-		Short:        "This action shows information about the server Plan identified by the given id",
+		Short:        "This action shows information about the server plan identified by the given id",
 		RunMethod:    ServerPlanShow,
 		FlagContexts: []cmd.FlagContext{fId}},
 	)
@@ -42,29 +43,30 @@ func ServerPlanList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
+	ctx := cmd.GetContext()
 	serverPlans, err := svc.ListServerPlans(
-		cmd.GetContext(),
+		ctx,
 		viper.GetString(cmd.CloudProviderId),
 		viper.GetString(cmd.RealmId))
 	if err != nil {
-		formatter.PrintError("Couldn't receive serverPlan data", err)
+		formatter.PrintError("Couldn't receive server plans data", err)
 		return err
 	}
-	if err = FormatServerPlansResponse(serverPlans, formatter); err != nil {
+	if err = FormatServerPlansResponse(ctx, serverPlans, formatter); err != nil {
 		return err
 	}
 	return nil
 }
 
 // FormatServerPlansResponse processes and prints received server plans
-func FormatServerPlansResponse(serverPlans []*types.ServerPlan, formatter format.Formatter) error {
+func FormatServerPlansResponse(ctx context.Context, serverPlans []*types.ServerPlan, formatter format.Formatter) error {
 	logger.DebugFuncInfo()
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}
-	locationsMap, err := cli.LoadLocationsMapping(cmd.GetContext())
+	locationsMap, err := cli.LoadLocationsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -86,13 +88,14 @@ func ServerPlanShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	serverPlan, err := svc.GetServerPlan(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	serverPlan, err := svc.GetServerPlan(ctx, viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't receive serverPlan data", err)
+		formatter.PrintError("Couldn't receive server plan data", err)
 		return err
 	}
 
-	locationsMap, err := cli.LoadLocationsMapping(cmd.GetContext())
+	locationsMap, err := cli.LoadLocationsMapping(ctx)
 	if err != nil {
 		return err
 	}

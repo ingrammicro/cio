@@ -29,13 +29,14 @@ func StoragePlanShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	storagePlans, err := svc.GetStoragePlan(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	storagePlans, err := svc.GetStoragePlan(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive storage plan data", err)
 		return err
 	}
 
-	locationsMap, err := cli.LoadLocationsMapping(cmd.GetContext())
+	locationsMap, err := cli.LoadLocationsMapping(ctx)
 	if err != nil {
 		return err
 	}

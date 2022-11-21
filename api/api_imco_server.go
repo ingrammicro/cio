@@ -11,29 +11,28 @@ import (
 	"github.com/ingrammicro/cio/configuration"
 	"github.com/ingrammicro/cio/logger"
 	"github.com/ingrammicro/cio/types"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"time"
 )
 
 const (
-	pathBlueprintScriptCharacterizationsType = "/blueprint/script_characterizations?type=%s"
-	pathBlueprintScriptCharacterization      = "/blueprint/script_characterizations/%s"
-	pathBlueprintScriptConclusions           = "/blueprint/script_conclusions"
-	pathBlueprintConfiguration               = "/blueprint/configuration"
-	pathBlueprintAppliedConfiguration        = "/blueprint/applied_configuration"
-	pathBlueprintBootstrapLogs               = "/blueprint/bootstrap_logs"
-	pathCloudFirewallProfile                 = "/cloud/firewall_profile"
-	pathCloudFirewallProfileRules            = "/cloud/firewall_profile/rules"
-	pathCommandPollingPings                  = "/command_polling/pings"
-	pathCommandPollingNextCommand            = "/command_polling/command"
-	pathCommandPollingCommand                = "/command_polling/commands/%s"
-	pathCommandPollingBootstrapLogs          = "/command_polling/bootstrap_logs"
+	PathBlueprintScriptCharacterizationsType = "/blueprint/script_characterizations?type=%s"
+	PathBlueprintScriptCharacterization      = "/blueprint/script_characterizations/%s"
+	PathBlueprintScriptConclusions           = "/blueprint/script_conclusions"
+	PathBlueprintConfiguration               = "/blueprint/configuration"
+	PathBlueprintAppliedConfiguration        = "/blueprint/applied_configuration"
+	PathBlueprintBootstrapLogs               = "/blueprint/bootstrap_logs"
+	PathCloudFirewallProfile                 = "/cloud/firewall_profile"
+	PathCloudFirewallProfileRules            = "/cloud/firewall_profile/rules"
+	PathCommandPollingPings                  = "/command_polling/pings"
+	PathCommandPollingNextCommand            = "/command_polling/command"
+	PathCommandPollingCommand                = "/command_polling/commands/%s"
+	PathCommandPollingBootstrapLogs          = "/command_polling/bootstrap_logs"
 
-	pathBrownfieldSslProfile = "/brownfield/ssl_profile"
-	pathCommandPollingApiKey = "/command_polling/api_key"
-	pathBrownfieldSettings   = "/brownfield/settings"
-	pathSecretVersionContent = "/secret/secret_versions/%s"
+	PathBrownfieldSslProfile = "/brownfield/ssl_profile"
+	PathCommandPollingApiKey = "/command_polling/api_key"
+	PathBrownfieldSettings   = "/brownfield/settings"
+	PathSecretVersionContent = "/secret/secret_versions/%s"
 )
 
 // ServerAPI web service manager
@@ -41,8 +40,8 @@ type ServerAPI struct {
 	HTTPClient
 }
 
-// NewIMCOServerWithToken creates new http IMCO cli based on config
-func NewIMCOServerWithToken(config *configuration.Config, context configuration.Context) (svc *ServerAPI, err error) {
+// NewHTTPClientWithToken creates new http cli to orchestration platform based on config
+func NewHTTPClientWithToken(config *configuration.Config, context configuration.Context) (svc *ServerAPI, err error) {
 	if config == nil {
 		return nil, fmt.Errorf(WebServiceConfigurationFailed)
 	}
@@ -80,7 +79,7 @@ func (imco *ServerAPI) GetDispatcherScriptCharacterizationsByType(ctx context.Co
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathBlueprintScriptCharacterizationsType, phase),
+		fmt.Sprintf(PathBlueprintScriptCharacterizationsType, phase),
 		true,
 		&scriptCharacterizations,
 	)
@@ -97,7 +96,7 @@ func (imco *ServerAPI) GetDispatcherScriptCharacterizationByUUID(ctx context.Con
 	logger.DebugFuncInfo()
 
 	_, err = imco.GetAndCheck(ctx,
-		fmt.Sprintf(pathBlueprintScriptCharacterization, scriptCharacterizationUUID),
+		fmt.Sprintf(PathBlueprintScriptCharacterization, scriptCharacterizationUUID),
 		true,
 		&scriptCharacterization,
 	)
@@ -112,7 +111,7 @@ func (imco *ServerAPI) ReportScriptConclusions(ctx context.Context, scriptConclu
 ) (command *types.ScriptConclusion, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.PostAndCheck(ctx, pathBlueprintScriptConclusions, scriptConclusions, true, &command)
+	status, err = imco.PostAndCheck(ctx, PathBlueprintScriptConclusions, scriptConclusions, true, &command)
 	if err != nil {
 		return nil, status, err
 	}
@@ -126,7 +125,7 @@ func (imco *ServerAPI) GetBootstrappingConfiguration(ctx context.Context) (
 ) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.GetAndCheck(ctx, pathBlueprintConfiguration, true, &bootstrappingConfigurations)
+	status, err = imco.GetAndCheck(ctx, PathBlueprintConfiguration, true, &bootstrappingConfigurations)
 	if err != nil {
 		return nil, status, err
 	}
@@ -140,7 +139,7 @@ func (imco *ServerAPI) ReportBootstrappingAppliedConfiguration(ctx context.Conte
 	logger.DebugFuncInfo()
 
 	_, err = imco.PutAndCheck(ctx,
-		pathBlueprintAppliedConfiguration,
+		PathBlueprintAppliedConfiguration,
 		bootstrappingAppliedConfigurationParams,
 		true,
 		nil,
@@ -157,7 +156,7 @@ func (imco *ServerAPI) ReportBootstrappingLog(ctx context.Context,
 ) (command *types.BootstrappingContinuousReport, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.PostAndCheck(ctx, pathBlueprintBootstrapLogs, bootstrappingContinuousReportParams, false, &command)
+	status, err = imco.PostAndCheck(ctx, PathBlueprintBootstrapLogs, bootstrappingContinuousReportParams, false, &command)
 	if err != nil {
 		return nil, status, err
 	}
@@ -168,7 +167,7 @@ func (imco *ServerAPI) ReportBootstrappingLog(ctx context.Context,
 func (imco *ServerAPI) GetPolicy(ctx context.Context) (policy *types.Policy, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.GetAndCheck(ctx, pathCloudFirewallProfile, true, &policy)
+	_, err = imco.GetAndCheck(ctx, PathCloudFirewallProfile, true, &policy)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +185,7 @@ func (imco *ServerAPI) AddPolicyRule(ctx context.Context, ruleParams *map[string
 ) (policyRule *types.PolicyRule, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PostAndCheck(ctx, pathCloudFirewallProfileRules, ruleParams, true, &policyRule)
+	_, err = imco.PostAndCheck(ctx, PathCloudFirewallProfileRules, ruleParams, true, &policyRule)
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +197,7 @@ func (imco *ServerAPI) UpdatePolicy(ctx context.Context, policyParams *map[strin
 ) (policy *types.Policy, err error) {
 	logger.DebugFuncInfo()
 
-	_, err = imco.PutAndCheck(ctx, pathCloudFirewallProfile, policyParams, true, &policy)
+	_, err = imco.PutAndCheck(ctx, PathCloudFirewallProfile, policyParams, true, &policy)
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +209,7 @@ func (imco *ServerAPI) Ping(ctx context.Context) (ping *types.PollingPing, statu
 	logger.DebugFuncInfo()
 
 	payload := make(map[string]interface{})
-	status, err = imco.PostAndCheck(ctx, pathCommandPollingPings, &payload, false, &ping)
+	status, err = imco.PostAndCheck(ctx, PathCommandPollingPings, &payload, false, &ping)
 	if err != nil {
 		return nil, status, err
 	}
@@ -221,7 +220,7 @@ func (imco *ServerAPI) Ping(ctx context.Context) (ping *types.PollingPing, statu
 func (imco *ServerAPI) GetNextCommand(ctx context.Context) (command *types.PollingCommand, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.GetAndCheck(ctx, pathCommandPollingNextCommand, false, &command)
+	status, err = imco.GetAndCheck(ctx, PathCommandPollingNextCommand, false, &command)
 	if err != nil {
 		return nil, status, err
 	}
@@ -235,7 +234,7 @@ func (imco *ServerAPI) UpdateCommand(ctx context.Context, commandID string,
 	logger.DebugFuncInfo()
 
 	status, err = imco.PutAndCheck(ctx,
-		fmt.Sprintf(pathCommandPollingCommand, commandID),
+		fmt.Sprintf(PathCommandPollingCommand, commandID),
 		pollingCommandParams,
 		false,
 		&command,
@@ -252,7 +251,7 @@ func (imco *ServerAPI) ReportBootstrapLog(ctx context.Context, pollingContinuous
 	logger.DebugFuncInfo()
 
 	status, err = imco.PostAndCheck(ctx,
-		pathCommandPollingBootstrapLogs,
+		PathCommandPollingBootstrapLogs,
 		pollingContinuousReportParams,
 		false,
 		&command,
@@ -268,7 +267,7 @@ func (imco *ServerAPI) ObtainBrownfieldSslProfile(ctx context.Context, payload *
 ) (response map[string]interface{}, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.PostAndCheck(ctx, pathBrownfieldSslProfile, payload, false, &response)
+	status, err = imco.PostAndCheck(ctx, PathBrownfieldSslProfile, payload, false, &response)
 	if err != nil {
 		return nil, status, err
 	}
@@ -280,7 +279,7 @@ func (imco *ServerAPI) ObtainPollingApiKey(ctx context.Context, payload *map[str
 ) (response map[string]interface{}, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.PostAndCheck(ctx, pathCommandPollingApiKey, payload, false, &response)
+	status, err = imco.PostAndCheck(ctx, PathCommandPollingApiKey, payload, false, &response)
 	if err != nil {
 		return nil, status, err
 	}
@@ -292,7 +291,7 @@ func (imco *ServerAPI) SetFirewallProfile(ctx context.Context, policyParams *map
 ) (firewall *types.Firewall, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.PostAndCheck(ctx, pathCloudFirewallProfile, policyParams, false, &firewall)
+	status, err = imco.PostAndCheck(ctx, PathCloudFirewallProfile, policyParams, false, &firewall)
 	if err != nil {
 		return nil, status, err
 	}
@@ -303,7 +302,7 @@ func (imco *ServerAPI) SetFirewallProfile(ctx context.Context, policyParams *map
 func (imco *ServerAPI) GetBrownfieldSettings(ctx context.Context) (settings *types.Settings, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.GetAndCheck(ctx, pathBrownfieldSettings, false, &settings)
+	status, err = imco.GetAndCheck(ctx, PathBrownfieldSettings, false, &settings)
 	if err != nil {
 		return nil, status, err
 	}
@@ -315,7 +314,7 @@ func (imco *ServerAPI) SetBrownfieldSettings(ctx context.Context, payload *map[s
 ) (settings *types.Settings, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.PutAndCheck(ctx, pathBrownfieldSettings, payload, false, &settings)
+	status, err = imco.PutAndCheck(ctx, PathBrownfieldSettings, payload, false, &settings)
 	if err != nil {
 		return nil, status, err
 	}
@@ -324,10 +323,10 @@ func (imco *ServerAPI) SetBrownfieldSettings(ctx context.Context, payload *map[s
 
 // RetrieveSecretVersion returns script characterizations list for a given UUID
 func (imco *ServerAPI) RetrieveSecretVersion(ctx context.Context, svID, filePath string) (int, error) {
-	log.Debug("RetrieveSecretVersion")
+	logger.DebugFuncInfo()
 
 	_, status, err := imco.DownloadFile(ctx,
-		fmt.Sprintf("%s"+pathSecretVersionContent, imco.config.APIEndpoint, svID),
+		fmt.Sprintf("%s"+PathSecretVersionContent, imco.config.APIEndpoint, svID),
 		filePath,
 		false)
 	if err != nil {

@@ -112,12 +112,13 @@ func VolumeList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	volumes, err := svc.ListStorageVolumes(cmd.GetContext(), viper.GetString(cmd.ServerId))
+	ctx := cmd.GetContext()
+	volumes, err := svc.ListStorageVolumes(ctx, viper.GetString(cmd.ServerId))
 	if err != nil {
 		formatter.PrintError("Couldn't receive volumes data", err)
 		return err
 	}
-	if err = cloud.FormatVolumesResponse(volumes, formatter); err != nil {
+	if err = cloud.FormatVolumesResponse(ctx, volumes, formatter); err != nil {
 		return err
 	}
 	return nil
@@ -128,12 +129,13 @@ func VolumeShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	volume, err := svc.GetStorageVolume(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	volume, err := svc.GetStorageVolume(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive volume data", err)
 		return err
 	}
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -157,13 +159,15 @@ func VolumeCreate() error {
 		"storage_plan_id":  viper.GetString(cmd.StoragePlanId),
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 
 	if viper.IsSet(cmd.Labels) {
 		volumeIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -172,7 +176,7 @@ func VolumeCreate() error {
 		}
 	}
 
-	volume, err := svc.CreateStorageVolume(cmd.GetContext(), &volumeIn)
+	volume, err := svc.CreateStorageVolume(ctx, &volumeIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create volume", err)
 		return err
@@ -195,13 +199,14 @@ func VolumeUpdate() error {
 		"name": viper.GetString(cmd.Name),
 	}
 
-	volume, err := svc.UpdateStorageVolume(cmd.GetContext(), viper.GetString(cmd.Id), &volumeIn)
+	ctx := cmd.GetContext()
+	volume, err := svc.UpdateStorageVolume(ctx, viper.GetString(cmd.Id), &volumeIn)
 	if err != nil {
 		formatter.PrintError("Couldn't update volume", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -222,13 +227,14 @@ func VolumeAttach() error {
 		"attached_server_id": viper.GetString(cmd.ServerId),
 	}
 
-	server, err := svc.AttachStorageVolume(cmd.GetContext(), viper.GetString(cmd.Id), &volumeIn)
+	ctx := cmd.GetContext()
+	server, err := svc.AttachStorageVolume(ctx, viper.GetString(cmd.Id), &volumeIn)
 	if err != nil {
 		formatter.PrintError("Couldn't attach volume", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}

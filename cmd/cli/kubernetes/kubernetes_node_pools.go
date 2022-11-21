@@ -85,7 +85,7 @@ func init() {
 		Use:          "update",
 		Short:        "Updates an existing node pool identified by the given id",
 		RunMethod:    NodePoolUpdate,
-		FlagContexts: []cmd.FlagContext{fId, fNameReq, fMinNodes, fMaxNodes, fDesiredNodes}},
+		FlagContexts: []cmd.FlagContext{fId, fName, fMinNodes, fMaxNodes, fDesiredNodes}},
 	)
 	cmd.NewCommand(nodePoolsCmd, &cmd.CommandContext{
 		Use:          "delete",
@@ -114,7 +114,7 @@ func NodePoolList() error {
 
 	nodePools, err := svc.ListNodePools(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't receive node pool data", err)
+		formatter.PrintError("Couldn't receive node pools data", err)
 		return err
 	}
 
@@ -263,7 +263,7 @@ func NodePoolPlanShow() error {
 
 	nodePoolPlan, err := svc.GetNodePoolPlan(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't show node pool plan", err)
+		formatter.PrintError("Couldn't receive node pool plan", err)
 		return err
 	}
 

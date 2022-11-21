@@ -72,7 +72,7 @@ func init() {
 
 	RootCmd = NewCommand(nil, &CommandContext{
 		Use:     "cio",
-		Short:   "Manages communication between Host and " + configuration.CloudOrchestratorPlatformName + " Platform",
+		Short:   "Manages communication between host and " + configuration.CloudOrchestratorPlatformName + " platform",
 		Version: configuration.VERSION,
 		//Ctx:     context.Background(),
 	})

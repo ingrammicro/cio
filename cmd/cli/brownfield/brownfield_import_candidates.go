@@ -3,6 +3,7 @@
 package brownfield
 
 import (
+	"context"
 	"github.com/ingrammicro/cio/cmd/cli"
 	"time"
 
@@ -17,25 +18,25 @@ func init() {
 	fCloudAccountId := cmd.FlagContext{Type: cmd.String, Name: cmd.Id, Required: true, Usage: "Cloud account Id"}
 
 	cmd.NewCommand(brownfieldCmd, &cmd.CommandContext{
-		Use:          "import-server",
+		Use:          "import-servers",
 		Short:        "Import servers for a given cloud account id",
 		RunMethod:    ImportServers,
 		FlagContexts: []cmd.FlagContext{fCloudAccountId}},
 	)
 	cmd.NewCommand(brownfieldCmd, &cmd.CommandContext{
-		Use:          "import-vpc",
+		Use:          "import-vpcs",
 		Short:        "Import VPCs for a given cloud account id",
 		RunMethod:    ImportVPCs,
 		FlagContexts: []cmd.FlagContext{fCloudAccountId}},
 	)
 	cmd.NewCommand(brownfieldCmd, &cmd.CommandContext{
-		Use:          "import-floating-ip",
-		Short:        "Import Floating IPs for a given cloud account id",
+		Use:          "import-floating-ips",
+		Short:        "Import floating IPs for a given cloud account id",
 		RunMethod:    ImportFloatingIPs,
 		FlagContexts: []cmd.FlagContext{fCloudAccountId}},
 	)
 	cmd.NewCommand(brownfieldCmd, &cmd.CommandContext{
-		Use:          "import-volume",
+		Use:          "import-volumes",
 		Short:        "Import volumes for a given cloud account id",
 		RunMethod:    ImportVolumes,
 		FlagContexts: []cmd.FlagContext{fCloudAccountId}},
@@ -55,6 +56,7 @@ func init() {
 }
 
 func checkCloudAccountImportingState(
+	ctx context.Context,
 	cloudAccount *types.CloudAccount,
 	state string,
 ) (*types.CloudAccount, error) {
@@ -64,9 +66,9 @@ func checkCloudAccountImportingState(
 	log.Info("Brownfield cloud account ID... ", cloudAccount.ID)
 	log.Info("Checking importing process... ")
 	for {
-		ca, err := svc.GetBrownfieldCloudAccount(cmd.GetContext(), viper.GetString(cmd.Id))
+		ca, err := svc.GetBrownfieldCloudAccount(ctx, viper.GetString(cmd.Id))
 		if err != nil {
-			formatter.PrintError("Couldn't get cloud account data", err)
+			formatter.PrintError("Couldn't receive cloud account data", err)
 			return nil, err
 		}
 		if (cloudAccount.State != ca.State) || (ca.State != state) {
@@ -86,18 +88,19 @@ func ImportServers() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cloudAccount, err := svc.ImportServers(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
+	ctx := cmd.GetContext()
+	cloudAccount, err := svc.ImportServers(ctx, viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintError("Couldn't import servers", err)
 		return err
 	}
 
-	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_servers")
+	cloudAccount, err = checkCloudAccountImportingState(ctx, cloudAccount, "importing_servers")
 	if err != nil {
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -115,18 +118,19 @@ func ImportVPCs() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cloudAccount, err := svc.ImportVPCs(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
+	ctx := cmd.GetContext()
+	cloudAccount, err := svc.ImportVPCs(ctx, viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintError("Couldn't import vpcs", err)
 		return err
 	}
 
-	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_vpcs")
+	cloudAccount, err = checkCloudAccountImportingState(ctx, cloudAccount, "importing_vpcs")
 	if err != nil {
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -144,18 +148,19 @@ func ImportFloatingIPs() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cloudAccount, err := svc.ImportFloatingIPs(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
+	ctx := cmd.GetContext()
+	cloudAccount, err := svc.ImportFloatingIPs(ctx, viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintError("Couldn't import floating IPs", err)
 		return err
 	}
 
-	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_floating_ips")
+	cloudAccount, err = checkCloudAccountImportingState(ctx, cloudAccount, "importing_floating_ips")
 	if err != nil {
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -173,18 +178,19 @@ func ImportVolumes() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cloudAccount, err := svc.ImportVolumes(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
+	ctx := cmd.GetContext()
+	cloudAccount, err := svc.ImportVolumes(ctx, viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintError("Couldn't import volumes", err)
 		return err
 	}
 
-	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_volumes")
+	cloudAccount, err = checkCloudAccountImportingState(ctx, cloudAccount, "importing_volumes")
 	if err != nil {
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -202,18 +208,19 @@ func ImportPolicies() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cloudAccount, err := svc.ImportPolicies(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
+	ctx := cmd.GetContext()
+	cloudAccount, err := svc.ImportPolicies(ctx, viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintError("Couldn't import policies", err)
 		return err
 	}
 
-	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_policies")
+	cloudAccount, err = checkCloudAccountImportingState(ctx, cloudAccount, "importing_policies")
 	if err != nil {
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -231,8 +238,9 @@ func ImportKubernetesClusters() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
+	ctx := cmd.GetContext()
 	cloudAccount, err := svc.ImportKubernetesClusters(
-		cmd.GetContext(),
+		ctx,
 		viper.GetString(cmd.Id),
 		&map[string]interface{}{},
 	)
@@ -241,12 +249,12 @@ func ImportKubernetesClusters() error {
 		return err
 	}
 
-	cloudAccount, err = checkCloudAccountImportingState(cloudAccount, "importing_kubernetes_clusters")
+	cloudAccount, err = checkCloudAccountImportingState(ctx, cloudAccount, "importing_kubernetes_clusters")
 	if err != nil {
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}

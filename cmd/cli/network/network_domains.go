@@ -159,7 +159,8 @@ func DomainList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	domains, err := svc.ListDomains(cmd.GetContext())
+	ctx := cmd.GetContext()
+	domains, err := svc.ListDomains(ctx)
 	if err != nil {
 		formatter.PrintError("Couldn't receive dns domains data", err)
 		return err
@@ -169,7 +170,7 @@ func DomainList() error {
 	for i := 0; i < len(domains); i++ {
 		labelables[i] = types.Labelable(domains[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -202,13 +203,14 @@ func DomainShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	domain, err := svc.GetDomain(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	domain, err := svc.GetDomain(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive dns domain data", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -230,12 +232,14 @@ func DomainCreate() error {
 		"cloud_account_id": viper.GetString(cmd.CloudAccountId),
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 	if viper.IsSet(cmd.Labels) {
 		domainIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -244,7 +248,7 @@ func DomainCreate() error {
 		}
 	}
 
-	domain, err := svc.CreateDomain(cmd.GetContext(), &domainIn)
+	domain, err := svc.CreateDomain(ctx, &domainIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create dns domain", err)
 		return err
@@ -263,13 +267,14 @@ func DomainDelete() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	domain, err := svc.DeleteDomain(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	domain, err := svc.DeleteDomain(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't delete dns domain", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -286,13 +291,14 @@ func DomainRetry() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	domain, err := svc.RetryDomain(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	domain, err := svc.RetryDomain(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't retry dns domain", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -409,7 +415,7 @@ func DomainCreateRecord() error {
 
 	// If provided, only include in adequate context
 	if err := setRecordInByType(recordType, recordIn); err != nil {
-		formatter.PrintError("Couldn't create dns record", err)
+		formatter.PrintError("Couldn't set dns record type", err)
 		return err
 	}
 
@@ -432,6 +438,9 @@ func DomainUpdateRecord() error {
 	svc, _, formatter := cli.WireUpAPIClient()
 
 	recordIn := map[string]interface{}{}
+	if viper.IsSet(cmd.Name) {
+		recordIn["name"] = viper.GetString(cmd.Name)
+	}
 	if viper.IsSet(cmd.Content) {
 		recordIn["content"] = viper.GetString(cmd.Content)
 	}

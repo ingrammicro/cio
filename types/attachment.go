@@ -2,7 +2,7 @@
 
 package types
 
-// Attachment stores an IMCO Attachment item
+// Attachment stores an Attachment item
 type Attachment struct {
 	ID           string `json:"id"                     header:"ID"`
 	Name         string `json:"name,omitempty"         header:"NAME"`

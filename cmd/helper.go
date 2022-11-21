@@ -31,7 +31,7 @@ func WireUpAPI() (svc *api.HTTPClient, config *configuration.Config, f format.Fo
 
 	svc, err = api.NewHTTPClient(config)
 	if err != nil {
-		f.PrintFatal("Couldn't wire up Orchestrator API service", err)
+		f.PrintFatal("Couldn't wire up "+configuration.CloudOrchestratorPlatformName+" API service", err)
 	}
 	return svc, config, f
 }

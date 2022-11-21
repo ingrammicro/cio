@@ -20,7 +20,7 @@ func init() {
 	)
 	cmd.NewCommand(cloudProvidersCmd, &cmd.CommandContext{
 		Use:          "list",
-		Short:        "Lists the available Cloud Providers",
+		Short:        "Lists the available cloud providers",
 		RunMethod:    WizCloudProviderList,
 		FlagContexts: []cmd.FlagContext{fAppId, fLocationId}},
 	)
@@ -37,7 +37,7 @@ func WizCloudProviderList() error {
 		viper.GetString(cmd.LocationId),
 	)
 	if err != nil {
-		formatter.PrintError("Couldn't receive cloudProvider data", err)
+		formatter.PrintError("Couldn't receive cloud providers data", err)
 		return err
 	}
 	if err = formatter.PrintList(cloudProviders); err != nil {

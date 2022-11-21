@@ -3,6 +3,7 @@
 package dispatcher
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/cmd/agent"
 	"os"
@@ -20,7 +21,7 @@ import (
 func init() {
 	scriptsCmd := cmd.NewCommand(cmd.RootCmd, &cmd.CommandContext{
 		Use:   "scripts",
-		Short: "Manages Execution Scripts within a Host"},
+		Short: "Manages execution scripts within a host"},
 	)
 	cmd.NewCommand(scriptsCmd, &cmd.CommandContext{
 		Use:       "boot",
@@ -56,20 +57,23 @@ func Shutdown() error {
 }
 
 func getDispatcherScriptCharacterization(
-	svc *api.ServerAPI, formatter format.Formatter, phase, scriptCharacterizationUUID string,
+	ctx context.Context,
+	svc *api.ServerAPI,
+	formatter format.Formatter,
+	phase, scriptCharacterizationUUID string,
 ) []*types.ScriptCharacterization {
 	var scriptChars []*types.ScriptCharacterization
 	var err error
 	log.Debugf("Current Script Characterization %s (UUID=%s)", phase, scriptCharacterizationUUID)
 	if scriptCharacterizationUUID == "" {
-		scriptChars, err = svc.GetDispatcherScriptCharacterizationsByType(cmd.GetContext(), phase)
+		scriptChars, err = svc.GetDispatcherScriptCharacterizationsByType(ctx, phase)
 	} else {
 		var scriptChar *types.ScriptCharacterization
-		scriptChar, err = svc.GetDispatcherScriptCharacterizationByUUID(cmd.GetContext(), scriptCharacterizationUUID)
+		scriptChar, err = svc.GetDispatcherScriptCharacterizationByUUID(ctx, scriptCharacterizationUUID)
 		scriptChars = []*types.ScriptCharacterization{scriptChar}
 	}
 	if err != nil {
-		formatter.PrintFatal("Couldn't receive Script Characterization data", err)
+		formatter.PrintFatal("Couldn't receive script characterization data", err)
 	}
 	return scriptChars
 }
@@ -93,6 +97,7 @@ func getAttachmentDir(formatter format.Formatter) string {
 }
 
 func downloadAttachments(
+	ctx context.Context,
 	attachmentDir string,
 	attachmentPaths []string,
 	svc *api.ServerAPI,
@@ -102,7 +107,7 @@ func downloadAttachments(
 	log.Infof("Attachment Folder: %s", attachmentDir)
 	log.Infof("Attachments")
 	for _, endpoint := range attachmentPaths {
-		realFileName, _, err := svc.DownloadFile(cmd.GetContext(),
+		realFileName, _, err := svc.DownloadFile(ctx,
 			fmt.Sprintf("%s%s", config.APIEndpoint, endpoint),
 			attachmentDir,
 			true,
@@ -116,7 +121,8 @@ func downloadAttachments(
 
 func execute(phase string, scriptCharacterizationUUID string) {
 	svc, config, formatter := agent.WireUpAPIServer()
-	scriptChars := getDispatcherScriptCharacterization(svc, formatter, phase, scriptCharacterizationUUID)
+	ctx := cmd.GetContext()
+	scriptChars := getDispatcherScriptCharacterization(ctx, svc, formatter, phase, scriptCharacterizationUUID)
 
 	for _, sc := range scriptChars {
 		log.Infof("------------------------------------------------------------------------------------------------")
@@ -139,7 +145,7 @@ func execute(phase string, scriptCharacterizationUUID string) {
 		setEnvironmentVariables(formatter, sc.Parameters)
 
 		if len(sc.Script.AttachmentPaths) > 0 {
-			downloadAttachments(attachmentDir, sc.Script.AttachmentPaths, svc, config, formatter)
+			downloadAttachments(ctx, attachmentDir, sc.Script.AttachmentPaths, svc, config, formatter)
 		}
 
 		output, exitCode, startedAt, finishedAt := agent.ExecCode(sc.Script.Code, path, sc.Script.UUID)
@@ -157,7 +163,7 @@ func execute(phase string, scriptCharacterizationUUID string) {
 		err = agent.Retry(5, time.Second, func() error {
 			log.Info("Calling ReportScriptConclusions")
 
-			_, statusCode, err := svc.ReportScriptConclusions(cmd.GetContext(), &scriptConclusionRootIn)
+			_, statusCode, err := svc.ReportScriptConclusions(ctx, &scriptConclusionRootIn)
 			switch {
 			// 0<100 error cases??
 			case statusCode == 0:
@@ -172,7 +178,7 @@ func execute(phase string, scriptCharacterizationUUID string) {
 		})
 
 		if err != nil {
-			formatter.PrintFatal("Couldn't send script_conclusions report data", err)
+			formatter.PrintFatal("Couldn't send script conclusions report data", err)
 		}
 		log.Infof("------------------------------------------------------------------------------------------------")
 	}

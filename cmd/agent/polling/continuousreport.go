@@ -42,6 +42,7 @@ func ContinuousReportRun(cmdArgs []string) error {
 	}
 	log.Debug("Time threshold:", thresholdTime)
 
+	ctx := cmd.GetContext()
 	// Custom method for chunks processing
 	fn := func(chunk string) error {
 		log.Debug("sendChunks")
@@ -52,7 +53,7 @@ func ContinuousReportRun(cmdArgs []string) error {
 				"stdout": chunk,
 			}
 
-			_, statusCode, err := svc.ReportBootstrapLog(cmd.GetContext(), &commandIn)
+			_, statusCode, err := svc.ReportBootstrapLog(ctx, &commandIn)
 			switch {
 			// 0<100 error cases??
 			case statusCode == 0:

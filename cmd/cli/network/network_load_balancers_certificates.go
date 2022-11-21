@@ -129,7 +129,8 @@ func CertificateUpdate() error {
 		"name": viper.GetString(cmd.Name),
 	}
 
-	certificate, err := svc.UpdateCertificate(cmd.GetContext(),
+	certificate, err := svc.UpdateCertificate(
+		cmd.GetContext(),
 		viper.GetString(cmd.LoadBalancerId),
 		viper.GetString(cmd.Id),
 		&certificateIn,

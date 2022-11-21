@@ -27,7 +27,7 @@ func GenericImageList() error {
 
 	genericImages, err := svc.ListGenericImages(cmd.GetContext())
 	if err != nil {
-		formatter.PrintError("Couldn't receive genericImage data", err)
+		formatter.PrintError("Couldn't receive generic images data", err)
 		return err
 	}
 	if err = formatter.PrintList(genericImages); err != nil {

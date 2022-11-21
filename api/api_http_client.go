@@ -54,7 +54,7 @@ func NewHTTPClient(config *configuration.Config) (svc *HTTPClient, err error) {
 	// Loads CA Certificate
 	caCert, err := os.ReadFile(svc.config.Certificate.Ca)
 	if err != nil {
-		return nil, fmt.Errorf("cannot read IMCO CA cert: %v", err)
+		return nil, fmt.Errorf("cannot read "+configuration.CloudOrchestratorPlatformName+" CA cert: %v", err)
 	}
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
@@ -63,7 +63,7 @@ func NewHTTPClient(config *configuration.Config) (svc *HTTPClient, err error) {
 	cert, err := tls.LoadX509KeyPair(svc.config.Certificate.Cert, svc.config.Certificate.Key)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"cannot read IMCO API key (from '%s' and '%s'): %v",
+			"cannot read "+configuration.CloudOrchestratorPlatformName+" API key (from '%s' and '%s'): %v",
 			svc.config.Certificate.Cert,
 			svc.config.Certificate.Key,
 			err,

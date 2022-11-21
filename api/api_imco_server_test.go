@@ -26,14 +26,14 @@ func initConfigAndServerAPI(context configuration.Context) (*configuration.Confi
 		config.ServerID = testutils.TEST
 	}
 
-	svc, err := NewIMCOServerWithToken(config, context)
+	svc, err := NewHTTPClientWithToken(config, context)
 	if err != nil {
 		return nil, nil, err
 	}
 	return config, svc, nil
 }
 
-func TestNewIMCOServerWithToken(t *testing.T) {
+func TestNewHTTPClientWithToken(t *testing.T) {
 	tests := map[string]struct {
 		context   int
 		setConfig bool
@@ -78,7 +78,7 @@ func TestNewIMCOServerWithToken(t *testing.T) {
 				test.config.ServerID = testutils.TEST
 			}
 
-			svc, err := NewIMCOServerWithToken(test.config, test.context)
+			svc, err := NewHTTPClientWithToken(test.config, test.context)
 			if err != nil && test.setConfig {
 				t.Errorf("Unexpected error: %v\n", err)
 			}

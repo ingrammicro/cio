@@ -152,8 +152,9 @@ func CloudApplicationDeploymentDeploy() error {
 	}
 	log.Debug("Time lapse -seconds- for deployment status check:", timeLapseDeploymentStatusCheck)
 
+	ctx := cmd.GetContext()
 	deploymentTask, err := svc.CreateCloudApplicationDeploymentTask(
-		cmd.GetContext(),
+		ctx,
 		viper.GetString(cmd.Id),
 		&deploymentIn,
 	)
@@ -167,7 +168,7 @@ func CloudApplicationDeploymentDeploy() error {
 	log.Info("Deploying... ")
 	for {
 		deploymentTask, err = svc.GetCloudApplicationDeploymentTask(
-			cmd.GetContext(),
+			ctx,
 			viper.GetString(cmd.Id),
 			deploymentTask.ID,
 		)
@@ -200,7 +201,8 @@ func CloudApplicationDeploymentDelete() error {
 	}
 	log.Debug("Time lapse -seconds- for deletion status check:", timeLapseDeletionStatusCheck)
 
-	deployment, err := svc.DeleteCloudApplicationDeployment(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	deployment, err := svc.DeleteCloudApplicationDeployment(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't delete cloud application deployment", err)
 		return err
@@ -210,7 +212,7 @@ func CloudApplicationDeploymentDelete() error {
 
 	log.Info(fmt.Sprintf("Deployment: %s - %s undeploying...", deploymentID, deploymentName))
 	for {
-		deployment, status, err := svc.GetCloudApplicationDeployment(cmd.GetContext(), deploymentID)
+		deployment, status, err := svc.GetCloudApplicationDeployment(ctx, deploymentID)
 		if err != nil {
 			if status == 404 {
 				log.Info(fmt.Sprintf("Deployment: %s - %s undeployed.", deploymentID, deploymentName))

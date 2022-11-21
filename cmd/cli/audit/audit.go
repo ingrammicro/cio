@@ -33,7 +33,7 @@ func EventList() error {
 
 	events, err := svc.ListEvents(cmd.GetContext())
 	if err != nil {
-		formatter.PrintError("Couldn't receive event data", err)
+		formatter.PrintError("Couldn't receive events data", err)
 		return err
 	}
 	if err = formatter.PrintList(events); err != nil {
@@ -50,7 +50,7 @@ func SystemEventList() error {
 
 	events, err := svc.ListSysEvents(cmd.GetContext())
 	if err != nil {
-		formatter.PrintError("Couldn't receive system event data", err)
+		formatter.PrintError("Couldn't receive system events data", err)
 		return err
 	}
 	if err = formatter.PrintList(events); err != nil {

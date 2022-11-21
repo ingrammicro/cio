@@ -2,7 +2,7 @@
 
 package types
 
-// Vpn stores an IMCO VPN item
+// Vpn stores a VPN item
 type Vpn struct {
 	ID           string   `json:"id"                      header:"ID"`
 	State        string   `json:"state,omitempty"         header:"STATE"`
@@ -13,7 +13,7 @@ type Vpn struct {
 	ResourceType string   `json:"resource_type"           header:"RESOURCE_TYPE" show:"nolist"`
 }
 
-// VpnPlan stores an IMCO VPN Plan item
+// VpnPlan stores a VPN Plan item
 type VpnPlan struct {
 	ID           string `json:"id"                      header:"ID"`
 	Name         string `json:"name,omitempty"          header:"NAME"`

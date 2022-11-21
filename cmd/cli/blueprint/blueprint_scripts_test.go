@@ -8,6 +8,7 @@ import (
 	"github.com/ingrammicro/cio/configuration"
 	"github.com/ingrammicro/cio/internal/testutils"
 	"github.com/ingrammicro/cio/types"
+	"github.com/ingrammicro/cio/utils/format"
 	"github.com/spf13/viper"
 	"net/http"
 	"net/http/httptest"
@@ -160,7 +161,6 @@ func TestScriptCreate(t *testing.T) {
 
 			config.APIEndpoint = testutils.TEST
 			if test.server != nil {
-				// TODO: make this model reusable
 				mux := http.NewServeMux()
 
 				variants := map[string]testutils.Value{"GET": {Status: http.StatusOK, V: []*types.Label{}}}
@@ -306,7 +306,6 @@ func TestScriptDelete(t *testing.T) {
 //
 //			config.APIEndpoint = testutils.TEST
 //			if test.server != nil {
-//				// TODO: make this model reusable
 //				mux := http.NewServeMux()
 //				mux.HandleFunc(fmt.Sprintf("/blueprint/scripts/%s/attachments", testutils.TEST), func(res http.ResponseWriter, req *http.Request) {
 //					res.WriteHeader(http.StatusOK)
@@ -358,6 +357,16 @@ func TestCleanAttachment(t *testing.T) {
 	configuration.SetConfig(config)
 	cmd.RootCmd.SetContext(context.Background())
 
+	ds, err := api.NewHTTPClient(config)
+	if err != nil {
+		t.Errorf("Unexpected error: %v\n", err)
+		return
+	}
+	svc := new(api.ClientAPI)
+	svc.HTTPClient = *ds
+
+	formatter := format.GetFormatter()
+
 	for title, test := range tests {
 		t.Run(title, func(t *testing.T) {
 			config.APIEndpoint = testutils.TEST
@@ -367,7 +376,7 @@ func TestCleanAttachment(t *testing.T) {
 				config.APIEndpoint = server.URL
 			}
 
-			err := cleanAttachment(testutils.TEST)
+			err := cleanAttachment(context.Background(), svc, formatter, testutils.TEST)
 			if err != nil && !strings.Contains(err.Error(), fmt.Sprintf("%s", test.expected)) {
 				t.Errorf("Unexpected error: %v\n", err)
 			}

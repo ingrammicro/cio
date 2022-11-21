@@ -81,7 +81,7 @@ func RealmNodePoolPlansList() error {
 
 	realms, err := svc.ListRealmNodePoolPlans(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't receive realms data", err)
+		formatter.PrintError("Couldn't receive realm node pool plans data", err)
 		return err
 	}
 

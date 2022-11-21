@@ -29,7 +29,7 @@ func init() {
 
 	firewallCmd := cmd.NewCommand(cmd.RootCmd, &cmd.CommandContext{
 		Use:   "firewall",
-		Short: "Manages Firewall Policies within a Host"},
+		Short: "Manages firewall policies within a host"},
 	)
 	cmd.NewCommand(firewallCmd, &cmd.CommandContext{
 		Use:          "add",

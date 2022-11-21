@@ -21,7 +21,8 @@ func Configure() error {
 			f.PrintFatal("Must run as super-user", fmt.Errorf("running as non-administrator user"))
 		}
 	}
-	applySettings(svc, f, config.CurrentUserName, viper.GetString(cmd.AdminPassword))
-	configureFirewall(svc, f)
+	ctx := cmd.GetContext()
+	applySettings(ctx, svc, f, config.CurrentUserName, viper.GetString(cmd.AdminPassword))
+	configureFirewall(ctx, svc, f)
 	return nil
 }

@@ -134,9 +134,10 @@ func ClusterList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	clusters, err := svc.ListClusters(cmd.GetContext())
+	ctx := cmd.GetContext()
+	clusters, err := svc.ListClusters(ctx)
 	if err != nil {
-		formatter.PrintError("Couldn't receive cluster data", err)
+		formatter.PrintError("Couldn't receive clusters data", err)
 		return err
 	}
 
@@ -144,7 +145,7 @@ func ClusterList() error {
 	for i := 0; i < len(clusters); i++ {
 		labelables[i] = types.Labelable(clusters[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -176,12 +177,13 @@ func ClusterShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cluster, err := svc.GetCluster(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	cluster, err := svc.GetCluster(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive cluster data", err)
 		return err
 	}
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -224,13 +226,15 @@ func ClusterCreate() error {
 		clusterIn["public_access_ip_addresses"] = strings.Split(viper.GetString(cmd.PublicAccessIpAddresses), ",")
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 
 	if viper.IsSet(cmd.Labels) {
 		clusterIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -239,7 +243,7 @@ func ClusterCreate() error {
 		}
 	}
 
-	cluster, err := svc.CreateCluster(cmd.GetContext(), &clusterIn)
+	cluster, err := svc.CreateCluster(ctx, &clusterIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create cluster", err)
 		return err
@@ -269,13 +273,14 @@ func ClusterUpdate() error {
 		clusterIn["public_access_ip_addresses"] = strings.Split(viper.GetString(cmd.PublicAccessIpAddresses), ",")
 	}
 
-	cluster, err := svc.UpdateCluster(cmd.GetContext(), viper.GetString(cmd.Id), &clusterIn)
+	ctx := cmd.GetContext()
+	cluster, err := svc.UpdateCluster(ctx, viper.GetString(cmd.Id), &clusterIn)
 	if err != nil {
 		formatter.PrintError("Couldn't update cluster", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -292,13 +297,14 @@ func ClusterDelete() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cluster, err := svc.DeleteCluster(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	cluster, err := svc.DeleteCluster(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't delete cluster", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -315,13 +321,14 @@ func ClusterRetry() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cluster, err := svc.RetryCluster(cmd.GetContext(), viper.GetString(cmd.Id), &map[string]interface{}{})
+	ctx := cmd.GetContext()
+	cluster, err := svc.RetryCluster(ctx, viper.GetString(cmd.Id), &map[string]interface{}{})
 	if err != nil {
 		formatter.PrintError("Couldn't retry cluster", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -353,7 +360,7 @@ func ClusterPlanShow() error {
 
 	clusterPlan, err := svc.GetClusterPlan(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't show cluster plan", err)
+		formatter.PrintError("Couldn't receive cluster plan", err)
 		return err
 	}
 

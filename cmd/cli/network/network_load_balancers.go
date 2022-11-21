@@ -128,7 +128,8 @@ func LoadBalancerList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	loadBalancers, err := svc.ListLoadBalancers(cmd.GetContext())
+	ctx := cmd.GetContext()
+	loadBalancers, err := svc.ListLoadBalancers(ctx)
 	if err != nil {
 		formatter.PrintError("Couldn't receive load balancers data", err)
 		return err
@@ -138,7 +139,7 @@ func LoadBalancerList() error {
 	for i := 0; i < len(loadBalancers); i++ {
 		labelables[i] = types.Labelable(loadBalancers[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -170,12 +171,13 @@ func LoadBalancerShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	loadBalancer, err := svc.GetLoadBalancer(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	loadBalancer, err := svc.GetLoadBalancer(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive load balancer data", err)
 		return err
 	}
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -200,12 +202,14 @@ func LoadBalancerCreate() error {
 		"realm_id":              viper.GetString(cmd.RealmId),
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 	if viper.IsSet(cmd.Labels) {
 		loadBalancerIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -214,7 +218,7 @@ func LoadBalancerCreate() error {
 		}
 	}
 
-	loadBalancer, err := svc.CreateLoadBalancer(cmd.GetContext(), &loadBalancerIn)
+	loadBalancer, err := svc.CreateLoadBalancer(ctx, &loadBalancerIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create load balancer", err)
 		return err
@@ -237,13 +241,14 @@ func LoadBalancerUpdate() error {
 		"name": viper.GetString(cmd.Name),
 	}
 
-	loadBalancer, err := svc.UpdateLoadBalancer(cmd.GetContext(), viper.GetString(cmd.Id), &loadBalancerIn)
+	ctx := cmd.GetContext()
+	loadBalancer, err := svc.UpdateLoadBalancer(ctx, viper.GetString(cmd.Id), &loadBalancerIn)
 	if err != nil {
 		formatter.PrintError("Couldn't update load balancer", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -260,13 +265,14 @@ func LoadBalancerDelete() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	loadBalancer, err := svc.DeleteLoadBalancer(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	loadBalancer, err := svc.DeleteLoadBalancer(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't delete load balancer", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -285,13 +291,14 @@ func LoadBalancerRetry() error {
 
 	loadBalancerIn := map[string]interface{}{}
 
-	loadBalancer, err := svc.RetryLoadBalancer(cmd.GetContext(), viper.GetString(cmd.Id), &loadBalancerIn)
+	ctx := cmd.GetContext()
+	loadBalancer, err := svc.RetryLoadBalancer(ctx, viper.GetString(cmd.Id), &loadBalancerIn)
 	if err != nil {
 		formatter.PrintError("Couldn't retry load balancer", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}

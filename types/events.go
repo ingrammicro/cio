@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// Event stores an Orchestrator event item
+// Event stores an event item
 type Event struct {
 	ID          string    `json:"id"          header:"ID"`
 	Timestamp   time.Time `json:"timestamp"   header:"TIMESTAMP"`

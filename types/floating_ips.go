@@ -2,7 +2,7 @@
 
 package types
 
-// FloatingIP stores an IMCO Floating IP item
+// FloatingIP stores a Floating IP item
 type FloatingIP struct {
 	ID               string `json:"id"                           header:"ID"`
 	Name             string `json:"name,omitempty"               header:"NAME"`

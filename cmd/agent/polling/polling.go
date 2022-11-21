@@ -43,7 +43,7 @@ func init() {
 		Short: "Manages polling commands"})
 	cmd.NewCommand(pollingCmd, &cmd.CommandContext{
 		Use:       "register",
-		Short:     "Registers orchestrator agent within an imported Host",
+		Short:     "Registers orchestrator agent within an imported host",
 		RunMethod: agent.RegisterPolling},
 	)
 	cmd.NewCommand(pollingCmd, &cmd.CommandContext{
@@ -145,7 +145,7 @@ func pingRoutine(ctx context.Context, longTimePeriod int64, shortTimePeriod int6
 	currentTicker := longTicker
 	for {
 		log.Debug("Requesting for candidate commands status")
-		ping, status, err := svc.Ping(cmd.GetContext())
+		ping, status, err := svc.Ping(ctx)
 		if err != nil {
 			formatter.PrintError("Couldn't receive polling ping data", err)
 		} else {
@@ -153,7 +153,7 @@ func pingRoutine(ctx context.Context, longTimePeriod int64, shortTimePeriod int6
 			if status == 201 && ping.PendingCommands && !isRunningCommandRoutine {
 				log.Debug("Detected a candidate command")
 				isRunningCommandRoutine = true
-				go processingCommandRoutine(svc, formatter, commandProcessed)
+				go processingCommandRoutine(ctx, svc, formatter, commandProcessed)
 			}
 		}
 
@@ -182,12 +182,17 @@ func pingRoutine(ctx context.Context, longTimePeriod int64, shortTimePeriod int6
 }
 
 // Subsidiary routine for commands processing
-func processingCommandRoutine(svc *api.ServerAPI, formatter format.Formatter, commandProcessed chan bool) {
+func processingCommandRoutine(
+	ctx context.Context,
+	svc *api.ServerAPI,
+	formatter format.Formatter,
+	commandProcessed chan bool,
+) {
 	logger.DebugFuncInfo()
 
 	// 1. Request for the new command available
 	log.Debug("Retrieving available command")
-	command, status, err := svc.GetNextCommand(cmd.GetContext())
+	command, status, err := svc.GetNextCommand(ctx)
 	if err != nil {
 		formatter.PrintError("Couldn't receive polling command candidate data", err)
 	}
@@ -197,7 +202,7 @@ func processingCommandRoutine(svc *api.ServerAPI, formatter format.Formatter, co
 		log.Debug("Running the retrieved command")
 		command.ExitCode, command.Stdout, command.Stderr, _, _ = agent.RunTracedCmd(command.Script)
 
-		// 3. then status is propagated to IMCO
+		// 3. then status is propagated to orchestration platform
 		log.Debug("Reporting command execution status")
 
 		commandIn := map[string]interface{}{
@@ -208,7 +213,7 @@ func processingCommandRoutine(svc *api.ServerAPI, formatter format.Formatter, co
 			"exit_code": command.ExitCode,
 		}
 
-		_, status, err := svc.UpdateCommand(cmd.GetContext(), command.ID, &commandIn)
+		_, status, err := svc.UpdateCommand(ctx, command.ID, &commandIn)
 		if err != nil {
 			formatter.PrintError("Couldn't send polling command report data", err)
 		}

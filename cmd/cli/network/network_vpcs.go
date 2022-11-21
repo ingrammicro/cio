@@ -98,9 +98,10 @@ func VPCList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	vpcs, err := svc.ListVPCs(cmd.GetContext())
+	ctx := cmd.GetContext()
+	vpcs, err := svc.ListVPCs(ctx)
 	if err != nil {
-		formatter.PrintError("Couldn't receive VPC data", err)
+		formatter.PrintError("Couldn't receive VPCs data", err)
 		return err
 	}
 
@@ -108,7 +109,7 @@ func VPCList() error {
 	for i := 0; i < len(vpcs); i++ {
 		labelables[i] = types.Labelable(vpcs[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -140,12 +141,13 @@ func VPCShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	vpc, err := svc.GetVPC(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	vpc, err := svc.GetVPC(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive VPC data", err)
 		return err
 	}
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -169,13 +171,15 @@ func VPCCreate() error {
 		"realm_provider_name": viper.GetString(cmd.RealmProviderName),
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 
 	if viper.IsSet(cmd.Labels) {
 		vpcIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -184,7 +188,7 @@ func VPCCreate() error {
 		}
 	}
 
-	vpc, err := svc.CreateVPC(cmd.GetContext(), &vpcIn)
+	vpc, err := svc.CreateVPC(ctx, &vpcIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create VPC", err)
 		return err
@@ -207,13 +211,14 @@ func VPCUpdate() error {
 		"name": viper.GetString(cmd.Name),
 	}
 
-	vpc, err := svc.UpdateVPC(cmd.GetContext(), viper.GetString(cmd.Id), &vpcIn)
+	ctx := cmd.GetContext()
+	vpc, err := svc.UpdateVPC(ctx, viper.GetString(cmd.Id), &vpcIn)
 	if err != nil {
 		formatter.PrintError("Couldn't update VPC", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}

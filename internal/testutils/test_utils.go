@@ -49,6 +49,8 @@ const TEST = "test"
 
 func NewServer(returnStatus int, returnData any) *httptest.Server {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// TODO
+		// To be able to manage cases:
 		//if r.URL.Path != "/storage/volumes" {
 		//	t.Errorf("Expected to request '/storage/volumes', got: %s", r.URL.Path)
 		//}

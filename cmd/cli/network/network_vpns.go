@@ -117,7 +117,7 @@ func VPNPlanList() error {
 
 	vpns, err := svc.ListVPNPlans(cmd.GetContext(), viper.GetString(cmd.VpcId))
 	if err != nil {
-		formatter.PrintError("Couldn't receive VPN data", err)
+		formatter.PrintError("Couldn't receive VPN plans data", err)
 		return err
 	}
 

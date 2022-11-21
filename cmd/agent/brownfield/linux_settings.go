@@ -5,9 +5,9 @@
 package brownfield
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/types"
 
 	"github.com/ingrammicro/cio/api"
@@ -19,8 +19,8 @@ import (
 	"github.com/ingrammicro/cio/utils/format"
 )
 
-func applySettings(svc *api.ServerAPI, f format.Formatter, _, _ string) {
-	settings, err := obtainSettings(svc)
+func applySettings(ctx context.Context, svc *api.ServerAPI, f format.Formatter, _, _ string) {
+	settings, err := obtainSettings(ctx, svc)
 	if err != nil {
 		f.PrintFatal("Cannot obtain settings", err)
 	}
@@ -52,8 +52,8 @@ func applySettings(svc *api.ServerAPI, f format.Formatter, _, _ string) {
 	fmt.Printf("Setup script ran successfully\n")
 }
 
-func obtainSettings(svc *api.ServerAPI) (settings *types.Settings, err error) {
-	settings, status, err := svc.GetBrownfieldSettings(cmd.GetContext())
+func obtainSettings(ctx context.Context, svc *api.ServerAPI) (settings *types.Settings, err error) {
+	settings, status, err := svc.GetBrownfieldSettings(ctx)
 	if err != nil {
 		return
 	}

@@ -65,14 +65,15 @@ func AttachmentDownload() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	attachment, err := svc.GetAttachment(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	attachment, err := svc.GetAttachment(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive attachment data", err)
 		return err
 	}
 
 	realFileName, status, err := svc.DownloadFile(
-		cmd.GetContext(),
+		ctx,
 		attachment.DownloadURL,
 		viper.GetString(cmd.Filepath),
 		false,

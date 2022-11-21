@@ -3,6 +3,7 @@
 package network
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/cmd/cli"
 
@@ -75,7 +76,7 @@ func init() {
 		Use:          "update",
 		Short:        "Updates an existing floating IP identified by the given id",
 		RunMethod:    FloatingIPUpdate,
-		FlagContexts: []cmd.FlagContext{fId, fName}},
+		FlagContexts: []cmd.FlagContext{fId, fNameReq}},
 	)
 	cmd.NewCommand(floatingIpsCmd, &cmd.CommandContext{
 		Use:          "attach",
@@ -120,23 +121,24 @@ func FloatingIPList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	floatingIPs, err := svc.ListFloatingIPs(cmd.GetContext(), viper.GetString(cmd.ServerId))
+	ctx := cmd.GetContext()
+	floatingIPs, err := svc.ListFloatingIPs(ctx, viper.GetString(cmd.ServerId))
 	if err != nil {
 		formatter.PrintError("Couldn't receive floating IPs data", err)
 		return err
 	}
-	if err = FormatFloatingIPsResponse(floatingIPs, formatter); err != nil {
+	if err = FormatFloatingIPsResponse(ctx, floatingIPs, formatter); err != nil {
 		return err
 	}
 	return nil
 }
 
-func FormatFloatingIPsResponse(floatingIPs []*types.FloatingIP, formatter format.Formatter) error {
+func FormatFloatingIPsResponse(ctx context.Context, floatingIPs []*types.FloatingIP, formatter format.Formatter) error {
 	labelables := make([]types.Labelable, len(floatingIPs))
 	for i := 0; i < len(floatingIPs); i++ {
 		labelables[i] = types.Labelable(floatingIPs[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -168,12 +170,13 @@ func FloatingIPShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	floatingIP, err := svc.GetFloatingIP(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	floatingIP, err := svc.GetFloatingIP(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive floating IP data", err)
 		return err
 	}
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -196,13 +199,15 @@ func FloatingIPCreate() error {
 		"realm_id":         viper.GetString(cmd.RealmId),
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 
 	if viper.IsSet(cmd.Labels) {
 		floatingIPIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -211,7 +216,7 @@ func FloatingIPCreate() error {
 		}
 	}
 
-	floatingIP, err := svc.CreateFloatingIP(cmd.GetContext(), &floatingIPIn)
+	floatingIP, err := svc.CreateFloatingIP(ctx, &floatingIPIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create floating IP", err)
 		return err
@@ -234,13 +239,14 @@ func FloatingIPUpdate() error {
 		"name": viper.GetString(cmd.Name),
 	}
 
-	floatingIP, err := svc.UpdateFloatingIP(cmd.GetContext(), viper.GetString(cmd.Id), &floatingIPIn)
+	ctx := cmd.GetContext()
+	floatingIP, err := svc.UpdateFloatingIP(ctx, viper.GetString(cmd.Id), &floatingIPIn)
 	if err != nil {
 		formatter.PrintError("Couldn't update floating IP", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -261,13 +267,14 @@ func FloatingIPAttach() error {
 		"attached_server_id": viper.GetString(cmd.ServerId),
 	}
 
-	server, err := svc.AttachFloatingIP(cmd.GetContext(), viper.GetString(cmd.Id), &floatingIPIn)
+	ctx := cmd.GetContext()
+	server, err := svc.AttachFloatingIP(ctx, viper.GetString(cmd.Id), &floatingIPIn)
 	if err != nil {
 		formatter.PrintError("Couldn't attach floating IP", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}

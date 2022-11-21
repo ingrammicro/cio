@@ -94,9 +94,10 @@ func FirewallProfileList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	firewallProfiles, err := svc.ListFirewallProfiles(cmd.GetContext())
+	ctx := cmd.GetContext()
+	firewallProfiles, err := svc.ListFirewallProfiles(ctx)
 	if err != nil {
-		formatter.PrintError("Couldn't receive firewallProfile data", err)
+		formatter.PrintError("Couldn't receive firewall profiles data", err)
 		return err
 	}
 
@@ -104,7 +105,7 @@ func FirewallProfileList() error {
 	for i := 0; i < len(firewallProfiles); i++ {
 		labelables[i] = types.Labelable(firewallProfiles[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -136,12 +137,13 @@ func FirewallProfileShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	firewallProfile, err := svc.GetFirewallProfile(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	firewallProfile, err := svc.GetFirewallProfile(ctx, viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't receive firewallProfile data", err)
+		formatter.PrintError("Couldn't receive firewall profile data", err)
 		return err
 	}
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -172,13 +174,15 @@ func FirewallProfileCreate() error {
 		firewallProfileIn["rules"] = fw.Rules
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 
 	if viper.IsSet(cmd.Labels) {
 		firewallProfileIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -187,9 +191,9 @@ func FirewallProfileCreate() error {
 		}
 	}
 
-	firewallProfile, err := svc.CreateFirewallProfile(cmd.GetContext(), &firewallProfileIn)
+	firewallProfile, err := svc.CreateFirewallProfile(ctx, &firewallProfileIn)
 	if err != nil {
-		formatter.PrintError("Couldn't create firewallProfile", err)
+		formatter.PrintError("Couldn't create firewall profile", err)
 		return err
 	}
 
@@ -222,13 +226,14 @@ func FirewallProfileUpdate() error {
 		firewallProfileIn["rules"] = fw.Rules
 	}
 
-	firewallProfile, err := svc.UpdateFirewallProfile(cmd.GetContext(), viper.GetString(cmd.Id), &firewallProfileIn)
+	ctx := cmd.GetContext()
+	firewallProfile, err := svc.UpdateFirewallProfile(ctx, viper.GetString(cmd.Id), &firewallProfileIn)
 	if err != nil {
-		formatter.PrintError("Couldn't update firewallProfile", err)
+		formatter.PrintError("Couldn't update firewall profile", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -247,7 +252,7 @@ func FirewallProfileDelete() error {
 
 	err := svc.DeleteFirewallProfile(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't delete firewallProfile", err)
+		formatter.PrintError("Couldn't delete firewall profile", err)
 		return err
 	}
 	return nil

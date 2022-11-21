@@ -3,6 +3,7 @@
 package agent
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/logger"
 	"os"
@@ -56,7 +57,9 @@ func Register(context configuration.Context) {
 			f.PrintFatal("Must run as super-user", fmt.Errorf("running as non-administrator user"))
 		}
 	}
-	rootCACert, cert, key, err := obtainServerKeys(config, context)
+
+	ctx := cmd.GetContext()
+	rootCACert, cert, key, err := obtainServerKeys(ctx, config, context)
 	if err != nil {
 		f.PrintFatal("Couldn't obtain server keys", err)
 	}
@@ -67,10 +70,10 @@ func Register(context configuration.Context) {
 	fmt.Printf("CIO agent successfully registered, configuration file placed at %s\n", config.ConfFile)
 }
 
-func obtainServerKeys(config *configuration.Config, context configuration.Context) (
+func obtainServerKeys(ctx context.Context, config *configuration.Config, context configuration.Context) (
 	rootCACert string, cert string, key string, err error,
 ) {
-	cs, err := api.NewIMCOServerWithToken(config, context)
+	cs, err := api.NewHTTPClientWithToken(config, context)
 	if err != nil {
 		return
 	}
@@ -80,10 +83,10 @@ func obtainServerKeys(config *configuration.Config, context configuration.Contex
 	responseData := make(map[string]interface{})
 
 	if context == configuration.Brownfield {
-		responseData, status, err = cs.ObtainBrownfieldSslProfile(cmd.GetContext(), &payload)
+		responseData, status, err = cs.ObtainBrownfieldSslProfile(ctx, &payload)
 	}
 	if context == configuration.Polling {
-		responseData, status, err = cs.ObtainPollingApiKey(cmd.GetContext(), &payload)
+		responseData, status, err = cs.ObtainPollingApiKey(ctx, &payload)
 	}
 	if err != nil {
 		return

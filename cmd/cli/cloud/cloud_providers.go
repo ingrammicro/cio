@@ -49,7 +49,7 @@ func CloudProviderList() error {
 
 	cloudProviders, err := svc.ListCloudProviders(cmd.GetContext())
 	if err != nil {
-		formatter.PrintError("Couldn't receive cloudProvider data", err)
+		formatter.PrintError("Couldn't receive cloud providers data", err)
 		return err
 	}
 	if err = formatter.PrintList(cloudProviders); err != nil {
@@ -64,17 +64,18 @@ func CloudProviderStoragePlansList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	storagePlans, err := svc.ListServerStoragePlans(cmd.GetContext(), viper.GetString(cmd.CloudProviderId))
+	ctx := cmd.GetContext()
+	storagePlans, err := svc.ListServerStoragePlans(ctx, viper.GetString(cmd.CloudProviderId))
 	if err != nil {
 		formatter.PrintError("Couldn't receive storage plans data", err)
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}
-	locationsMap, err := cli.LoadLocationsMapping(cmd.GetContext())
+	locationsMap, err := cli.LoadLocationsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -96,13 +97,14 @@ func CloudProviderLoadBalancerPlansList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	loadBalancerPlans, err := svc.ListLoadBalancerPlans(cmd.GetContext(), viper.GetString(cmd.CloudProviderId))
+	ctx := cmd.GetContext()
+	loadBalancerPlans, err := svc.ListLoadBalancerPlans(ctx, viper.GetString(cmd.CloudProviderId))
 	if err != nil {
 		formatter.PrintError("Couldn't receive load balancer plans data", err)
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -122,13 +124,14 @@ func CloudProviderClusterPlansList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	loadBalancerPlans, err := svc.ListClusterPlans(cmd.GetContext(), viper.GetString(cmd.CloudProviderId))
+	ctx := cmd.GetContext()
+	loadBalancerPlans, err := svc.ListClusterPlans(ctx, viper.GetString(cmd.CloudProviderId))
 	if err != nil {
 		formatter.PrintError("Couldn't receive cluster plans data", err)
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}

@@ -101,7 +101,8 @@ func variableFilePath(dir string) string {
 	return filepath.Join(dir, variableFile)
 }
 
-// processAnsiblePolicyfiles applies for each policy the required ansible-galaxy and ansible-playbook commands, reporting in bunches of N lines
+// processAnsiblePolicyfiles applies for each policy the required ansible-galaxy and ansible-playbook commands,
+// reporting in bunches of N lines
 func processAnsiblePolicyfiles(
 	ctx context.Context,
 	blueprintConfig *types.BootstrappingConfiguration,

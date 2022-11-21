@@ -3,6 +3,7 @@
 package labels
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/cmd/cli"
 	"regexp"
@@ -86,13 +87,14 @@ func LabelAssignNamesForIDs(items []types.Labelable, labelNamesByID map[string]s
 	}
 }
 
-// LabelLoadsMapping subcommand function retrieves the current label list in IMCO; then prepares two mapping structures
+// LabelLoadsMapping subcommand function retrieves the current label list in orchestration platform;
+// then prepares two mapping structures
 // (Name <-> ID and ID <-> Name)
-func LabelLoadsMapping() (map[string]string, map[string]string, error) {
+func LabelLoadsMapping(ctx context.Context) (map[string]string, map[string]string, error) {
 	logger.DebugFuncInfo()
 
 	svc, _, formatter := cli.WireUpAPIClient()
-	labels, err := svc.ListLabels(cmd.GetContext())
+	labels, err := svc.ListLabels(ctx)
 	if err != nil {
 		formatter.PrintError("Couldn't receive labels data", err)
 		return nil, nil, err
@@ -131,9 +133,10 @@ func LabelsUnifyInputNames(labelsNames string, formatter format.Formatter) ([]st
 // LabelResolution subcommand function retrieves a labels map(Name<->ID) based on label names received to be processed.
 // The function evaluates the received labels names (comma separated string); with them, solves the assigned IDs for the
 // given labels names.
-// If the label name is not available in IMCO yet, it is created.
+// If the label name is not available in orchestration platform yet, it is created.
 // If new label is created, mapping structures labelNamesByID/labelIDsByName are updated
 func LabelResolution(
+	ctx context.Context,
 	labelsNames string,
 	labelNamesByID *map[string]string,
 	labelIDsByName *map[string]string,
@@ -146,14 +149,14 @@ func LabelResolution(
 		return nil, err
 	}
 
-	// Obtain output mapped labels Name<->ID; currently in IMCO platform as well as if creation is required
+	// Obtain output mapped labels Name<->ID; currently in orchestration platform as well as if creation is required
 	labelsOutMap := make(map[string]string)
 	for _, name := range labelNamesIn {
-		// check if the label already exists in IMCO, creates it if it does not exist
+		// check if the label already exists in orchestration platform, creates it if it does not exist
 		if (*labelIDsByName)[name] == "" {
 			labelPayload := make(map[string]interface{})
 			labelPayload["name"] = name
-			newLabel, err := svc.CreateLabel(cmd.GetContext(), &labelPayload)
+			newLabel, err := svc.CreateLabel(ctx, &labelPayload)
 			if err != nil {
 				formatter.PrintError("Couldn't create label", err)
 				return nil, err
@@ -179,11 +182,12 @@ func LabelAdd() error {
 
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	labelIDsByName, labelNamesByID, err := LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
-	labelIds, err := LabelResolution(viper.GetString(cmd.Label), &labelNamesByID, &labelIDsByName)
+	labelIds, err := LabelResolution(ctx, viper.GetString(cmd.Label), &labelNamesByID, &labelIDsByName)
 	if err != nil {
 		return err
 	}
@@ -204,7 +208,7 @@ func LabelAdd() error {
 		"resources": resourcesData,
 	}
 
-	labeledResources, err := svc.AddLabel(cmd.GetContext(), labelID, &labelIn)
+	labeledResources, err := svc.AddLabel(ctx, labelID, &labelIn)
 	if err != nil {
 		formatter.PrintError("Couldn't add label data", err)
 		return err
@@ -222,13 +226,14 @@ func LabelRemove() error {
 
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	labelsMapNameToID, _, err := LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelsMapNameToID, _, err := LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 	labelID := labelsMapNameToID[viper.GetString(cmd.Label)]
 
-	err = svc.RemoveLabel(cmd.GetContext(), labelID, viper.GetString(cmd.ResourceType), viper.GetString(cmd.Id))
+	err = svc.RemoveLabel(ctx, labelID, viper.GetString(cmd.ResourceType), viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't remove label", err)
 		return err

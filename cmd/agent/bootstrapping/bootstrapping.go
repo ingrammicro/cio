@@ -54,12 +54,10 @@ const (
 	// defaultIntervalSeconds is the default minimum number of seconds
 	// we will wait between policyfile applications (or attempts)
 	defaultIntervalSeconds = 600 // 600 seconds = 10 minutes
-
 	// defaultSplaySeconds is the maximum number of seconds added to
 	// the configured interval to randomize the actual interval between
 	// policyfiles applications (or attempts)
 	defaultSplaySeconds = 300 // 300 seconds = 5 minutes
-
 	// defaultThresholdLines is the default maximum number of lines a
 	// batch of policyfile application output report can have
 	defaultThresholdLines = 20
@@ -67,7 +65,6 @@ const (
 	// the continuous bootstrap command can go without attempting to apply
 	// policyfiles
 	defaultApplyAfterIterations = 4 // iterations
-
 	// ProcessLockFile is the name of the file used to ensure the bootstrap
 	// command is the only one of its kind running
 	ProcessLockFile = "cio-bootstrapping.lock"
@@ -196,7 +193,7 @@ func Stop() error {
 
 	formatter := format.GetFormatter()
 	if err := agent.StopProcess(lockFilePath()); err != nil {
-		formatter.PrintError("cannot Stop the bootstrapping process", err)
+		formatter.PrintError("cannot stop the bootstrapping process", err)
 		return err
 	}
 
@@ -254,7 +251,8 @@ func runBootstrapPeriodically(ctx context.Context, formatter format.Formatter) e
 				}
 			} else {
 				log.Info(
-					fmt.Sprintf("Configuration has not changed since last successful application and not %d iterations have passed since last application",
+					fmt.Sprintf("Configuration has not changed since last successful application and "+
+						"not %d iterations have passed since last application",
 						applyAfterIterations))
 			}
 		} else {
@@ -357,7 +355,8 @@ func applyPolicyfiles(
 	} else if blueprintConfig.ConfigurationManagementSystem == CMSAnsible {
 		err = applyAnsiblePolicyfiles(ctx, blueprintConfig, svc, bsProcess, formatter)
 	} else {
-		return fmt.Errorf("unknown configuration management system %q, expected %q or %q", blueprintConfig.ConfigurationManagementSystem, CMSChef, CMSAnsible)
+		return fmt.Errorf("unknown configuration management system %q, expected %q or %q",
+			blueprintConfig.ConfigurationManagementSystem, CMSChef, CMSAnsible)
 	}
 	// Finishing time
 	bsProcess.finishedAt = time.Now().UTC()
@@ -408,7 +407,7 @@ func getBlueprintConfig(
 
 	// Inquire about desired configuration changes to be applied by querying the `GET /blueprint/configuration`
 	// endpoint. This will provide a JSON response with the desired configuration changes
-	blueprintConfig, status, err := svc.GetBootstrappingConfiguration(cmd.GetContext())
+	blueprintConfig, status, err := svc.GetBootstrappingConfiguration(ctx)
 	if err == nil && status != 200 {
 		err = fmt.Errorf("received non-ok %d response", status)
 	}
@@ -494,7 +493,10 @@ func reportAppliedConfiguration(
 	return svc.ReportBootstrappingAppliedConfiguration(ctx, &payload)
 }
 
-func (bsProcess *bootstrappingProcess) parseCMSVersion(blueprintConfig *types.BootstrappingConfiguration, chunk string) {
+func (bsProcess *bootstrappingProcess) parseCMSVersion(
+	blueprintConfig *types.BootstrappingConfiguration,
+	chunk string,
+) {
 	logger.DebugFuncInfo()
 
 	if bsProcess.cmsVersion != "" {
@@ -539,7 +541,7 @@ func downloadPolicyfiles(ctx context.Context, svc *api.ServerAPI, bsProcess *boo
 	for _, bsPolicyfile := range bsProcess.policyfiles {
 		tarballPath := bsPolicyfile.TarballPath(bsProcess.directoryPath)
 		log.Debug("downloading: ", tarballPath)
-		_, status, err := svc.DownloadFile(cmd.GetContext(), bsPolicyfile.DownloadURL, tarballPath, false)
+		_, status, err := svc.DownloadFile(ctx, bsPolicyfile.DownloadURL, tarballPath, false)
 		if err == nil && status != 200 {
 			err = fmt.Errorf("obtained non-ok response when downloading policyfile %s", bsPolicyfile.DownloadURL)
 		}

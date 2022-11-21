@@ -3,6 +3,7 @@
 package cloudspecificextensions
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/cmd/cli"
 
@@ -84,9 +85,10 @@ func CloudSpecificExtensionTemplateList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	csets, err := svc.ListCloudSpecificExtensionTemplates(cmd.GetContext())
+	ctx := cmd.GetContext()
+	csets, err := svc.ListCloudSpecificExtensionTemplates(ctx)
 	if err != nil {
-		formatter.PrintError("Couldn't receive CSE template data", err)
+		formatter.PrintError("Couldn't receive CSE templates data", err)
 		return err
 	}
 
@@ -94,7 +96,7 @@ func CloudSpecificExtensionTemplateList() error {
 	for i := 0; i < len(csets); i++ {
 		labelables[i] = types.Labelable(csets[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -126,12 +128,13 @@ func CloudSpecificExtensionTemplateShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cset, err := svc.GetCloudSpecificExtensionTemplate(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	cset, err := svc.GetCloudSpecificExtensionTemplate(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive CSE template data", err)
 		return err
 	}
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -170,12 +173,14 @@ func CloudSpecificExtensionTemplateImport() error {
 		cseTemplateIn["definition"] = viper.GetString(cmd.Definition)
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 	if viper.IsSet(cmd.Labels) {
 		cseTemplateIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -184,7 +189,7 @@ func CloudSpecificExtensionTemplateImport() error {
 		}
 	}
 
-	cseTemplate, err := svc.CreateCloudSpecificExtensionTemplate(cmd.GetContext(), &cseTemplateIn)
+	cseTemplate, err := svc.CreateCloudSpecificExtensionTemplate(ctx, &cseTemplateIn)
 	if err != nil {
 		formatter.PrintError("Couldn't import CSE template", err)
 		return err
@@ -207,8 +212,9 @@ func CloudSpecificExtensionTemplateUpdate() error {
 		"name": viper.GetString(cmd.Name),
 	}
 
+	ctx := cmd.GetContext()
 	cseTemplate, err := svc.UpdateCloudSpecificExtensionTemplate(
-		cmd.GetContext(),
+		ctx,
 		viper.GetString(cmd.Id),
 		&cseTemplateIn,
 	)
@@ -217,7 +223,7 @@ func CloudSpecificExtensionTemplateUpdate() error {
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -234,23 +240,28 @@ func CloudSpecificExtensionTemplateListDeployments() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cseds, err := svc.ListCloudSpecificExtensionTemplateDeployments(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	cseds, err := svc.ListCloudSpecificExtensionTemplateDeployments(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive CSE template deployments data", err)
 		return err
 	}
-	if err = formatDeploymentsResponse(cseds, formatter); err != nil {
+	if err = formatDeploymentsResponse(ctx, cseds, formatter); err != nil {
 		return err
 	}
 	return nil
 }
 
-func formatDeploymentsResponse(cseds []*types.CloudSpecificExtensionDeployment, formatter format.Formatter) error {
+func formatDeploymentsResponse(
+	ctx context.Context,
+	cseds []*types.CloudSpecificExtensionDeployment,
+	formatter format.Formatter,
+) error {
 	labelables := make([]types.Labelable, len(cseds))
 	for i := 0; i < len(cseds); i++ {
 		labelables[i] = types.Labelable(cseds[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}

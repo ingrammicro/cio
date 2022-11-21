@@ -3,8 +3,11 @@
 package blueprint
 
 import (
+	"context"
 	"fmt"
+	"github.com/ingrammicro/cio/api"
 	"github.com/ingrammicro/cio/cmd/cli"
+	"github.com/ingrammicro/cio/utils/format"
 
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/cmd/cli/labels"
@@ -79,7 +82,8 @@ func CookbookVersionList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cookbookVersions, err := svc.ListCookbookVersions(cmd.GetContext())
+	ctx := cmd.GetContext()
+	cookbookVersions, err := svc.ListCookbookVersions(ctx)
 	if err != nil {
 		formatter.PrintError("Couldn't receive cookbook versions data", err)
 		return err
@@ -89,7 +93,7 @@ func CookbookVersionList() error {
 	for i := 0; i < len(cookbookVersions); i++ {
 		labelables[i] = types.Labelable(cookbookVersions[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -121,13 +125,14 @@ func CookbookVersionShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cookbookVersion, err := svc.GetCookbookVersion(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	cookbookVersion, err := svc.GetCookbookVersion(ctx, viper.GetString(cmd.Id))
 	if err != nil {
 		formatter.PrintError("Couldn't receive cookbook version data", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -151,29 +156,30 @@ func CookbookVersionUpload() error {
 		return nil
 	}
 
+	ctx := cmd.GetContext()
 	cbIn := map[string]interface{}{}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 	if viper.IsSet(cmd.Labels) {
-		cbIn["label_ids"], err = labels.LabelResolution(viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
+		cbIn["label_ids"], err = labels.LabelResolution(ctx, viper.GetString(cmd.Labels), &labelNamesByID, &labelIDsByName)
 		if err != nil {
 			return err
 		}
 	}
 
 	// creates new cookbook_version
-	cookbookVersion, err := svc.CreateCookbookVersion(cmd.GetContext(), &cbIn)
+	cookbookVersion, err := svc.CreateCookbookVersion(ctx, &cbIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create cookbook version data", err)
 		return err
 	}
 
 	// uploads new cookbook_version file
-	err = svc.UploadFile(cmd.GetContext(), sourceFilePath, cookbookVersion.UploadURL)
+	err = svc.UploadFile(ctx, sourceFilePath, cookbookVersion.UploadURL)
 	if err != nil {
-		cleanCookbookVersion(cookbookVersion.ID)
+		cleanCookbookVersion(ctx, svc, formatter, cookbookVersion.ID)
 		formatter.PrintError("Couldn't upload cookbook version data", err)
 		return err
 	}
@@ -181,9 +187,9 @@ func CookbookVersionUpload() error {
 	// processes the new cookbook_version
 	cookbookVersionID := cookbookVersion.ID
 	cookbookVersionParams := new(map[string]interface{})
-	cookbookVersion, err = svc.ProcessCookbookVersion(cmd.GetContext(), cookbookVersion.ID, cookbookVersionParams)
+	cookbookVersion, err = svc.ProcessCookbookVersion(ctx, cookbookVersion.ID, cookbookVersionParams)
 	if err != nil {
-		cleanCookbookVersion(cookbookVersionID)
+		cleanCookbookVersion(ctx, svc, formatter, cookbookVersionID)
 		formatter.PrintError("Couldn't process cookbook version", err)
 		return err
 	}
@@ -198,9 +204,13 @@ func CookbookVersionUpload() error {
 }
 
 // cleanCookbookVersion deletes CookbookVersion. Ideally for cleaning at uploading error cases
-func cleanCookbookVersion(cookbookVersionID string) error {
-	svc, _, formatter := cli.WireUpAPIClient()
-	if err := svc.DeleteCookbookVersion(cmd.GetContext(), cookbookVersionID); err != nil {
+func cleanCookbookVersion(
+	ctx context.Context,
+	svc *api.ClientAPI,
+	formatter format.Formatter,
+	cookbookVersionID string,
+) error {
+	if err := svc.DeleteCookbookVersion(ctx, cookbookVersionID); err != nil {
 		formatter.PrintError("Couldn't clean failed cookbook version", err)
 		return err
 	}

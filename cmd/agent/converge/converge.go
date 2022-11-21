@@ -19,7 +19,7 @@ import (
 func init() {
 	cmd.NewCommand(
 		cmd.RootCmd,
-		&cmd.CommandContext{Use: "converge", Short: "Converges Host to original Blueprint", RunMethod: Converge},
+		&cmd.CommandContext{Use: "converge", Short: "Converges host to original blueprint", RunMethod: Converge},
 	)
 }
 

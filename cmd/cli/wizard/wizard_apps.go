@@ -30,11 +30,11 @@ func init() {
 		Short: "Provides information about apps"})
 	cmd.NewCommand(appsCmd, &cmd.CommandContext{
 		Use:       "list",
-		Short:     "Lists the available Apps",
+		Short:     "Lists the available apps",
 		RunMethod: AppList})
 	cmd.NewCommand(appsCmd, &cmd.CommandContext{
 		Use:          "deploy",
-		Short:        "Deploys the App with the given id as a server on the cloud",
+		Short:        "Deploys the app with the given id as a server on the cloud",
 		RunMethod:    AppDeploy,
 		FlagContexts: []cmd.FlagContext{fId, fLocationId, fCloudAccountId, fHostname, fServerPlanId}},
 	)
@@ -47,7 +47,7 @@ func AppList() error {
 
 	apps, err := svc.ListApps(cmd.GetContext())
 	if err != nil {
-		formatter.PrintError("Couldn't receive app data", err)
+		formatter.PrintError("Couldn't receive apps data", err)
 		return err
 	}
 	if err = formatter.PrintList(apps); err != nil {

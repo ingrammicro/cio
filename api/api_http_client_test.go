@@ -99,11 +99,11 @@ func TestNewHTTPClient(t *testing.T) {
 		},
 		"if cannot read config API CA cert": {
 			config:   InitConfig(),
-			expected: "cannot read IMCO CA cert",
+			expected: "cannot read " + configuration.CloudOrchestratorPlatformName + " CA cert",
 		},
 		"if cannot read config API key": {
 			config:   InitConfig(),
-			expected: "cannot read IMCO API key",
+			expected: "cannot read " + configuration.CloudOrchestratorPlatformName + " API key",
 		},
 		"if config initialized": {
 			config:   InitConfig(),
@@ -120,10 +120,10 @@ func TestNewHTTPClient(t *testing.T) {
 					test.config.Certificate.Key = ""
 					test.config.Certificate.Ca = ""
 				}
-				if test.expected == "cannot read IMCO CA cert" {
+				if test.expected == "cannot read "+configuration.CloudOrchestratorPlatformName+" CA cert" {
 					test.config.Certificate.Ca = testutils.TEST
 				}
-				if test.expected == "cannot read IMCO API key" {
+				if test.expected == "cannot read "+configuration.CloudOrchestratorPlatformName+" API key" {
 					test.config.Certificate.Key = testutils.TEST
 				}
 			}

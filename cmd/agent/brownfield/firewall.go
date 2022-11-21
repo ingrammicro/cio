@@ -3,9 +3,8 @@
 package brownfield
 
 import (
+	"context"
 	"fmt"
-
-	"github.com/ingrammicro/cio/cmd"
 
 	"github.com/ingrammicro/cio/api"
 
@@ -16,7 +15,7 @@ import (
 	"github.com/ingrammicro/cio/utils/format"
 )
 
-func configureFirewall(svc *api.ServerAPI, f format.Formatter) {
+func configureFirewall(ctx context.Context, svc *api.ServerAPI, f format.Formatter) {
 	chains, err := discovery.CurrentFirewallRules()
 	if err != nil {
 		f.PrintFatal("Cannot obtain current firewall rules", err)
@@ -26,7 +25,7 @@ func configureFirewall(svc *api.ServerAPI, f format.Formatter) {
 		f.PrintFatal("Cannot flatten firewall INPUT chain", err)
 	}
 	fmt.Printf("After flattening chain: %d rules\n", len(flattenedInputChain.Rules))
-	policy, err := startFirewallMapping(svc, flattenedInputChain.Rules)
+	policy, err := startFirewallMapping(ctx, svc, flattenedInputChain.Rules)
 	if err != nil {
 		f.PrintFatal("Error starting the firewall mapping", err)
 	}
@@ -36,11 +35,12 @@ func configureFirewall(svc *api.ServerAPI, f format.Formatter) {
 	}
 }
 
-func startFirewallMapping(svc *api.ServerAPI, rules []*discovery.FirewallRule) (p *types.Policy, err error) {
+func startFirewallMapping(ctx context.Context, svc *api.ServerAPI, rules []*discovery.FirewallRule) (
+	p *types.Policy, err error) {
 	payload := convertFirewallChainToPayload(rules)
 	fmt.Printf("DEBUG: Sending following firewall profile: %+v\n", payload)
 
-	response, status, err := svc.SetFirewallProfile(cmd.GetContext(), &payload)
+	response, status, err := svc.SetFirewallProfile(ctx, &payload)
 	if err != nil {
 		return
 	}

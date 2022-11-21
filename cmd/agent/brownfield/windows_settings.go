@@ -5,25 +5,25 @@
 package brownfield
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
 
-	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/types"
 
 	"github.com/ingrammicro/cio/api"
 	"github.com/ingrammicro/cio/utils/format"
 )
 
-func applySettings(svc *api.ServerAPI, f format.Formatter, username, password string) {
-	settings, err := obtainSettings(svc)
+func applySettings(ctx context.Context, svc *api.ServerAPI, f format.Formatter, username, password string) {
+	settings, err := obtainSettings(ctx, svc)
 	if err != nil {
 		f.PrintFatal("Cannot obtain settings", err)
 	}
-	err = sendUsernamePassword(svc, username, password)
+	err = sendUsernamePassword(ctx, svc, username, password)
 	if err != nil {
 		f.PrintFatal("Cannot send server credentials", err)
 	}
@@ -47,9 +47,9 @@ func applySettings(svc *api.ServerAPI, f format.Formatter, username, password st
 	fmt.Printf("Setup script ran successfully\n")
 }
 
-func obtainSettings(svc *api.ServerAPI) (settings *types.Settings, err error) {
+func obtainSettings(ctx context.Context, svc *api.ServerAPI) (settings *types.Settings, err error) {
 	// We do not need settings data, but make the API call to log progress on API service log
-	settings, status, err := svc.GetBrownfieldSettings(cmd.GetContext())
+	settings, status, err := svc.GetBrownfieldSettings(ctx)
 	if err != nil {
 		return
 	}
@@ -64,14 +64,14 @@ func obtainSettings(svc *api.ServerAPI) (settings *types.Settings, err error) {
 	return
 }
 
-func sendUsernamePassword(svc *api.ServerAPI, username, password string) error {
+func sendUsernamePassword(ctx context.Context, svc *api.ServerAPI, username, password string) error {
 	payload := &map[string]interface{}{
 		"settings": map[string]interface{}{
 			"username":    username,
 			"user_passwd": password,
 		},
 	}
-	settings, status, err := svc.SetBrownfieldSettings(cmd.GetContext(), payload)
+	settings, status, err := svc.SetBrownfieldSettings(ctx, payload)
 	if err != nil {
 		return err
 	}

@@ -34,13 +34,14 @@ func CloudAccountList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cloudAccounts, err := svc.ListCloudAccounts(cmd.GetContext())
+	ctx := cmd.GetContext()
+	cloudAccounts, err := svc.ListCloudAccounts(ctx)
 	if err != nil {
-		formatter.PrintError("Couldn't receive cloudAccount data", err)
+		formatter.PrintError("Couldn't receive cloud accounts data", err)
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -61,13 +62,14 @@ func CloudAccountShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	cloudAccount, err := svc.GetCloudAccount(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	cloudAccount, err := svc.GetCloudAccount(ctx, viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't receive cloudAccount data", err)
+		formatter.PrintError("Couldn't receive cloud account data", err)
 		return err
 	}
 
-	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(cmd.GetContext())
+	cloudProvidersMap, err := cli.LoadCloudProvidersMapping(ctx)
 	if err != nil {
 		return err
 	}

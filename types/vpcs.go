@@ -2,7 +2,7 @@
 
 package types
 
-// Vpc stores an IMCO VPC item
+// Vpc stores a VPC item
 type Vpc struct {
 	ID                 string   `json:"id"                             header:"ID"`
 	Name               string   `json:"name,omitempty"                 header:"NAME"`

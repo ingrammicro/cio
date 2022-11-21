@@ -25,7 +25,7 @@ func init() {
 	)
 	cmd.NewCommand(serverPlansCmd, &cmd.CommandContext{
 		Use:          "list",
-		Short:        "Lists the available server Plans",
+		Short:        "Lists the available server plans",
 		RunMethod:    WizServerPlanList,
 		FlagContexts: []cmd.FlagContext{fAppId, fLocationId, fCloudProviderId}},
 	)
@@ -36,16 +36,18 @@ func WizServerPlanList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	serverPlans, err := svc.ListWizardServerPlans(cmd.GetContext(),
+	ctx := cmd.GetContext()
+	serverPlans, err := svc.ListWizardServerPlans(
+		ctx,
 		viper.GetString(cmd.AppId),
 		viper.GetString(cmd.LocationId),
 		viper.GetString(cmd.CloudProviderId),
 	)
 	if err != nil {
-		formatter.PrintError("Couldn't receive serverPlan data", err)
+		formatter.PrintError("Couldn't receive server plans data", err)
 		return err
 	}
-	if err = cloud.FormatServerPlansResponse(serverPlans, formatter); err != nil {
+	if err = cloud.FormatServerPlansResponse(ctx, serverPlans, formatter); err != nil {
 		return err
 	}
 	return nil

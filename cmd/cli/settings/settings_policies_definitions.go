@@ -195,7 +195,7 @@ func PolicyDefinitionListAssignments() error {
 
 	assignments, err := svc.ListPolicyDefinitionAssignments(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't receive policy assignments data", err)
+		formatter.PrintError("Couldn't receive policy definition assignments data", err)
 		return err
 	}
 

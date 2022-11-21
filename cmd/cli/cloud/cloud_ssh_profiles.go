@@ -23,8 +23,7 @@ func init() {
 	fNameReq := fName
 	fNameReq.Required = true
 
-	fPublicKey := cmd.FlagContext{Type: cmd.String, Name: cmd.PublicKey, Required: true,
-		Usage: "Public key of the SSH profile"}
+	fPublicKey := cmd.FlagContext{Type: cmd.String, Name: cmd.PublicKey, Usage: "Public key of the SSH profile"}
 	fPublicKeyReq := fPublicKey
 	fPublicKeyReq.Required = true
 
@@ -96,9 +95,10 @@ func SSHProfileList() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	sshProfiles, err := svc.ListSSHProfiles(cmd.GetContext())
+	ctx := cmd.GetContext()
+	sshProfiles, err := svc.ListSSHProfiles(ctx)
 	if err != nil {
-		formatter.PrintError("Couldn't receive sshProfile data", err)
+		formatter.PrintError("Couldn't receive ssh profiles data", err)
 		return err
 	}
 
@@ -106,7 +106,7 @@ func SSHProfileList() error {
 	for i := 0; i < len(sshProfiles); i++ {
 		labelables[i] = types.Labelable(sshProfiles[i])
 	}
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -138,12 +138,13 @@ func SSHProfileShow() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	sshProfile, err := svc.GetSSHProfile(cmd.GetContext(), viper.GetString(cmd.Id))
+	ctx := cmd.GetContext()
+	sshProfile, err := svc.GetSSHProfile(ctx, viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't receive sshProfile data", err)
+		formatter.PrintError("Couldn't receive ssh profile data", err)
 		return err
 	}
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -168,13 +169,15 @@ func SSHProfileCreate() error {
 		sshProfileIn["private_key"] = viper.GetString(cmd.PrivateKey)
 	}
 
-	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping()
+	ctx := cmd.GetContext()
+	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
 
 	if viper.IsSet(cmd.Labels) {
 		sshProfileIn["label_ids"], err = labels.LabelResolution(
+			ctx,
 			viper.GetString(cmd.Labels),
 			&labelNamesByID,
 			&labelIDsByName)
@@ -183,9 +186,9 @@ func SSHProfileCreate() error {
 		}
 	}
 
-	sshProfile, err := svc.CreateSSHProfile(cmd.GetContext(), &sshProfileIn)
+	sshProfile, err := svc.CreateSSHProfile(ctx, &sshProfileIn)
 	if err != nil {
-		formatter.PrintError("Couldn't create sshProfile", err)
+		formatter.PrintError("Couldn't create ssh profile", err)
 		return err
 	}
 
@@ -212,13 +215,14 @@ func SSHProfileUpdate() error {
 	if viper.IsSet(cmd.PrivateKey) {
 		sshProfileIn["private_key"] = viper.GetString(cmd.PrivateKey)
 	}
-	sshProfile, err := svc.UpdateSSHProfile(cmd.GetContext(), viper.GetString(cmd.Id), &sshProfileIn)
+	ctx := cmd.GetContext()
+	sshProfile, err := svc.UpdateSSHProfile(ctx, viper.GetString(cmd.Id), &sshProfileIn)
 	if err != nil {
-		formatter.PrintError("Couldn't update sshProfile", err)
+		formatter.PrintError("Couldn't update ssh profile", err)
 		return err
 	}
 
-	_, labelNamesByID, err := labels.LabelLoadsMapping()
+	_, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {
 		return err
 	}
@@ -237,7 +241,7 @@ func SSHProfileDelete() error {
 
 	err := svc.DeleteSSHProfile(cmd.GetContext(), viper.GetString(cmd.Id))
 	if err != nil {
-		formatter.PrintError("Couldn't delete sshProfile", err)
+		formatter.PrintError("Couldn't delete ssh profile", err)
 		return err
 	}
 	return nil

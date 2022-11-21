@@ -3,6 +3,7 @@
 package cloud
 
 import (
+	"context"
 	"fmt"
 	"github.com/ingrammicro/cio/cmd/cli"
 	"strings"
@@ -46,13 +47,13 @@ func init() {
 	)
 	cmd.NewCommand(infrastructureCmd, &cmd.CommandContext{
 		Use:          "export",
-		Short:        "Exports infrastructure file from IMCO",
+		Short:        "Exports infrastructure file from " + configuration.CloudOrchestratorPlatformName,
 		RunMethod:    TemporaryArchiveExport,
 		FlagContexts: []cmd.FlagContext{fServerIds, fServerArrayIds, fFilepathExport, fTimeExport}},
 	)
 	cmd.NewCommand(infrastructureCmd, &cmd.CommandContext{
 		Use:          "import",
-		Short:        "Imports infrastructure file on IMCO",
+		Short:        "Imports infrastructure file on " + configuration.CloudOrchestratorPlatformName,
 		RunMethod:    TemporaryArchiveImport,
 		FlagContexts: []cmd.FlagContext{fFilepathImport, fLabel, fTimeImport}},
 	)
@@ -87,11 +88,11 @@ func setExportParams(temporaryArchiveIn map[string]interface{}) (int64, error) {
 	return timeLapseExportStatusCheck, nil
 }
 
-func downloadTemporaryArchive(svc *api.ClientAPI, config *configuration.Config,
+func downloadTemporaryArchive(ctx context.Context, svc *api.ClientAPI, config *configuration.Config,
 	temporaryArchiveExportTask *types.TemporaryArchiveExportTask,
 ) error {
 	downloadURL := temporaryArchiveExportTask.DownloadURL(config.APIEndpoint)
-	realFileName, status, err := svc.DownloadFile(cmd.GetContext(), downloadURL, viper.GetString(cmd.Filepath), false)
+	realFileName, status, err := svc.DownloadFile(ctx, downloadURL, viper.GetString(cmd.Filepath), false)
 	if err == nil && status != 200 {
 		err = fmt.Errorf("obtained non-ok response when downloading export file %s", downloadURL)
 	}
@@ -116,7 +117,8 @@ func TemporaryArchiveExport() error {
 		return err
 	}
 
-	temporaryArchiveExport, err := svc.CreateTemporaryArchiveExport(cmd.GetContext(), &temporaryArchiveIn)
+	ctx := cmd.GetContext()
+	temporaryArchiveExport, err := svc.CreateTemporaryArchiveExport(ctx, &temporaryArchiveIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create temporary archive", err)
 		return err
@@ -127,7 +129,7 @@ func TemporaryArchiveExport() error {
 	log.Info("Exporting...")
 	temporaryArchiveExportTask := new(types.TemporaryArchiveExportTask)
 	for {
-		temporaryArchiveExportTask, err = svc.GetTemporaryArchiveExportTask(cmd.GetContext(), temporaryArchiveExport.ID)
+		temporaryArchiveExportTask, err = svc.GetTemporaryArchiveExportTask(ctx, temporaryArchiveExport.ID)
 		if err != nil {
 			formatter.PrintError("Couldn't get temporary archive", err)
 			return err
@@ -149,7 +151,7 @@ func TemporaryArchiveExport() error {
 		time.Sleep(time.Duration(timeLapseExportStatusCheck) * time.Second)
 	}
 
-	return downloadTemporaryArchive(svc, config, temporaryArchiveExportTask)
+	return downloadTemporaryArchive(ctx, svc, config, temporaryArchiveExportTask)
 }
 
 func getTimeLapseImportStatusCheckParam() int64 {
@@ -181,20 +183,21 @@ func TemporaryArchiveImport() error {
 
 	timeLapseImportStatusCheck := getTimeLapseImportStatusCheckParam()
 
-	temporaryArchive, err := svc.CreateTemporaryArchive(cmd.GetContext(), &temporaryArchiveIn)
+	ctx := cmd.GetContext()
+	temporaryArchive, err := svc.CreateTemporaryArchive(ctx, &temporaryArchiveIn)
 	if err != nil {
 		formatter.PrintError("Couldn't create temporary archive", err)
 		return err
 	}
 
-	err = svc.UploadFile(cmd.GetContext(), sourceFilePath, temporaryArchive.UploadURL)
+	err = svc.UploadFile(ctx, sourceFilePath, temporaryArchive.UploadURL)
 	if err != nil {
 		formatter.PrintError("Couldn't upload temporary archive", err)
 		return err
 	}
 
 	temporaryArchiveImport, err := svc.CreateTemporaryArchiveImport(
-		cmd.GetContext(),
+		ctx,
 		temporaryArchive.ID,
 		&temporaryArchiveIn,
 	)
@@ -208,7 +211,7 @@ func TemporaryArchiveImport() error {
 	log.Info("Label: ", temporaryArchiveImport.LabelName)
 	log.Info("Importing...")
 	for {
-		temporaryArchiveImport, err = svc.GetTemporaryArchiveImport(cmd.GetContext(), temporaryArchive.ID)
+		temporaryArchiveImport, err = svc.GetTemporaryArchiveImport(ctx, temporaryArchive.ID)
 		if err != nil {
 			formatter.PrintError("Couldn't get temporary archive import", err)
 			return err
