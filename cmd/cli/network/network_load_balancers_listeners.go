@@ -26,6 +26,9 @@ func init() {
 	fTargetGroupId := cmd.FlagContext{Type: cmd.String, Name: cmd.TargetGroupId, Required: true,
 		Usage: "Identifier of the target group of the listener"}
 
+	fCertificateId := cmd.FlagContext{Type: cmd.String, Name: cmd.CertificateId,
+		Usage: "Identifier of the certificate"}
+
 	fListenerId := cmd.FlagContext{Type: cmd.String, Name: cmd.ListenerId, Required: true,
 		Usage: "Identifier of the listener"}
 
@@ -52,13 +55,13 @@ func init() {
 		Use:          "create",
 		Short:        "Creates a new listener in a load balancer",
 		RunMethod:    ListenerCreate,
-		FlagContexts: []cmd.FlagContext{fLoadBalancerId, fProtocol, fPort, fTargetGroupId}},
+		FlagContexts: []cmd.FlagContext{fLoadBalancerId, fProtocol, fPort, fTargetGroupId, fCertificateId}},
 	)
 	cmd.NewCommand(listenersCmd, &cmd.CommandContext{
 		Use:          "update",
 		Short:        "Updates an existing listener identified by the given id",
 		RunMethod:    ListenerUpdate,
-		FlagContexts: []cmd.FlagContext{fId, fTargetGroupId}},
+		FlagContexts: []cmd.FlagContext{fId, fTargetGroupId, fCertificateId}},
 	)
 	cmd.NewCommand(listenersCmd, &cmd.CommandContext{
 		Use:          "delete",
@@ -142,6 +145,7 @@ func ListenerCreate() error {
 		"port":                    viper.GetInt(cmd.Port),
 		"default_target_group_id": viper.GetString(cmd.TargetGroupId),
 	}
+	cmd.SetParamString("certificate_id", cmd.CertificateId, listenerIn)
 
 	listener, err := svc.CreateListener(cmd.GetContext(), viper.GetString(cmd.LoadBalancerId), &listenerIn)
 	if err != nil {
@@ -164,6 +168,7 @@ func ListenerUpdate() error {
 	listenerIn := map[string]interface{}{
 		"default_target_group_id": viper.GetString(cmd.TargetGroupId),
 	}
+	cmd.SetParamString("certificate_id", cmd.CertificateId, listenerIn)
 
 	listener, err := svc.UpdateListener(cmd.GetContext(), viper.GetString(cmd.Id), &listenerIn)
 	if err != nil {

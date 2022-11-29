@@ -6,6 +6,7 @@ type PolicyDefinition struct {
 	ID           string                 `json:"id"            header:"ID"`
 	Name         string                 `json:"name"          header:"NAME"`
 	Description  string                 `json:"description"   header:"DESCRIPTION"`
+	Syntax       string                 `json:"syntax"        header:"SYNTAX"`
 	Definition   string                 `json:"definition"    header:"DEFINITION"    show:"nolist"`
 	Parameters   map[string]interface{} `json:"parameters"    header:"PARAMETERS"    show:"nolist"`
 	Builtin      bool                   `json:"builtin"       header:"BUILTIN"       show:"nolist"`

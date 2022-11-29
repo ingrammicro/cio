@@ -273,7 +273,7 @@ func (imco *HTTPClient) request(ctx context.Context, method string, path string,
 	if err != nil {
 		return nil, httpResponse.StatusCode, errors.Wrap(err, CannotReadHttpResponseBody)
 	}
-	log.Debugf("Response : %s", buf)
+	log.Debugf("Response: %s", buf)
 	log.Debugf("Status code: (%d) %s", httpResponse.StatusCode, httpResponse.Status)
 	return buf, httpResponse.StatusCode, nil
 }

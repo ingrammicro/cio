@@ -88,17 +88,8 @@ func init() {
 		Use:       "create",
 		Short:     "Creates a new server array",
 		RunMethod: ServerArrayCreate,
-		FlagContexts: []cmd.FlagContext{
-			fNameReq,
-			fTemplateId,
-			fCloudAccountId,
-			fServerPlanId,
-			fSize,
-			fFirewallProfileId,
-			fSSHProfileId,
-			fSubnetId,
-			fPrivateness,
-			fLabels}},
+		FlagContexts: []cmd.FlagContext{fNameReq, fTemplateId, fCloudAccountId, fServerPlanId, fSize,
+			fFirewallProfileId, fSSHProfileId, fSubnetId, fPrivateness, fLabels}},
 	)
 	cmd.NewCommand(serverArraysCmd, &cmd.CommandContext{
 		Use:          "update",
@@ -238,21 +229,11 @@ func ServerArrayCreate() error {
 		"server_plan_id":   viper.GetString(cmd.ServerPlanId),
 	}
 
-	if viper.IsSet(cmd.Size) {
-		serverArrayIn["size"] = viper.GetInt(cmd.Size)
-	}
-	if viper.IsSet(cmd.FirewallProfileId) {
-		serverArrayIn["firewall_profile_id"] = viper.GetString(cmd.FirewallProfileId)
-	}
-	if viper.IsSet(cmd.SSHProfileId) {
-		serverArrayIn["ssh_profile_id"] = viper.GetString(cmd.SSHProfileId)
-	}
-	if viper.IsSet(cmd.SubnetId) {
-		serverArrayIn["subnet_id"] = viper.GetString(cmd.SubnetId)
-	}
-	if viper.IsSet(cmd.Privateness) {
-		serverArrayIn["privateness"] = viper.GetBool(cmd.Privateness)
-	}
+	cmd.SetParamInt("size", cmd.Size, serverArrayIn)
+	cmd.SetParamString("firewall_profile_id", cmd.FirewallProfileId, serverArrayIn)
+	cmd.SetParamString("ssh_profile_id", cmd.SSHProfileId, serverArrayIn)
+	cmd.SetParamString("subnet_id", cmd.SubnetId, serverArrayIn)
+	cmd.SetParamBool("privateness", cmd.Privateness, serverArrayIn)
 
 	ctx := cmd.GetContext()
 	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
@@ -291,9 +272,8 @@ func ServerArrayUpdate() error {
 	svc, _, formatter := cli.WireUpAPIClient()
 
 	serverArrayIn := map[string]interface{}{}
-	if viper.IsSet(cmd.Name) {
-		serverArrayIn["name"] = viper.GetString(cmd.Name)
-	}
+	cmd.SetParamString("name", cmd.Name, serverArrayIn)
+
 	ctx := cmd.GetContext()
 	serverArray, err := svc.UpdateServerArray(ctx, viper.GetString(cmd.Id), &serverArrayIn)
 	if err != nil {

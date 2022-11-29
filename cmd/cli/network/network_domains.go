@@ -121,18 +121,8 @@ func init() {
 		Use:       "create",
 		Short:     "Creates a DNS record in a domain",
 		RunMethod: DomainCreateRecord,
-		FlagContexts: []cmd.FlagContext{
-			fDomainId,
-			fNameRecordRec,
-			fType,
-			fContent,
-			fTtl,
-			fServerId,
-			fFloatingIpId,
-			fLoadBalancerId,
-			fPriority,
-			fWeight,
-			fPort}},
+		FlagContexts: []cmd.FlagContext{fDomainId, fNameRecordRec, fType, fContent, fTtl, fServerId, fFloatingIpId,
+			fLoadBalancerId, fPriority, fWeight, fPort}},
 	)
 	cmd.NewCommand(recordsCmd, &cmd.CommandContext{
 		Use:          "update",
@@ -409,7 +399,6 @@ func DomainCreateRecord() error {
 		"name": viper.GetString(cmd.Name),
 		"type": recordType,
 	}
-
 	cmd.SetParamString("content", cmd.Content, recordIn)
 	cmd.SetParamString("ttl", cmd.Ttl, recordIn)
 
@@ -438,25 +427,13 @@ func DomainUpdateRecord() error {
 	svc, _, formatter := cli.WireUpAPIClient()
 
 	recordIn := map[string]interface{}{}
-	if viper.IsSet(cmd.Name) {
-		recordIn["name"] = viper.GetString(cmd.Name)
-	}
-	if viper.IsSet(cmd.Content) {
-		recordIn["content"] = viper.GetString(cmd.Content)
-	}
-	if viper.IsSet(cmd.Ttl) {
-		recordIn["ttl"] = viper.GetInt(cmd.Ttl)
-	}
+	cmd.SetParamString("name", cmd.Name, recordIn)
+	cmd.SetParamString("content", cmd.Content, recordIn)
+	cmd.SetParamInt("ttl", cmd.Ttl, recordIn)
 	// Params only supported by adequate record type!?
-	if viper.IsSet(cmd.Priority) {
-		recordIn["priority"] = viper.GetInt(cmd.Priority)
-	}
-	if viper.IsSet(cmd.Weight) {
-		recordIn["weight"] = viper.GetInt(cmd.Weight)
-	}
-	if viper.IsSet(cmd.Port) {
-		recordIn["port"] = viper.GetInt(cmd.Port)
-	}
+	cmd.SetParamInt("priority", cmd.Priority, recordIn)
+	cmd.SetParamInt("weight", cmd.Weight, recordIn)
+	cmd.SetParamInt("port", cmd.Port, recordIn)
 
 	record, err := svc.UpdateRecord(cmd.GetContext(), viper.GetString(cmd.Id), &recordIn)
 	if err != nil {

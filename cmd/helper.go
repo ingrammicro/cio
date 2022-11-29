@@ -87,3 +87,9 @@ func SetParamInt(name string, flag string, paramsIn map[string]interface{}) {
 		paramsIn[name] = viper.GetInt(flag)
 	}
 }
+
+func SetParamBool(name string, flag string, paramsIn map[string]interface{}) {
+	if viper.IsSet(flag) {
+		paramsIn[name] = viper.GetBool(flag)
+	}
+}

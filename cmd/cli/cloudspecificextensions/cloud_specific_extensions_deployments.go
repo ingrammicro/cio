@@ -5,6 +5,7 @@ package cloudspecificextensions
 import (
 	"fmt"
 	"github.com/ingrammicro/cio/cmd/cli"
+	"strings"
 
 	"github.com/ingrammicro/cio/cmd"
 	"github.com/ingrammicro/cio/cmd/cli/labels"
@@ -22,8 +23,14 @@ func init() {
 	fCloudAccountId := cmd.FlagContext{Type: cmd.String, Name: cmd.CloudAccountId, Required: true,
 		Usage: "Identifier of the cloud account in which is deployed"}
 
-	fRealmId := cmd.FlagContext{Type: cmd.String, Name: cmd.RealmId, Required: true,
+	fRealmId := cmd.FlagContext{Type: cmd.String, Name: cmd.RealmId,
 		Usage: "Identifier of the realm in which is deployed"}
+
+	fRealmIds := cmd.FlagContext{Type: cmd.String, Name: cmd.RealmIds,
+		Usage: "A list of comma separated realms ids in which is deployed"}
+
+	fIsStackset := cmd.FlagContext{Type: cmd.Bool, Name: cmd.IsStackset,
+		Usage: "Flag indicating whether this CSE will be deployed in more than one realm"}
 
 	fParameters := cmd.FlagContext{Type: cmd.String, Name: cmd.Parameters,
 		Usage: "The parameters used to configure the CSE deployment, as a json formatted parameter. \n\t" +
@@ -57,14 +64,8 @@ func init() {
 		Use:       "deploy",
 		Short:     "Deploys a new CSE deployment from CSE template",
 		RunMethod: CloudSpecificExtensionDeploymentCreate,
-		FlagContexts: []cmd.FlagContext{
-			fIdTemplate,
-			fName,
-			fCloudAccountId,
-			fRealmId,
-			fParameters,
-			fParametersFromFile,
-			fLabels}},
+		FlagContexts: []cmd.FlagContext{fIdTemplate, fName, fCloudAccountId, fParameters, fParametersFromFile,
+			fIsStackset, fRealmId, fRealmIds, fLabels}},
 	)
 	cmd.NewCommand(deploymentsCmd, &cmd.CommandContext{
 		Use:          "update",
@@ -134,7 +135,11 @@ func CloudSpecificExtensionDeploymentCreate() error {
 	cseDeploymentIn := map[string]interface{}{
 		"name":             viper.GetString(cmd.Name),
 		"cloud_account_id": viper.GetString(cmd.CloudAccountId),
-		"realm_id":         viper.GetString(cmd.RealmId),
+	}
+	cmd.SetParamBool("is_stackset", cmd.IsStackset, cseDeploymentIn)
+	cmd.SetParamString("realm_id", cmd.RealmId, cseDeploymentIn)
+	if viper.IsSet(cmd.RealmIds) {
+		cseDeploymentIn["realm_ids"] = strings.Split(viper.GetString(cmd.RealmIds), ",")
 	}
 
 	if viper.IsSet(cmd.ParametersFromFile) {

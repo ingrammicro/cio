@@ -78,15 +78,8 @@ func init() {
 		Use:       "create",
 		Short:     "Creates a new server",
 		RunMethod: ServerCreate,
-		FlagContexts: []cmd.FlagContext{
-			fNameReq,
-			fSSHProfileId,
-			fSSHProfileIds,
-			fFirewallProfileId,
-			fTemplateId,
-			fServerPlanId,
-			fCloudAccountId,
-			fLabels}},
+		FlagContexts: []cmd.FlagContext{fNameReq, fSSHProfileId, fSSHProfileIds, fFirewallProfileId, fTemplateId,
+			fServerPlanId, fCloudAccountId, fLabels}},
 	)
 	cmd.NewCommand(serversCmd, &cmd.CommandContext{
 		Use:          "update",
@@ -259,9 +252,7 @@ func ServerCreate() error {
 		"cloud_account_id": viper.GetString(cmd.CloudAccountId),
 	}
 
-	if viper.IsSet(cmd.SSHProfileId) {
-		serverIn["ssh_profile_id"] = viper.GetString(cmd.SSHProfileId)
-	}
+	cmd.SetParamString("ssh_profile_id", cmd.SSHProfileId, serverIn)
 	if viper.IsSet(cmd.SSHProfileIds) {
 		serverIn["ssh_profile_ids"] = strings.Split(viper.GetString(cmd.SSHProfileIds), ",")
 	}
@@ -303,9 +294,7 @@ func ServerUpdate() error {
 	svc, _, formatter := cli.WireUpAPIClient()
 
 	serverIn := map[string]interface{}{}
-	if viper.IsSet(cmd.Name) {
-		serverIn["name"] = viper.GetString(cmd.Name)
-	}
+	cmd.SetParamString("name", cmd.Name, serverIn)
 	ctx := cmd.GetContext()
 	server, err := svc.UpdateServer(ctx, viper.GetString(cmd.Id), &serverIn)
 	if err != nil {

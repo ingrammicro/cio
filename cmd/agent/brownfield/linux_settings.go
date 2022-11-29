@@ -1,5 +1,6 @@
 // Copyright (c) 2017-2022 Ingram Micro Inc.
 
+//go:build linux || darwin
 // +build linux darwin
 
 package brownfield
@@ -54,15 +55,15 @@ func applySettings(ctx context.Context, svc *api.ServerAPI, f format.Formatter, 
 
 func obtainSettings(ctx context.Context, svc *api.ServerAPI) (settings *types.Settings, err error) {
 	settings, status, err := svc.GetBrownfieldSettings(ctx)
-	if err != nil {
-		return
-	}
 	if status == 403 {
 		err = fmt.Errorf("server responded with 403 code: authentication was not successful")
 		return
 	}
 	if status >= 300 {
 		err = fmt.Errorf("server responded with %d code: %s", status, settings)
+		return
+	}
+	if err != nil {
 		return
 	}
 	return

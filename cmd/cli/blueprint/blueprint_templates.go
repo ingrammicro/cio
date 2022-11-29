@@ -24,12 +24,13 @@ func init() {
 
 	fId := cmd.FlagContext{Type: cmd.String, Name: cmd.Id, Required: true, Usage: "Template Id"}
 
-	fName := cmd.FlagContext{Type: cmd.String, Name: cmd.Name, Usage: "Name of the template"}
-	fNameReq := fName
-	fNameReq.Required = true
+	fName := cmd.FlagContext{Type: cmd.String, Name: cmd.Name, Required: true, Usage: "Name of the template"}
 
 	fGenericImageId := cmd.FlagContext{Type: cmd.String, Name: cmd.GenericImageId, Required: true,
 		Usage: "Identifier of the OS image that the template builds on"}
+
+	fConfigurationManagementSystem := cmd.FlagContext{Type: cmd.String, Name: cmd.ConfigurationManagementSystem,
+		Usage: "A string indicating the type of the configuration management system the template will have. Values can be ‘chef' or ‘ansible'"}
 
 	fRunList := cmd.FlagContext{Type: cmd.String, Name: cmd.RunList,
 		Usage: "A list of comma separated cookbook recipes that is run on the servers at start-up, " +
@@ -110,28 +111,15 @@ func init() {
 		Use:       "create",
 		Short:     "Creates a new template",
 		RunMethod: TemplateCreate,
-		FlagContexts: []cmd.FlagContext{
-			fNameReq,
-			fGenericImageId,
-			fRunList,
-			fCookbookVersions,
-			fConfigurationAttributes,
-			fConfigurationAttributesFromFile,
-			fLabels,
-		}},
+		FlagContexts: []cmd.FlagContext{fName, fGenericImageId, fConfigurationManagementSystem, fRunList,
+			fCookbookVersions, fConfigurationAttributes, fConfigurationAttributesFromFile, fLabels}},
 	)
 	cmd.NewCommand(templatesCmd, &cmd.CommandContext{
 		Use:       "update",
 		Short:     "Updates an existing template",
 		RunMethod: TemplateUpdate,
-		FlagContexts: []cmd.FlagContext{
-			fId,
-			fName,
-			fRunList,
-			fCookbookVersions,
-			fConfigurationAttributes,
-			fConfigurationAttributesFromFile,
-		}},
+		FlagContexts: []cmd.FlagContext{fId, fName, fRunList, fCookbookVersions, fConfigurationAttributes,
+			fConfigurationAttributesFromFile}},
 	)
 	cmd.NewCommand(templatesCmd, &cmd.CommandContext{
 		Use:          "compile",
@@ -327,6 +315,7 @@ func TemplateCreate() error {
 		"generic_image_id": viper.GetString(cmd.GenericImageId),
 	}
 	setTemplateParams(ctx, formatter, templateIn)
+	cmd.SetParamString("configuration_management_system", cmd.ConfigurationManagementSystem, templateIn)
 
 	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
 	if err != nil {

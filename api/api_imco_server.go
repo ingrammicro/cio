@@ -267,7 +267,7 @@ func (imco *ServerAPI) ObtainBrownfieldSslProfile(ctx context.Context, payload *
 ) (response map[string]interface{}, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.PostAndCheck(ctx, PathBrownfieldSslProfile, payload, false, &response)
+	status, err = imco.PostAndCheck(ctx, PathBrownfieldSslProfile, payload, true, &response)
 	if err != nil {
 		return nil, status, err
 	}
@@ -302,7 +302,7 @@ func (imco *ServerAPI) SetFirewallProfile(ctx context.Context, policyParams *map
 func (imco *ServerAPI) GetBrownfieldSettings(ctx context.Context) (settings *types.Settings, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.GetAndCheck(ctx, PathBrownfieldSettings, false, &settings)
+	status, err = imco.GetAndCheck(ctx, PathBrownfieldSettings, true, &settings)
 	if err != nil {
 		return nil, status, err
 	}
@@ -314,7 +314,7 @@ func (imco *ServerAPI) SetBrownfieldSettings(ctx context.Context, payload *map[s
 ) (settings *types.Settings, status int, err error) {
 	logger.DebugFuncInfo()
 
-	status, err = imco.PutAndCheck(ctx, PathBrownfieldSettings, payload, false, &settings)
+	status, err = imco.PutAndCheck(ctx, PathBrownfieldSettings, payload, true, &settings)
 	if err != nil {
 		return nil, status, err
 	}

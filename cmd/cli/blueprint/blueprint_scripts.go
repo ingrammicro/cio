@@ -236,17 +236,11 @@ func ScriptUpdate() error {
 	svc, _, formatter := cli.WireUpAPIClient()
 
 	scriptIn := map[string]interface{}{}
-	if viper.IsSet(cmd.Name) {
-		scriptIn[cmd.Name] = viper.GetString(cmd.Name)
-	}
-	if viper.IsSet(cmd.Description) {
-		scriptIn[cmd.Description] = viper.GetString(cmd.Description)
-	}
-	if viper.IsSet(cmd.Code) {
-		scriptIn[cmd.Code] = viper.GetString(cmd.Code)
-	}
+	cmd.SetParamString("name", cmd.Name, scriptIn)
+	cmd.SetParamString("description", cmd.Description, scriptIn)
+	cmd.SetParamString("code", cmd.Code, scriptIn)
 	if viper.IsSet(cmd.Parameters) {
-		scriptIn[cmd.Parameters] = strings.Split(viper.GetString(cmd.Parameters), ",")
+		scriptIn["parameters"] = strings.Split(viper.GetString(cmd.Parameters), ",")
 	}
 
 	ctx := cmd.GetContext()

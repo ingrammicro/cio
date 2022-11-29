@@ -67,9 +67,7 @@ func AppDeploy() error {
 		"cloud_account_id": viper.GetString(cmd.CloudAccountId),
 		"hostname":         viper.GetString(cmd.Hostname),
 	}
-	if viper.IsSet(cmd.ServerPlanId) {
-		appIn["server_plan_id"] = viper.GetString(cmd.ServerPlanId)
-	}
+	cmd.SetParamString("server_plan_id", cmd.ServerPlanId, appIn)
 
 	server, err := svc.DeployApp(cmd.GetContext(), viper.GetString(cmd.Id), &appIn)
 	if err != nil {

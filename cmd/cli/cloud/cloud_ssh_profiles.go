@@ -165,9 +165,7 @@ func SSHProfileCreate() error {
 		"name":       viper.GetString(cmd.Name),
 		"public_key": viper.GetString(cmd.PublicKey),
 	}
-	if viper.IsSet(cmd.PrivateKey) {
-		sshProfileIn["private_key"] = viper.GetString(cmd.PrivateKey)
-	}
+	cmd.SetParamString("private_key", cmd.PrivateKey, sshProfileIn)
 
 	ctx := cmd.GetContext()
 	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)
@@ -206,15 +204,10 @@ func SSHProfileUpdate() error {
 	svc, _, formatter := cli.WireUpAPIClient()
 
 	sshProfileIn := map[string]interface{}{}
-	if viper.IsSet(cmd.Name) {
-		sshProfileIn["name"] = viper.GetString(cmd.Name)
-	}
-	if viper.IsSet(cmd.PublicKey) {
-		sshProfileIn["public_key"] = viper.GetString(cmd.PublicKey)
-	}
-	if viper.IsSet(cmd.PrivateKey) {
-		sshProfileIn["private_key"] = viper.GetString(cmd.PrivateKey)
-	}
+	cmd.SetParamString("name", cmd.Name, sshProfileIn)
+	cmd.SetParamString("public_key", cmd.PublicKey, sshProfileIn)
+	cmd.SetParamString("private_key", cmd.PrivateKey, sshProfileIn)
+
 	ctx := cmd.GetContext()
 	sshProfile, err := svc.UpdateSSHProfile(ctx, viper.GetString(cmd.Id), &sshProfileIn)
 	if err != nil {

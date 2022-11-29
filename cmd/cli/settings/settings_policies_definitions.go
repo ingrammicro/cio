@@ -14,7 +14,9 @@ import (
 func init() {
 	fId := cmd.FlagContext{Type: cmd.String, Name: cmd.Id, Required: true, Usage: "Policy Id"}
 
-	fName := cmd.FlagContext{Type: cmd.String, Name: cmd.Name, Required: true, Usage: "Name of the policy definition"}
+	fName := cmd.FlagContext{Type: cmd.String, Name: cmd.Name, Usage: "Name of the policy definition"}
+	fNameReq := fName
+	fNameReq.Required = true
 
 	fDescription := cmd.FlagContext{Type: cmd.String, Name: cmd.Description,
 		Usage: "Description of the policy definition"}
@@ -32,6 +34,9 @@ func init() {
 		Usage: "The definition used to configure the policy, from file or STDIN, as a json formatted parameter. \n\t" +
 			"From file: --definition-from-file def.json \n\t" +
 			"From STDIN: --definition-from-file -"}
+
+	fSyntax := cmd.FlagContext{Type: cmd.String, Name: cmd.Syntax, Required: true,
+		Usage: "Syntax of the policy. Expected values are either \"AWS\" or \"Azure\""}
 
 	definitionsCmd := cmd.NewCommand(policiesCmd, &cmd.CommandContext{
 		Use:   "definitions",
@@ -52,7 +57,7 @@ func init() {
 		Use:          "create",
 		Short:        "Creates policy definition",
 		RunMethod:    PolicyDefinitionCreate,
-		FlagContexts: []cmd.FlagContext{fName, fDescriptionReq, fDefinition, fDefinitionFromFile}},
+		FlagContexts: []cmd.FlagContext{fNameReq, fDescriptionReq, fDefinition, fDefinitionFromFile, fSyntax}},
 	)
 	cmd.NewCommand(definitionsCmd, &cmd.CommandContext{
 		Use:          "update",
@@ -124,6 +129,7 @@ func PolicyDefinitionCreate() error {
 	definitionIn := map[string]interface{}{
 		"name":        viper.GetString(cmd.Name),
 		"description": viper.GetString(cmd.Description),
+		"syntax":      viper.GetString(cmd.Syntax),
 	}
 	if viper.IsSet(cmd.DefinitionFromFile) {
 		defIn, err := cmd.ConvertFlagParamsJsonStringFromFileOrStdin(viper.GetString(cmd.DefinitionFromFile))
@@ -133,9 +139,7 @@ func PolicyDefinitionCreate() error {
 		}
 		definitionIn["definition"] = defIn
 	}
-	if viper.IsSet(cmd.Definition) {
-		definitionIn["definition"] = viper.GetString(cmd.Definition)
-	}
+	cmd.SetParamString("definition", cmd.Definition, definitionIn)
 
 	definition, err := svc.CreatePolicyDefinition(cmd.GetContext(), &definitionIn)
 	if err != nil {
@@ -155,12 +159,9 @@ func PolicyDefinitionUpdate() error {
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
-	definitionIn := map[string]interface{}{
-		"name": viper.GetString(cmd.Name),
-	}
-	if viper.IsSet(cmd.Description) {
-		definitionIn["description"] = viper.GetString(cmd.Description)
-	}
+	definitionIn := map[string]interface{}{}
+	cmd.SetParamString("name", cmd.Name, definitionIn)
+	cmd.SetParamString("description", cmd.Description, definitionIn)
 
 	definition, err := svc.UpdatePolicyDefinition(cmd.GetContext(), viper.GetString(cmd.Id), &definitionIn)
 	if err != nil {

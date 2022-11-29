@@ -88,16 +88,15 @@ func obtainServerKeys(ctx context.Context, config *configuration.Config, context
 	if context == configuration.Polling {
 		responseData, status, err = cs.ObtainPollingApiKey(ctx, &payload)
 	}
-	if err != nil {
-		return
-	}
-
 	if status == 403 {
 		err = fmt.Errorf("server responded with 403 code: the token is not valid, maybe it expired")
 		return
 	}
 	if status >= 300 {
 		err = fmt.Errorf("server responded with %d code: %s", status, responseData)
+		return
+	}
+	if err != nil {
 		return
 	}
 

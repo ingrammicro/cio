@@ -169,9 +169,7 @@ func CloudSpecificExtensionTemplateImport() error {
 		}
 		cseTemplateIn["definition"] = defIn
 	}
-	if viper.IsSet(cmd.Definition) {
-		cseTemplateIn["definition"] = viper.GetString(cmd.Definition)
-	}
+	cmd.SetParamString("definition", cmd.Definition, cseTemplateIn)
 
 	ctx := cmd.GetContext()
 	labelIDsByName, labelNamesByID, err := labels.LabelLoadsMapping(ctx)

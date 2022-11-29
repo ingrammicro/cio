@@ -50,15 +50,15 @@ func applySettings(ctx context.Context, svc *api.ServerAPI, f format.Formatter, 
 func obtainSettings(ctx context.Context, svc *api.ServerAPI) (settings *types.Settings, err error) {
 	// We do not need settings data, but make the API call to log progress on API service log
 	settings, status, err := svc.GetBrownfieldSettings(ctx)
-	if err != nil {
-		return
-	}
 	if status == 403 {
 		err = fmt.Errorf("server responded with 403 code: authentication was not successful")
 		return
 	}
 	if status >= 300 {
 		err = fmt.Errorf("server responded with %d code: %s", status, settings)
+		return
+	}
+	if err != nil {
 		return
 	}
 	return
@@ -72,14 +72,14 @@ func sendUsernamePassword(ctx context.Context, svc *api.ServerAPI, username, pas
 		},
 	}
 	settings, status, err := svc.SetBrownfieldSettings(ctx, payload)
-	if err != nil {
-		return err
-	}
 	if status == 403 {
 		return fmt.Errorf("server responded with 403 code: authentication was not successful")
 	}
 	if status >= 300 {
 		return fmt.Errorf("server responded with %d code: %s", status, settings)
+	}
+	if err != nil {
+		return err
 	}
 	return nil
 }

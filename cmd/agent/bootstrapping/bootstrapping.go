@@ -168,17 +168,19 @@ func generateWorkspaceDir() error {
 func Start() error {
 	logger.DebugFuncInfo()
 
+	formatter := format.GetFormatter()
+
 	err := generateWorkspaceDir()
 	if err != nil {
+		formatter.PrintError("cannot start the bootstrapping process", err)
 		return err
 	}
 	lockFile, err := singleinstance.CreateLockFile(lockFilePath())
 	if err != nil {
+		formatter.PrintError("cannot start the bootstrapping process", err)
 		return err
 	}
 	defer lockFile.Close()
-
-	formatter := format.GetFormatter()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

@@ -65,33 +65,15 @@ func init() {
 		Use:       "create",
 		Short:     "Creates a new target group in a load balancer",
 		RunMethod: TargetGroupCreate,
-		FlagContexts: []cmd.FlagContext{
-			fLoadBalancerId,
-			fName,
-			fProtocol,
-			fPort,
-			fHealthCheckProtocol,
-			fHealthCheckPort,
-			fHealthCheckInterval,
-			fHealthCheckThresholdCount,
-			fHealthCheckPath,
-			fStickiness}},
+		FlagContexts: []cmd.FlagContext{fLoadBalancerId, fName, fProtocol, fPort, fHealthCheckProtocol,
+			fHealthCheckPort, fHealthCheckInterval, fHealthCheckThresholdCount, fHealthCheckPath, fStickiness}},
 	)
 	cmd.NewCommand(targetGroupsCmd, &cmd.CommandContext{
 		Use:       "update",
 		Short:     "Updates an existing target group identified by the given id",
 		RunMethod: TargetGroupUpdate,
-		FlagContexts: []cmd.FlagContext{
-			fId,
-			fName,
-			fProtocol,
-			fPort,
-			fHealthCheckProtocol,
-			fHealthCheckPort,
-			fHealthCheckInterval,
-			fHealthCheckThresholdCount,
-			fHealthCheckPath,
-			fStickiness}},
+		FlagContexts: []cmd.FlagContext{fId, fName, fProtocol, fPort, fHealthCheckProtocol, fHealthCheckPort,
+			fHealthCheckInterval, fHealthCheckThresholdCount, fHealthCheckPath, fStickiness}},
 	)
 	cmd.NewCommand(targetGroupsCmd, &cmd.CommandContext{
 		Use:          "delete",
@@ -170,9 +152,7 @@ func getTargetGroupIn() map[string]interface{} {
 		"health_check_threshold_count": viper.GetInt(cmd.HealthCheckThresholdCount),
 		"health_check_path":            viper.GetString(cmd.HealthCheckPath),
 	}
-	if viper.IsSet(cmd.Stickiness) {
-		targetGroupIn["stickiness"] = viper.GetBool(cmd.Stickiness)
-	}
+	cmd.SetParamBool("stickiness", cmd.Stickiness, targetGroupIn)
 	return targetGroupIn
 }
 

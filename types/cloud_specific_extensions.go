@@ -23,6 +23,7 @@ type CloudSpecificExtensionDeployment struct {
 	RemoteID        string                 `json:"remote_id"        header:"REMOTE_ID"`
 	CloudAccountID  string                 `json:"cloud_account_id" header:"CLOUD_ACCOUNT_ID"`
 	RealmID         string                 `json:"realm_id"         header:"REALM_ID"`
+	RealmIDs        []string               `json:"realm_ids"        header:"REALM_IDS"`
 	ErrorEventID    string                 `json:"error_event_id"   header:"ERROR_EVENT_ID"   show:"nolist,noshow"`
 	ParameterValues map[string]interface{} `json:"parameter_values" header:"PARAMETER_VALUES" show:"nolist"`
 	Outputs         map[string]interface{} `json:"outputs"          header:"OUTPUTS"          show:"nolist"`

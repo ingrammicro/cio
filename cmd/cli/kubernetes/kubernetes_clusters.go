@@ -32,8 +32,10 @@ func init() {
 	fCloudAccountId := cmd.FlagContext{Type: cmd.String, Name: cmd.CloudAccountId, Required: true,
 		Usage: "Identifier of the cloud account the cluster will be deployed"}
 
-	fClusterPlanId := cmd.FlagContext{Type: cmd.String, Name: cmd.ClusterPlanId, Required: true,
+	fClusterPlanIdReq := cmd.FlagContext{Type: cmd.String, Name: cmd.ClusterPlanId, Required: true,
 		Usage: "Identifier of the cluster plan that will use the cluster to be created"}
+
+	fClusterPlanId := cmd.FlagContext{Type: cmd.String, Name: cmd.Id, Required: true, Usage: "Cluster plan Id"}
 
 	fPublicAccessIpAddresses := cmd.FlagContext{Type: cmd.String, Name: cmd.PublicAccessIpAddresses,
 		Usage: "A list of comma separated CIDR blocks the cluster will allow to receive requests"}
@@ -74,16 +76,8 @@ func init() {
 		Use:       "create",
 		Short:     "Creates a new cluster",
 		RunMethod: ClusterCreate,
-		FlagContexts: []cmd.FlagContext{
-			fNameReq,
-			fVersionReq,
-			fCloudAccountId,
-			fClusterPlanId,
-			fPublicAccessIpAddresses,
-			fDefaultVpcCreation,
-			fDefaultVpcCidr,
-			fVpcId,
-			fLabels}},
+		FlagContexts: []cmd.FlagContext{fNameReq, fVersionReq, fCloudAccountId, fClusterPlanIdReq,
+			fPublicAccessIpAddresses, fDefaultVpcCreation, fDefaultVpcCidr, fVpcId, fLabels}},
 	)
 	cmd.NewCommand(clustersCmd, &cmd.CommandContext{
 		Use:          "update",
@@ -113,7 +107,7 @@ func init() {
 		Use:          "show-plan",
 		Short:        "Shows information about a specific cluster plan identified by the given id",
 		RunMethod:    ClusterPlanShow,
-		FlagContexts: []cmd.FlagContext{fId}},
+		FlagContexts: []cmd.FlagContext{fClusterPlanId}},
 	)
 	cmd.NewCommand(clustersCmd, &cmd.CommandContext{
 		Use:          "add-label",
@@ -266,9 +260,7 @@ func ClusterUpdate() error {
 		"name": viper.GetString(cmd.Name),
 	}
 
-	if viper.IsSet(cmd.Version) {
-		clusterIn["version"] = viper.GetString(cmd.Version)
-	}
+	cmd.SetParamString("version", cmd.Version, clusterIn)
 	if viper.IsSet(cmd.PublicAccessIpAddresses) {
 		clusterIn["public_access_ip_addresses"] = strings.Split(viper.GetString(cmd.PublicAccessIpAddresses), ",")
 	}

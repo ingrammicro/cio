@@ -69,17 +69,8 @@ func init() {
 		Use:       "create",
 		Short:     "Creates a new node pool",
 		RunMethod: NodePoolCreate,
-		FlagContexts: []cmd.FlagContext{
-			fClusterId,
-			fNameReq,
-			fSubnetId,
-			fNodePoolPlanId,
-			fCpuType,
-			fDiskSize,
-			fMinNodes,
-			fMaxNodes,
-			fDesiredNodes,
-			fPodsPerNode}},
+		FlagContexts: []cmd.FlagContext{fClusterId, fNameReq, fSubnetId, fNodePoolPlanId, fCpuType, fDiskSize,
+			fMinNodes, fMaxNodes, fDesiredNodes, fPodsPerNode}},
 	)
 	cmd.NewCommand(nodePoolsCmd, &cmd.CommandContext{
 		Use:          "update",
@@ -153,27 +144,13 @@ func NodePoolCreate() error {
 		"node_pool_plan_id": viper.GetString(cmd.NodePoolPlanId),
 	}
 
-	if viper.IsSet(cmd.SubnetId) {
-		nodePoolIn["subnet_id"] = viper.GetString(cmd.SubnetId)
-	}
-	if viper.IsSet(cmd.CpuType) {
-		nodePoolIn["cpu_type"] = viper.GetString(cmd.CpuType)
-	}
-	if viper.IsSet(cmd.DiskSize) {
-		nodePoolIn["disk_size"] = viper.GetInt(cmd.DiskSize)
-	}
-	if viper.IsSet(cmd.MinNodes) {
-		nodePoolIn["min_nodes"] = viper.GetInt(cmd.MinNodes)
-	}
-	if viper.IsSet(cmd.MaxNodes) {
-		nodePoolIn["max_nodes"] = viper.GetInt(cmd.MaxNodes)
-	}
-	if viper.IsSet(cmd.DesiredNodes) {
-		nodePoolIn["desired_nodes"] = viper.GetInt(cmd.DesiredNodes)
-	}
-	if viper.IsSet(cmd.PodsPerNode) {
-		nodePoolIn["pods_per_node"] = viper.GetInt(cmd.PodsPerNode)
-	}
+	cmd.SetParamString("subnet_id", cmd.SubnetId, nodePoolIn)
+	cmd.SetParamString("cpu_type", cmd.CpuType, nodePoolIn)
+	cmd.SetParamInt("disk_size", cmd.DiskSize, nodePoolIn)
+	cmd.SetParamInt("min_nodes", cmd.MinNodes, nodePoolIn)
+	cmd.SetParamInt("max_nodes", cmd.MaxNodes, nodePoolIn)
+	cmd.SetParamInt("desired_nodes", cmd.DesiredNodes, nodePoolIn)
+	cmd.SetParamInt("pods_per_node", cmd.PodsPerNode, nodePoolIn)
 
 	nodePool, err := svc.CreateNodePool(cmd.GetContext(), viper.GetString(cmd.Id), &nodePoolIn)
 	if err != nil {
@@ -194,18 +171,10 @@ func NodePoolUpdate() error {
 	svc, _, formatter := cli.WireUpAPIClient()
 
 	nodePoolIn := map[string]interface{}{}
-	if viper.IsSet(cmd.Name) {
-		nodePoolIn["name"] = viper.GetString(cmd.Name)
-	}
-	if viper.IsSet(cmd.MinNodes) {
-		nodePoolIn["min_nodes"] = viper.GetString(cmd.MinNodes)
-	}
-	if viper.IsSet(cmd.MaxNodes) {
-		nodePoolIn["max_nodes"] = viper.GetString(cmd.MaxNodes)
-	}
-	if viper.IsSet(cmd.DesiredNodes) {
-		nodePoolIn["desired_nodes"] = viper.GetString(cmd.DesiredNodes)
-	}
+	cmd.SetParamString("name", cmd.Name, nodePoolIn)
+	cmd.SetParamInt("min_nodes", cmd.MinNodes, nodePoolIn)
+	cmd.SetParamInt("max_nodes", cmd.MaxNodes, nodePoolIn)
+	cmd.SetParamInt("desired_nodes", cmd.DesiredNodes, nodePoolIn)
 
 	nodePool, err := svc.UpdateNodePool(cmd.GetContext(), viper.GetString(cmd.Id), &nodePoolIn)
 	if err != nil {

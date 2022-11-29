@@ -57,12 +57,7 @@ func init() {
 		Use:       "create",
 		Short:     "Creates policy assignment",
 		RunMethod: PolicyAssignmentCreate,
-		FlagContexts: []cmd.FlagContext{
-			fName,
-			fDescriptionReq,
-			fCloudAccountId,
-			fDefinitionId,
-			fParameters,
+		FlagContexts: []cmd.FlagContext{fName, fDescriptionReq, fCloudAccountId, fDefinitionId, fParameters,
 			fParametersFromFile}},
 	)
 	cmd.NewCommand(assignmentsCmd, &cmd.CommandContext{
@@ -170,9 +165,7 @@ func PolicyAssignmentUpdate() error {
 		"name": viper.GetString(cmd.Name),
 	}
 
-	if viper.IsSet(cmd.Description) {
-		assignmentIn["description"] = viper.GetString(cmd.Description)
-	}
+	cmd.SetParamString("description", cmd.Description, assignmentIn)
 
 	assignment, err := svc.UpdatePolicyAssignment(cmd.GetContext(), viper.GetString(cmd.Id), &assignmentIn)
 	if err != nil {

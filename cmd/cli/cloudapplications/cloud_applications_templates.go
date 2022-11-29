@@ -89,7 +89,6 @@ func CloudApplicationTemplateShow() error {
 
 // CloudApplicationTemplateUpload subcommand function
 func CloudApplicationTemplateUpload() error {
-	// TODO "name"!?
 	logger.DebugFuncInfo()
 	svc, _, formatter := cli.WireUpAPIClient()
 
@@ -101,6 +100,7 @@ func CloudApplicationTemplateUpload() error {
 	}
 
 	catIn := map[string]interface{}{
+		"name":    viper.GetString(cmd.Name),
 		"is_mock": false,
 	}
 	ctx := cmd.GetContext()

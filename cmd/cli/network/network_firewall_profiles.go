@@ -211,12 +211,8 @@ func FirewallProfileUpdate() error {
 	svc, _, formatter := cli.WireUpAPIClient()
 
 	firewallProfileIn := map[string]interface{}{}
-	if viper.IsSet(cmd.Name) {
-		firewallProfileIn["name"] = viper.GetString(cmd.Name)
-	}
-	if viper.IsSet(cmd.Description) {
-		firewallProfileIn["description"] = viper.GetString(cmd.Description)
-	}
+	cmd.SetParamString("name", cmd.Name, firewallProfileIn)
+	cmd.SetParamString("description", cmd.Description, firewallProfileIn)
 	if viper.IsSet(cmd.Rules) {
 		fw := new(types.FirewallProfile)
 		if err := fw.ConvertFlagParamsToRules(viper.GetString(cmd.Rules)); err != nil {
