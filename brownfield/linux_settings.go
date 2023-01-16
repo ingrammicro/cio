@@ -1,5 +1,6 @@
 // Copyright (c) 2017-2021 Ingram Micro Inc.
 
+//go:build linux || darwin
 // +build linux darwin
 
 package brownfield

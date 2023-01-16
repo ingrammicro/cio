@@ -35,7 +35,7 @@ func GetBootstrappingContinuousReportData() *types.BootstrappingContinuousReport
 	}
 }
 
-//GetBootstrappingDownloadFileData loads test data
+// GetBootstrappingDownloadFileData loads test data
 func GetBootstrappingDownloadFileData() map[string]string {
 	return map[string]string{
 		"fakeURLToFile":        "http://fakeURLToFile.xxx/filename.tgz",

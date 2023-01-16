@@ -1,5 +1,6 @@
 // Copyright (c) 2017-2021 Ingram Micro Inc.
 
+//go:build windows
 // +build windows
 
 package brownfield
@@ -92,11 +93,11 @@ func sendUsernamePassword(cs *utils.HTTPConcertoservice, username, password stri
 	return nil
 }
 
-func createScriptTemplate(settings *Settings) (string){
+func createScriptTemplate(settings *Settings) string {
 	return strings.Join([]string{
 		`powershell -command "Set-Service -Name sshd -StartupType Automatic"`,
 		`powershell -command "Start-Service sshd"`,
-		`powershell -command "Set-Content -path C:\ProgramData\ssh\administrators_authorized_keys '`+settings.SSHPublicKeys[0]+`'"`,
+		`powershell -command "Set-Content -path C:\ProgramData\ssh\administrators_authorized_keys '` + settings.SSHPublicKeys[0] + `'"`,
 		`powershell -command "icacls C:\ProgramData\ssh\administrators_authorized_keys /inheritance:d"`,
 		`powershell -command "icacls C:\ProgramData\ssh\administrators_authorized_keys /remove 'NT AUTHORITY\Authenticated Users'"`,
 		`powershell -command "Restart-Service sshd"`,
