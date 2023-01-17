@@ -126,7 +126,7 @@ func TestListServerVolumes(t *testing.T) {
 	}
 }
 
-//======= Events ==========
+// ======= Events ==========
 func TestListEvents(t *testing.T) {
 	serversIn := testdata.GetServerData()
 	eventsIn := testdata.GetEventData()
@@ -138,7 +138,7 @@ func TestListEvents(t *testing.T) {
 	}
 }
 
-//======= Operational Scripts ==========
+// ======= Operational Scripts ==========
 func TestListOperationalScripts(t *testing.T) {
 	serversIn := testdata.GetServerData()
 	scriptsIn := testdata.GetScriptCharData()

@@ -14,7 +14,7 @@ type Template struct {
 	RunList                 []string               `json:"run_list,omitempty" header:"RUN_LIST" show:"nolist"`
 	ConfigurationAttributes map[string]interface{} `json:"configuration_attributes,omitempty" header:"CONFIGURATION_ATTRIBUTES" show:"nolist"`
 	ResourceType            string                 `json:"resource_type" header:"RESOURCE_TYPE" show:"nolist"`
-	CookbookVersions cookbookVersionsMap `json:"cookbook_versions,omitempty" header:"COOKBOOK_VERSIONS" show:"nolist"`
+	CookbookVersions        cookbookVersionsMap    `json:"cookbook_versions,omitempty" header:"COOKBOOK_VERSIONS" show:"nolist"`
 	State                   string                 `json:"state" header:"STATE" show:"nolist"`
 	LabelableFields
 }

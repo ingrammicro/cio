@@ -453,7 +453,7 @@ func processCookbookVersionItem(
 }
 
 // convertFlagParamsToCookbookVersions returns the json representation for the given friendly input format f cookbook
-//versions assignation
+// versions assignation
 // i.e: "wordpress:0.1.0,nano=2.0.1,1password~>1.3.0"
 func convertFlagParamsToCookbookVersions(c *cli.Context, cbvsIn string) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
