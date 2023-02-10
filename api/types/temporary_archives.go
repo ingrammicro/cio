@@ -33,7 +33,7 @@ type TemporaryArchiveExport struct {
 	TaskID string `json:"task_id" header:"TASK_ID"`
 }
 
-//tosca_task
+// tosca_task
 type TemporaryArchiveExportTask struct {
 	ID           string `json:"id"            header:"ID"`
 	Type         string `json:"type"          header:"TYPE"`

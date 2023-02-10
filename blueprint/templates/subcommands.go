@@ -173,8 +173,8 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "create-template-script",
-			Usage:  "Creates a new script characterisation for a template and appends it to the list of script " +
+			Name: "create-template-script",
+			Usage: "Creates a new script characterisation for a template and appends it to the list of script " +
 				"characterisations of the same type.",
 			Action: cmd.TemplateScriptCreate,
 			Flags: []cli.Flag{
@@ -191,12 +191,12 @@ func SubCommands() []cli.Command {
 					Usage: "Identifier for the script that is parameterised by the script characterisation",
 				},
 				cli.StringFlag{
-					Name:  "parameter-values",
+					Name: "parameter-values",
 					Usage: "A map that assigns a value to each script parameter, as a json formatted parameter; " +
 						"i.e: '{\"param1\":\"val1\",\"param2\":\"val2\"}'",
 				},
 				cli.StringFlag{
-					Name:  "parameter-values-from-file",
+					Name: "parameter-values-from-file",
 					Usage: "A map that assigns a value to each script parameter, from file or STDIN, as a json formatted " +
 						"parameter. \n\t" +
 						"From file: --parameter-values-from-file params.json \n\t" +
@@ -218,12 +218,12 @@ func SubCommands() []cli.Command {
 					Usage: "Identifier for the template-script that is parameterised by the script characterisation",
 				},
 				cli.StringFlag{
-					Name:  "parameter-values",
+					Name: "parameter-values",
 					Usage: "A map that assigns a value to each script parameter, as a json formatted parameter; " +
 						"i.e: '{\"param1\":\"val1\",\"param2\":\"val2\"}'",
 				},
 				cli.StringFlag{
-					Name:  "parameter-values-from-file",
+					Name: "parameter-values-from-file",
 					Usage: "A map that assigns a value to each script parameter, from file or STDIN, as a json formatted " +
 						"parameter. \n\t" +
 						"From file: --parameter-values-from-file params.json \n\t" +
@@ -232,8 +232,8 @@ func SubCommands() []cli.Command {
 			},
 		},
 		{
-			Name:   "reorder-template-scripts",
-			Usage:  "Reorders the scripts of the template and type specified according to the provided order, changing " +
+			Name: "reorder-template-scripts",
+			Usage: "Reorders the scripts of the template and type specified according to the provided order, changing " +
 				"their execution order as corresponds.",
 			Action: cmd.TemplateScriptReorder,
 			Flags: []cli.Flag{
@@ -246,7 +246,7 @@ func SubCommands() []cli.Command {
 					Usage: "Must be \"operational\", \"boot\", or \"shutdown\"",
 				},
 				cli.StringFlag{
-					Name:  "script-ids",
+					Name: "script-ids",
 					Usage: "A list of comma separated scripts ids that must contain all the ids of scripts of the given " +
 						"template and type in the desired execution order",
 				},

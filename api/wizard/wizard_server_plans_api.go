@@ -11,8 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const APIPathWizardServerPlansByAppLocationCloudProvider =
-	"/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s"
+const APIPathWizardServerPlansByAppLocationCloudProvider = "/wizard/server_plans?app_id=%s&location_id=%s&cloud_provider_id=%s"
 
 // WizardServerPlanService manages wizard server plan operations
 type WizardServerPlanService struct {

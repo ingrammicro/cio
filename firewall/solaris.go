@@ -1,5 +1,6 @@
 // Copyright (c) 2017-2021 Ingram Micro Inc.
 
+//go:build solaris
 // +build solaris
 
 package firewall

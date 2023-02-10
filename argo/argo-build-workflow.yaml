@@ -76,7 +76,7 @@ spec:
         arguments:
           parameters:
           - name: go-image
-            value: golang:1.18.5
+            value: golang:1.19.4
           - name: notifiable_commits
             value: "{{tasks.dependencies.outputs.parameters.notifiable_commits}}"
           - name: repo
@@ -84,6 +84,18 @@ spec:
           - name: test_path
             value: .
         when: "{{workflow.parameters.skip_tests}} == false"
+
+      - name: cio-govulncheck
+        dependencies: [dependencies]
+        templateRef:
+          name: workflow-template-vulnerability-template-1.0
+          template: govulncheck
+        arguments:
+          parameters:
+          - name: go-image
+            value: golang:1.19.4
+          - name: source_mountpath
+            value: /src
 
       - name: dependency-track
         dependencies: [dependencies]
@@ -139,7 +151,7 @@ spec:
         when: "('{{workflow.parameters.pull_request}}' =~ '^[0-9]+$')"
 
       - name: cio-releaser
-        dependencies: [cio-tests]
+        dependencies: [cio-build]
         template: cio-releaser
         arguments:
           artifacts:
@@ -159,7 +171,7 @@ spec:
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.18.5
+        value: golang:1.19.4
       - name: notifiable_commits
       - name: source_mountpath
         value: /usr/src
@@ -238,7 +250,7 @@ spec:
     inputs:
       parameters:
       - name: go-image
-        value: golang:1.18.5
+        value: golang:1.19.4
       artifacts:
       - name: src
         path: "/src"
